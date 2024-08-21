@@ -1,0 +1,8 @@
+{
+  "FINALY_BOSS_MAP_SCALE": [ 0.1, 0.1, 0.1 ],
+  "FINALY_BOSS_MAP_ROTATION": [ 0.0, 0.0, 0.0 ],
+  "FINALY_BOSS_MAP_POSITION": [ 0.0, 0.0, 0.0 ],
+  "SKYDOME_POSITION": [ 0.0, -80.0, 0.0 ],
+  "SKYDOME_SCALE": [ 1.1, 1.1, 1.1 ],
+  "SKYDOME_ROTATION": [ 0.0, 0.0, 0.0 ]
+}

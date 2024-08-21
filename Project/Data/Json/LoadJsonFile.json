@@ -1,0 +1,16 @@
+{
+  "FILE_NAME": [
+    "Data/Json/FPSController.json",
+    "Data/Json/ScreenSetup.json",
+    "Data/Json/LoadScene.json",
+    "Data/Json/ModelPath.json",
+    "Data/Json/ImagePath.json",
+    "Data/Json/FontPath.json",
+    "Data/Json/SoundPath.json",
+    "Data/Json/Map.json",
+    "Data/Json/Camera.json",
+    "Data/Json/Player.json",
+    "Data/Json/Enemy.json",
+    "Data/Json/Debug.json"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "PATH": [
+    "Asset/Image/UI/FrameIcon.png",
+    "Asset/Image/UI/BoltIcon.png",
+    "Asset/Image/UI/IceIcon.png",
+    "Asset/Image/UI/EarthIcon.png",
+    "Asset/Image/UI/StormIcon.png"
+  ]
+}

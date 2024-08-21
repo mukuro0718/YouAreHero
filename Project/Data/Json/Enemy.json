@@ -1,0 +1,38 @@
+{
+  "ORIGIN": [ 0.0, 0.0, 0.0 ],
+  "MAX_HIT_POSITION_OFFSET": [ 5.0, 5.0, 5.0 ],
+  "MIN_HIT_POSITION_OFFSET": [ -5.0, -5.0, -5.0 ],
+  "INIT_POSITION": [ 150.0, 5.0, 150.0 ],
+  "INIT_SCALE": [ 0.05, 0.05, 0.05 ],
+  "INIT_ROTATION": [ 45.0, 45.0, 45.0 ],
+  "HIT_SCALE": 5.0,
+  "VELOCITY": 0.4,
+  "REST_COUNT": 120,
+  "WAIT_TIME_BEFORE_RUSH": 60,
+  "RUSH_TIME": 60,
+  "RUSH_VELOCITY": 4.0,
+  "WAIT_TIME_BEFORE_JUMP": 30,
+  "JUMP_TIME": 60,
+  "JUMP_VELOCITY": 4.0,
+  "JUMP_POWER": 0.5,
+  "JUMP_RANGE": 5.0,
+  "JUMP_HEIGHT": 30.0,
+  "GRAVITY": -5.0,
+
+  "ANIMATION_HANDLE": [
+    "Asset/Animation/Boss_Idle.mv1",
+    "Asset/Animation/Boss_Taunt.mv1",
+    "Asset/Animation/Boss_Walk.mv1"
+  ],
+  "ANIMATION_INDEX": [
+    0,
+    0,
+    0
+  ],
+  "ANIMATION_PLAY_TIME": [
+    0.8,
+    0.8,
+    0.8
+  ],
+  "CHASE_RANGE": 50.0
+}
