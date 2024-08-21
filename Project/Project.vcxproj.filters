@@ -1,0 +1,488 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Json">
+      <UniqueIdentifier>{7a8fcb7e-0132-4ed9-be5a-12c90e1e0917}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Json\File">
+      <UniqueIdentifier>{d42c3d30-4758-42e6-bc9a-7cb261fae233}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Manager">
+      <UniqueIdentifier>{53af874b-408e-4d46-933f-1b4fce1fa681}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Changer">
+      <UniqueIdentifier>{e8258cc4-259b-42fe-a03d-16c64a3e900a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Type">
+      <UniqueIdentifier>{3bf80840-65e3-41a5-9e1c-6d79868d5774}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Type\Game">
+      <UniqueIdentifier>{ee48e7ce-33ea-4c8b-a58d-ded8787cba07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Type\Load">
+      <UniqueIdentifier>{532efa21-8f9c-46d9-b712-06557c74f422}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Type\Base">
+      <UniqueIdentifier>{0bdc4ccd-fa10-4ff1-9aef-1225f3a0d725}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Json\Loader">
+      <UniqueIdentifier>{41b87622-2c4c-44b2-8e67-8344665a1f8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Json\Manager">
+      <UniqueIdentifier>{9945ae04-01f1-4104-9713-aa40d4757c94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object">
+      <UniqueIdentifier>{3d964cea-eaa3-40ea-bbda-fdaa2f5720ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Map">
+      <UniqueIdentifier>{578d26eb-3713-48dd-9647-a06275298111}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{183fbf68-dac6-4b05-9465-64cfa656c0b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Image">
+      <UniqueIdentifier>{f2809882-62ab-47e1-8a61-462adea7a570}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Model">
+      <UniqueIdentifier>{1d8adef2-5d68-4c7c-969a-504eaa7bce7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Other">
+      <UniqueIdentifier>{8982895f-5c2d-41f4-990a-77431b47fe23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Other\FPSController">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Other\LoadingAsset">
+      <UniqueIdentifier>{b05d2304-1a58-4a35-be3f-fc84576338ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Transform">
+      <UniqueIdentifier>{2a1acee5-cb24-4d89-b806-aa091fb3e683}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Other\ScreenSetup">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Data\HeaderFile">
+      <UniqueIdentifier>{365052f4-3377-444e-bb3e-2ffc09b09f16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Camera">
+      <UniqueIdentifier>{e11c1448-d36a-45d2-a92d-487b76ecda5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Camera\Manager">
+      <UniqueIdentifier>{4beac0c3-5332-45bd-a60e-3a8d3dac7ffc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Singleton">
+      <UniqueIdentifier>{87fe75bc-2600-4894-abb5-c790bf82292a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\VECTORtoUseful">
+      <UniqueIdentifier>{bf2757e9-26ed-44b0-95d7-f195106f0e5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Map\Manager">
+      <UniqueIdentifier>{d04c3abc-e5eb-4d03-a202-d6c40f68757b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debug">
+      <UniqueIdentifier>{698d366a-b420-4203-b60d-c11510e3b874}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InputManager">
+      <UniqueIdentifier>{58d3b52a-1806-4a75-bc73-787f4abe430d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Map\Skydome">
+      <UniqueIdentifier>{00644cf4-cc1b-4557-beaa-613dc603e37e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character">
+      <UniqueIdentifier>{3fc86b96-4675-44da-92f3-ea37320d1313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player">
+      <UniqueIdentifier>{99cea7a1-2aea-4212-943c-43d0b70c0397}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy">
+      <UniqueIdentifier>{c42f51d4-9a05-4bb4-a762-e63c536ca483}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\PlayerManager">
+      <UniqueIdentifier>{92bd5c24-fadf-447d-9c5e-620647e01723}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\BitFlag">
+      <UniqueIdentifier>{b08a6700-eaef-4265-af97-c176d9d357b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{9a45627d-9426-470a-9e62-4260da791afa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\EnemyManager">
+      <UniqueIdentifier>{06d10af2-3272-434d-8d5b-e7b6fa8af27b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\Satellite">
+      <UniqueIdentifier>{07fa03df-bc59-4b90-9f94-b6e8eb0458fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Magic">
+      <UniqueIdentifier>{aec7845b-84a1-407b-b36d-13ae1a48ab42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Magic\PlayerMagic">
+      <UniqueIdentifier>{74e862fc-7b86-4af9-ae5e-44de2b4b83d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Magic\PlayerMagic\Manager">
+      <UniqueIdentifier>{d3e19c02-4c54-48ec-ab06-11c6dc842fb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Magic\PlayerMagic\Type">
+      <UniqueIdentifier>{e7f75f09-d670-408e-8c07-12b8669848a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Magic\PlayerMagic\Base">
+      <UniqueIdentifier>{f92c5219-8f1d-4c7f-9cef-447dba954f31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\Shield">
+      <UniqueIdentifier>{963e84a4-825e-4716-9bdf-a9572ff28be2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{f1a33d7d-eecc-4dae-8795-b4ae50f423f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision\Manager">
+      <UniqueIdentifier>{9e9e1fab-4766-4b5d-b45c-794404c13560}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision\Collider">
+      <UniqueIdentifier>{fb90847f-4b7c-4961-9893-25347c34eb38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Vector4">
+      <UniqueIdentifier>{e6b23e04-dce2-476f-96c1-973a764710bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{efb3e4fa-b963-40ae-b20d-cc4705da50d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Manager">
+      <UniqueIdentifier>{2ba8901a-af08-49c0-a5f1-ae9be57edcaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\HP">
+      <UniqueIdentifier>{8ae68818-4ed3-423b-9cca-40de92dfbd3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Action">
+      <UniqueIdentifier>{a0ac1759-5aa1-4453-8e3b-c78be5704002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Map\BossMap">
+      <UniqueIdentifier>{ffb39af1-a9fc-4823-9dd3-020f1c98df57}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FPSController.cpp">
+      <Filter>Other\FPSController</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenSetup.cpp">
+      <Filter>Other\ScreenSetup</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="LoadingAsset.cpp">
+      <Filter>Other\LoadingAsset</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Data\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="Singleton.cpp">
+      <Filter>Data\Singleton</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Scene\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneChanger.cpp">
+      <Filter>Scene\Changer</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
+      <Filter>Scene\Type\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadScene.cpp">
+      <Filter>Scene\Type\Load</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneBase.cpp">
+      <Filter>Scene\Type\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonLoader.cpp">
+      <Filter>Json\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonManager.cpp">
+      <Filter>Json\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMap.cpp">
+      <Filter>Object\Map\BossMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Data\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Data\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Object\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraManager.cpp">
+      <Filter>Object\Camera\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="VECTORtoUseful.cpp">
+      <Filter>Data\VECTORtoUseful</Filter>
+    </ClCompile>
+    <ClCompile Include="MapManager.cpp">
+      <Filter>Object\Map\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>InputManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Skydome.cpp">
+      <Filter>Object\Map\Skydome</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Object\Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerManager.cpp">
+      <Filter>Object\Character\PlayerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="BitFlag.cpp">
+      <Filter>Data\BitFlag</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Boss.cpp">
+      <Filter>Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyManager.cpp">
+      <Filter>Object\Character\EnemyManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Satellite.cpp">
+      <Filter>Object\Character\Player\Satellite</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMagicManager.cpp">
+      <Filter>Object\Magic\PlayerMagic\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerFlameMagic.cpp">
+      <Filter>Object\Magic\PlayerMagic\Type</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBoltMagic.cpp">
+      <Filter>Object\Magic\PlayerMagic\Type</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMagic.cpp">
+      <Filter>Object\Magic\PlayerMagic\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Shield.cpp">
+      <Filter>Object\Character\Player\Shield</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>Collision\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Collision\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="HP.cpp">
+      <Filter>UI\HP</Filter>
+    </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>UI\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Action.cpp">
+      <Filter>UI\Action</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerEarthMagic.cpp">
+      <Filter>Object\Magic\PlayerMagic\Type</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerIceMagic.cpp">
+      <Filter>Object\Magic\PlayerMagic\Type</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerStormMagic.cpp">
+      <Filter>Object\Magic\PlayerMagic\Type</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FPSController.h">
+      <Filter>Other\FPSController</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenSetup.h">
+      <Filter>Other\ScreenSetup</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingAsset.h">
+      <Filter>Other\LoadingAsset</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Data\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="UseMath.h">
+      <Filter>Data\HeaderFile</Filter>
+    </ClInclude>
+    <ClInclude Include="UseJson.h">
+      <Filter>Data\HeaderFile</Filter>
+    </ClInclude>
+    <ClInclude Include="UseSTL.h">
+      <Filter>Data\HeaderFile</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>Data\Singleton</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Scene\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneChanger.h">
+      <Filter>Scene\Changer</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene.h">
+      <Filter>Scene\Type\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadScene.h">
+      <Filter>Scene\Type\Load</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneBase.h">
+      <Filter>Scene\Type\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonLoader.h">
+      <Filter>Json\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonManager.h">
+      <Filter>Json\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMap.h">
+      <Filter>Object\Map\BossMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Data\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Data\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Object\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraManager.h">
+      <Filter>Object\Camera\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteInstance.h">
+      <Filter>Data\HeaderFile</Filter>
+    </ClInclude>
+    <ClInclude Include="VECTORtoUseful.h">
+      <Filter>Data\VECTORtoUseful</Filter>
+    </ClInclude>
+    <ClInclude Include="MapManager.h">
+      <Filter>Object\Map\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>InputManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Skydome.h">
+      <Filter>Object\Map\Skydome</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Object\Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerManager.h">
+      <Filter>Object\Character\PlayerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BitFlag.h">
+      <Filter>Data\BitFlag</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Boss.h">
+      <Filter>Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyManager.h">
+      <Filter>Object\Character\EnemyManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Satellite.h">
+      <Filter>Object\Character\Player\Satellite</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMagicManager.h">
+      <Filter>Object\Magic\PlayerMagic\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerFlameMagic.h">
+      <Filter>Object\Magic\PlayerMagic\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBoltMagic.h">
+      <Filter>Object\Magic\PlayerMagic\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMagic.h">
+      <Filter>Object\Magic\PlayerMagic\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Shield.h">
+      <Filter>Object\Character\Player\Shield</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>Collision\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Collision\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Data\Vector4</Filter>
+    </ClInclude>
+    <ClInclude Include="HP.h">
+      <Filter>UI\HP</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>UI\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Action.h">
+      <Filter>UI\Action</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerEarthMagic.h">
+      <Filter>Object\Magic\PlayerMagic\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerIceMagic.h">
+      <Filter>Object\Magic\PlayerMagic\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerStormMagic.h">
+      <Filter>Object\Magic\PlayerMagic\Type</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\Json\Camera.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\Enemy.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\FontPath.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\FPSController.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\ImagePath.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\LoadJsonFile.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\LoadScene.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\ModelPath.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\Player.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\ScreenSetup.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\SoundPath.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\Map.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\Debug.json">
+      <Filter>Json\File</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Project.rc">
+      <Filter>Other\ScreenSetup</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
