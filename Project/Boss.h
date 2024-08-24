@@ -41,7 +41,6 @@ private:
 	const bool CanMove()const;						//ˆÚ“®‚Å‚«‚é‚©
 	const bool CanAttack()const;						//UŒ‚‚Å‚«‚é‚©
 	void DecideOfAttack();//UŒ‚‚ğŒˆ‚ß‚é
-	void Move();
 	void RushAttack();//“ËiUŒ‚
 	void JumpAttack();//ƒWƒƒƒ“ƒvUŒ‚
 	void SetState();

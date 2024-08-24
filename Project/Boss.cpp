@@ -186,9 +186,11 @@ void Boss::Move()
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	/*プレイヤーからの距離が定数以上だったら追跡*/
-	const int CHASE_RANGE = json.GetJson(JsonManager::FileType::ENEMY)["CHASE_RANGE"];
+	const float CHASE_RANGE = json.GetJson(JsonManager::FileType::ENEMY)["CHASE_RANGE"];
+	const 
 }
 
 /// <summary>
