@@ -21,6 +21,7 @@ private:
 	void operator=(const Singleton& _object){}//代入演算子禁止
 	Singleton(const Singleton& _object){}//コピーコンストラクタ禁止
 };
+
 //#pragma once
 //template <typename T>
 //class Singleton

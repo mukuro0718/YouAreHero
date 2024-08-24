@@ -25,3 +25,13 @@ void BitFlag::ClearFlag(const unsigned int _flag)
 {
 	this->flags &= ~_flag;
 }
+
+/// <summary>
+/// ˆø”‚Ìƒtƒ‰ƒO‚ğæ“¾‚·‚é
+/// </summary>
+/// <param name="_targetFlag"></param>
+/// <returns></returns>
+const unsigned int BitFlag::GetTargetFlag(const unsigned int _maskFlag)const
+{
+	return this->flags & _maskFlag;
+}
