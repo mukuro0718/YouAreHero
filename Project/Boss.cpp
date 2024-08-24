@@ -190,7 +190,6 @@ void Boss::Move()
 
 	/*ƒvƒŒƒCƒ„[‚©‚ç‚Ì‹——£‚ª’è”ˆÈã‚¾‚Á‚½‚ç’ÇÕ*/
 	const float CHASE_RANGE = json.GetJson(JsonManager::FileType::ENEMY)["CHASE_RANGE"];
-	const 
 }
 
 /// <summary>

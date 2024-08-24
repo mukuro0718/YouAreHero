@@ -6,7 +6,6 @@
 #include "Singleton.h"
 
 class HP;
-class Action;
 class UIManager : public Singleton<UIManager>
 {
 public:
@@ -23,6 +22,5 @@ private:
 
 	/*ƒƒ“ƒo•Ï”*/
 	HP* hp;
-	Action* action;
 };
 

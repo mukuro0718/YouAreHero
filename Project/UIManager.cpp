@@ -3,7 +3,6 @@
 #include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
 #include "HP.h"
-#include "Action.h"
 #include "UIManager.h"
 
 
@@ -15,7 +14,6 @@ UIManager::UIManager()
 {
 	/*インスタンスの生成*/
 	this->hp = new HP();
-	this->action = new Action();
 
 	/*初期化*/
 	Initialize();
@@ -50,5 +48,4 @@ void UIManager::Update()
 const void UIManager::Draw()const
 {
 	this->hp->Draw();
-	this->action->Draw();
 }

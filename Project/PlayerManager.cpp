@@ -86,14 +86,6 @@ const bool PlayerManager::IsAttack()const
 	return this->player->IsAttack();
 }
 
-/// <summary>
-/// ‘–‚èƒtƒ‰ƒO
-/// </summary>
-const bool PlayerManager::IsShowElementWheel()const
-{
-	return this->player->IsShowElementWheel();
-}
-
 const Collider PlayerManager::GetCollider()
 {
 	return this->player->GetCollider();
@@ -101,12 +93,4 @@ const Collider PlayerManager::GetCollider()
 const int PlayerManager::GetHP()const
 {
 	return this->player->GetHP();
-}
-const int PlayerManager::GetCurrentElement()const
-{
-	return this->player->GetCurrentElement();
-}
-const float PlayerManager::GetElementAngle()const
-{
-	return this->player->GetElementAngle();
 }

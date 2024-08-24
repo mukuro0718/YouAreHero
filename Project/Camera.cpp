@@ -142,9 +142,6 @@ void Camera::UpdateAngle()
 	auto& json  = Singleton<JsonManager>::GetInstance();//json
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
-	/*属性ホイールを表示していたら早期リターン*/
-	if (player.IsShowElementWheel())return;
-
 	/*変数の準備*/
 	const int	X_BUF			= input.GetRStickState().XBuf;										  //右スティック入力
 	const int	Y_BUF			= input.GetRStickState().YBuf;										  //右スティック入力

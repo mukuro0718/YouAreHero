@@ -115,27 +115,6 @@
     <Filter Include="Object\Character\EnemyManager">
       <UniqueIdentifier>{06d10af2-3272-434d-8d5b-e7b6fa8af27b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Player\Satellite">
-      <UniqueIdentifier>{07fa03df-bc59-4b90-9f94-b6e8eb0458fc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Magic">
-      <UniqueIdentifier>{aec7845b-84a1-407b-b36d-13ae1a48ab42}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Magic\PlayerMagic">
-      <UniqueIdentifier>{74e862fc-7b86-4af9-ae5e-44de2b4b83d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Magic\PlayerMagic\Manager">
-      <UniqueIdentifier>{d3e19c02-4c54-48ec-ab06-11c6dc842fb5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Magic\PlayerMagic\Type">
-      <UniqueIdentifier>{e7f75f09-d670-408e-8c07-12b8669848a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Magic\PlayerMagic\Base">
-      <UniqueIdentifier>{f92c5219-8f1d-4c7f-9cef-447dba954f31}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Player\Shield">
-      <UniqueIdentifier>{963e84a4-825e-4716-9bdf-a9572ff28be2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Collision">
       <UniqueIdentifier>{f1a33d7d-eecc-4dae-8795-b4ae50f423f3}</UniqueIdentifier>
     </Filter>
@@ -156,9 +135,6 @@
     </Filter>
     <Filter Include="UI\HP">
       <UniqueIdentifier>{8ae68818-4ed3-423b-9cca-40de92dfbd3e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UI\Action">
-      <UniqueIdentifier>{a0ac1759-5aa1-4453-8e3b-c78be5704002}</UniqueIdentifier>
     </Filter>
     <Filter Include="Object\Map\BossMap">
       <UniqueIdentifier>{ffb39af1-a9fc-4823-9dd3-020f1c98df57}</UniqueIdentifier>
@@ -250,24 +226,6 @@
     <ClCompile Include="EnemyManager.cpp">
       <Filter>Object\Character\EnemyManager</Filter>
     </ClCompile>
-    <ClCompile Include="Satellite.cpp">
-      <Filter>Object\Character\Player\Satellite</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerMagicManager.cpp">
-      <Filter>Object\Magic\PlayerMagic\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerFlameMagic.cpp">
-      <Filter>Object\Magic\PlayerMagic\Type</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerBoltMagic.cpp">
-      <Filter>Object\Magic\PlayerMagic\Type</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerMagic.cpp">
-      <Filter>Object\Magic\PlayerMagic\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Shield.cpp">
-      <Filter>Object\Character\Player\Shield</Filter>
-    </ClCompile>
     <ClCompile Include="CollisionManager.cpp">
       <Filter>Collision\Manager</Filter>
     </ClCompile>
@@ -279,18 +237,6 @@
     </ClCompile>
     <ClCompile Include="UIManager.cpp">
       <Filter>UI\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Action.cpp">
-      <Filter>UI\Action</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerEarthMagic.cpp">
-      <Filter>Object\Magic\PlayerMagic\Type</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerIceMagic.cpp">
-      <Filter>Object\Magic\PlayerMagic\Type</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerStormMagic.cpp">
-      <Filter>Object\Magic\PlayerMagic\Type</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -393,24 +339,6 @@
     <ClInclude Include="EnemyManager.h">
       <Filter>Object\Character\EnemyManager</Filter>
     </ClInclude>
-    <ClInclude Include="Satellite.h">
-      <Filter>Object\Character\Player\Satellite</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerMagicManager.h">
-      <Filter>Object\Magic\PlayerMagic\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerFlameMagic.h">
-      <Filter>Object\Magic\PlayerMagic\Type</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerBoltMagic.h">
-      <Filter>Object\Magic\PlayerMagic\Type</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerMagic.h">
-      <Filter>Object\Magic\PlayerMagic\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Shield.h">
-      <Filter>Object\Character\Player\Shield</Filter>
-    </ClInclude>
     <ClInclude Include="CollisionManager.h">
       <Filter>Collision\Manager</Filter>
     </ClInclude>
@@ -425,18 +353,6 @@
     </ClInclude>
     <ClInclude Include="UIManager.h">
       <Filter>UI\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Action.h">
-      <Filter>UI\Action</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerEarthMagic.h">
-      <Filter>Object\Magic\PlayerMagic\Type</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerIceMagic.h">
-      <Filter>Object\Magic\PlayerMagic\Type</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerStormMagic.h">
-      <Filter>Object\Magic\PlayerMagic\Type</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

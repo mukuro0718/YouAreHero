@@ -46,7 +46,8 @@
     "Asset/Animation/Player/Attack/Punch.mv1",
     "Asset/Animation/Player/Attack/Rotation.mv1",
     "Asset/Animation/Player/Attack/Slash1.mv1",
-    "Asset/Animation/Player/Attack/Slash2.mv1"
+    "Asset/Animation/Player/Attack/Slash2.mv1",
+    "Asset/Animation/Player/Action/Avoid.mv1"
   ],
   "ANIMATION_INDEX": [
     1,
@@ -111,5 +112,5 @@
     0.5,
     0.5,
     0.5
-  ],
+  ]
 }

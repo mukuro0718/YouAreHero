@@ -21,11 +21,8 @@ public:
 	const VECTOR   GetDirection			()const;//座標の取得
 	const bool     IsMove				()const;//移動したか
 	const bool	   IsAttack				()const;//攻撃したか
-	const bool	   IsShowElementWheel	()const;//属性ホイールを表示したか
 	const Collider GetCollider			();
 	const int	   GetHP				()const;
-	const int	   GetCurrentElement	()const;
-	const float GetElementAngle()const;
 
 private:
 	/*内部処理関数*/

@@ -5,8 +5,6 @@
 
 class Model;
 class BitFlag;
-class Satellite;
-class Shield;
 class Collider;
 class Player
 {
@@ -33,36 +31,38 @@ private:
 	/*静的定数*/
 	//プレイヤーの状態
 	static constexpr unsigned int IDLE	   = (1 << 0); //待機
-	static constexpr unsigned int ATTACK   = (1 << 1); //攻撃
-	static constexpr unsigned int REACTION = (1 << 2); //リアクション（攻撃を受けた時）
-	static constexpr unsigned int DEATH    = (1 << 3); //死亡
+	static constexpr unsigned int REACTION = (1 << 1); //リアクション（攻撃を受けた時）
+	static constexpr unsigned int DEATH    = (1 << 2); //死亡
+	static constexpr unsigned int LOCK_ON  = (1 << 3); //ロックオン
 	//立ち、座り
-	static constexpr unsigned int STAND  = (1 << 0); //立ち
-	static constexpr unsigned int CROUCH = (1 << 1); //座り
+	static constexpr unsigned int STAND  = (1 << 4); //立ち
+	static constexpr unsigned int CROUCH = (1 << 5); //座り
 	//移動
-	static constexpr unsigned int IDLE	  = (1 << 0); //待機
-	static constexpr unsigned int RUN	  = (1 << 1); //走り
-	static constexpr unsigned int WALK	  = (1 << 2); //歩き
-	static constexpr unsigned int LOCK_ON = (1 << 3); //ロックオン
+	static constexpr unsigned int RUN	  = (1 << 6); //走り
+	static constexpr unsigned int WALK	  = (1 << 7); //歩き
 	//アクション
-	static constexpr unsigned int AVOID	= (1 << 0); //回避
-	static constexpr unsigned int JUMP  = (1 << 1); //ジャンプ
-	static constexpr unsigned int BLOCK = (1 << 2); //ブロック
+	static constexpr unsigned int AVOID	= (1 << 8); //回避
+	static constexpr unsigned int JUMP  = (1 << 9); //ジャンプ
+	static constexpr unsigned int BLOCK = (1 << 10); //ブロック
 	//リアクション
-	static constexpr unsigned int BIG_IMPACT   = (1 << 0); //大衝撃
-	static constexpr unsigned int SMALL_IMPACT = (1 << 1); //小衝撃
+	static constexpr unsigned int BIG_IMPACT   = (1 << 11); //大衝撃
+	static constexpr unsigned int SMALL_IMPACT = (1 << 12); //小衝撃
 	//攻撃
-	static constexpr unsigned int CASTING				 = (1 << 2); //詠唱
-	static constexpr unsigned int COMBO_ATTACK			 = (1 << 3); //コンボ
-	static constexpr unsigned int CROUCH_SLASH			 = (1 << 4); //しゃがみ切り
-	static constexpr unsigned int JUMP_ATTACK			 = (1 << 5); //ジャンプ攻撃
-	static constexpr unsigned int JUMP_ROTATION_ATTACK	 = (1 << 6); //ジャンプ回転攻撃
-	static constexpr unsigned int KICK					 = (1 << 6); //キック
-	static constexpr unsigned int PUNCH					 = (1 << 6); //パンチ
-	static constexpr unsigned int ROTATION_ATTACK		 = (1 << 6); //回転攻撃
-	static constexpr unsigned int SLASH_1				 = (1 << 6); //切り１
-	static constexpr unsigned int SLASH_2				 = (1 << 6); //切り２
-
+	static constexpr unsigned int CASTING				 = (1 << 13); //詠唱
+	static constexpr unsigned int COMBO_ATTACK			 = (1 << 14); //コンボ
+	static constexpr unsigned int CROUCH_SLASH			 = (1 << 15); //しゃがみ切り
+	static constexpr unsigned int JUMP_ATTACK			 = (1 << 16); //ジャンプ攻撃
+	static constexpr unsigned int JUMP_ROTATION_ATTACK	 = (1 << 17); //ジャンプ回転攻撃
+	static constexpr unsigned int KICK					 = (1 << 18); //キック
+	static constexpr unsigned int PUNCH					 = (1 << 19); //パンチ
+	static constexpr unsigned int ROTATION_ATTACK		 = (1 << 20); //回転攻撃
+	static constexpr unsigned int SLASH_1				 = (1 << 21); //切り１
+	static constexpr unsigned int SLASH_2				 = (1 << 22); //切り２
+	//マスク
+	static constexpr unsigned int MASK_MOVE = RUN | WALK; //移動マスク
+	static constexpr unsigned int MASK_REACTION = BIG_IMPACT | SMALL_IMPACT;//リアクションマスク
+	static constexpr unsigned int MASK_ATTACK = CASTING | COMBO_ATTACK | CROUCH_SLASH | JUMP_ATTACK | JUMP_ROTATION_ATTACK |
+												KICK | PUNCH | ROTATION_ATTACK | SLASH_1 | SLASH_2;//攻撃マスク
 	/*列挙体*/
 	//フレームカウントの種類
 	enum class FrameCountType
@@ -92,6 +92,7 @@ private:
 		BIG_IMPACT			 = 17,//大衝撃
 		SMALL_IMPACT		 = 18,//小衝撃
 		DEATH				 = 19,//デス
+
 		CASTING				 = 20,//詠唱
 		COMBO				 = 21,//コンボ
 		CROUCH_SLASH		 = 22,//しゃがみ切り
@@ -102,6 +103,8 @@ private:
 		ROTATION_ATTACK		 = 27,//回転攻撃
 		SLASH_1				 = 28,//切り１
 		SLASH_2				 = 29,//切り２
+
+		AVOID				 = 30,//回避
 	};
 
 	/*内部処理関数*/
@@ -111,29 +114,32 @@ private:
 		  void Attack			 ();		//攻撃
 		  void Move				 ();		//移動
 		  void Jump				 ();		//ジャンプ
+		  void Block			 ();		//ブロック
+		  void Avoid			 ();		//回避
+		  void LockOn			 ();		//ロックオン
+		  void Crouch			 ();		//しゃがみ
+		  void Taunt			 ();		//咆哮
 		  void UpdateAnimation	 ();		//現在のアニメーションの更新
-	const bool CanMove			 ()const;//移動できるか
-	const bool CanAttack		 ()const;//攻撃できるか
-	const bool CanJump			 ()const;//ジャンプできるか
-
+	const bool CanMove			 ()const;	//移動できるか
+	const bool CanAttack		 ()const;	//攻撃できるか
+	const bool CanJump			 ()const;	//ジャンプできるか
+	void StateChanger();
 
 	/*メンバ変数*/
 
 	Model*				model;						//モデル
-	BitFlag*			state;						//アクションの状態
+	BitFlag*			state;				//状態
 	Collider*			collider;					//コライダークラス
 	VECTOR				moveVector;					//移動ベクトル
 	VECTOR				direction;					//向いている方向
 	VECTOR				fixVector;					//補正ベクトル
 	VECTOR				moveVectorRotation;			//移動ベクトル用回転値
 	VECTOR				wasd;						//wasd入力
-	VECTOR				lStick;						//lStick入力
+	VECTOR				lStick;						//lStick入力(上:Z+ 下:Z- 左:x- 右:x+)
 	float				velocity;					//速度
 	std::vector<int>	frameCount;					//フレームカウント
 	std::vector<bool>	isCount;					//カウントをするか
-	std::map<unsigned int, int> animationMap;		//アニメーション
-	std::map<int, unsigned int> attackTypeMap;
-	bool				isShot;						//魔法を撃ったか
+	std::map<unsigned int, int> attackAnimationMap;//攻撃アニメーションマップ
 	float				jumpPower;					//ジャンプ力
 	int					nowAnimation;				//アニメーション
 	float				animationPlayTime;			//アニメーション再生時間

@@ -8,8 +8,6 @@
 #include "BitFlag.h"
 #include "LoadingAsset.h"
 #include "InputManager.h"
-#include "Satellite.h"
-#include "Shield.h"
 #include "Player.h"
 #include "CameraManager.h"
 #include "EnemyManager.h"
@@ -21,8 +19,6 @@
 /// </summary>
 Player::Player()
 	: model				(nullptr)
-	, state				(nullptr)
-	, shield			(nullptr)
 	, collider			(nullptr)
 	, moveVector		{ 0.0f, 0.0f, 0.0f }
 	, direction			{ 0.0f, 0.0f, 0.0f }
@@ -31,9 +27,6 @@ Player::Player()
 	, wasd				{ 0.0f, 0.0f, 0.0f }
 	, lStick			{ 0.0f, 0.0f, 0.0f }
 	, velocity			(0.0f)
-	, isShot			(false)
-	, isShowElementWheel(false)
-	, elementAngle		(0.0f)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -41,13 +34,8 @@ Player::Player()
 
 	/*インスタンスの作成*/
 	this->model = new Model(asset.GetModel(LoadingAsset::ModelType::PLAYER));
-	this->shield = new Shield();
 	this->state = new BitFlag();
 	this->collider = new Collider();
-	for (int i = 0; i < this->SATELLITE_NUM; i++)
-	{
-		this->satellite[i] = new Satellite();
-	}
 
 	/*vectorの追加*/
 	this->frameCount.emplace_back(0);
@@ -56,24 +44,19 @@ Player::Player()
 	/*アニメーションの設定*/
 	vector<string> animationHandle = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_HANDLE"];
 	vector<int> animationIndex = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_INDEX"];
-	this->nowAnimation = static_cast<int>(AnimationType::IDLE);
+	this->nowAnimation = static_cast<int>(AnimationType::STANDING_IDLE);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 	this->model->AddAnimation(animationHandle, animationIndex);
-	this->animationMap.emplace(this->IDLE		 , static_cast<int>(AnimationType::IDLE));
-	this->animationMap.emplace(this->WALK		 , static_cast<int>(AnimationType::WALK));
-	this->animationMap.emplace(this->RUN		 , static_cast<int>(AnimationType::RUN));
-	this->animationMap.emplace(this->AVOID		 , static_cast<int>(AnimationType::AVOID));
-	this->animationMap.emplace(this->JUMP		 , static_cast<int>(AnimationType::JUMP));
-	this->animationMap.emplace(this->FLAME_ATTACK, static_cast<int>(AnimationType::FLAME_ATTACK));
-	this->animationMap.emplace(this->BOLT_ATTACK , static_cast<int>(AnimationType::BOLT_ATTACK));
-	this->animationMap.emplace(this->ICE_ATTACK	 , static_cast<int>(AnimationType::ICE_ATTACK));
-	this->animationMap.emplace(this->EARTH_ATTACK, static_cast<int>(AnimationType::EARTH_ATTACK));
-	this->animationMap.emplace(this->STORM_ATTACK, static_cast<int>(AnimationType::STORM_ATTACK));
-	this->attackTypeMap.emplace(static_cast<int>(Element::FRAME), this->FLAME_ATTACK);
-	this->attackTypeMap.emplace(static_cast<int>(Element::BOLT), this->BOLT_ATTACK);
-	this->attackTypeMap.emplace(static_cast<int>(Element::ICE), this->ICE_ATTACK);
-	this->attackTypeMap.emplace(static_cast<int>(Element::EARTH), this->EARTH_ATTACK);
-	this->attackTypeMap.emplace(static_cast<int>(Element::STORM), this->STORM_ATTACK);
+	this->attackAnimationMap.emplace(this->CASTING				, static_cast<int>(AnimationType::CASTING));
+	this->attackAnimationMap.emplace(this->COMBO_ATTACK			, static_cast<int>(AnimationType::COMBO));
+	this->attackAnimationMap.emplace(this->CROUCH_SLASH			, static_cast<int>(AnimationType::CROUCH_SLASH));
+	this->attackAnimationMap.emplace(this->JUMP_ATTACK			, static_cast<int>(AnimationType::JUMP_ATTACK));
+	this->attackAnimationMap.emplace(this->JUMP_ROTATION_ATTACK	, static_cast<int>(AnimationType::JUMP_ROTATION_ATTACK));
+	this->attackAnimationMap.emplace(this->KICK					, static_cast<int>(AnimationType::KICK));
+	this->attackAnimationMap.emplace(this->PUNCH				, static_cast<int>(AnimationType::PUNCH));
+	this->attackAnimationMap.emplace(this->ROTATION_ATTACK		, static_cast<int>(AnimationType::ROTATION_ATTACK));
+	this->attackAnimationMap.emplace(this->SLASH_1				, static_cast<int>(AnimationType::SLASH_1));
+	this->attackAnimationMap.emplace(this->SLASH_2				, static_cast<int>(AnimationType::SLASH_2));
 }
 
 /// <summary>
@@ -83,16 +66,9 @@ Player::~Player()
 {
 	DeleteMemberInstance(this->model);
 	DeleteMemberInstance(this->state);
-	for (int i = 0; i < this->SATELLITE_NUM; i++)
-	{
-		DeleteMemberInstance(this->satellite[i]);
-	}
-	DeleteMemberInstance(this->shield);
 	DeleteMemberInstance(this->collider);
 	this->frameCount.clear();
 	this->isCount.clear();
-	this->animationMap.clear();
-	this->attackTypeMap.clear();
 }
 
 void Player::Initialize()
@@ -104,17 +80,11 @@ void Player::Initialize()
 	const VECTOR position = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_POSITION"]);//座標
 	const VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_ROTATION"]);//回転率
 	const VECTOR scale = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	 //拡大率
-	float ANGLE_OFFSET = json.GetJson(JsonManager::FileType::PLAYER)["SATELLITE_ANGLE_OFFSET"];
 	this->velocity = 0.0f;
 	this->direction = VGet(0.0f, 0.0f, -1.0f);
 
 	/*モデルのトランスフォームの設定*/
 	this->model->SetTransform(position, rotation, scale);
-
-	this->shield->Initialize();
-
-	satellite[0]->Initialize(0.0f,position, Convert(json.GetJson(JsonManager::FileType::PLAYER)["SATELLITE_POSITION_OFFSET_A"]));
-	satellite[1]->Initialize(180.0f,position, Convert(json.GetJson(JsonManager::FileType::PLAYER)["SATELLITE_POSITION_OFFSET_A"]));
 }
 
 /// <summary>
@@ -124,7 +94,6 @@ void Player::Action()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	UpdateElement();
 
 	/*回転率の更新*/
 	UpdateRotation();
@@ -134,6 +103,8 @@ void Player::Action()
 
 	/*ジャンプ*/
 	Jump();
+	
+	/*ガード*/
 
 	/*攻撃*/
 	Attack();
@@ -152,7 +123,7 @@ void Player::Update()
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	VECTOR position = this->model->GetPosition() + this->moveVector;
-	const float  radius = json.GetJson(JsonManager::FileType::PLAYER)["RADIUS"];	 //
+	const float  radius = json.GetJson(JsonManager::FileType::PLAYER)["RADIUS"];
 
 	/*Y座標 - 半径が０よりも小さかったら*/
 	if (position.y - radius <= 0)
@@ -165,13 +136,6 @@ void Player::Update()
 
 	/*コライダーの更新*/
 	this->collider->SetSphere(position, radius);
-
-	if (this->state->CheckFlag(this->MASK_MOVE))
-	{
-		satellite[0]->Update(true, VNorm(this->direction), this->model->GetPosition());
-		satellite[1]->Update(false, VNorm(this->direction), this->model->GetPosition());
-	}
-	this->shield->Update(this->model->GetPosition());
 
 	/*アニメーションの更新*/
 	UpdateAnimation();
@@ -191,16 +155,7 @@ const void Player::Draw()const
 	printfDx("PLAYER_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
 	printfDx("PLAYER_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
 	printfDx("PLAYER_VELOCITY:%f\n", this->velocity);
-	printfDx("ELEMENT_ANGLE:%f\n", this->elementAngle);
-
 	this->model->Draw();
-	for (int i = 0; i < this->SATELLITE_NUM; i++)
-	{
-		satellite[i]->Draw();
-	}
-	DrawLine(950, 540, 970, 541, GetColor(200, 200, 200), 2);
-	DrawLine(960, 530, 961, 550, GetColor(200, 200, 200), 2);
-
 	this->collider->DrawHitSphere();
 }
 
@@ -250,7 +205,8 @@ void Player::Move()
 	UpdateMoveVector();
 
 	/*向きの更新*/
-	if (!this->isShot)
+	//ロックオンしていなかったら
+	if (!state->CheckFlag(this->LOCK_ON))
 	{
 		if (state->CheckFlag(this->MASK_MOVE))
 		{
@@ -395,8 +351,8 @@ void Player::UpdateRotation()
 	//反転していたのでベクトルを反転する
 	cameraDirection = cameraDirection * -1.0f;
 
-	/*もしエイム状態だったら*/
-	if (this->state->CheckFlag(this->MASK_ATTACK))
+	/*もしロックオンしていたら*/
+	if (this->state->CheckFlag(this->LOCK_ON))
 	{
 		/*カメラの向いている方向をもとにモデルの回転率を出す。*/
 			rotation.y = static_cast<float>(
@@ -439,7 +395,7 @@ void Player::UpdateRotation()
 	}
 	rotation = VGet(rotation.x * PI / DX_PI_F, (rotation.y * PI / DX_PI_F), rotation.z * PI / DX_PI_F);
 
-	if (isInputKey || isInputLStick || this->isShot)
+	if (isInputKey || isInputLStick || this->state->CheckFlag(this->LOCK_ON))
 	{
 		this->model->SetRotation(rotation);
 	}
@@ -467,8 +423,6 @@ void Player::Attack()
 		if (input.GetPadState() & PAD_INPUT_1 || CheckHitKey(KEY_INPUT_X))
 		{
 			this->isCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = true;
-			unsigned int flag = this->attackTypeMap[this->element];
-			this->state->SetFlag(flag);
 		}
 	}
 	else
@@ -501,7 +455,7 @@ void Player::Jump()
 	/*BボタンまたはキーボードのBが押されたら*/
 	if (!this->state->CheckFlag(this->JUMP))
 	{
-		if (input.GetPadState() & PAD_INPUT_4 || CheckHitKey(KEY_INPUT_SPACE))
+		if (input.GetPadState() & PAD_INPUT_3 || CheckHitKey(KEY_INPUT_SPACE))
 		{
 			this->jumpPower = json.GetJson(JsonManager::FileType::PLAYER)["JUMP_POWER"];
 			/*移動状態をセット*/
@@ -538,37 +492,8 @@ const bool Player::CanMove()const
 /// </summary>
 const bool Player::CanAttack()const
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
-	/*攻撃待機用フレームカウントフラグが立っていなかったらtrueを返す*/
-	if (!this->isCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)])return true;
-
-	/*攻撃ごとに最大フレームカウントを決める*/
-	int maxFrameCount = 0;
-	if (this->state->CheckFlag(this->FLAME_ATTACK))
-	{
-		maxFrameCount = json.GetJson(JsonManager::FileType::PLAYER)["FLAME_MAGIC_INTERVAL"];
-	}
-	else if (this->state->CheckFlag(this->BOLT_ATTACK))
-	{
-		maxFrameCount = json.GetJson(JsonManager::FileType::PLAYER)["BOLT_MAGIC_INTERVAL"];
-	}
-	else if (this->state->CheckFlag(this->ICE_ATTACK))
-	{
-		maxFrameCount = json.GetJson(JsonManager::FileType::PLAYER)["ICE_MAGIC_INTERVAL"];
-	}
-	else if (this->state->CheckFlag(this->EARTH_ATTACK))
-	{
-		maxFrameCount = json.GetJson(JsonManager::FileType::PLAYER)["EARTH_MAGIC_INTERVAL"];
-	}
-	else if (this->state->CheckFlag(this->STORM_ATTACK))
-	{
-		maxFrameCount = json.GetJson(JsonManager::FileType::PLAYER)["STORM_MAGIC_INTERVAL"];
-	}
-
-	/*もしフレームカウントが定数以上だったらtrueを返す*/
-	if (this->frameCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] >= maxFrameCount)return true;
+	/*攻撃マスクを確認してビットが立っていなかったらtrueを返す*/
+	if (this->state->CheckFlag(this->MASK_ATTACK))return true;
 
 	return false;
 }
@@ -623,128 +548,169 @@ const Collider Player::GetCollider()
 }
 
 /// <summary>
-/// 属性の更新
-/// </summary>
-void Player::UpdateElement()
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& input = Singleton<InputManager> ::GetInstance();
-	auto& json = Singleton<JsonManager>  ::GetInstance();
-
-	/*属性ホイールを表示するか*/
-	if (input.GetPadState() & PAD_INPUT_5)
-	{
-		this->isShowElementWheel = true;
-	}
-	else
-	{
-		//falseなら早期リターン
-		this->isShowElementWheel = false;
-		return;
-	}
-
-	/*右スティックの傾きをもとに、属性を変更する*/
-	vector<int> buf = { input.GetRStickState().XBuf ,input.GetRStickState().YBuf };
-	this->rStick = buf;
-	/*スティック入力がなければリターンを返す*/
-	if (this->rStick[0] == 0 && this->rStick[1] == 0)return;
-	this->elementAngle = (- atan2(this->rStick[1], this->rStick[0]) * 180.0f / DX_PI_F) - 90.0f;
-	if (this->elementAngle < 0)
-	{
-		this->elementAngle += 360.0f;
-		if (this->elementAngle == 360.0f)
-		{
-			this->elementAngle = 0.0f;
-		}
-	}
-
-	if (31.0f >= this->elementAngle || this->elementAngle >= 320.0f)
-	{
-		this->element = static_cast<int>(Element::ICE);
-	}
-	else if (103.0f >= this->elementAngle && this->elementAngle >= 32.0f)
-	{
-		this->element = static_cast<int>(Element::BOLT);
-	}
-	else if (175.0f >= this->elementAngle && this->elementAngle >= 104.0f)
-	{
-		this->element = static_cast<int>(Element::FRAME);
-	}
-	else if (247.0f >= this->elementAngle && this->elementAngle >= 176.0f)
-	{
-		this->element = static_cast<int>(Element::STORM);
-	}
-	else if (319.0f >= this->elementAngle && this->elementAngle >= 248.0f)
-	{
-		this->element = static_cast<int>(Element::EARTH);
-	}
-}
-
-/// <summary>
 /// アニメーションの更新
 /// </summary>
 void Player::UpdateAnimation()
 {
+	/*
+	HACK:アニメーションの優先順位
+	デス→リアクション→攻撃・防御・ジャンプ・回避
+	*/
+
+	/*デスしていたら*/
+	if (this->state->CheckFlag(this->DEATH))
+	{
+		this->nowAnimation = static_cast<int>(AnimationType::DEATH);
+	}
+
 	/*攻撃していたら*/
-	if (this->state->CheckFlag(this->MASK_ATTACK))
+	else if (this->state->CheckFlag(this->MASK_ATTACK))
 	{
-		//炎
-		if (this->state->CheckFlag(this->FLAME_ATTACK))
+		this->nowAnimation = this->attackAnimationMap[this->state->GetTargetFlag(this->MASK_ATTACK)];
+	}
+	else
+	{
+		/*回避していたら*/
+		if (this->state->CheckFlag(this->AVOID))
 		{
-			this->nowAnimation = static_cast<int>(AnimationType::FLAME_ATTACK);
-		}
-		//雷
-		else if (this->state->CheckFlag(this->BOLT_ATTACK))
-		{
-			this->nowAnimation = static_cast<int>(AnimationType::BOLT_ATTACK);
-		}
-		//氷
-		else if (this->state->CheckFlag(this->ICE_ATTACK))
-		{
-			this->nowAnimation = static_cast<int>(AnimationType::ICE_ATTACK);
-		}
-		//土
-		else if (this->state->CheckFlag(this->EARTH_ATTACK))
-		{
-			this->nowAnimation = static_cast<int>(AnimationType::EARTH_ATTACK);
-		}
-		//風
-		else if (this->state->CheckFlag(this->STORM_ATTACK))
-		{
-			this->nowAnimation = static_cast<int>(AnimationType::STORM_ATTACK);
+			this->nowAnimation = static_cast<int>(AnimationType::AVOID);
 		}
 
-		return;
-	}
-
-	/*回避していたら*/
-	if (this->state->CheckFlag(this->AVOID))
-	{
-		this->nowAnimation = static_cast<int>(AnimationType::AVOID);
-		return;
-	}
-	/*ジャンプしていたら*/
-	if (this->state->CheckFlag(this->JUMP))
-	{
-		this->nowAnimation = static_cast<int>(AnimationType::JUMP);
-		return;
-	}
-
-	/*移動していたら*/
-	if (this->state->CheckFlag(this->MASK_MOVE))
-	{
-		//走り
-		if (this->state->CheckFlag(this->RUN))
+		/*ジャンプしていたら*/
+		else if (this->state->CheckFlag(this->JUMP))
 		{
-			this->nowAnimation = static_cast<int>(AnimationType::RUN);
+			//移動していたら
+			if (this->state->CheckFlag(this->MASK_MOVE))
+			{
+				//ロックオンしていたら待機状態のジャンプをする
+				if (this->state->CheckFlag(this->LOCK_ON))
+				{
+					this->nowAnimation = static_cast<int>(AnimationType::IDLE_JUMP);
+				}
+				else
+				{
+					this->nowAnimation = static_cast<int>(AnimationType::MOVE_JUMP);
+				}
+			}
+			else
+			{
+				this->nowAnimation = static_cast<int>(AnimationType::IDLE_JUMP);
+			}
 		}
-		//歩き
-		if (this->state->CheckFlag(this->WALK))
+
+		/*防御していたら*/
+		else if (this->state->CheckFlag(this->BLOCK))
 		{
-			this->nowAnimation = static_cast<int>(AnimationType::WALK);
+			this->nowAnimation = static_cast<int>(AnimationType::BLOCK);
 		}
-		return;
+
+		/*移動していたら*/
+		else if (this->state->CheckFlag(this->MASK_MOVE))
+		{
+			//走り
+			if (this->state->CheckFlag(this->RUN))
+			{
+				//ロックオンしているか
+				if (this->state->CheckFlag(this->LOCK_ON))
+				{
+					//ZとXの入力の絶対値を比べて、大きいほうで判断する
+					if (this->lStick.x * this->lStick.x < this->lStick.z * this->lStick.z)
+					{
+						//後ろ
+						if (this->lStick.z < 0)
+						{
+							this->nowAnimation = static_cast<int>(AnimationType::LOCK_ON_RUN_BACK);
+						}
+						//前
+						else
+						{
+							this->nowAnimation = static_cast<int>(AnimationType::RUN);
+						}
+					}
+					else
+					{
+						//右
+						if (this->lStick.x > 0)
+						{
+							this->nowAnimation = static_cast<int>(AnimationType::LOCK_ON_RUN_RIGHT);
+						}
+						//左
+						else
+						{
+							this->nowAnimation = static_cast<int>(AnimationType::LOCK_ON_RUN_LEFT);
+						}
+					}
+				}
+				else
+				{
+					this->nowAnimation = static_cast<int>(AnimationType::RUN);
+				}
+			}
+			//歩き
+			if (this->state->CheckFlag(this->WALK))
+			{
+				//ロックオンしているか
+				if (this->state->CheckFlag(this->LOCK_ON))
+				{
+					//ZとXの入力の絶対値を比べて、大きいほうで判断する
+					if (this->lStick.x * this->lStick.x < this->lStick.z * this->lStick.z)
+					{
+						//後ろ
+						if (this->lStick.z < 0)
+						{
+							this->nowAnimation = static_cast<int>(AnimationType::LOCK_ON_WALK_BACK);
+						}
+						//前
+						else
+						{
+							this->nowAnimation = static_cast<int>(AnimationType::WALK);
+						}
+					}
+					else
+					{
+						//右
+						if (this->lStick.x > 0)
+						{
+							this->nowAnimation = static_cast<int>(AnimationType::LOCK_ON_WALK_RIGHT);
+						}
+						//左
+						else
+						{
+							this->nowAnimation = static_cast<int>(AnimationType::LOCK_ON_WALK_LEFT);
+						}
+					}
+				}
+				else
+				{
+					this->nowAnimation = static_cast<int>(AnimationType::WALK);
+				}
+			}
+		}
 	}
 	/*何もしていなかったら待機状態*/
-	this->nowAnimation = static_cast<int>(AnimationType::IDLE);
+	this->nowAnimation = static_cast<int>(AnimationType::STANDING_IDLE);
+}
+
+/// <summary>
+/// ブロック
+/// </summary>
+void Player::Block()
+{
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& input = Singleton<InputManager>::GetInstance();
+
+	/*LBボタン*/
+	if (input.GetPadState() & PAD_INPUT_5)
+	{
+		this->state->SetFlag(this->BLOCK);
+	}
+	else
+	{
+		this->state->ClearFlag(this->BLOCK);
+	}
+}
+
+void Player::StateChanger()
+{
+
 }

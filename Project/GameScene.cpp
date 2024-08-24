@@ -9,7 +9,6 @@
 #include "InputManager.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"
-#include "PlayerMagicManager.h"
 #include "CollisionManager.h"
 #include "UIManager.h"
 
@@ -68,7 +67,6 @@ void GameScene::Update()
 	auto& map		  = Singleton<MapManager>		 ::GetInstance();
 	auto& player	  = Singleton<PlayerManager>	 ::GetInstance();
 	auto& enemy		  = Singleton<EnemyManager>		 ::GetInstance();
-	auto& playerMagic = Singleton<PlayerMagicManager>::GetInstance();
 	auto& collision   = Singleton<CollisionManager>	 ::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 
@@ -85,7 +83,6 @@ void GameScene::Update()
 	map.Update();
 	enemy.Update();
 	player.Update();
-	playerMagic.Update();
 	ui.Update();
 
 	/*èIóπèàóù*/
@@ -103,7 +100,6 @@ const void GameScene::Draw()const
 	auto& player	  = Singleton<PlayerManager>	 ::GetInstance();
 	auto& camera	  = Singleton<CameraManager>	 ::GetInstance();
 	auto& enemy		  = Singleton<EnemyManager>		 ::GetInstance();
-	auto& playerMagic = Singleton<PlayerMagicManager>::GetInstance();
 	auto& collision	  = Singleton<CollisionManager>	 ::GetInstance();
 	auto& ui		  = Singleton<UIManager>::GetInstance();
 
@@ -113,7 +109,6 @@ const void GameScene::Draw()const
 	map.Draw();
 	debug.Draw();
 	enemy.Draw();
-	playerMagic.Draw();
 	player.Draw();
 	collision.DebugDrawHit();
 	ui.Draw();
