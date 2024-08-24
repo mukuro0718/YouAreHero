@@ -34,20 +34,38 @@ public:
 	const float GetElementAngle		  ()const { return this->elementAngle; }
 private:
 	/*静的定数*/
-	static constexpr int SATELLITE_NUM	 = 2;//衛星の
-	static constexpr unsigned int IDLE			 = (1 << 0); //待機
-	static constexpr unsigned int RUN			 = (1 << 1); //歩き
-	static constexpr unsigned int WALK			 = (1 << 2); //歩き
-	static constexpr unsigned int AVOID			 = (1 << 3); //回避
-	static constexpr unsigned int JUMP			 = (1 << 4); //ガード
-	static constexpr unsigned int FLAME_ATTACK	 = (1 << 5); //重攻撃
-	static constexpr unsigned int BOLT_ATTACK	 = (1 << 6); //重攻撃
-	static constexpr unsigned int ICE_ATTACK	 = (1 << 7); //重攻撃
-	static constexpr unsigned int EARTH_ATTACK	 = (1 << 8); //重攻撃
-	static constexpr unsigned int STORM_ATTACK	 = (1 << 9); //重攻撃
-	static constexpr unsigned int MASK_ATTACK	 = FLAME_ATTACK | BOLT_ATTACK | ICE_ATTACK | EARTH_ATTACK | STORM_ATTACK;
-	static constexpr unsigned int MASK_MOVE		 = RUN | WALK;
-	static constexpr unsigned int MASK_ALL		 = IDLE | MASK_MOVE | MASK_ATTACK | AVOID | JUMP;
+	//プレイヤーの状態
+	static constexpr unsigned int IDLE	   = (1 << 0); //待機
+	static constexpr unsigned int ATTACK   = (1 << 1); //攻撃
+	static constexpr unsigned int REACTION = (1 << 2); //リアクション（攻撃を受けた時）
+	static constexpr unsigned int DEATH    = (1 << 3); //死亡
+	//立ち、座り
+	static constexpr unsigned int STAND  = (1 << 0); //立ち
+	static constexpr unsigned int CROUCH = (1 << 1); //座り
+	//移動
+	static constexpr unsigned int IDLE	  = (1 << 0); //待機
+	static constexpr unsigned int RUN	  = (1 << 1); //走り
+	static constexpr unsigned int WALK	  = (1 << 2); //歩き
+	static constexpr unsigned int LOCK_ON = (1 << 3); //ロックオン
+	//アクション
+	static constexpr unsigned int AVOID	= (1 << 0); //回避
+	static constexpr unsigned int JUMP  = (1 << 1); //ジャンプ
+	static constexpr unsigned int BLOCK = (1 << 2); //ブロック
+	//リアクション
+	static constexpr unsigned int BIG_IMPACT   = (1 << 0); //大衝撃
+	static constexpr unsigned int SMALL_IMPACT = (1 << 1); //小衝撃
+	//攻撃
+	static constexpr unsigned int CASTING				 = (1 << 2); //詠唱
+	static constexpr unsigned int COMBO_ATTACK			 = (1 << 3); //コンボ
+	static constexpr unsigned int CROUCH_SLASH			 = (1 << 4); //しゃがみ切り
+	static constexpr unsigned int JUMP_ATTACK			 = (1 << 5); //ジャンプ攻撃
+	static constexpr unsigned int JUMP_ROTATION_ATTACK	 = (1 << 6); //ジャンプ回転攻撃
+	static constexpr unsigned int KICK					 = (1 << 6); //キック
+	static constexpr unsigned int PUNCH					 = (1 << 6); //パンチ
+	static constexpr unsigned int ROTATION_ATTACK		 = (1 << 6); //回転攻撃
+	static constexpr unsigned int SLASH_1				 = (1 << 6); //切り１
+	static constexpr unsigned int SLASH_2				 = (1 << 6); //切り２
+
 	/*列挙体*/
 	//フレームカウントの種類
 	enum class FrameCountType
@@ -57,25 +75,38 @@ private:
 	//アニメーションの種類
 	enum class AnimationType
 	{
-		IDLE		 = 0,
-		WALK		 = 1,
-		RUN			 = 2,
-		AVOID		 = 3,
-		JUMP		 = 4,
-		FLAME_ATTACK = 5,
-		BOLT_ATTACK	 = 6,
-		ICE_ATTACK	 = 7,
-		EARTH_ATTACK = 8,
-		STORM_ATTACK = 9,
+		CROUCH_IDLE			 = 0,//座り待機
+		STANDING_IDLE		 = 1,//立ち待機
+		STANDING_IDLE_PLAY	 = 2,//立ち待機遊び
+		WALK				 = 3,//歩き
+		WALK_180_TURN		 = 4,//歩き180ターン
+		RUN					 = 5,//走り
+		RUN_180_TURN		 = 6,//走り180ターン
+		LOCK_ON_RUN_BACK	 = 7,//ロックオン後ろ走り
+		LOCK_ON_RUN_LEFT	 = 8,//ロックオン左走り
+		LOCK_ON_RUN_RIGHT	 = 9,//ロックオン右走り
+		LOCK_ON_WALK_BACK	 = 10,//ロックオン後ろ歩き
+		LOCK_ON_WALK_LEFT	 = 11,//ロックオン左歩き
+		LOCK_ON_WALK_RIGHT	 = 12,//ロックオン右歩き
+		BLOCK				 = 13,//ブロック
+		IDLE_JUMP			 = 14,//待機ジャンプ
+		MOVE_JUMP			 = 15,//移動ジャンプ
+		ROAR				 = 16,//咆哮
+		BIG_IMPACT			 = 17,//大衝撃
+		SMALL_IMPACT		 = 18,//小衝撃
+		DEATH				 = 19,//デス
+		CASTING				 = 20,//詠唱
+		COMBO				 = 21,//コンボ
+		CROUCH_SLASH		 = 22,//しゃがみ切り
+		JUMP_ATTACK			 = 23,//ジャンプ攻撃
+		JUMP_ROTATION_ATTACK = 24,//ジャンプ回転攻撃
+		KICK				 = 25,//蹴り
+		PUNCH				 = 26,//殴り
+		ROTATION_ATTACK		 = 27,//回転攻撃
+		SLASH_1				 = 28,//切り１
+		SLASH_2				 = 29,//切り２
 	};
-	enum class Element
-	{
-		FRAME,
-		BOLT,
-		ICE,
-		EARTH,
-		STORM,
-	};
+
 	/*内部処理関数*/
 		  void UpdateVelocity	 ();		//速度の更新
 		  void UpdateMoveVector	 ();		//移動ベクトルの更新
