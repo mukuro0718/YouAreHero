@@ -29,9 +29,6 @@ public:
 	const void		FixMoveVector	  (const VECTOR _fixVector);				  //移動ベクトルの修正
 	const Collider	GetCollider		  ();										  //コライダーの取得
 	const int		GetHP			  ()const { return this->hp; }				  //HPの取得
-	const int		GetCurrentElement ()const { return this->element; }			  //現在の属性の取得
-	const bool		IsShowElementWheel()const { return this->isShowElementWheel; }//属性ホイールを表示するか
-	const float GetElementAngle		  ()const { return this->elementAngle; }
 private:
 	/*静的定数*/
 	//プレイヤーの状態
@@ -115,7 +112,6 @@ private:
 		  void Move				 ();		//移動
 		  void Jump				 ();		//ジャンプ
 		  void UpdateAnimation	 ();		//現在のアニメーションの更新
-		  void UpdateElement	 ();
 	const bool CanMove			 ()const;//移動できるか
 	const bool CanAttack		 ()const;//攻撃できるか
 	const bool CanJump			 ()const;//ジャンプできるか
@@ -125,8 +121,6 @@ private:
 
 	Model*				model;						//モデル
 	BitFlag*			state;						//アクションの状態
-	Satellite*			satellite[SATELLITE_NUM];	//衛星
-	Shield*				shield;						//シールド
 	Collider*			collider;					//コライダークラス
 	VECTOR				moveVector;					//移動ベクトル
 	VECTOR				direction;					//向いている方向
@@ -144,9 +138,5 @@ private:
 	int					nowAnimation;				//アニメーション
 	float				animationPlayTime;			//アニメーション再生時間
 	int					hp;
-	int					element;
-	bool				isShowElementWheel;//属性ホイールの表示
-	std::vector<int> rStick;
-	float elementAngle;
 };
 
