@@ -29,6 +29,7 @@ public:
 	const int		GetHP			  ()const { return this->hp; }				  //HPの取得
 private:
 	/*静的定数*/
+
 	//プレイヤーの状態
 	static constexpr unsigned int IDLE	   = (1 << 0); //待機
 	static constexpr unsigned int REACTION = (1 << 1); //リアクション（攻撃を受けた時）
@@ -58,11 +59,20 @@ private:
 	static constexpr unsigned int ROTATION_ATTACK		 = (1 << 20); //回転攻撃
 	static constexpr unsigned int SLASH_1				 = (1 << 21); //切り１
 	static constexpr unsigned int SLASH_2				 = (1 << 22); //切り２
+	static constexpr unsigned int ROAR					 = (1 << 23);//咆哮
 	//マスク
 	static constexpr unsigned int MASK_MOVE = RUN | WALK; //移動マスク
 	static constexpr unsigned int MASK_REACTION = BIG_IMPACT | SMALL_IMPACT;//リアクションマスク
 	static constexpr unsigned int MASK_ATTACK = CASTING | COMBO_ATTACK | CROUCH_SLASH | JUMP_ATTACK | JUMP_ROTATION_ATTACK |
 												KICK | PUNCH | ROTATION_ATTACK | SLASH_1 | SLASH_2;//攻撃マスク
+	static constexpr unsigned int MASK_ALWAYS_INITIALIZE = RUN | WALK | LOCK_ON | BLOCK | STAND | CROUCH;
+	static constexpr unsigned int MASK_CANT_MOVE = MASK_ATTACK | MASK_REACTION | AVOID | BLOCK | CROUCH;
+	static constexpr unsigned int MASK_CANT_AVOID = MASK_ATTACK | MASK_REACTION | BLOCK | LOCK_ON | JUMP | AVOID;
+	static constexpr unsigned int MASK_CANT_ROAR = MASK_ATTACK | MASK_REACTION | JUMP | ROAR;
+	static constexpr unsigned int MASK_CANT_MAIN_ATTACK = MASK_ATTACK | MASK_REACTION | ROAR | BLOCK | AVOID;
+	static constexpr unsigned int MASK_CANT_SUB_ATTACK = MASK_ATTACK | MASK_REACTION | ROAR | AVOID;
+	static constexpr unsigned int MASK_CANT_IDLE = MASK_ATTACK | MASK_REACTION | ROAR | AVOID | JUMP | BLOCK | DEATH;
+
 	/*列挙体*/
 	//フレームカウントの種類
 	enum class FrameCountType
@@ -120,9 +130,6 @@ private:
 		  void Crouch			 ();		//しゃがみ
 		  void Taunt			 ();		//咆哮
 		  void UpdateAnimation	 ();		//現在のアニメーションの更新
-	const bool CanMove			 ()const;	//移動できるか
-	const bool CanAttack		 ()const;	//攻撃できるか
-	const bool CanJump			 ()const;	//ジャンプできるか
 	void StateChanger();
 
 	/*メンバ変数*/
@@ -140,9 +147,11 @@ private:
 	std::vector<int>	frameCount;					//フレームカウント
 	std::vector<bool>	isCount;					//カウントをするか
 	std::map<unsigned int, int> attackAnimationMap;//攻撃アニメーションマップ
+	std::map<int, unsigned int> attackComboStateMap;//コンボに応じて攻撃のビットフラグを返す
 	float				jumpPower;					//ジャンプ力
 	int					nowAnimation;				//アニメーション
 	float				animationPlayTime;			//アニメーション再生時間
 	int					hp;
+	int attackComboCount;
 };
 

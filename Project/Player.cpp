@@ -27,6 +27,7 @@ Player::Player()
 	, wasd				{ 0.0f, 0.0f, 0.0f }
 	, lStick			{ 0.0f, 0.0f, 0.0f }
 	, velocity			(0.0f)
+	, attackComboCount  (0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -57,6 +58,9 @@ Player::Player()
 	this->attackAnimationMap.emplace(this->ROTATION_ATTACK		, static_cast<int>(AnimationType::ROTATION_ATTACK));
 	this->attackAnimationMap.emplace(this->SLASH_1				, static_cast<int>(AnimationType::SLASH_1));
 	this->attackAnimationMap.emplace(this->SLASH_2				, static_cast<int>(AnimationType::SLASH_2));
+	this->attackComboStateMap.emplace(0, this->SLASH_1);
+	this->attackComboStateMap.emplace(1, this->SLASH_2);
+	this->attackComboStateMap.emplace(2, this->COMBO_ATTACK);
 }
 
 /// <summary>
@@ -168,35 +172,11 @@ void Player::Move()
 	this->moveVector = { 0.0f,0.0f,0.0f };
 
 	/*移動できるか*/
-	if (!CanMove())return;
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& input = Singleton<InputManager>::GetInstance();
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& camera = Singleton<CameraManager>::GetInstance();
-
-	/*スティック入力がなければ移動フラグを下してreturnを返す*/
-	if (this->lStick.x == 0 && this->lStick.z == 0 && this->wasd.x == 0 && this->wasd.z == 0)
-	{
-		//移動状態を削除する
-		this->state->ClearFlag(this->MASK_MOVE);
-	}
-	else
-	{
-		/*移動状態を削除する*/
-		this->state->ClearFlag(this->MASK_MOVE);
-		
-		/*移動状態をセット*/
-		//走るか
-		if (input.GetPadState() & PAD_INPUT_6 || CheckHitKey(KEY_INPUT_LSHIFT))
-		{
-			this->state->SetFlag(this->RUN);
-		}
-		else
-		{
-			this->state->SetFlag(this->WALK);
-		}
-	}
 
 	/*速度の更新*/
 	UpdateVelocity();
@@ -408,32 +388,6 @@ void Player::Attack()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& input = Singleton<InputManager> ::GetInstance();
-
-	
-	/*攻撃できるか*/
-	if (CanAttack())
-	{
-		/*攻撃関係の初期化*/
-		this->state->ClearFlag(this->MASK_ATTACK);
-		this->isCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = false;
-		this->frameCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = 0;
-
-
-		/*XボタンまたはキーボードのXが押されたら*/
-		if (input.GetPadState() & PAD_INPUT_1 || CheckHitKey(KEY_INPUT_X))
-		{
-			this->isCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = true;
-		}
-	}
-	else
-	{
-		this->frameCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)]++;
-		if (this->model->GetIsChangeAnim())
-		{
-			this->state->ClearFlag(this->MASK_ATTACK);
-			this->state->SetFlag(this->IDLE);
-		}
-	}
 }
 
 
@@ -443,7 +397,6 @@ void Player::Attack()
 void Player::Jump()
 {
 	/*シングルトンクラスのインスタンスの取得*/
-	auto& input = Singleton<InputManager> ::GetInstance();
 	auto& json = Singleton<JsonManager>  ::GetInstance();
 
 	/*空を飛べるか*/
@@ -453,16 +406,7 @@ void Player::Jump()
 	float y = json.GetJson(JsonManager::FileType::PLAYER)["GRAVITY"];
 
 	/*BボタンまたはキーボードのBが押されたら*/
-	if (!this->state->CheckFlag(this->JUMP))
-	{
-		if (input.GetPadState() & PAD_INPUT_3 || CheckHitKey(KEY_INPUT_SPACE))
-		{
-			this->jumpPower = json.GetJson(JsonManager::FileType::PLAYER)["JUMP_POWER"];
-			/*移動状態をセット*/
-			this->state->SetFlag(this->JUMP);
-		}
-	}
-	else
+	if (this->state->CheckFlag(this->JUMP))
 	{
 		float jumpDecel = json.GetJson(JsonManager::FileType::PLAYER)["JUMP_DECEL"];
 		this->jumpPower -= jumpDecel;
@@ -479,25 +423,6 @@ const bool Player::IsMove()const
 }
 
 /// <summary>
-/// 移動できるか
-/// </summary>
-const bool Player::CanMove()const
-{
-	if (this->state->CheckFlag(this->MASK_ATTACK))	return false;
-	return true;
-}
-
-/// <summary>
-/// 攻撃できるか
-/// </summary>
-const bool Player::CanAttack()const
-{
-	/*攻撃マスクを確認してビットが立っていなかったらtrueを返す*/
-	if (this->state->CheckFlag(this->MASK_ATTACK))return true;
-
-	return false;
-}
-/// <summary>
 /// 攻撃したか
 /// </summary>
 const bool Player::IsAttack()const
@@ -505,13 +430,6 @@ const bool Player::IsAttack()const
 	/*攻撃マスクを確認してビットが立っていたらtrueを返す*/
 	if (this->state->CheckFlag(this->MASK_ATTACK))return true;
 	return false;
-}
-/// <summary>
-/// 空を飛べるか
-/// </summary>
-const bool Player::CanJump()const
-{
-	return true;
 }
 
 /// <summary>
@@ -699,18 +617,137 @@ void Player::Block()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& input = Singleton<InputManager>::GetInstance();
 
-	/*LBボタン*/
-	if (input.GetPadState() & PAD_INPUT_5)
-	{
-		this->state->SetFlag(this->BLOCK);
-	}
-	else
-	{
-		this->state->ClearFlag(this->BLOCK);
-	}
 }
 
 void Player::StateChanger()
 {
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& input = Singleton<InputManager> ::GetInstance();
+	auto& json = Singleton<JsonManager>  ::GetInstance();
 
+	/*変数の準備*/
+	int pad = input.GetPadState();
+
+	/*任意の状態を初期化*/
+	this->state->ClearFlag(this->MASK_ALWAYS_INITIALIZE);
+
+	/*立ち座り*/
+	if (pad & PAD_INPUT_7)
+	{
+		this->state->SetFlag(this->CROUCH);
+	}
+	else
+	{
+		this->state->SetFlag(this->STAND);
+	}
+
+	/*移動*/
+	if (this->state->CheckFlag(this->MASK_CANT_MOVE))
+	{
+		//スティック入力
+		this->lStick = VGet(static_cast<float>(input.GetLStickState().XBuf), 0.0f, static_cast<float>(input.GetLStickState().YBuf));
+		//スティックが入力されていたら移動している
+		if (lStick.x != 0.0f || lStick.z != 0.0f)
+		{
+			//Lスティック押し込みがあればダッシュ
+			if (pad & PAD_INPUT_9)
+			{
+				this->state->SetFlag(this->RUN);
+			}
+			else
+			{
+				this->state->SetFlag(this->WALK);
+			}
+		}
+	}
+	/*Lスティック押し込みがあればロックオン*/
+	if (pad & PAD_INPUT_10)
+	{
+		this->state->SetFlag(this->LOCK_ON);
+	}
+
+	/*ジャンプ*/
+	if (this->state->CheckFlag(this->JUMP) && pad & PAD_INPUT_3)
+	{
+		this->jumpPower = json.GetJson(JsonManager::FileType::PLAYER)["JUMP_POWER"];
+		this->state->SetFlag(this->JUMP);
+	}
+
+	/*ガード*/
+	if (input.GetPadState() & PAD_INPUT_5)
+	{
+		this->state->SetFlag(this->BLOCK);
+	}
+
+	/*回避*/
+	if (this->state->CheckFlag(this->MASK_CANT_AVOID) && input.GetPadState() & PAD_INPUT_4)
+	{
+		this->state->SetFlag(this->AVOID);
+	}
+
+	/*咆哮*/
+	if (this->state->CheckFlag(this->MASK_CANT_ROAR) && input.GetPadState() & PAD_INPUT_7 && input.GetPadState() & PAD_INPUT_7)
+	{
+		this->state->SetFlag(this->AVOID);
+	}
+
+	/*攻撃*/
+	//メイン攻撃
+	if (this->state->CheckFlag(this->MASK_CANT_MAIN_ATTACK))
+	{
+		//ジャンプしていたら
+		if (this->state->CheckFlag(this->JUMP))
+		{
+			//ジャンプ攻撃
+			if (input.GetPadState() & PAD_INPUT_1)
+			{
+				this->state->SetFlag(this->JUMP_ATTACK);
+			}
+			//ジャンプ回転攻撃
+			else if (input.GetPadState() & PAD_INPUT_6)
+			{
+				this->state->SetFlag(this->JUMP_ROTATION_ATTACK);
+			}
+		}
+		else
+		{
+			//回転攻撃
+			if (input.GetPadState() & PAD_INPUT_6)
+			{
+				this->state->SetFlag(this->JUMP_ATTACK);
+			}
+			//詠唱攻撃
+			else if (input.GetPadState() & PAD_INPUT_8)
+			{
+				this->state->SetFlag(this->JUMP_ATTACK);
+			}
+			//通常攻撃
+			else if (input.GetPadState() & PAD_INPUT_1)
+			{
+				this->state->SetFlag(this->attackComboStateMap[this->attackComboCount]);
+				this->attackComboCount++;
+				if (this->attackComboCount >= json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_COMBO_NUM"])
+				{
+					this->attackComboCount = 0;
+				}
+			}
+		}
+	}
+	//サブ攻撃
+	if (this->state->CheckFlag(this->MASK_CANT_SUB_ATTACK))
+	{
+		//Yをしている
+		if (this->state->CheckFlag(this->BLOCK))
+		{
+			//ガードしていたら
+			if (this->state->CheckFlag(this->BLOCK))
+			{
+				this->state->SetFlag(this->KICK);
+			}
+			else
+			{
+				this->state->SetFlag(this->PUNCH);
+			}
+		}
+	}
 }
