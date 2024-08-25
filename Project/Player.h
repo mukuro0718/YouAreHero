@@ -29,7 +29,7 @@ public:
 	const int		GetHP			  ()const { return this->hp; }				  //HPの取得
 private:
 	/*静的定数*/
-
+	static constexpr int COUNT_NUM = 4;
 	//プレイヤーの状態
 	static constexpr unsigned int IDLE	   = (1 << 0); //待機
 	static constexpr unsigned int REACTION = (1 << 1); //リアクション（攻撃を受けた時）
@@ -52,32 +52,33 @@ private:
 	static constexpr unsigned int CASTING				 = (1 << 13); //詠唱
 	static constexpr unsigned int COMBO_ATTACK			 = (1 << 14); //コンボ
 	static constexpr unsigned int CROUCH_SLASH			 = (1 << 15); //しゃがみ切り
-	static constexpr unsigned int JUMP_ATTACK			 = (1 << 16); //ジャンプ攻撃
-	static constexpr unsigned int JUMP_ROTATION_ATTACK	 = (1 << 17); //ジャンプ回転攻撃
-	static constexpr unsigned int KICK					 = (1 << 18); //キック
-	static constexpr unsigned int PUNCH					 = (1 << 19); //パンチ
-	static constexpr unsigned int ROTATION_ATTACK		 = (1 << 20); //回転攻撃
-	static constexpr unsigned int SLASH_1				 = (1 << 21); //切り１
-	static constexpr unsigned int SLASH_2				 = (1 << 22); //切り２
-	static constexpr unsigned int ROAR					 = (1 << 23);//咆哮
+	static constexpr unsigned int KICK					 = (1 << 16); //キック
+	static constexpr unsigned int PUNCH					 = (1 << 17); //パンチ
+	static constexpr unsigned int ROTATION_ATTACK		 = (1 << 18); //回転攻撃
+	static constexpr unsigned int SLASH_1				 = (1 << 19); //切り１
+	static constexpr unsigned int SLASH_2				 = (1 << 20); //切り２
+	static constexpr unsigned int ROAR					 = (1 << 21);//咆哮
 	//マスク
 	static constexpr unsigned int MASK_MOVE = RUN | WALK; //移動マスク
 	static constexpr unsigned int MASK_REACTION = BIG_IMPACT | SMALL_IMPACT;//リアクションマスク
-	static constexpr unsigned int MASK_ATTACK = CASTING | COMBO_ATTACK | CROUCH_SLASH | JUMP_ATTACK | JUMP_ROTATION_ATTACK |
+	static constexpr unsigned int MASK_ATTACK = CASTING | COMBO_ATTACK | CROUCH_SLASH |
 												KICK | PUNCH | ROTATION_ATTACK | SLASH_1 | SLASH_2;//攻撃マスク
-	static constexpr unsigned int MASK_ALWAYS_INITIALIZE = RUN | WALK | LOCK_ON | BLOCK | STAND | CROUCH;
-	static constexpr unsigned int MASK_CANT_MOVE = MASK_ATTACK | MASK_REACTION | AVOID | BLOCK | CROUCH;
+	static constexpr unsigned int MASK_ALWAYS_INITIALIZE = BLOCK | STAND | CROUCH | IDLE;
 	static constexpr unsigned int MASK_CANT_AVOID = MASK_ATTACK | MASK_REACTION | BLOCK | LOCK_ON | JUMP | AVOID;
 	static constexpr unsigned int MASK_CANT_ROAR = MASK_ATTACK | MASK_REACTION | JUMP | ROAR;
-	static constexpr unsigned int MASK_CANT_MAIN_ATTACK = MASK_ATTACK | MASK_REACTION | ROAR | BLOCK | AVOID;
-	static constexpr unsigned int MASK_CANT_SUB_ATTACK = MASK_ATTACK | MASK_REACTION | ROAR | AVOID;
-	static constexpr unsigned int MASK_CANT_IDLE = MASK_ATTACK | MASK_REACTION | ROAR | AVOID | JUMP | BLOCK | DEATH;
+	static constexpr unsigned int MASK_CANT_MAIN_ATTACK = MASK_ATTACK | MASK_REACTION | ROAR | BLOCK | AVOID | JUMP;
+	static constexpr unsigned int MASK_CANT_SUB_ATTACK = MASK_ATTACK | MASK_REACTION | ROAR | AVOID | JUMP;
+	static constexpr unsigned int MASK_CANT_IDLE = MASK_ATTACK | MASK_REACTION | ROAR | AVOID | JUMP | BLOCK | DEATH | RUN | WALK;
+	static constexpr unsigned int MASK_CANT_JUMP = MASK_ATTACK | MASK_REACTION | ROAR | AVOID | JUMP | BLOCK | DEATH;
 
 	/*列挙体*/
 	//フレームカウントの種類
 	enum class FrameCountType
 	{
-		ATTACK_INTERVAL = 0,//攻撃待機
+		SWITCH_MOVE_STATE = 0,
+		ATTACK_INTERVAL = 1,//攻撃待機
+		SWITCH_LOCK_ON = 2,//攻撃待機
+		SWITCH_AVOID = 3,//回避
 	};
 	//アニメーションの種類
 	enum class AnimationType
@@ -106,32 +107,37 @@ private:
 		CASTING				 = 20,//詠唱
 		COMBO				 = 21,//コンボ
 		CROUCH_SLASH		 = 22,//しゃがみ切り
-		JUMP_ATTACK			 = 23,//ジャンプ攻撃
-		JUMP_ROTATION_ATTACK = 24,//ジャンプ回転攻撃
-		KICK				 = 25,//蹴り
-		PUNCH				 = 26,//殴り
-		ROTATION_ATTACK		 = 27,//回転攻撃
-		SLASH_1				 = 28,//切り１
-		SLASH_2				 = 29,//切り２
+		
+		KICK				 = 23,//蹴り
+		PUNCH				 = 24,//殴り
+		ROTATION_ATTACK		 = 25,//回転攻撃
+		SLASH_1				 = 26,//切り１
+		SLASH_2				 = 27,//切り２
 
-		AVOID				 = 30,//回避
+		AVOID				 = 28,//回避
 	};
 
 	/*内部処理関数*/
+		  void StandOrSit		 ();		//立ち座りの切り替え
 		  void UpdateVelocity	 ();		//速度の更新
 		  void UpdateMoveVector	 ();		//移動ベクトルの更新
 		  void UpdateRotation	 ();		//回転率の更新
-		  void Attack			 ();		//攻撃
 		  void Move				 ();		//移動
+		  void LockOn			 ();		//ロックオン
 		  void Jump				 ();		//ジャンプ
 		  void Block			 ();		//ブロック
 		  void Avoid			 ();		//回避
-		  void LockOn			 ();		//ロックオン
-		  void Crouch			 ();		//しゃがみ
-		  void Taunt			 ();		//咆哮
+		  void Roar				 ();		//咆哮
+		  void Attack			 ();		//攻撃
 		  void UpdateAnimation	 ();		//現在のアニメーションの更新
-	void StateChanger();
-
+		  bool FrameCount(const int _index,const int _maxFrame);
+	const bool CanRotation()const;
+	const bool CanBlock()const;
+	const bool CanAvoid()const;
+	const bool CanRoar()const;
+	const bool CanAttack()const;
+	const bool CanJump()const;
+	const bool DontAnyAction()const;
 	/*メンバ変数*/
 
 	Model*				model;						//モデル

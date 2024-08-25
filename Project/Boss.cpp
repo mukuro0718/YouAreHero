@@ -197,11 +197,11 @@ void Boss::Move()
 /// </summary>
 const void Boss::Draw()const
 {
-	VECTOR position = this->model->GetPosition();
-	VECTOR rotation = this->model->GetRotation();
-	printfDx("Boss_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-	printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
-	printfDx("Boss_VELOCITY:%f\n", this->velocity);
+	//VECTOR position = this->model->GetPosition();
+	//VECTOR rotation = this->model->GetRotation();
+	//printfDx("Boss_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+	//printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
+	//printfDx("Boss_VELOCITY:%f\n", this->velocity);
 	this->model->Draw();
 	this->collider->DrawHitBox();
 }

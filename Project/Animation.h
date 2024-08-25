@@ -10,9 +10,9 @@ public:
     Animation();    //コンストラクタ
     ~Animation();   //デストラクタ
 
-    void Add    (const int _animationHandle, const int _animatinoIndex);                      //アニメーションの追加
+    void Add(const int _animationHandle, const int _animatinoIndex);                      //アニメーションの追加
     void Attach (int* _modelHandle);                                                        //アニメーションのアタッチ
-    void Play   (int* _modelHandle, const int _nextAnimation, const float _animationPlayTime); //アニメーションの再生時間
+    void Play   (int* _modelHandle, VECTOR& _position,const int _nextAnimation, const float _animationPlayTime); //アニメーションの再生時間
 
     /*getter*/
     const bool GetIsChangeAnim()const { return isChange; }//アニメーションの変更フラグのgetter
@@ -28,4 +28,5 @@ private:
     int   prevAnimationAttachIndex;       //以前のアニメーションアタッチ番号
     int   prevAnimation;                  //前のアニメーション
     int   nowAnimation;                   //現在のアニメーション
+    int moveAnimationFrameIndex;//アニメーションで移動しているフレームの番号を取得する
 };

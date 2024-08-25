@@ -112,8 +112,8 @@ void Camera::UpdatePosition()
 /// </summary>
 const void Camera::Draw()const
 {
-	printfDx("CAMERA_POSITION X:%f,Y:%f,Z:%f\n", this->nowPosition.x, this->nowPosition.y, this->nowPosition.z);
-	printfDx("CAMERA_TARGET X:%f,Y:%f,Z:%f\n", this->nowTarget.x, this->nowTarget.y, this->nowTarget.z);
+	//printfDx("CAMERA_POSITION X:%f,Y:%f,Z:%f\n", this->nowPosition.x, this->nowPosition.y, this->nowPosition.z);
+	//printfDx("CAMERA_TARGET X:%f,Y:%f,Z:%f\n", this->nowTarget.x, this->nowTarget.y, this->nowTarget.z);
 }
 
 /// <summary>

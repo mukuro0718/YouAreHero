@@ -104,7 +104,6 @@ const void GameScene::Draw()const
 	auto& ui		  = Singleton<UIManager>::GetInstance();
 
 	/*•`‰æ*/
-	printfDx("GAME");
 	camera.Draw();
 	map.Draw();
 	debug.Draw();

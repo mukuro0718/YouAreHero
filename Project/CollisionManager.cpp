@@ -118,10 +118,10 @@ const void CollisionManager::DebugDrawHit()const
 	DrawCube3D(debugMax, debugMin, GetColor(0, 0, 255), GetColor(0, 0, 255), FALSE);
 	if (this->isHit)
 	{
-		printfDx("HIT\n");
+		//printfDx("HIT\n");
 	}
 	else
 	{
-		printfDx("NOT_HIT\n");
+		//printfDx("NOT_HIT\n");
 	}
 }

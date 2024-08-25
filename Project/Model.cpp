@@ -127,7 +127,9 @@ void Model::AddAnimation(const std::vector<string> _animationHandle, const std::
 /// </summary>
 void Model::PlayAnimation(const int _nowAnimation, const float _animationPlayTime)
 {
-	this->animation->Play(&this->modelHandle, _nowAnimation, _animationPlayTime);
+	VECTOR position = this->transform->GetPosition();
+	this->animation->Play(&this->modelHandle, position,_nowAnimation, _animationPlayTime);
+	this->transform->SetPosition(position);
 }
 
 /// <summary>
