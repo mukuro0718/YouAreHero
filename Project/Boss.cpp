@@ -101,6 +101,29 @@ void Boss::Update()
 	const VECTOR POSITION = this->model->GetPosition();
 	this->collider->SetOBB(POSITION + MAX_OFFSET, POSITION + MIN_OFFSET,this->model->GetPosition(), this->model->GetRotation());
 }
+
+/// <summary>
+/// アクション
+/// </summary>
+void Boss::Action()
+{
+	/*咆哮*/
+	Taunt();
+
+
+}
+
+/// <summary>
+/// 咆哮
+/// </summary>
+void Boss::Taunt()
+{
+	/*咆哮中にアニメーションが終了していたらフラグを下す*/
+	if (this->state->CheckFlag(this->TAUNT) && this->model->GetIsChangeAnim())
+	{
+		this->state->ClearFlag(this->TAUNT);
+	}
+}
 /// <summary>
 /// 攻撃
 /// </summary>
@@ -416,4 +439,13 @@ void Boss::JumpAttack()
 		position = VAdd(position, VScale(this->moveVector, VELOCITY));
 		this->model->SetPosition(position);
 	}
+}
+
+/// <summary>
+/// 回転できるか
+/// </summary>
+/// <returns></returns>
+const bool Boss::CanRotation()const
+{
+	if (this->state->CheckFlag(this->MASK_ATTACK));
 }

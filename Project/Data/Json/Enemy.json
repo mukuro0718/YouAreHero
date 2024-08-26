@@ -32,9 +32,13 @@
     "Asset/Animation/Boss/Attack/Strong_Horizon_Slash.mv1",
     "Asset/Animation/Boss/Attack/Combo2.mv1",
     "Asset/Animation/Boss/Attack/Strong_Combo2.mv1",
-    "Asset/Animation/Boss/Attack/Combo3.mv1"
+    "Asset/Animation/Boss/Attack/Combo3.mv1",
+    "Asset/Animation/Boss/Move/Reaction.mv1",
+    "Asset/Animation/Boss/Move/Death.mv1"
   ],
   "ANIMATION_INDEX": [
+    0,
+    0,
     0,
     0,
     0,
@@ -50,6 +54,8 @@
     0
   ],
   "ANIMATION_PLAY_TIME": [
+    0.8,
+    0.8,
     0.8,
     0.8,
     0.8,
