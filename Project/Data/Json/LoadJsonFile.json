@@ -11,6 +11,7 @@
     "Data/Json/Camera.json",
     "Data/Json/Player.json",
     "Data/Json/Enemy.json",
-    "Data/Json/Debug.json"
+    "Data/Json/Debug.json",
+    "Data/Json/UI.json"
   ]
 }

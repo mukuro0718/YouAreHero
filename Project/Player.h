@@ -54,12 +54,11 @@ private:
 	//攻撃
 	static constexpr unsigned int MAIN_ATTACK_1				 = (1 << 12); //基本攻撃１
 	static constexpr unsigned int MAIN_ATTACK_2				 = (1 << 13); //基本攻撃１
-	static constexpr unsigned int MAIN_ATTACK_3				 = (1 << 14); //基本攻撃１
-	static constexpr unsigned int SPECIAL_ATTACK			 = (1 << 15); //コンボ
+	static constexpr unsigned int SPECIAL_ATTACK			 = (1 << 14); //コンボ
 	//マスク
 	static constexpr unsigned int MASK_MOVE = RUN | WALK; //移動マスク
 	static constexpr unsigned int MASK_REACTION = BIG_IMPACT | SMALL_IMPACT;//リアクションマスク
-	static constexpr unsigned int MASK_ATTACK = MAIN_ATTACK_1 | MAIN_ATTACK_2 | MAIN_ATTACK_3 | SPECIAL_ATTACK;//攻撃マスク
+	static constexpr unsigned int MASK_ATTACK = MAIN_ATTACK_1 | MAIN_ATTACK_2 | SPECIAL_ATTACK;//攻撃マスク
 	static constexpr unsigned int MASK_ALWAYS_INITIALIZE = BLOCK | IDLE;
 	static constexpr unsigned int MASK_CANT_AVOID = MASK_ATTACK | MASK_REACTION | BLOCK | LOCK_ON | AVOID;
 	static constexpr unsigned int MASK_CANT_MAIN_ATTACK = MASK_ATTACK | MASK_REACTION | BLOCK | AVOID ;
@@ -87,8 +86,7 @@ private:
 		NONE			 = -1,
 		MAIN_1			 = 0,//詠唱
 		MAIN_2			 = 1,//詠唱
-		MAIN_3			 = 2,//詠唱
-		SPECIAL			 = 3,//コンボ
+		SPECIAL			 = 2,//コンボ
 	};
 	//アニメーションの種類
 	enum class AnimationType

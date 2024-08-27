@@ -2,7 +2,8 @@
 #include "UseSTL.h"
 #include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
-#include "HP.h"
+#include "HPUI.h"
+#include "ButtonUI.h"
 #include "UIManager.h"
 
 
@@ -13,7 +14,8 @@ UIManager::UIManager()
 	:hp(nullptr)
 {
 	/*インスタンスの生成*/
-	this->hp = new HP();
+	this->hp = new HPUI();
+	this->button = new ButtonUI();
 
 	/*初期化*/
 	Initialize();
@@ -25,6 +27,7 @@ UIManager::UIManager()
 UIManager::~UIManager()
 {
 	DeleteMemberInstance(this->hp);
+	DeleteMemberInstance(this->button);
 }
 
 /// <summary>
@@ -33,6 +36,7 @@ UIManager::~UIManager()
 void UIManager::Initialize()
 {
 	this->hp->Initialize();
+	this->button->Initialize();
 }
 
 /// <summary>
@@ -41,6 +45,7 @@ void UIManager::Initialize()
 void UIManager::Update()
 {
 	this->hp->Update();
+	this->button->Update();
 }
 
 /// <summary>
@@ -49,4 +54,5 @@ void UIManager::Update()
 const void UIManager::Draw()const
 {
 	this->hp->Draw();
+	this->button->Draw();
 }

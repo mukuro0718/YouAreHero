@@ -171,7 +171,6 @@ const void Player::Draw()const
 	printfDx("%d:SMALL_IMPACT			\n", this->state->CheckFlag(this->SMALL_IMPACT));
 	printfDx("%d:CASTING				\n", this->state->CheckFlag(this->MAIN_ATTACK_1));
 	printfDx("%d:COMBO_ATTACK			\n", this->state->CheckFlag(this->MAIN_ATTACK_2));
-	printfDx("%d:CROUCH_SLASH			\n", this->state->CheckFlag(this->MAIN_ATTACK_3));
 	printfDx("%d:KICK					\n", this->state->CheckFlag(this->SPECIAL_ATTACK));
 	this->model->Draw();
 	this->collider[static_cast<int>(ColliderType::CHARACTER)]->DrawHitCapsule();
@@ -696,9 +695,6 @@ void Player::Attack()
 		case 1:
 			attackType = static_cast<int>(AttackType::MAIN_2);
 			break;
-		case 2:
-			attackType = static_cast<int>(AttackType::MAIN_3);
-			break;
 		}
 
 		this->state->SetFlag(this->attackComboStateMap[this->attackComboCount]);
@@ -793,14 +789,17 @@ const bool Player::DontAnyAction()const
 }
 void Player::CalcDamage(const int _damage) 
 { 
-	this->hp -= _damage;
-	this->state->ClearFlag(this->MASK_ALL);
-	if (_damage >= 20)
+	if (!this->state->CheckFlag(this->BLOCK | this->AVOID))
 	{
-		this->state->SetFlag(this->BIG_IMPACT);
-	}
-	else
-	{
-		this->state->SetFlag(this->SMALL_IMPACT);
+		this->hp -= _damage;
+		this->state->ClearFlag(this->MASK_ALL);
+		if (_damage >= 20)
+		{
+			this->state->SetFlag(this->BIG_IMPACT);
+		}
+		else
+		{
+			this->state->SetFlag(this->SMALL_IMPACT);
+		}
 	}
 }

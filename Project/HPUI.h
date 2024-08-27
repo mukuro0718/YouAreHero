@@ -1,27 +1,19 @@
 //======================================================
-// @brief HPクラス
+// @brief HPUIクラス
 // ボスとプレイヤーのHPの表示を行う
 // （HPの直接管理は行わない）
 //======================================================
 
 #pragma once
-class HP
+class HPUI
 {
 public:
-	HP			   ();		//コンストラクタ
-	~HP			   ();		//デストラクタ
+	HPUI();		//コンストラクタ
+	~HPUI();		//デストラクタ
 	void Initialize();//初期化
 	void Update();
 	const void Draw()const;	//描画
 private:
-	/*静的定数*/
-	static const	 int BOSS_HP_COLOR;	 //ボスHPの色
-	static const	 int PLAYER_HP_COLOR;//プレイヤーHPの色
-	static const	 int PREV_HP_COLOR;	 //HPの差の色
-	static constexpr int HP_BAR_HEIGHT		= 20;
-	static constexpr float PLAYER_INDEX_BASE	= 300;//指数化のもと
-	static constexpr float BOSS_INDEX_BASE	= 1000;//指数化のもと
-
 	/*構造体*/
 	struct RangeNum
 	{
@@ -39,6 +31,7 @@ private:
 	struct Vec2d
 	{
 		void Set(const int _x, const int _y) { this->x = _x; this->y = _y; }
+		void Set(const std::vector<int> _pos) { this->x = _pos[0]; this->y = _pos[1]; }
 		int x, y;
 	};
 	struct Box
@@ -46,7 +39,14 @@ private:
 		int lx, ly, rx, ry;
 	};
 
+	/*内部処理関数*/
+	int ConvertColor(const std::vector<int> _color);
+
 	/*メンバ変数*/
+	int playerHPColor;
+	int bossHPColor;
+	int prevPlayerHPColor;
+	int prevBossHPColor;
 	RangeNum playerHP;	//プレイヤーHP
 	RangeNum bossHP;	//ボスHP
 	Vec2d playerHPPosition;

@@ -25,6 +25,7 @@ public:
 		PLAYER			= 9,
 		ENEMY			= 10,
 		DEBUG			= 11,
+		UI				= 12,
 	};
 
 	void LoadFileAgain();

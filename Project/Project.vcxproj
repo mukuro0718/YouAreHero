@@ -142,11 +142,12 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="BitFlag.cpp" />
     <ClCompile Include="Boss.cpp" />
+    <ClCompile Include="ButtonUI.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
-    <ClCompile Include="HP.cpp" />
+    <ClCompile Include="HPUI.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="FPSController.cpp" />
@@ -177,11 +178,12 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="BitFlag.h" />
     <ClInclude Include="Boss.h" />
+    <ClInclude Include="ButtonUI.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="EnemyManager.h" />
-    <ClInclude Include="HP.h" />
+    <ClInclude Include="HPUI.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="FPSController.h" />

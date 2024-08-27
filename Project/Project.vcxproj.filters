@@ -133,11 +133,14 @@
     <Filter Include="UI\Manager">
       <UniqueIdentifier>{2ba8901a-af08-49c0-a5f1-ae9be57edcaa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI\HP">
-      <UniqueIdentifier>{8ae68818-4ed3-423b-9cca-40de92dfbd3e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Map\BossMap">
       <UniqueIdentifier>{ffb39af1-a9fc-4823-9dd3-020f1c98df57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\ButtonUI">
+      <UniqueIdentifier>{5b61f51d-f525-4524-8d63-3c9e9a7ae028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\HPUI">
+      <UniqueIdentifier>{8ae68818-4ed3-423b-9cca-40de92dfbd3e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -232,11 +235,14 @@
     <ClCompile Include="Collider.cpp">
       <Filter>Collision\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="HP.cpp">
-      <Filter>UI\HP</Filter>
+    <ClCompile Include="HPUI.cpp">
+      <Filter>UI\HPUI</Filter>
     </ClCompile>
     <ClCompile Include="UIManager.cpp">
       <Filter>UI\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonUI.cpp">
+      <Filter>UI\ButtonUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -348,11 +354,14 @@
     <ClInclude Include="Vector4.h">
       <Filter>Data\Vector4</Filter>
     </ClInclude>
-    <ClInclude Include="HP.h">
-      <Filter>UI\HP</Filter>
+    <ClInclude Include="HPUI.h">
+      <Filter>UI\HPUI</Filter>
     </ClInclude>
     <ClInclude Include="UIManager.h">
       <Filter>UI\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonUI.h">
+      <Filter>UI\ButtonUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

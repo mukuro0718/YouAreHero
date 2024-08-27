@@ -5,7 +5,8 @@
 #pragma once
 #include "Singleton.h"
 
-class HP;
+class HPUI;
+class ButtonUI;
 class UIManager : public Singleton<UIManager>
 {
 public:
@@ -21,6 +22,7 @@ private:
 	~UIManager();//デストラクタ
 
 	/*メンバ変数*/
-	HP* hp;
+	HPUI* hp;
+	ButtonUI* button;
 };
 
