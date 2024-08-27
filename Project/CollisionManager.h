@@ -21,9 +21,10 @@ public:
 
 	void HitCheck();//当たり判定
 
-	bool HitCheck_AABB_Sphere(const Collider& _aabb,const Collider& _sphere);//AABBボックス当たり判定
-	bool HitCheck_OBB_Sphere(const Collider& _aabb, const Collider& _sphere);//OBBボックス当たり判定
-
+	bool HitCheckAABBSphere(const Collider& _aabb,const Collider& _sphere);//AABBボックス当たり判定
+	bool HitCheckOBBSphere(const Collider& _aabb, const Collider& _sphere);//OBBボックス当たり判定
+	bool HitCheckSphereSphere(const Collider& _sphere1, const Collider& _sphere2);
+	bool HitCheckSphereCapsule(const Collider& _sphere, const Collider& _capsule);
 private:
 	/*内部処理関数*/
 	float GetLengthAABBToPoint(const Collider& _aabb, const Collider& _point);//AABBオブジェクトと1点の最近接点を求める
@@ -32,6 +33,7 @@ private:
 
 	/*メンバ変数*/
 	bool isHit;//デバック時に当たったかどうかを表示（本来は使用しない）
+	VECTOR fixVector;
 	VECTOR debugMax;
 	VECTOR debugMin;
 };

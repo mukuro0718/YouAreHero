@@ -11,6 +11,8 @@ Collider::Collider()
 	, max	  { 0.0f,0.0f,0.0f }
 	, min	  { 0.0f,0.0f,0.0f }
 	, rotation{ 0.0f,0.0f,0.0f }
+	, heightPosition{ 0.0f,0.0f,0.0f }
+	, fixVector{ 0.0f,0.0f,0.0f }
 {
 
 }
@@ -21,6 +23,13 @@ Collider::Collider()
 void Collider::SetSphere(const VECTOR _position, const float _radius)
 {
 	this->position = _position;
+	this->radius = _radius;
+}
+void Collider::SetCapsule(const VECTOR _position,const float _capsuleHeight, const float _radius)
+{
+	this->position = _position;
+	this->heightPosition = this->position;
+	this->heightPosition.y += _capsuleHeight;
 	this->radius = _radius;
 }
 void Collider::SetAABB(const VECTOR _max, const VECTOR _min)
@@ -45,11 +54,18 @@ void Collider::SetOBB(const VECTOR _max, const VECTOR _min, const VECTOR _center
 /// <summary>
 /// “–‚½‚è”»’è‚Ì•`‰æ
 /// </summary>
-/// <returns></returns>
 const void Collider::DrawHitSphere()const
 {
 	DrawSphere3D(this->position, this->radius, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), FALSE);
 }
+/// <summary>
+/// “–‚½‚è”»’è‚Ì•`‰æ
+/// </summary>
+const void Collider::DrawHitCapsule()const
+{
+	DrawCapsule3D(this->position,this->heightPosition, this->radius, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), FALSE);
+}
+
 const void Collider::DrawHitBox()const
 {
 	VECTOR position[8];

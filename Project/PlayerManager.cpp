@@ -55,6 +55,14 @@ const void PlayerManager::Draw()const
 }
 
 /// <summary>
+/// 移動ベクトルの補正
+/// </summary>
+void PlayerManager::FixMoveVector(const VECTOR _fixVector)
+{
+	this->player->FixMoveVector(_fixVector);
+}
+
+/// <summary>
 /// 座標の取得
 /// </summary>
 const VECTOR PlayerManager::GetPosition()const
@@ -77,6 +85,20 @@ const bool PlayerManager::IsMove()const
 {
 	return this->player->IsMove();
 }
+/// <summary>
+/// ダメージの取得
+/// </summary>
+const int PlayerManager::GetDamage()const
+{
+	return this->player->GetDamage();
+}
+/// <summary>
+/// ダメージ処理
+/// </summary>
+void PlayerManager::CalcDamage(const int _damage)
+{
+	return this->player->CalcDamage(_damage);
+}
 
 /// <summary>
 /// ショットフラグ
@@ -86,11 +108,27 @@ const bool PlayerManager::IsAttack()const
 	return this->player->IsAttack();
 }
 
-const Collider PlayerManager::GetCollider()
+const Collider PlayerManager::GetCharacterCollider()
 {
-	return this->player->GetCollider();
+	return this->player->GetCharacterCollider();
+}
+const Collider PlayerManager::GetAttackCollider()
+{
+	return this->player->GetAttackCollider();
 }
 const int PlayerManager::GetHP()const
 {
 	return this->player->GetHP();
+}
+const int PlayerManager::GetAttackNumber()const
+{
+	return this->player->GetAttackNumber();
+}
+const int PlayerManager::GetHitNumber()const
+{
+	return this->player->GetHitNumber();
+}
+void PlayerManager::SetHitNumber(const int _attackNumber)
+{
+	this->player->SetHitNumber(_attackNumber);
 }

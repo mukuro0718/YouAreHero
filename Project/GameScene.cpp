@@ -72,6 +72,7 @@ void GameScene::Update()
 
 	/*À•WˆÚ“®*/
 	player.Action();
+	enemy.Action();
 
 	/*À•W‚Ì•â³‚ğs‚¤*/
 	collision.HitCheck();

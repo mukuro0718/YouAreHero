@@ -10,6 +10,7 @@ class HP
 public:
 	HP			   ();		//コンストラクタ
 	~HP			   ();		//デストラクタ
+	void Initialize();//初期化
 	void Update();
 	const void Draw()const;	//描画
 private:
@@ -18,8 +19,8 @@ private:
 	static const	 int PLAYER_HP_COLOR;//プレイヤーHPの色
 	static const	 int PREV_HP_COLOR;	 //HPの差の色
 	static constexpr int HP_BAR_HEIGHT		= 20;
-	static constexpr int PLAYER_INDEX_BASE	= 300;//指数化のもと
-	static constexpr int BOSS_INDEX_BASE	= 1000;//指数化のもと
+	static constexpr float PLAYER_INDEX_BASE	= 300;//指数化のもと
+	static constexpr float BOSS_INDEX_BASE	= 1000;//指数化のもと
 
 	/*構造体*/
 	struct RangeNum
@@ -27,10 +28,13 @@ private:
 	public:
 		void SetRange(const int _max, const int _min, const int _now);
 		void Add(const int _add);
-		const int GetMax()const { return this->max; }
-		const int GetNow()const { return this->now; }
+		void PrevDecrease();
+		const float GetMax()const { return this->max; }
+		const float GetNow()const { return this->now; }
+		const float GetPrev()const { return this->prev; }
+		void SetNow(const int _hp);
 	private:
-		int max, min, now;
+		float max, min, now, prev;
 	};
 	struct Vec2d
 	{

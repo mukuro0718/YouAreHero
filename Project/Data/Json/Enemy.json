@@ -3,10 +3,10 @@
   "MAX_HIT_POSITION_OFFSET": [ 5.0, 5.0, 5.0 ],
   "MIN_HIT_POSITION_OFFSET": [ -5.0, -5.0, -5.0 ],
   "INIT_POSITION": [ 0.0, 0.0, 0.0 ],
-  "INIT_SCALE": [ 0.05, 0.05, 0.05 ],
+  "INIT_SCALE": [ 0.065, 0.065, 0.065 ],
   "INIT_ROTATION": [ 0.0, 0.0, 0.0 ],
-  "HIT_SCALE": 5.0,
-  "VELOCITY": 0.4,
+  "HIT_RADIUS": 5.0,
+  "VELOCITY": 0.35,
   "REST_COUNT": 120,
   "WAIT_TIME_BEFORE_RUSH": 60,
   "RUSH_TIME": 60,
@@ -18,7 +18,9 @@
   "JUMP_RANGE": 5.0,
   "JUMP_HEIGHT": 30.0,
   "GRAVITY": -5.0,
+  "HIT_HEIGHT": 10.0,
 
+  "REST_FRAME_COUNT": 60,
   "ANIMATION_HANDLE": [
     "Asset/Animation/Boss/Move/Idle.mv1",
     "Asset/Animation/Boss/Move/Taunt.mv1",
@@ -30,14 +32,12 @@
     "Asset/Animation/Boss/Attack/Rotation.mv1",
     "Asset/Animation/Boss/Attack/Knock_Up_Slash.mv1",
     "Asset/Animation/Boss/Attack/Strong_Horizon_Slash.mv1",
-    "Asset/Animation/Boss/Attack/Combo2.mv1",
-    "Asset/Animation/Boss/Attack/Strong_Combo2.mv1",
-    "Asset/Animation/Boss/Attack/Combo3.mv1",
+    "Asset/Animation/Boss/Attack/Combo_2.mv1",
+    "Asset/Animation/Boss/Attack/Combo_3.mv1",
     "Asset/Animation/Boss/Move/Reaction.mv1",
     "Asset/Animation/Boss/Move/Death.mv1"
   ],
   "ANIMATION_INDEX": [
-    0,
     0,
     0,
     0,
@@ -67,8 +67,44 @@
     0.8,
     0.8,
     0.8,
-    0.8,
     0.8
   ],
-  "CHASE_RANGE": 50.0
+  "TARGET_DISTANCE": 10.0,
+
+  "ATTACK_OFFSET_SCALE": [
+    10.0,
+    6.0,
+    0.0,
+    8.0,
+    10.0,
+    6.0,
+    10.0
+  ],
+  "ATTACK_OFFSET_Y": [
+    6.0,
+    6.0,
+    6.0,
+    6.0,
+    8.0,
+    6.0,
+    6.0
+  ],
+  "ATTACK_RADIUS": [
+    5.0,
+    6.0,
+    10.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0
+  ],
+  "ATTACK_DAMAGE": [
+    10,
+    10,
+    15,
+    20,
+    30,
+    20,
+    30
+  ]
 }

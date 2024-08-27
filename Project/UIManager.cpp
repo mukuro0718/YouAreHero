@@ -32,6 +32,7 @@ UIManager::~UIManager()
 /// </summary>
 void UIManager::Initialize()
 {
+	this->hp->Initialize();
 }
 
 /// <summary>

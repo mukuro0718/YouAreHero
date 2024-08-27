@@ -14,15 +14,22 @@ public:
 		  void Initialize();	 //初期化
 		  void Update	 ();	 //更新
 		  void Action	 ();	 //アクション
-	const void Draw		 ()const;//描画
+		  void		FixMoveVector(const VECTOR _fixVector);				  //移動ベクトルの修正
+		  const void Draw		 ()const;//描画
 
 	/*getter*/
+		  void CalcDamage(const int _damage);
+	const int GetDamage()const;
 	const VECTOR   GetPosition			()const;//座標の取得
 	const VECTOR   GetDirection			()const;//座標の取得
 	const bool     IsMove				()const;//移動したか
 	const bool	   IsAttack				()const;//攻撃したか
-	const Collider GetCollider			();
+	const Collider GetCharacterCollider();
+	const Collider GetAttackCollider();
 	const int	   GetHP				()const;
+	const int GetAttackNumber()const;
+	const int GetHitNumber()const;
+	void SetHitNumber(const int _attackNumber);
 
 private:
 	/*内部処理関数*/

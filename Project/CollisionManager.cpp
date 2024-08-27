@@ -23,16 +23,81 @@ void CollisionManager::HitCheck()
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& enemy  = Singleton<EnemyManager>::GetInstance();
 
+	this->fixVector = { 0.0f,0.0f,0.0f };
+
 	/*プレイヤーとボスとの当たり判定*/
-	//bool isHit = HitCheck_AABB_Sphere(enemy.GetCollider(), player.GetCollider());
-	bool isHit = HitCheck_OBB_Sphere(enemy.GetCollider(), player.GetCollider());
-	this->isHit = isHit;
+	if (HitCheckSphereSphere(player.GetCharacterCollider(), enemy.GetCharacterCollider()))
+	{
+		player.FixMoveVector(this->fixVector);
+	}
+
+	/*プレイヤーの攻撃スフィアとボスのカプセルとの当たり判定*/
+	if (player.IsAttack())
+	{
+		if (HitCheckSphereCapsule(player.GetAttackCollider(), enemy.GetCharacterCollider()))
+		{
+			int attackNumber = player.GetAttackNumber();
+			int hitNumber = enemy.GetHitNumber();
+			if (attackNumber != hitNumber)
+			{
+				enemy.CalcDamage(player.GetDamage());
+				enemy.SetHitNumber(attackNumber);
+			}
+		}
+	}
+
+	/*ボスの攻撃とプレイヤーのカプセルとの当たり判定*/
+	if (enemy.IsAttack())
+	{
+		if (HitCheckSphereCapsule(enemy.GetAttackCollider(), player.GetCharacterCollider()))
+		{
+			int attackNumber = enemy.GetAttackNumber();
+			int hitNumber = player.GetHitNumber();
+			if (attackNumber != hitNumber)
+			{
+				player.CalcDamage(enemy.GetDamage());
+				player.SetHitNumber(attackNumber);
+			}
+		}
+	}
+}
+
+/// <summary>
+/// スフィアとスフィアの当たり判定
+/// </summary>
+bool CollisionManager::HitCheckSphereSphere(const Collider& _sphere1, const Collider& _sphere2)
+{
+	/*スフィア間の距離を求める*/
+	float betweenSphereDistance = VSize(VSub(_sphere1.position, _sphere2.position));
+
+	/*スフィアの半径の合計を求める*/
+	float radiusSub = _sphere1.radius + _sphere2.radius;
+
+	/*もしスフィア間の距離が半径の合計よりも小さかったら*/
+	if (betweenSphereDistance <= radiusSub)
+	{
+		float fixSize = radiusSub - betweenSphereDistance;
+		VECTOR fixVector = VNorm(VSub(_sphere1.position, _sphere2.position));
+		fixVector = VScale(fixVector, fixSize);
+		this->fixVector = fixVector;
+		return true;
+	}
+
+	return false;
+}
+
+/// <summary>
+/// カプセルとスフィアの当たり判定
+/// </summary>
+bool CollisionManager::HitCheckSphereCapsule(const Collider& _sphere, const Collider& _capsule)
+{
+	return HitCheck_Sphere_Capsule(_capsule.position, _capsule.radius, _capsule.position, _capsule.heightPosition, _capsule.radius);
 }
 
 /// <summary>
 /// AABBとSphereの当たり判定
 /// </summary>
-bool CollisionManager::HitCheck_AABB_Sphere(const Collider& _aabb, const Collider& _sphere)
+bool CollisionManager::HitCheckAABBSphere(const Collider& _aabb, const Collider& _sphere)
 {
 	/*AABBとsphereの最近接点を求める*/
 	float length = GetLengthAABBToPoint(_aabb, _sphere);
@@ -49,7 +114,7 @@ bool CollisionManager::HitCheck_AABB_Sphere(const Collider& _aabb, const Collide
 /// <summary>
 /// OBBボックス当たり判定
 /// </summary>
-bool CollisionManager::HitCheck_OBB_Sphere(const Collider& _obb, const Collider& _sphere)
+bool CollisionManager::HitCheckOBBSphere(const Collider& _obb, const Collider& _sphere)
 {
 	float OBBToSphere = VSize(VSub(_obb.position, _sphere.position));
 

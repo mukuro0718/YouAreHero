@@ -19,7 +19,6 @@
 /// </summary>
 Player::Player()
 	: model				(nullptr)
-	, collider			(nullptr)
 	, moveVector		{ 0.0f, 0.0f, 0.0f }
 	, direction			{ 0.0f, 0.0f, 0.0f }
 	, fixVector			{ 0.0f, 0.0f, 0.0f }
@@ -36,7 +35,10 @@ Player::Player()
 	/*インスタンスの作成*/
 	this->model = new Model(asset.GetModel(LoadingAsset::ModelType::PLAYER));
 	this->state = new BitFlag();
-	this->collider = new Collider();
+	for (int i = 0; i < this->COLLIDER_NUM; i++)
+	{
+		this->collider[i] = new Collider();
+	}
 
 	/*vectorの追加*/
 	for (int i = 0; i < this->COUNT_NUM; i++)
@@ -48,20 +50,14 @@ Player::Player()
 	/*アニメーションの設定*/
 	vector<string> animationHandle = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_HANDLE"];
 	vector<int> animationIndex = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_INDEX"];
-	this->nowAnimation = static_cast<int>(AnimationType::STANDING_IDLE);
+	this->nowAnimation = static_cast<int>(AnimationType::IDLE);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 	this->model->AddAnimation(animationHandle, animationIndex);
-	this->attackAnimationMap.emplace(this->CASTING				, static_cast<int>(AnimationType::CASTING));
-	this->attackAnimationMap.emplace(this->COMBO_ATTACK			, static_cast<int>(AnimationType::COMBO));
-	this->attackAnimationMap.emplace(this->CROUCH_SLASH			, static_cast<int>(AnimationType::CROUCH_SLASH));
-	this->attackAnimationMap.emplace(this->KICK					, static_cast<int>(AnimationType::KICK));
-	this->attackAnimationMap.emplace(this->PUNCH				, static_cast<int>(AnimationType::PUNCH));
-	this->attackAnimationMap.emplace(this->ROTATION_ATTACK		, static_cast<int>(AnimationType::ROTATION_ATTACK));
-	this->attackAnimationMap.emplace(this->SLASH_1				, static_cast<int>(AnimationType::SLASH_1));
-	this->attackAnimationMap.emplace(this->SLASH_2				, static_cast<int>(AnimationType::SLASH_2));
-	this->attackComboStateMap.emplace(0, this->SLASH_1);
-	this->attackComboStateMap.emplace(1, this->SLASH_2);
-	this->attackComboStateMap.emplace(2, this->COMBO_ATTACK);
+	this->attackAnimationMap.emplace(this->MAIN_ATTACK_1, static_cast<int>(AnimationType::MAIN_1));
+	this->attackAnimationMap.emplace(this->MAIN_ATTACK_2, static_cast<int>(AnimationType::MAIN_2));
+	this->attackAnimationMap.emplace(this->SPECIAL_ATTACK, static_cast<int>(AnimationType::SPECIAL));
+	this->attackComboStateMap.emplace(0, this->MAIN_ATTACK_1);
+	this->attackComboStateMap.emplace(1, this->MAIN_ATTACK_2);
 }
 
 /// <summary>
@@ -71,7 +67,10 @@ Player::~Player()
 {
 	DeleteMemberInstance(this->model);
 	DeleteMemberInstance(this->state);
-	DeleteMemberInstance(this->collider);
+	for (int i = 0; i < this->COLLIDER_NUM; i++)
+	{
+		DeleteMemberInstance(this->collider[i]);
+	}
 	this->frameCount.clear();
 	this->isCount.clear();
 }
@@ -87,7 +86,7 @@ void Player::Initialize()
 	const VECTOR scale = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	 //拡大率
 	this->velocity = 0.0f;
 	this->direction = VGet(0.0f, 0.0f, -1.0f);
-
+	this->hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];	 //拡大率
 	/*モデルのトランスフォームの設定*/
 	this->model->SetTransform(position, rotation, scale);
 }
@@ -100,26 +99,20 @@ void Player::Action()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	
-	/*立ち座りの切り替え*/
-	StandOrSit();
+	/*リアクション*/
+	Reaction();
 
 	/*移動*/
 	Move();
 
 	/*ロックオン*/
 	LockOn();
-
-	/*ジャンプ*/
-	Jump();
 	
 	/*ガード*/
 	Block();
 
 	/*回避*/
 	Avoid();
-
-	/*咆哮*/
-	Roar();
 
 	/*攻撃*/
 	Attack();
@@ -129,11 +122,6 @@ void Player::Action()
 	{
 		this->state->SetFlag(this->IDLE);
 	}
-
-	/*コライダーの設定*/
-	const VECTOR position = this->model->GetPosition() + this->moveVector;
-	const float  radius	  = json.GetJson(JsonManager::FileType::PLAYER)["RADIUS"];
-	this->collider->SetSphere(position, radius);
 }
 
 /// <summary>
@@ -146,17 +134,11 @@ void Player::Update()
 	VECTOR position = this->model->GetPosition() + this->moveVector;
 	const float  radius = json.GetJson(JsonManager::FileType::PLAYER)["RADIUS"];
 
-	/*Y座標 - 半径が０よりも小さかったら*/
-	if (position.y <= 0.0f)
-	{
-		position.y = 0.0f;
-		this->state->ClearFlag(this->JUMP);
-		this->jumpPower = 0.0f;
-	}
 	this->model->SetPosition(position);
 
 	/*コライダーの更新*/
-	this->collider->SetSphere(position, radius);
+	float hitHeight = json.GetJson(JsonManager::FileType::PLAYER)["HIT_HEIGHT"];
+	this->collider[static_cast<int>(ColliderType::CHARACTER)]->SetCapsule(position,hitHeight, radius);
 
 	/*アニメーションの更新*/
 	UpdateAnimation();
@@ -181,26 +163,19 @@ const void Player::Draw()const
 	printfDx("%d:REACTION				\n", this->state->CheckFlag(this->REACTION));
 	printfDx("%d:DEATH					\n", this->state->CheckFlag(this->DEATH));
 	printfDx("%d:LOCK_ON				\n", this->state->CheckFlag(this->LOCK_ON));
-	printfDx("%d:STAND					\n", this->state->CheckFlag(this->STAND));
-	printfDx("%d:CROUCH					\n", this->state->CheckFlag(this->CROUCH));
 	printfDx("%d:RUN					\n", this->state->CheckFlag(this->RUN));
 	printfDx("%d:WALK					\n", this->state->CheckFlag(this->WALK));
 	printfDx("%d:AVOID					\n", this->state->CheckFlag(this->AVOID));
-	printfDx("%d:JUMP					\n", this->state->CheckFlag(this->JUMP));
 	printfDx("%d:BLOCK					\n", this->state->CheckFlag(this->BLOCK));
 	printfDx("%d:BIG_IMPACT				\n", this->state->CheckFlag(this->BIG_IMPACT));
 	printfDx("%d:SMALL_IMPACT			\n", this->state->CheckFlag(this->SMALL_IMPACT));
-	printfDx("%d:CASTING				\n", this->state->CheckFlag(this->CASTING));
-	printfDx("%d:COMBO_ATTACK			\n", this->state->CheckFlag(this->COMBO_ATTACK));
-	printfDx("%d:CROUCH_SLASH			\n", this->state->CheckFlag(this->CROUCH_SLASH));
-	printfDx("%d:KICK					\n", this->state->CheckFlag(this->KICK));
-	printfDx("%d:PUNCH					\n", this->state->CheckFlag(this->PUNCH));
-	printfDx("%d:ROTATION_ATTACK		\n", this->state->CheckFlag(this->ROTATION_ATTACK));
-	printfDx("%d:SLASH_1				\n", this->state->CheckFlag(this->SLASH_1));
-	printfDx("%d:SLASH_2				\n", this->state->CheckFlag(this->SLASH_2));
-	printfDx("%d:ROAR					\n", this->state->CheckFlag(this->ROAR));
+	printfDx("%d:CASTING				\n", this->state->CheckFlag(this->MAIN_ATTACK_1));
+	printfDx("%d:COMBO_ATTACK			\n", this->state->CheckFlag(this->MAIN_ATTACK_2));
+	printfDx("%d:CROUCH_SLASH			\n", this->state->CheckFlag(this->MAIN_ATTACK_3));
+	printfDx("%d:KICK					\n", this->state->CheckFlag(this->SPECIAL_ATTACK));
 	this->model->Draw();
-	this->collider->DrawHitSphere();
+	this->collider[static_cast<int>(ColliderType::CHARACTER)]->DrawHitCapsule();
+	this->collider[static_cast<int>(ColliderType::ATTACK)]->DrawHitSphere();
 }
 
 /// <summary>
@@ -234,6 +209,7 @@ void Player::Move()
 	else
 	{
 		this->direction = VSub(enemy.GetPosition(),this->model->GetPosition());
+		this->direction = VNorm(this->direction);
 	}
 }
 /// <summary>
@@ -262,51 +238,18 @@ void Player::UpdateVelocity()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	
-	/*状態が移動状態でなければ速度を落とす*/
-	if (!this->state->CheckFlag(this->MASK_MOVE))
+
+	if (this->state->CheckFlag(this->AVOID))
 	{
-		/*定数型に代入*/
-		float DECEL = json.GetJson(JsonManager::FileType::PLAYER)["DECEL"];
-
-		/*もし速度が最大速度以上だったらリターンを返す*/
-		if (this->velocity <= 0.0f)
-		{
-			this->velocity = 0.0f;
-			return;
-		}
-
-		/*減速させる*/
-		this->velocity -= DECEL;
+		this->velocity = json.GetJson(JsonManager::FileType::PLAYER)["AVOID_VELOCITY"];
 	}
-	/*移動していたら速度を最大速度まで上げる*/
-	else
+	else if (this->state->CheckFlag(this->WALK))
 	{
-		//加速度
-		const float ACCEL = json.GetJson(JsonManager::FileType::PLAYER)["ACCEL"];
-		//最大速度の決定
-		float maxVelocity = 0.0f;
-		if (this->state->CheckFlag(this->AVOID))
-		{
-			maxVelocity = json.GetJson(JsonManager::FileType::PLAYER)["AVOID_VELOCITY"];
-		}
-		else if (this->state->CheckFlag(this->WALK))
-		{
-			maxVelocity = json.GetJson(JsonManager::FileType::PLAYER)["WALK_VELOCITY"];
-		}
-		else if (this->state->CheckFlag(this->RUN))
-		{
-			maxVelocity = json.GetJson(JsonManager::FileType::PLAYER)["RUN_VELOCITY"];
-		}
-		/*もし速度が最大速度以上だったらリターンを返す*/
-		if (this->velocity >= maxVelocity)
-		{
-			this->velocity = maxVelocity;
-			return;
-		}
-
-		/*加速させる*/
-		this->velocity += ACCEL;
+		this->velocity = json.GetJson(JsonManager::FileType::PLAYER)["WALK_VELOCITY"];
+	}
+	else if (this->state->CheckFlag(this->RUN))
+	{
+		this->velocity = json.GetJson(JsonManager::FileType::PLAYER)["RUN_VELOCITY"];
 	}
 }
 
@@ -380,7 +323,7 @@ void Player::UpdateRotation()
 
 	/*カメラの向きを出す*/
 	//カメラ座標からプレイヤーの座標へのベクトルを出す
-	cameraDirection = this->direction = camera.GetCameraDirection();
+	cameraDirection = camera.GetCameraDirection();
 	//求めたベクトルを正規化する
 	cameraDirection = VNorm(cameraDirection);
 	//反転していたのでベクトルを反転する
@@ -447,26 +390,17 @@ const bool Player::IsAttack()const
 }
 
 /// <summary>
-/// 軽攻撃をしているか
+/// ダメージの取得
 /// </summary>
-const bool Player::IsLightAttack()const
+const int Player::GetDamage()const
 {
-	return this->state->CheckFlag(this->MASK_ATTACK);
-}
-
-
-/// <summary>
-/// 重攻撃をしているか
-/// </summary>
-const bool Player::IsHeavyAttack()const
-{
-	return this->state->CheckFlag(this->MASK_ATTACK);
+	return this->damage;
 }
 
 /// <summary>
 /// 移動ベクトルの補正
 /// </summary>
-const void Player::FixMoveVector(const VECTOR _fixVector)
+void Player::FixMoveVector(const VECTOR _fixVector)
 {
 	this->moveVector = this->moveVector + _fixVector; 
 }
@@ -474,9 +408,13 @@ const void Player::FixMoveVector(const VECTOR _fixVector)
 /// <summary>
 /// コライダーの取得
 /// </summary>
-const Collider Player::GetCollider()
+const Collider Player::GetCharacterCollider()
 {
-	return *this->collider;
+	return *this->collider[static_cast<int>(ColliderType::CHARACTER)];
+}
+const Collider Player::GetAttackCollider()
+{
+	return *this->collider[static_cast<int>(ColliderType::ATTACK)];
 }
 
 /// <summary>
@@ -497,6 +435,17 @@ void Player::UpdateAnimation()
 	{
 		this->nowAnimation = static_cast<int>(AnimationType::DEATH);
 	}
+	else if (this->state->CheckFlag(this->MASK_REACTION))
+	{
+		if (this->state->CheckFlag(this->BIG_IMPACT))
+		{
+			this->nowAnimation = static_cast<int>(AnimationType::BIG_IMPACT);
+		}
+		else if (this->state->CheckFlag(this->SMALL_IMPACT))
+		{
+			this->nowAnimation = static_cast<int>(AnimationType::SMALL_IMPACT);
+		}
+	}
 	/*攻撃していたら*/
 	else if (this->state->CheckFlag(this->MASK_ATTACK))
 	{
@@ -506,27 +455,6 @@ void Player::UpdateAnimation()
 	else if (this->state->CheckFlag(this->AVOID))
 	{
 		this->nowAnimation = static_cast<int>(AnimationType::AVOID);
-	}
-	/*ジャンプしていたら*/
-	else if (this->state->CheckFlag(this->JUMP))
-	{
-		//移動していたら
-		if (this->state->CheckFlag(this->MASK_MOVE))
-		{
-			//ロックオンしていたら待機状態のジャンプをする
-			if (this->state->CheckFlag(this->LOCK_ON))
-			{
-				this->nowAnimation = static_cast<int>(AnimationType::IDLE_JUMP);
-			}
-			else
-			{
-				this->nowAnimation = static_cast<int>(AnimationType::MOVE_JUMP);
-			}
-		}
-		else
-		{
-			this->nowAnimation = static_cast<int>(AnimationType::IDLE_JUMP);
-		}
 	}
 	/*防御していたら*/
 	else if (this->state->CheckFlag(this->BLOCK))
@@ -618,36 +546,17 @@ void Player::UpdateAnimation()
 	/*何もしていなかったら待機状態*/
 	else if (this->state->CheckFlag(this->IDLE))
 	{
-		if (this->state->CheckFlag(this->STAND))
-		{
-			this->nowAnimation = static_cast<int>(AnimationType::STANDING_IDLE);
-		}
-		else if (this->state->CheckFlag(this->CROUCH))
-		{
-			this->nowAnimation = static_cast<int>(AnimationType::CROUCH_IDLE);
-		}
+		this->nowAnimation = static_cast<int>(AnimationType::IDLE);
 	}
 
 	/*アニメーション再生時間を取得*/
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 }
-
-void Player::StandOrSit()
+void Player::Reaction()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& input = Singleton<InputManager> ::GetInstance();
-
-	/*パッド入力の取得*/
-	int pad = input.GetPadState();
-
-	/*立ち座り*/
-	if (pad & PAD_INPUT_7)
+	if (this->state->CheckFlag(this->MASK_REACTION) && this->model->GetIsChangeAnim())
 	{
-		this->state->SetFlag(this->CROUCH);
-	}
-	else
-	{
-		this->state->SetFlag(this->STAND);
+		this->state->ClearFlag(this->MASK_REACTION);
 	}
 }
 
@@ -679,35 +588,6 @@ void Player::LockOn()
 	FrameCount(static_cast<int>(FrameCountType::SWITCH_LOCK_ON), json.GetJson(JsonManager::FileType::PLAYER)["SWITCH_LOCK_ON_MAX_FRAME"]);
 }
 
-/// <summary>
-/// ジャンプ
-/// </summary>
-void Player::Jump()
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>  ::GetInstance();
-	auto& input = Singleton<InputManager> ::GetInstance();
-
-	/*パッド入力の取得*/
-	int pad = input.GetPadState();
-
-	/*Aボタンが押されたか*/
-	if (CanJump() && pad & PAD_INPUT_3)
-	{
-		this->jumpPower = json.GetJson(JsonManager::FileType::PLAYER)["JUMP_POWER"];
-		this->state->SetFlag(this->JUMP);
-	}
-
-	/*重力を代入*/
-	float y = json.GetJson(JsonManager::FileType::PLAYER)["GRAVITY"];
-
-	if (this->state->CheckFlag(this->JUMP))
-	{
-		float jumpDecel = json.GetJson(JsonManager::FileType::PLAYER)["JUMP_DECEL"];
-		this->jumpPower -= jumpDecel;
-	}
-	this->moveVector.y = y + this->jumpPower;
-}
 /// <summary>
 /// ブロック
 /// </summary>
@@ -765,34 +645,6 @@ void Player::Avoid()
 		this->velocity = json.GetJson(JsonManager::FileType::PLAYER)["AVOID_VELOCITY"];
 	}
 }
-
-/// <summary>
-/// 咆哮
-/// </summary>
-void Player::Roar()
-{
-	/*咆哮中にアニメーションが終了していたらフラグを下す*/
-	if (this->state->CheckFlag(this->ROAR) && this->model->GetIsChangeAnim())
-	{
-		this->state->ClearFlag(this->ROAR);
-	}
-
-	/*咆哮ができなければ早期リターン*/
-	if (!CanRoar())return;
-
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& input = Singleton<InputManager> ::GetInstance();
-
-	/*パッド入力の取得*/
-	int pad = input.GetPadState();
-
-	/*咆哮*/
-	if (input.GetPadState() & PAD_INPUT_7 && input.GetPadState() & PAD_INPUT_8)
-	{
-		this->state->SetFlag(this->ROAR);
-	}
-
-}
 /// <summary>
 /// 攻撃
 /// </summary>
@@ -813,46 +665,46 @@ void Player::Attack()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& input = Singleton<InputManager> ::GetInstance();
 
+	/*攻撃コライダー用変数*/
+	float radius = 0.0f;
+	float offsetScale = 0.0f;
+	float offsetY = 0.0f;
+	VECTOR position = { 0.0f,0.0f,0.0f };
+	int attackType = -1;
+
 	/*パッド入力の取得*/
 	int pad = input.GetPadState();
 
-	//ガードしていたら
-	if (this->state->CheckFlag(this->BLOCK))
+	//特殊攻撃
+	if (pad & PAD_INPUT_2)
 	{
-		if (pad & PAD_INPUT_2)
-		{
-			this->state->SetFlag(this->KICK);
-		}
+		this->state->SetFlag(this->SPECIAL_ATTACK);
+		attackType = static_cast<int>(AttackType::SPECIAL);
 	}
-	else
+	//通常攻撃
+	else if (pad & PAD_INPUT_1)
 	{
-		//回転攻撃
-		if (pad & PAD_INPUT_6)
+		if (this->attackComboCount >= json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_COMBO_NUM"])
 		{
-			this->state->SetFlag(this->ROTATION_ATTACK);
+			this->attackComboCount = 0;
 		}
-		//詠唱攻撃
-		else if (pad & PAD_INPUT_8)
+		switch (this->attackComboCount)
 		{
-			this->state->SetFlag(this->CASTING);
+		case 0:
+			attackType = static_cast<int>(AttackType::MAIN_1);
+			break;
+		case 1:
+			attackType = static_cast<int>(AttackType::MAIN_2);
+			break;
+		case 2:
+			attackType = static_cast<int>(AttackType::MAIN_3);
+			break;
 		}
-		//通常攻撃
-		else if (pad & PAD_INPUT_1)
-		{
-			if (this->attackComboCount >= json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_COMBO_NUM"])
-			{
-				this->attackComboCount = 0;
-			}
-			this->state->SetFlag(this->attackComboStateMap[this->attackComboCount]);
-			this->attackComboCount++;
-			this->frameCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = 0;
-			this->isCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = true;
-		}
-		//Yをしている
-		else if (pad & PAD_INPUT_2)
-		{
-			this->state->SetFlag(this->PUNCH);
-		}
+
+		this->state->SetFlag(this->attackComboStateMap[this->attackComboCount]);
+		this->attackComboCount++;
+		this->frameCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = 0;
+		this->isCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = true;
 	}
 
 	/*もし攻撃していたら移動フラグを下す*/
@@ -866,6 +718,19 @@ void Player::Attack()
 	{
 		this->attackComboCount = 0;
 	}
+
+	/*コライダーの更新*/
+	if (attackType != static_cast<int>(AttackType::NONE))
+	{
+		radius = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_RADIUS"][attackType];
+		offsetScale = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_SCALE"][attackType];
+		offsetY = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"][attackType];
+		position = this->model->GetPosition() + VScale(this->direction, offsetScale);
+		position.y += offsetY;
+		this->damage = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_DAMAGE"][attackType];
+		this->attackNumber++;
+	}
+	this->collider[static_cast<int>(ColliderType::ATTACK)]->SetSphere(position, radius);
 }
 
 bool Player::FrameCount(const int _index, const int _maxFrame)
@@ -892,7 +757,6 @@ const bool Player::CanRotation()const
 	if (this->state->CheckFlag(this->MASK_REACTION))return false;//リアクション
 	if (this->state->CheckFlag(this->AVOID))		return false;//回避
 	if (this->state->CheckFlag(this->BLOCK))		return false;//ガード
-	if (this->state->CheckFlag(this->CROUCH))		return false;//しゃがみ
 	return true;
 }
 const bool Player::CanBlock()const
@@ -900,7 +764,6 @@ const bool Player::CanBlock()const
 	if (this->state->CheckFlag(this->MASK_ATTACK))	return false;//攻撃
 	if (this->state->CheckFlag(this->MASK_REACTION))return false;//リアクション
 	if (this->state->CheckFlag(this->AVOID))		return false;//回避
-	if (this->state->CheckFlag(this->CROUCH))		return false;//しゃがみ
 	return true;
 }
 const bool Player::CanAvoid()const
@@ -909,15 +772,6 @@ const bool Player::CanAvoid()const
 	if (this->state->CheckFlag(this->MASK_REACTION))return false;//リアクション
 	if (this->state->CheckFlag(this->AVOID))		return false;//回避
 	if (this->state->CheckFlag(this->BLOCK))		return false;//ガード
-	if (this->state->CheckFlag(this->CROUCH))		return false;//しゃがみ
-	return true;
-}
-const bool Player::CanRoar()const
-{
-	if (this->state->CheckFlag(this->MASK_ATTACK))	return false;//攻撃
-	if (this->state->CheckFlag(this->MASK_REACTION))return false;//リアクション
-	if (this->state->CheckFlag(this->AVOID))		return false;//回避
-	if (this->state->CheckFlag(this->ROAR))			return false;//咆哮
 	return true;
 }
 const bool Player::CanAttack()const
@@ -925,18 +779,6 @@ const bool Player::CanAttack()const
 	if (this->state->CheckFlag(this->MASK_ATTACK))	return false;//攻撃
 	if (this->state->CheckFlag(this->MASK_REACTION))return false;//リアクション
 	if (this->state->CheckFlag(this->AVOID))		return false;//回避
-	if (this->state->CheckFlag(this->ROAR))			return false;//咆哮
-	if (this->state->CheckFlag(this->JUMP))			return false;//ジャンプ
-	return true;
-}
-const bool Player::CanJump()const
-{
-	if (this->state->CheckFlag(this->MASK_ATTACK))	return false;//攻撃
-	if (this->state->CheckFlag(this->MASK_REACTION))return false;//リアクション
-	if (this->state->CheckFlag(this->AVOID))		return false;//回避
-	if (this->state->CheckFlag(this->ROAR))			return false;//咆哮
-	if (this->state->CheckFlag(this->JUMP))			return false;//ジャンプ
-	if (this->state->CheckFlag(this->BLOCK))		return false;//ブロック
 	return true;
 }
 const bool Player::DontAnyAction()const
@@ -944,10 +786,21 @@ const bool Player::DontAnyAction()const
 	if (this->state->CheckFlag(this->MASK_ATTACK))	return false;//攻撃
 	if (this->state->CheckFlag(this->MASK_REACTION))return false;//リアクション
 	if (this->state->CheckFlag(this->AVOID))		return false;//回避
-	if (this->state->CheckFlag(this->ROAR))			return false;//咆哮
-	if (this->state->CheckFlag(this->JUMP))			return false;//ジャンプ
 	if (this->state->CheckFlag(this->BLOCK))		return false;//ブロック
 	if (this->state->CheckFlag(this->MASK_MOVE))	return false;//移動
 
 	return true;
+}
+void Player::CalcDamage(const int _damage) 
+{ 
+	this->hp -= _damage;
+	this->state->ClearFlag(this->MASK_ALL);
+	if (_damage >= 20)
+	{
+		this->state->SetFlag(this->BIG_IMPACT);
+	}
+	else
+	{
+		this->state->SetFlag(this->SMALL_IMPACT);
+	}
 }

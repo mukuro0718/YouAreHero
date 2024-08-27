@@ -11,10 +11,12 @@ public:
 	~Collider(){}//デストラクタ
 
 	void SetSphere(const VECTOR _position, const float _radius);
+	void SetCapsule(const VECTOR _position, const float _capsuleHeight, const float _radius);
 	void SetAABB(const VECTOR _max, const VECTOR _min);
 	void SetOBB(const VECTOR _max, const VECTOR _min, const VECTOR _position, const VECTOR _rotation);
 
 	const void DrawHitSphere()const;
+	const void DrawHitCapsule()const;
 	const void DrawHitBox()const;
 
 	/*getter*/
@@ -29,11 +31,15 @@ public:
 	//Sphere
 	VECTOR position;
 	float radius;
+	//capsule
+	VECTOR heightPosition;
 	//AABB
 	VECTOR max;
 	VECTOR min;
 	//OBB
 	MATRIX rotation;
+
+	VECTOR fixVector;
 
 private:
 	/*列挙体*/
