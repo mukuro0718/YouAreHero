@@ -1,9 +1,41 @@
 {
   "PATH": [
-    "Asset/Image/UI/FrameIcon.png",
-    "Asset/Image/UI/BoltIcon.png",
-    "Asset/Image/UI/IceIcon.png",
-    "Asset/Image/UI/EarthIcon.png",
-    "Asset/Image/UI/StormIcon.png"
+    "Asset/Image/UI/B.png",
+    "Asset/Image/UI/X.png",
+    "Asset/Image/UI/Y.png",
+    "Asset/Image/UI/LB.png",
+    "Asset/Image/UI/LS.png",
+    "Asset/Image/UI/LT.png",
+    "Asset/Image/UI/RB.png",
+    "Asset/Image/UI/RS.png",
+
+    "Asset/Image/UI/Bar/BossHPBarCenter.png",
+    "Asset/Image/UI/Bar/BossHPBarRight.png",
+    "Asset/Image/UI/Bar/BossHPBarLeft.png",
+
+    "Asset/Image/UI/Bar/BossHPBarCenterHolder.png",
+    "Asset/Image/UI/Bar/BossHPBarRightHolder.png",
+    "Asset/Image/UI/Bar/BossHPBarLeftHolder.png",
+    "Asset/Image/UI/Bar/BossHPIconHolder.png",
+
+    "Asset/Image/UI/Bar/PlayerHPBarCenter.png",
+    "Asset/Image/UI/Bar/PlayerHPBarRight.png",
+    "Asset/Image/UI/Bar/PlayerHPBarLeft.png",
+
+    "Asset/Image/UI/Bar/PlayerHPBarCenterHolder.png",
+    "Asset/Image/UI/Bar/PlayerHPBarRightHolder.png",
+    "Asset/Image/UI/Bar/PlayerHPBarLeftHolder.png",
+    "Asset/Image/UI/Bar/PlayerHPIconHolder.png",
+
+    "Asset/Image/UI/Bar/StaminaBarCenter.png",
+    "Asset/Image/UI/Bar/StaminaBarRight.png",
+    "Asset/Image/UI/Bar/StaminaBarLeft.png",
+
+    "Asset/Image/UI/Bar/StaminaBarCenterHolder.png",
+    "Asset/Image/UI/Bar/StaminaBarRightHolder.png",
+    "Asset/Image/UI/Bar/StaminaBarLeftHolder.png",
+    "Asset/Image/UI/Bar/StaminaIconHolder.png",
+    "Asset/Image/UI/Bar/HPIcon.png",
+    "Asset/Image/UI/Bar/Stamina.png"
   ]
 }

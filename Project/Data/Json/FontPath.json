@@ -1,5 +1,10 @@
 {
   "PATH": [
-    "Data/Image/Font/ThaleahFat.ttf"
-  ]
+    "Asset/Font/Honoka_Shin_Mincho_L.otf"
+  ],
+  "NAME": [
+    "ほのか新明朝 Light"
+  ],
+  "SIZE": [50,30 ],
+  "THICK": [64,64 ]
 }

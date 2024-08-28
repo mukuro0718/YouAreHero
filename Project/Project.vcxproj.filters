@@ -142,6 +142,12 @@
     <Filter Include="UI\HPUI">
       <UniqueIdentifier>{8ae68818-4ed3-423b-9cca-40de92dfbd3e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Attack">
+      <UniqueIdentifier>{85c3ea9d-90a4-4cd5-92a5-ce5cf6df9bba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Attack\Type">
+      <UniqueIdentifier>{393b1d76-aa34-4633-a94f-65da079d1a24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -243,6 +249,12 @@
     </ClCompile>
     <ClCompile Include="ButtonUI.cpp">
       <Filter>UI\ButtonUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Attack.cpp">
+      <Filter>Object\Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="BossAttack.cpp">
+      <Filter>Object\Attack\Type</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -363,6 +375,12 @@
     <ClInclude Include="ButtonUI.h">
       <Filter>UI\ButtonUI</Filter>
     </ClInclude>
+    <ClInclude Include="Attack.h">
+      <Filter>Object\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="BossAttack.h">
+      <Filter>Object\Attack\Type</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\Json\Camera.json">
@@ -402,6 +420,9 @@
       <Filter>Json\File</Filter>
     </None>
     <None Include="Data\Json\Debug.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\UI.json">
       <Filter>Json\File</Filter>
     </None>
   </ItemGroup>

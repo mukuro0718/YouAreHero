@@ -36,20 +36,26 @@ private:
 	};
 	struct Box
 	{
+		void Set(const std::vector<int> _pos) { this->lx = _pos[0]; this->ly = _pos[1]; this->rx = _pos[2]; this->ry = _pos[3]; }
 		int lx, ly, rx, ry;
 	};
 
+	
 	/*内部処理関数*/
 	int ConvertColor(const std::vector<int> _color);
 
 	/*メンバ変数*/
+	int backgroundColor;
 	int playerHPColor;
 	int bossHPColor;
 	int prevPlayerHPColor;
 	int prevBossHPColor;
-	RangeNum playerHP;	//プレイヤーHP
-	RangeNum bossHP;	//ボスHP
+	int staminaColor;
+	RangeNum playerHP;		//プレイヤーHP
+	RangeNum playerStamina;	//プレイヤーHP
+	RangeNum bossHP;			//ボスHP
 	Vec2d playerHPPosition;
 	Vec2d bossHPPosition;
+
 };
 

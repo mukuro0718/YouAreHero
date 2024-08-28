@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "LoadingAsset.h"
 #include "HPUI.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"
@@ -11,6 +12,15 @@
 /// </summary>
 HPUI::HPUI()
 {
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
+	this->backgroundColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BACKGROUND_COLOR"]);
+	this->playerHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_COLOR"]);
+	this->bossHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_COLOR"]);
+	this->prevPlayerHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_PREV_HP_COLOR"]);
+	this->prevBossHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_PREV_HP_COLOR"]);
+	this->staminaColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["STAMINA_COLOR"]);
 }
 
 /// <summary>
@@ -29,18 +39,13 @@ void HPUI::Initialize()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
-	auto& json = Singleton<JsonManager>::GetInstance();
+	/*初期化*/
 	int playerHP = player.GetHP();
 	int bossHP = enemy.GetHP();
-	/*初期化*/
-	this->playerHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_COLOR"]);
-	this->bossHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_COLOR"]);
-	this->prevPlayerHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_PREV_HP_COLOR"]);
-	this->prevBossHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_PREV_HP_COLOR"]);
+
 	this->playerHP.SetRange(playerHP, 0, playerHP);
 	this->bossHP.SetRange(bossHP, 0, bossHP);
-	this->playerHPPosition.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_POSITION"]);
-	this->bossHPPosition.Set(json.GetJson(JsonManager::FileType::UI)["BOSS_PREV_HP_COLOR"]);
+	this->playerStamina.SetRange(500, 0, 500);
 }
 
 /// <summary>
@@ -55,6 +60,7 @@ void HPUI::Update()
 	/*HP計算*/
 	this->playerHP.SetNow(player.GetHP());
 	this->bossHP.SetNow(enemy.GetHP());
+
 	this->playerHP.PrevDecrease();
 	this->bossHP.PrevDecrease();
 }
@@ -65,36 +71,65 @@ void HPUI::Update()
 const void HPUI::Draw()const
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
+	//HP
+	{
+		Vec2d position;
+		Box box;
+		int height;
+		int indexBase = json.GetJson(JsonManager::FileType::UI)["PLAYER_INDEX_BASE"];
+		int nowHP = static_cast<int>(this->playerHP.GetNow() / this->playerHP.GetMax() * indexBase);
+		int prevHP = static_cast<int>(this->playerHP.GetPrev() / this->playerHP.GetMax() * indexBase);
+		position.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_POSITION"]);
+		height = json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_HEIGHT"];
 
-	Box prevPlayer;
-	prevPlayer.lx = this->playerHPPosition.x;
-	prevPlayer.ly = this->playerHPPosition.y;
-	prevPlayer.rx = this->playerHPPosition.x + static_cast<int>(this->playerHP.GetPrev() / this->playerHP.GetMax() * json.GetJson(JsonManager::FileType::UI)["PLAYER_INDEX_BASE"]);
-	prevPlayer.ry = this->playerHPPosition.y + json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_HEIGHT"];
-	DrawBox(prevPlayer.lx, prevPlayer.ly, prevPlayer.rx, prevPlayer.ry, this->prevPlayerHPColor, TRUE);
+		box.lx = position.x;
+		box.ly = position.y;
+		box.rx = box.lx + indexBase;
+		box.ry = box.ly + height;
 
-	Box player;
-	player.lx = this->playerHPPosition.x;
-	player.ly = this->playerHPPosition.y;
-	player.rx = this->playerHPPosition.x + static_cast<int>(this->playerHP.GetNow() / this->playerHP.GetMax() * json.GetJson(JsonManager::FileType::UI)["PLAYER_INDEX_BASE"]);
-	player.ry = this->playerHPPosition.y + json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_HEIGHT"];
-	DrawBox(player.lx, player.ly, player.rx, player.ry, this->playerHPColor, TRUE);
+		DrawBox(box.lx, box.ly, box.lx + indexBase, box.ry, this->backgroundColor, TRUE);
+		DrawBox(box.lx, box.ly, box.lx + prevHP, box.ry, this->prevPlayerHPColor, TRUE);
+		DrawBox(box.lx, box.ly, box.lx + nowHP, box.ry, this->playerHPColor, TRUE);
+	}
+	//STAMINA
+	{
+		Vec2d position;
+		Box box;
+		int height;
+		int indexBase = json.GetJson(JsonManager::FileType::UI)["PLAYER_INDEX_BASE"];
+		int nowStamina =/* static_cast<int>(this->playerHP.GetNow() / this->playerHP.GetMax() * indexBase)*/indexBase;
+		position.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_POSITION"]);
+		height = json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_HEIGHT"];
 
-	Box prevBoss;
-	prevBoss.lx = this->bossHPPosition.x;
-	prevBoss.ly = this->bossHPPosition.y;
-	prevBoss.rx = this->bossHPPosition.x + static_cast<int>(this->bossHP.GetPrev() / this->bossHP.GetMax() * json.GetJson(JsonManager::FileType::UI)["BOSS_HP_HEIGHT"]);
-	prevBoss.ry = this->bossHPPosition.y + json.GetJson(JsonManager::FileType::UI)["BOSS_HP_HEIGHT"];
-	DrawBox(prevBoss.lx, prevBoss.ly, prevBoss.rx, prevBoss.ry, this->prevBossHPColor, TRUE);
+		box.lx = position.x;
+		box.ly = position.y;
+		box.rx = box.lx + indexBase;
+		box.ry = box.ly + height;
 
-	Box boss;
-	boss.lx = this->bossHPPosition.x;
-	boss.ly = this->bossHPPosition.y;
-	boss.rx = this->bossHPPosition.x + static_cast<int>(this->bossHP.GetNow() / this->bossHP.GetMax() * json.GetJson(JsonManager::FileType::UI)["BOSS_HP_HEIGHT"]);
-	boss.ry = this->bossHPPosition.y + json.GetJson(JsonManager::FileType::UI)["BOSS_HP_HEIGHT"];
-	DrawBox(boss.lx, boss.ly, boss.rx, boss.ry, this->bossHPColor, TRUE);
+		DrawBox(box.lx, box.ly, box.lx + indexBase, box.ry, this->backgroundColor, TRUE);
+		DrawBox(box.lx, box.ly, box.lx + nowStamina, box.ry, this->staminaColor, TRUE);
+	}
+	//BOSS
+	{
+		Vec2d position;
+		Box box;
+		int height;
+		int indexBase = json.GetJson(JsonManager::FileType::UI)["BOSS_INDEX_BASE"];
+		int nowHP = static_cast<int>(this->bossHP.GetNow() / this->bossHP.GetMax() * indexBase);
+		int prevHP = static_cast<int>(this->bossHP.GetPrev() / this->bossHP.GetMax() * indexBase);
+		position.Set(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_POSITION"]);
+		height = json.GetJson(JsonManager::FileType::UI)["BOSS_HP_HEIGHT"];
+
+		box.lx = position.x;
+		box.ly = position.y;
+		box.rx = box.lx + indexBase;
+		box.ry = box.ly + height;
+
+		DrawBox(box.lx, box.ly, box.lx + indexBase, box.ry, this->backgroundColor, TRUE);
+		DrawBox(box.lx, box.ly, box.lx + prevHP, box.ry, this->prevBossHPColor, TRUE);
+		DrawBox(box.lx, box.ly, box.lx + nowHP, box.ry, this->bossHPColor, TRUE);
+	}
 }
-
 /// <summary>
 /// 範囲の設定
 /// </summary>
@@ -143,7 +178,7 @@ void HPUI::RangeNum::PrevDecrease()
 {
 	if (this->now < this->prev)
 	{
-		this->prev -= 1.0f;
+		this->prev -= 0.5f;
 	}
 }
 

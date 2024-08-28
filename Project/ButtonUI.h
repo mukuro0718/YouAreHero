@@ -27,13 +27,12 @@ private:
 
 	/*“à•”ˆ—ŠÖ”*/
 	int ConvertColor(const std::vector<int> _color);
-	void DrawBackground();
 	void DrawIcon();
-	void DrawIconText();
-	void DrawButtonText();
-	void DrawOperation();
+	void DrawFont();
 
 	/*ƒƒ“ƒo•Ï”*/
 	int specialAttackSize;
+	int b, x, y, lb, ls, lt, rb, rs;
+	int iconFont, operationFont;
 };
 

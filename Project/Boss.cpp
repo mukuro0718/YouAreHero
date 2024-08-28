@@ -53,43 +53,31 @@ Boss::Boss()
 
 	/*関数マップの設定*/
 	auto idleSet	  = [this]() {Idle(); };
-	auto tauntSet	  = [this]() {Taunt(); };
+	auto roarSet	  = [this]() {Taunt(); };
 	auto moveSet	  = [this]() {Move(); };
-	auto reactionSet  = [this]() {Reaction(); };
 	auto deathSet	  = [this]() {Death(); };
 	auto restSet	  = [this]() {Rest(); };
-	auto attackSet	  = [this]() {Attack(); };
 	this->AddItemFunction(this->IDLE					, idleSet);
-	this->AddItemFunction(this->TAUNT					, tauntSet);
-	this->AddItemFunction(this->WALK_FRONT				, moveSet);
-	this->AddItemFunction(this->WALK_LEFT				, moveSet);
-	this->AddItemFunction(this->WALK_RIGHT				, moveSet);
-	this->AddItemFunction(this->VERTICAL_SLASH			, attackSet);
-	this->AddItemFunction(this->HORIZONTAL_SLASH		, attackSet);
-	this->AddItemFunction(this->ROTATION_SLASH			, attackSet);
-	this->AddItemFunction(this->KNOCK_UP_SLASH			, attackSet);
-	this->AddItemFunction(this->STRONG_HORIZONTAL_SLASH	, attackSet);
-	this->AddItemFunction(this->TWO_COMBO				, attackSet);
-	this->AddItemFunction(this->THREE_COMBO				, attackSet);
-	this->AddItemFunction(this->REACTION				, reactionSet);
-	this->AddItemFunction(this->DEATH					, deathSet);
+	this->AddItemFunction(this->ROAR, roarSet);
+	this->AddItemFunction(this->WALK, moveSet);
 	this->AddItemFunction(this->REST					, restSet);
+	this->AddItemFunction(this->DYING, deathSet);
 	/*アニメーションマップの設定*/
-	this->stateAnimationMap.emplace(this->IDLE					  , static_cast<int>(AnimationType::IDLE));
-	this->stateAnimationMap.emplace(this->TAUNT					  , static_cast<int>(AnimationType::TAUNT));
-	this->stateAnimationMap.emplace(this->WALK_FRONT			  , static_cast<int>(AnimationType::WALK_FRONT));
-	this->stateAnimationMap.emplace(this->WALK_LEFT				  , static_cast<int>(AnimationType::WALK_LEFT));
-	this->stateAnimationMap.emplace(this->WALK_RIGHT			  , static_cast<int>(AnimationType::WALK_RIGHT));
-	this->stateAnimationMap.emplace(this->VERTICAL_SLASH		  , static_cast<int>(AnimationType::VERTICAL_SLASH));
-	this->stateAnimationMap.emplace(this->HORIZONTAL_SLASH		  , static_cast<int>(AnimationType::HORIZONTAL_SLASH));
-	this->stateAnimationMap.emplace(this->ROTATION_SLASH		  , static_cast<int>(AnimationType::ROTATION_SLASH));
-	this->stateAnimationMap.emplace(this->KNOCK_UP_SLASH		  , static_cast<int>(AnimationType::KNOCK_UP_SLASH));
-	this->stateAnimationMap.emplace(this->STRONG_HORIZONTAL_SLASH , static_cast<int>(AnimationType::STRONG_HORIZONTAL_SLASH));
-	this->stateAnimationMap.emplace(this->TWO_COMBO				  , static_cast<int>(AnimationType::TWO_COMBO));
-	this->stateAnimationMap.emplace(this->THREE_COMBO			  , static_cast<int>(AnimationType::THREE_COMBO));
-	this->stateAnimationMap.emplace(this->REACTION				  , static_cast<int>(AnimationType::REACTION));
-	this->stateAnimationMap.emplace(this->DEATH					  , static_cast<int>(AnimationType::DEATH));
-	this->stateAnimationMap.emplace(this->REST					  , static_cast<int>(AnimationType::IDLE));
+	this->stateAnimationMap.emplace(this->DYING, static_cast<int>(AnimationType::DYING));
+	this->stateAnimationMap.emplace(this->IDLE, static_cast<int>(AnimationType::IDLE));
+	this->stateAnimationMap.emplace(this->ROAR, static_cast<int>(AnimationType::ROAR));
+	this->stateAnimationMap.emplace(this->WALK, static_cast<int>(AnimationType::WALK));
+	this->stateAnimationMap.emplace(this->REST, static_cast<int>(AnimationType::IDLE));
+	this->stateAnimationMap.emplace(this->PUNCH, static_cast<int>(AnimationType::PUNCH));
+	this->stateAnimationMap.emplace(this->SLASH, static_cast<int>(AnimationType::SLASH));
+	this->stateAnimationMap.emplace(this->THROW_STORN, static_cast<int>(AnimationType::THROW_STORN));
+	this->stateAnimationMap.emplace(this->HURRICANE_KICK, static_cast<int>(AnimationType::HURRICANE_KICK));
+	this->stateAnimationMap.emplace(this->GRAND_SLAM, static_cast<int>(AnimationType::GRAND_SLAM));
+	this->stateAnimationMap.emplace(this->FLAME_MAGIC, static_cast<int>(AnimationType::FLAME_MAGIC));
+	this->stateAnimationMap.emplace(this->LIGHTNING, static_cast<int>(AnimationType::LIGHTNING));
+	this->stateAnimationMap.emplace(this->CONTINUOUS_SLASH, static_cast<int>(AnimationType::CONTINUOUS_SLASH));
+	this->stateAnimationMap.emplace(this->DARK_FIELD, static_cast<int>(AnimationType::DARK_FIELD));
+	this->stateAnimationMap.emplace(this->METEO, static_cast<int>(AnimationType::METEO));
 
 	this->state->SetFlag(this->IDLE);
 
@@ -176,8 +164,8 @@ void Boss::Action()
 	ChangeState();
 
 	/*状態ごとの処理を実行*/
-	unsigned int flag = this->state->GetFlag();
-	this->stateFunctionMap[flag].update();
+	//unsigned int flag = this->state->GetFlag();
+	//this->stateFunctionMap[flag].update();
 }
 
 /// <summary>
@@ -186,9 +174,9 @@ void Boss::Action()
 void Boss::Taunt()
 {
 	/*咆哮中にアニメーションが終了していたらフラグを下す*/
-	if (this->state->CheckFlag(this->TAUNT) && this->model->GetIsChangeAnim())
+	if (this->state->CheckFlag(this->ROAR) && this->model->GetIsChangeAnim())
 	{
-		this->state->ClearFlag(this->TAUNT);
+		this->state->ClearFlag(this->ROAR);
 	}
 }
 /// <summary>
@@ -267,7 +255,7 @@ void Boss::ChangeState()
 
 	if (this->hp < 0)
 	{
-		this->state->SetFlag(this->DEATH);
+		this->state->SetFlag(this->DYING);
 		if (this->model->GetIsChangeAnim())
 		{
 			this->isDraw = false;
@@ -275,7 +263,7 @@ void Boss::ChangeState()
 	}
 
 	/*デスしていなければ*/
-	if (this->state->CheckFlag(this->DEATH))return;
+	if (this->state->CheckFlag(this->DYING))return;
 
 	/*休憩するか*/
 	if (CanRest())
@@ -301,14 +289,22 @@ void Boss::ChangeState()
 
 	/*移動するか*/
 	const float TARGET_DISTANCE = VSize(VSub(player.GetPosition(), this->model->GetPosition()));//プレイヤーとの距離を求める
-	const float MAX_TARGET_DISTANCE = json.GetJson(JsonManager::FileType::ENEMY)["TARGET_DISTANCE"];//目標との最大距離
-	//もしプレイヤーとの距離が最大距離以上離れていたら追跡する
-	if (TARGET_DISTANCE >= MAX_TARGET_DISTANCE)
-	{
-		this->state->ClearFlag(this->MASK_MOVE | this->IDLE);
-		this->state->SetFlag(this->WALK_FRONT);
-	}
+	const float MOVE_DISTANCE = json.GetJson(JsonManager::FileType::ENEMY)["MOVE_DISTANCE"];//目標との最大距離
+	const float THROW_DISTANCE = json.GetJson(JsonManager::FileType::ENEMY)["THROW_DISTANCE"];//目標との最大距離
+	
+	this->state->ClearFlag(this->WALK | this->IDLE);
 
+	/*石を投げる*/
+	if (TARGET_DISTANCE >= THROW_DISTANCE)
+	{
+		int attackType = static_cast<int>(AttackType::THROW_STORN);
+		this->state->SetFlag(this->THROW_STORN);
+	}
+	/*もしプレイヤーとの距離が最大距離以上離れていたら追跡する*/
+	else if (TARGET_DISTANCE >= MOVE_DISTANCE)
+	{
+		this->state->SetFlag(this->WALK);
+	}
 	/*攻撃するか*/
 	else
 	{
@@ -318,43 +314,25 @@ void Boss::ChangeState()
 		float offsetY = 0.0f;
 		VECTOR position = { 0.0f,0.0f,0.0f };
 		int attackType = static_cast<int>(AttackType::NONE);
-		this->state->ClearFlag(this->MASK_MOVE | this->IDLE);
 
 		/*phase1*/
 		//今向いている方向とプレイヤーへの咆哮のない席が一定以上だったら回転切りをする
-		VECTOR toPlayer = VNorm(VSub(player.GetPosition(),this->model->GetPosition()));
-		this->dot = VDot(this->direction, toPlayer);
-		this->dot = this->dot * 180.0f / DX_PI_F;
-		if (this->dot < 0.0f)
+		VECTOR toPlayer = VNorm(VSub(player.GetPosition(), this->model->GetPosition()));
+		int type = GetRand(1);
+		if (type == 0)
 		{
-			this->state->SetFlag(this->ROTATION_SLASH);
-			attackType = static_cast<int>(AttackType::ROTATION_SLASH);
+			this->state->SetFlag(this->PUNCH);
+			attackType = static_cast<int>(AttackType::PUNCH);
 		}
-		//以前の攻撃が当たっていたらコンボ攻撃をする
-		else if (this->isHitAttack)
-		{
-			this->state->SetFlag(this->TWO_COMBO);
-			attackType = static_cast<int>(AttackType::TWO_COMBO);
-		}
-		//縦切りか横切りはランダムで決める
 		else
 		{
-			int type = GetRand(1);
-			if (type == 0)
-			{
-				this->state->SetFlag(this->VERTICAL_SLASH);
-				attackType = static_cast<int>(AttackType::VERTICAL_SLASH);
-			}
-			else
-			{
-				this->state->SetFlag(this->HORIZONTAL_SLASH);
-				attackType = static_cast<int>(AttackType::HORIZONTAL_SLASH);
-			}
+			this->state->SetFlag(this->SLASH);
+			attackType = static_cast<int>(AttackType::SLASH);
 		}
 
 
 		/*phase2*/
-		
+
 
 		/*コライダーの更新*/
 		if (attackType != static_cast<int>(AttackType::NONE))
@@ -434,7 +412,7 @@ void Boss::UpdateVelocity()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
-	if (this->state->CheckFlag(this->MASK_MOVE))
+	if (this->state->CheckFlag(this->WALK))
 	{
 		this->velocity = json.GetJson(JsonManager::FileType::ENEMY)["VELOCITY"];
 	}
@@ -518,79 +496,7 @@ void Boss::RushAttack()
 /// </summary>
 void Boss::JumpAttack()
 {
-	///*シングルトンクラスのインスタンスの取得*/
-	//auto& json = Singleton<JsonManager>::GetInstance();
-	////auto& player = Singleton<PlayerManager>::GetInstance();
-
-	///*攻撃前*/
-	//int WAIT_TIME = json.GetJson(JsonManager::FileType::ENEMY)["WAIT_TIME_BEFORE_JUMP"];
-	////目標待機時間に達していなかったら早期リターン
-	//if (this->waitingCountBeforeAttack < WAIT_TIME)
-	//{
-	//	/*回転率の更新*/
-	//	UpdateRotation();
-	//	//カウントを増加
-	//	this->waitingCountBeforeAttack++;
-	//	//ジャンプ力の初期化
-	//	this->jumpPower = json.GetJson(JsonManager::FileType::ENEMY)["JUMP_POWER"];
-	//	//早期リターン
-	//	return;
-	//}
-
-	///*攻撃中*/
-	//int ATTACK_TIME = json.GetJson(JsonManager::FileType::ENEMY)["JUMP_TIME"];
-	//float ATTACK_RANGE = json.GetJson(JsonManager::FileType::ENEMY)["JUMP_RANGE"];
-
-	////目標攻撃時間に達していたら落下させる
-	//if (this->attackCount >= ATTACK_TIME)
-	//{
-	//	//座標の取得
-	//	VECTOR position = this->model->GetPosition();
-	//	//重力の取得
-	//	const float GRAVITY = json.GetJson(JsonManager::FileType::ENEMY)["GRAVITY"];
-	//	//移動ベクトルの更新
-	//	VECTOR moveVector = VGet(0.0f, GRAVITY, 0.0f);
-	//	//座標の更新
-	//	position = VAdd(position, moveVector);
-
-	//	/*地面についていたら待機状態にする*/
-	//	const float HIT_SCALE = json.GetJson(JsonManager::FileType::ENEMY)["HIT_SCALE"];
-	//	if (position.y <= HIT_SCALE)
-	//	{
-	//		position.y = HIT_SCALE;
-	//		//「待機」状態に設定する
-	//		this->state->ClearFlag(this->attackType);
-	//		this->state->SetFlag(this->IDLE);
-	//		this->isRest = true;
-	//	}
-	//	this->model->SetPosition(position);
-	//	return;
-	//}
-	////ターゲット座標に近づいたらカウントを増加
-	//VECTOR moveTarget = this->moveTarget;
-	//moveTarget.y = 0.0f;
-	//VECTOR position = this->model->GetPosition();
-	//position.y = 0.0f;
-	//float size = VSize(VSub(moveTarget, position));
-	//if (size <= ATTACK_RANGE)
-	//{
-	//	this->attackCount++;
-	//}
-	//if (this->attackCount == 0)
-	//{
-	//	/*座標移動*/
-	//	//速度の取得
-	//	const float VELOCITY = json.GetJson(JsonManager::FileType::ENEMY)["JUMP_VELOCITY"];
-	//	//座標の取得
-	//	VECTOR position = this->model->GetPosition();
-	//	//ジャンプ
-	//	const float JUMP_HEIGHT = json.GetJson(JsonManager::FileType::ENEMY)["JUMP_HEIGHT"];
-	//	moveTarget.y = JUMP_HEIGHT;
-	//	this->moveVector = VNorm(VSub(moveTarget, this->model->GetPosition()));
-	//	//座標の更新
-	//	position = VAdd(position, VScale(this->moveVector, VELOCITY));
-	//	this->model->SetPosition(position);
-	//}
+	
 }
 
 /// <summary>
@@ -606,7 +512,7 @@ const bool Boss::CanRotation()const
 const bool Boss::CanMove()const
 {
 	if (this->state->CheckFlag(this->MASK_ATTACK))return false;
-	if (this->state->CheckFlag(this->TAUNT))return false;
+	if (this->state->CheckFlag(this->ROAR))return false;
 	return true;
 }
 /// <summary>
@@ -681,4 +587,9 @@ const bool Boss::IsAttack()const
 {
 	if (this->state->CheckFlag(this->MASK_ATTACK))return true;
 	return false;
+}
+
+const VECTOR Boss::GetHeadPosition()const
+{
+	return MV1GetFramePosition(this->model->GetModelHandle(), 7);
 }

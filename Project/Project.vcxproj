@@ -140,8 +140,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="Attack.cpp" />
     <ClCompile Include="BitFlag.cpp" />
     <ClCompile Include="Boss.cpp" />
+    <ClCompile Include="BossAttack.cpp" />
     <ClCompile Include="ButtonUI.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
@@ -176,8 +178,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="Attack.h" />
     <ClInclude Include="BitFlag.h" />
     <ClInclude Include="Boss.h" />
+    <ClInclude Include="BossAttack.h" />
     <ClInclude Include="ButtonUI.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />
@@ -229,6 +233,7 @@
     <None Include="Data\Json\Player.json" />
     <None Include="Data\Json\ScreenSetup.json" />
     <None Include="Data\Json\SoundPath.json" />
+    <None Include="Data\Json\UI.json" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project.rc" />

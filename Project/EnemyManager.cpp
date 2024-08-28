@@ -58,7 +58,10 @@ const VECTOR EnemyManager::GetPosition()const
 {
 	return this->boss->GetPosition();
 }
-
+const VECTOR EnemyManager::GetHeadPosition()const
+{
+	return this->boss->GetHeadPosition();
+}
 
 const Collider EnemyManager::GetCharacterCollider()
 {

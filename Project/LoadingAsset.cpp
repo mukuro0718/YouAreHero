@@ -17,7 +17,9 @@ LoadingAsset::LoadingAsset()
 	vector<string> modelPath = json.GetJson(JsonManager::FileType::MODEL_PATH)["PATH"];
 	vector<string> imagePath = json.GetJson(JsonManager::FileType::IMAGE_PATH)["PATH"];
 	vector<string> fontPath  = json.GetJson(JsonManager::FileType::FONT_PATH )["PATH"];
-
+	vector<string> fontName = json.GetJson(JsonManager::FileType::FONT_PATH)["NAME"];
+	vector<int> fontSize = json.GetJson(JsonManager::FileType::FONT_PATH)["SIZE"];
+	vector<int> fontThick = json.GetJson(JsonManager::FileType::FONT_PATH)["THICK"];
 	/*モデルのロード*/
 	for (int i = 0; i < modelPath.size(); i++)
 	{
@@ -33,8 +35,14 @@ LoadingAsset::LoadingAsset()
 	/*フォントのロード*/
 	for (int i = 0; i < fontPath.size(); i++)
 	{
-		this->fontHandle.emplace_back(CreateFontToHandle(fontPath[i].c_str(), 32, 16));
+		AddFontResourceEx(fontPath[i].c_str(), FR_PRIVATE, NULL);
 	}
+	for (int i = 0; i < fontSize.size(); i++)
+	{
+		this->fontHandle.emplace_back(CreateFontToHandle(fontName[static_cast<int>(FontName::Honoka)].c_str(), fontSize[i], fontThick[i], DX_FONTTYPE_EDGE, DX_CHARSET_DEFAULT, 4));
+	}
+	
+
 }
 
 /// <summary>

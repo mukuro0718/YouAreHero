@@ -19,6 +19,7 @@ public:
 	/*getter*/
 	const int	   GetHP()const;
 	const VECTOR GetPosition()const;//À•W‚Ìæ“¾
+	const VECTOR GetHeadPosition()const;//À•W‚Ìæ“¾
 	const Collider GetCharacterCollider();
 	const Collider GetAttackCollider();
 	void CalcDamage(const int _damage);

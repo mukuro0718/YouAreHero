@@ -19,7 +19,7 @@ public:
 	void CalcDamage(const int _damage) { this->hp -= _damage; }
 	const int		GetDamage()const;									  //ダメージの取得
 	const int		GetHP()const { return this->hp; }				  //HPの取得
-
+	const VECTOR GetHeadPosition()const;
 	const VECTOR GetPosition()const;
 	const Collider GetCharacterCollider();
 	const Collider GetAttackCollider();
@@ -35,30 +35,30 @@ private:
 	/*静的定数*/
 	static constexpr int COUNT_NUM = 1;
 	static constexpr int COLLIDER_NUM = 2;//コライダーの数
+	//基本状態
+	static constexpr unsigned int DYING	= (1 << 0);//デス
+	static constexpr unsigned int IDLE	= (1 << 1);//待機
+	static constexpr unsigned int ROAR	= (1 << 2);//咆哮
+	static constexpr unsigned int WALK	= (1 << 3);//歩き
+	static constexpr unsigned int REST	= (1 << 4);//休憩
+	//フェーズ１
+	static constexpr unsigned int PUNCH		  = (1 << 5);//パンチ
+	static constexpr unsigned int SLASH		  = (1 << 6);//スラッシュ
+	static constexpr unsigned int THROW_STORN = (1 << 7);//投石
+	//フェーズ２
+	static constexpr unsigned int HURRICANE_KICK = (1 << 8);//回転蹴り
+	static constexpr unsigned int GRAND_SLAM	 = (1 << 9);//地面をたたく
+	static constexpr unsigned int FLAME_MAGIC	 = (1 << 10);//火炎放射
+	static constexpr unsigned int LIGHTNING		 = (1 << 11);//ランダムで落雷
+	//フェーズ３
+	static constexpr unsigned int CONTINUOUS_SLASH = (1 << 12);//連続スラッシュ
+	static constexpr unsigned int COMBO			   = (1 << 12);//コンボ（ランダムな攻撃を組み合わせる）
+	static constexpr unsigned int DARK_FIELD	   = (1 << 13);//ダークフィールド（範囲内にダメージ）
+	static constexpr unsigned int METEO			   = (1 << 14);//隕石
 
-	static constexpr unsigned int IDLE						 = (1 << 0);//待機
-	static constexpr unsigned int TAUNT						 = (1 << 1);//咆哮
-	static constexpr unsigned int WALK_FRONT			 	 = (1 << 2);//前歩き
-	static constexpr unsigned int WALK_LEFT					 = (1 << 3);//左歩き
-	static constexpr unsigned int WALK_RIGHT				 = (1 << 4);//右歩き
-
-	static constexpr unsigned int VERTICAL_SLASH			 = (1 << 5);//縦切り
-	static constexpr unsigned int HORIZONTAL_SLASH			 = (1 << 6);//横切り
-	static constexpr unsigned int ROTATION_SLASH			 = (1 << 7);//回転切り
-	static constexpr unsigned int KNOCK_UP_SLASH			 = (1 << 8);//下から上切り
-	static constexpr unsigned int STRONG_HORIZONTAL_SLASH	 = (1 << 9);//強い横切り
-	static constexpr unsigned int TWO_COMBO					 = (1 << 10);//１２コンボ
-	static constexpr unsigned int THREE_COMBO				 = (1 << 11);//１２３コンボ
-	static constexpr unsigned int REACTION					 = (1 << 12);//被ダメージ
-
-	static constexpr unsigned int DEATH						 = (1 << 13);//デス
-	static constexpr unsigned int REST						 = (1 << 14);//休憩
-
-	static constexpr unsigned int MASK_MOVE = WALK_FRONT | WALK_LEFT | WALK_RIGHT;
-	static constexpr unsigned int MASK_ATTACK = VERTICAL_SLASH | HORIZONTAL_SLASH | ROTATION_SLASH |
-												KNOCK_UP_SLASH | STRONG_HORIZONTAL_SLASH |
-												TWO_COMBO | THREE_COMBO;
-	static constexpr unsigned int MASK_ALL = MASK_MOVE | MASK_ATTACK | REACTION | DEATH | REST | TAUNT | IDLE;
+	static constexpr unsigned int MASK_ATTACK = PUNCH | SLASH | THROW_STORN |HURRICANE_KICK | GRAND_SLAM |FLAME_MAGIC | LIGHTNING 
+											   | CONTINUOUS_SLASH | COMBO | DARK_FIELD | METEO;
+	static constexpr unsigned int MASK_ALL = MASK_ATTACK | WALK | DYING | REST | REST | IDLE;
 	
 	/*クラス*/
 	class FlagsStateSet
@@ -80,31 +80,34 @@ private:
 	};
 	enum class AttackType
 	{
-		NONE					= -1,
-		VERTICAL_SLASH			= 0,//縦切り
-		HORIZONTAL_SLASH		= 1,//横切り
-		ROTATION_SLASH			= 2,//回転切り
-		KNOCK_UP_SLASH			= 3,//下から上切り
-		STRONG_HORIZONTAL_SLASH = 4,//強い横切り
-		TWO_COMBO				= 5,//１２コンボ
-		THREE_COMBO				= 6,//１２３コンボ
+		NONE			 = -1,
+		PUNCH			 = 0,//パンチ
+		SLASH			 = 1,//スラッシュ
+		THROW_STORN		 = 2,//投石
+		HURRICANE_KICK	 = 3,//回転蹴り
+		GRAND_SLAM		 = 4,//地面をたたく
+		FLAME_MAGIC		 = 5,//火炎放射
+		LIGHTNING		 = 6,//落雷
+		CONTINUOUS_SLASH = 7,//連続切り
+		DARK_FIELD		 = 8,//ダークフィールド
+		METEO			 = 9,//隕石
 	};
 	enum class AnimationType
 	{
-		IDLE					= 0,//待機
-		TAUNT					= 1,//咆哮
-		WALK_FRONT				= 2,//前歩き
-		WALK_LEFT				= 3,//左歩き
-		WALK_RIGHT				= 4,//右歩き
-		VERTICAL_SLASH			= 5,//縦切り
-		HORIZONTAL_SLASH		= 6,//横切り
-		ROTATION_SLASH			= 7,//回転切り
-		KNOCK_UP_SLASH			= 8,//下から上切り
-		STRONG_HORIZONTAL_SLASH = 9,//強い横切り
-		TWO_COMBO				= 10,//１２コンボ
-		THREE_COMBO				= 11,//１２３コンボ
-		REACTION = 12,
-		DEATH = 13,
+		DYING			 = 0,//デス
+		IDLE			 = 1,//待機
+		ROAR			 = 2,//咆哮
+		WALK			 = 3,//歩き
+		PUNCH			 = 4,//パンチ
+		SLASH			 = 5,//スラッシュ
+		THROW_STORN		 = 6,//投石
+		HURRICANE_KICK	 = 7,//回転蹴り
+		GRAND_SLAM		 = 8,//地面をたたく
+		FLAME_MAGIC		 = 9,//火炎放射
+		LIGHTNING		 = 10,//落雷
+		CONTINUOUS_SLASH = 11,//連続切り
+		DARK_FIELD		 = 12,//ダークフィールド
+		METEO			 = 13,//隕石
 	};
 
 	/*内部処理関数*/

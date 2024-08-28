@@ -154,24 +154,24 @@ const void Player::Draw()const
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& camera = Singleton<CameraManager>::GetInstance();
 
-	VECTOR position = this->model->GetPosition();
-	VECTOR rotation = this->model->GetRotation();
-	printfDx("PLAYER_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-	printfDx("PLAYER_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
-	printfDx("PLAYER_VELOCITY:%f\n", this->velocity);
-	printfDx("%d:IDLE					\n", this->state->CheckFlag(this->IDLE));
-	printfDx("%d:REACTION				\n", this->state->CheckFlag(this->REACTION));
-	printfDx("%d:DEATH					\n", this->state->CheckFlag(this->DEATH));
-	printfDx("%d:LOCK_ON				\n", this->state->CheckFlag(this->LOCK_ON));
-	printfDx("%d:RUN					\n", this->state->CheckFlag(this->RUN));
-	printfDx("%d:WALK					\n", this->state->CheckFlag(this->WALK));
-	printfDx("%d:AVOID					\n", this->state->CheckFlag(this->AVOID));
-	printfDx("%d:BLOCK					\n", this->state->CheckFlag(this->BLOCK));
-	printfDx("%d:BIG_IMPACT				\n", this->state->CheckFlag(this->BIG_IMPACT));
-	printfDx("%d:SMALL_IMPACT			\n", this->state->CheckFlag(this->SMALL_IMPACT));
-	printfDx("%d:CASTING				\n", this->state->CheckFlag(this->MAIN_ATTACK_1));
-	printfDx("%d:COMBO_ATTACK			\n", this->state->CheckFlag(this->MAIN_ATTACK_2));
-	printfDx("%d:KICK					\n", this->state->CheckFlag(this->SPECIAL_ATTACK));
+	//VECTOR position = this->model->GetPosition();
+	//VECTOR rotation = this->model->GetRotation();
+	//printfDx("PLAYER_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+	//printfDx("PLAYER_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
+	//printfDx("PLAYER_VELOCITY:%f\n", this->velocity);
+	//printfDx("%d:IDLE					\n", this->state->CheckFlag(this->IDLE));
+	//printfDx("%d:REACTION				\n", this->state->CheckFlag(this->REACTION));
+	//printfDx("%d:DEATH					\n", this->state->CheckFlag(this->DEATH));
+	//printfDx("%d:LOCK_ON				\n", this->state->CheckFlag(this->LOCK_ON));
+	//printfDx("%d:RUN					\n", this->state->CheckFlag(this->RUN));
+	//printfDx("%d:WALK					\n", this->state->CheckFlag(this->WALK));
+	//printfDx("%d:AVOID					\n", this->state->CheckFlag(this->AVOID));
+	//printfDx("%d:BLOCK					\n", this->state->CheckFlag(this->BLOCK));
+	//printfDx("%d:BIG_IMPACT				\n", this->state->CheckFlag(this->BIG_IMPACT));
+	//printfDx("%d:SMALL_IMPACT			\n", this->state->CheckFlag(this->SMALL_IMPACT));
+	//printfDx("%d:CASTING				\n", this->state->CheckFlag(this->MAIN_ATTACK_1));
+	//printfDx("%d:COMBO_ATTACK			\n", this->state->CheckFlag(this->MAIN_ATTACK_2));
+	//printfDx("%d:KICK					\n", this->state->CheckFlag(this->SPECIAL_ATTACK));
 	this->model->Draw();
 	this->collider[static_cast<int>(ColliderType::CHARACTER)]->DrawHitCapsule();
 	this->collider[static_cast<int>(ColliderType::ATTACK)]->DrawHitSphere();
@@ -292,25 +292,16 @@ void Player::UpdateRotation()
 	{
 		isInputLStick = true;
 
-		//なにも移動状態が入っていなければWALKをセットする
-		if (!this->state->CheckFlag(this->MASK_MOVE))
+		//LB入力があれば状態を切り替える
+		if (pad & PAD_INPUT_5)
 		{
-			this->state->SetFlag(this->WALK);
+			this->state->ClearFlag(this->WALK);
+			this->state->SetFlag(this->RUN);
 		}
-		//Lスティック押し込みがあれば状態を切り替える
-		if (pad & PAD_INPUT_9 && !this->isCount[static_cast<int>(FrameCountType::SWITCH_MOVE_STATE)])
+		else
 		{
-			if (this->state->CheckFlag(this->RUN))
-			{
-				this->state->ClearFlag(this->RUN);
-				this->state->SetFlag(this->WALK);
-			}
-			else
-			{
-				this->state->ClearFlag(this->WALK);
-				this->state->SetFlag(this->RUN);
-			}
-			this->isCount[static_cast<int>(FrameCountType::SWITCH_MOVE_STATE)] = true;
+			this->state->ClearFlag(this->RUN);
+			this->state->SetFlag(this->WALK);
 		}
 	}
 	else
@@ -602,7 +593,7 @@ void Player::Block()
 	int pad = input.GetPadState();
 
 	/*LBボタンが押されているか*/
-	if (pad & PAD_INPUT_5)
+	if (pad & PAD_INPUT_7)
 	{
 		this->state->SetFlag(this->BLOCK);
 		this->state->ClearFlag(this->MASK_MOVE);
