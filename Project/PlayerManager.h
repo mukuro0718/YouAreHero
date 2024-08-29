@@ -5,17 +5,16 @@
 #include "Singleton.h"
 
 class Player;
-class Collider;
 class PlayerManager : public Singleton<PlayerManager>
 {
 public:
 	friend class Singleton<PlayerManager>;
 
-		  void Initialize();	 //初期化
-		  void Update	 ();	 //更新
-		  void Action	 ();	 //アクション
-		  void		FixMoveVector(const VECTOR _fixVector);				  //移動ベクトルの修正
-		  const void Draw		 ()const;//描画
+		  void Initialize(GoriLib::Physics* _physics); //初期化
+		  void Finalize  (GoriLib::Physics* _physics);
+		  void Update	 (GoriLib::Physics* _physics); //更新
+		  void OnCollide (const GoriLib::Collidable& _colider); //移動ベクトルの修正
+	const void Draw		 ()const;					   //描画
 
 	/*getter*/
 		  void CalcDamage(const int _damage);
@@ -24,8 +23,6 @@ public:
 	const VECTOR   GetDirection			()const;//座標の取得
 	const bool     IsMove				()const;//移動したか
 	const bool	   IsAttack				()const;//攻撃したか
-	const Collider GetCharacterCollider();
-	const Collider GetAttackCollider();
 	const int	   GetHP				()const;
 	const int GetAttackNumber()const;
 	const int GetHitNumber()const;

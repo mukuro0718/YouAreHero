@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "GoriLib.h"
 #include "UseJson.h"
 #include "UseSTL.h"
 #include "VECTORtoUseful.h"
@@ -12,6 +13,7 @@
 /// </summary>
 Camera::Camera()
 	: nextPosition	 { 0.0f,0.0f,0.0f }
+	, firstDirection { 0.0f,0.0f,0.0f }
 	, nowPosition	 { 0.0f,0.0f,0.0f }
 	, nextTarget	 { 0.0f,0.0f,0.0f }
 	, nowTarget		 { 0.0f,0.0f,0.0f }

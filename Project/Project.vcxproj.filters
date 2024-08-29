@@ -118,9 +118,6 @@
     <Filter Include="Collision">
       <UniqueIdentifier>{f1a33d7d-eecc-4dae-8795-b4ae50f423f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Collision\Manager">
-      <UniqueIdentifier>{9e9e1fab-4766-4b5d-b45c-794404c13560}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Collision\Collider">
       <UniqueIdentifier>{fb90847f-4b7c-4961-9893-25347c34eb38}</UniqueIdentifier>
     </Filter>
@@ -147,6 +144,18 @@
     </Filter>
     <Filter Include="Object\Attack\Type">
       <UniqueIdentifier>{393b1d76-aa34-4633-a94f-65da079d1a24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision\Collidable">
+      <UniqueIdentifier>{b656a8a7-846e-44c9-8717-25400c3584b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision\Rigidbody">
+      <UniqueIdentifier>{d9f061a2-dc46-4c23-a4b4-b1c37b05c25f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision\Physics">
+      <UniqueIdentifier>{ec82f4a1-bdf7-48a8-b91f-f588e293273a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision\ColliderData">
+      <UniqueIdentifier>{f3d0129b-8896-4d85-8dec-a50e94735d5e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -235,9 +244,6 @@
     <ClCompile Include="EnemyManager.cpp">
       <Filter>Object\Character\EnemyManager</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionManager.cpp">
-      <Filter>Collision\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="Collider.cpp">
       <Filter>Collision\Collider</Filter>
     </ClCompile>
@@ -255,6 +261,24 @@
     </ClCompile>
     <ClCompile Include="BossAttack.cpp">
       <Filter>Object\Attack\Type</Filter>
+    </ClCompile>
+    <ClCompile Include="Rigidbody.cpp">
+      <Filter>Collision\Rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="Collidable.cpp">
+      <Filter>Collision\Collidable</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Collision\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderDataSphere.cpp">
+      <Filter>Collision\ColliderData</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderDataCapsule.cpp">
+      <Filter>Collision\ColliderData</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderDataPlane.cpp">
+      <Filter>Collision\ColliderData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -357,9 +381,6 @@
     <ClInclude Include="EnemyManager.h">
       <Filter>Object\Character\EnemyManager</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionManager.h">
-      <Filter>Collision\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="Collider.h">
       <Filter>Collision\Collider</Filter>
     </ClInclude>
@@ -380,6 +401,33 @@
     </ClInclude>
     <ClInclude Include="BossAttack.h">
       <Filter>Object\Attack\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="Rigidbody.h">
+      <Filter>Collision\Rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="Collidable.h">
+      <Filter>Collision\Collidable</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>Collision\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="GoriLib.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectTag.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderData.h">
+      <Filter>Collision\ColliderData</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderDataSphere.h">
+      <Filter>Collision\ColliderData</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderDataCapsule.h">
+      <Filter>Collision\ColliderData</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderDataPlane.h">
+      <Filter>Collision\ColliderData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -3,8 +3,6 @@
 #include "UseJson.h"
 #include "LoadingAsset.h"
 #include "ButtonUI.h"
-#include "PlayerManager.h"
-#include "EnemyManager.h"
 
 
 /// <summary>
@@ -25,6 +23,7 @@ ButtonUI::ButtonUI()
 	this->rs = asset.GetImage(LoadingAsset::ImageType::RS);
 	this->iconFont = asset.GetFont(LoadingAsset::FontType::ICON_UI);
 	this->operationFont = asset.GetFont(LoadingAsset::FontType::OPERATION_UI);
+	this->specialAttackSize = 0;
 }
 
 /// <summary>

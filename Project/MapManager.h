@@ -12,8 +12,10 @@ class MapManager : public Singleton<MapManager>
 public:
 	friend class Singleton<MapManager>;
 
-	void Initialize	();		//初期化
-	void Update		();		//更新
+	void Initialize(GoriLib::Physics* _physics); //初期化
+	void Finalize(GoriLib::Physics* _physics);
+	void Update(GoriLib::Physics* _physics); //更新
+	void OnCollide(const GoriLib::Collidable& _colider); //移動ベクトルの修正
 	const void Draw	()const;//描画
 
 private:

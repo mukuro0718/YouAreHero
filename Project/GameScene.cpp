@@ -1,6 +1,7 @@
 #include <DxLib.h>
+#include "GoriLib.h"
 #include "UseSTL.h"
-//#include "VECTORtoUseful.h"
+#include "GameObjectTag.h"
 #include "GameScene.h"
 #include "SceneChanger.h"
 #include "CameraManager.h"
@@ -9,8 +10,9 @@
 #include "InputManager.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"
-#include "CollisionManager.h"
 #include "UIManager.h"
+
+using namespace GoriLib;
 
 /// <summary>
 /// コンストラクタ
@@ -18,6 +20,7 @@
 GameScene::GameScene()
 	: gameState(this->TITLE)
 {
+	this->physics = new GoriLib::Physics;
 	Initialize();
 }
 
@@ -26,6 +29,7 @@ GameScene::GameScene()
 /// </summary>
 GameScene::~GameScene()
 {
+	delete(this->physics);
 }
 
 /// <summary>
@@ -42,9 +46,9 @@ void GameScene::Initialize()
 	
 	/*初期化*/
 	camera.Initialize();
-	map.Initialize();
+	map.Initialize(this->physics);
 	enemy.Initialize();
-	player.Initialize();
+	player.Initialize(this->physics);
 	ui.Initialize();
 }
 
@@ -53,6 +57,13 @@ void GameScene::Initialize()
 /// </summary>
 void GameScene::Finalize()
 {
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& map = Singleton<MapManager>::GetInstance();
+	auto& enemy = Singleton<EnemyManager>::GetInstance();
+	auto& player = Singleton<PlayerManager>::GetInstance();
+	map.Finalize(this->physics);
+	enemy.Initialize();
+	player.Finalize(this->physics);
 }
 
 /// <summary>
@@ -67,25 +78,19 @@ void GameScene::Update()
 	auto& map		  = Singleton<MapManager>		 ::GetInstance();
 	auto& player	  = Singleton<PlayerManager>	 ::GetInstance();
 	auto& enemy		  = Singleton<EnemyManager>		 ::GetInstance();
-	auto& collision   = Singleton<CollisionManager>	 ::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 
-	/*座標移動*/
-	player.Action();
 	enemy.Action();
-
-	/*座標の補正を行う*/
-	collision.HitCheck();
 
 	/*更新処理*/
 	input.Update();
 	debug.Update();
 	camera.Update();
-	map.Update();
+	map.Update(this->physics);
 	enemy.Update();
-	player.Update();
+	player.Update(this->physics);
 	ui.Update();
-
+	this->physics->Update();
 	/*終了処理*/
 	ChangeState();
 }
@@ -101,7 +106,6 @@ const void GameScene::Draw()const
 	auto& player	  = Singleton<PlayerManager>	 ::GetInstance();
 	auto& camera	  = Singleton<CameraManager>	 ::GetInstance();
 	auto& enemy		  = Singleton<EnemyManager>		 ::GetInstance();
-	auto& collision	  = Singleton<CollisionManager>	 ::GetInstance();
 	auto& ui		  = Singleton<UIManager>::GetInstance();
 
 	/*描画*/
@@ -110,7 +114,6 @@ const void GameScene::Draw()const
 	debug.Draw();
 	enemy.Draw();
 	player.Draw();
-	collision.DebugDrawHit();
 	ui.Draw();
 }
 

@@ -1,9 +1,9 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "GoriLib.h"
+#include "GameObjectTag.h"
 #include "VECTORtoUseful.h"
 #include "Player.h"
-#include "Vector4.h"
-#include "Collider.h"
 #include "PlayerManager.h"
 
 /// <summary>
@@ -26,25 +26,25 @@ PlayerManager::~PlayerManager()
 /// <summary>
 /// 初期化
 /// </summary>
-void PlayerManager::Initialize()
+void PlayerManager::Initialize(GoriLib::Physics* _physics)
 {
-	this->player->Initialize();
+	this->player->Initialize(_physics);
 }
 
 /// <summary>
-/// アクション
+/// 後処理
 /// </summary>
-void PlayerManager::Action()
+void PlayerManager::Finalize(GoriLib::Physics* _physics)
 {
-	this->player->Action();
+	this->player->Finalize(_physics);
 }
 
 /// <summary>
 /// 更新
 /// </summary>
-void PlayerManager::Update()
+void PlayerManager::Update(GoriLib::Physics* _physics)
 {
-	this->player->Update();
+	this->player->Update(_physics);
 }
 /// <summary>
 /// 描画
@@ -57,9 +57,9 @@ const void PlayerManager::Draw()const
 /// <summary>
 /// 移動ベクトルの補正
 /// </summary>
-void PlayerManager::FixMoveVector(const VECTOR _fixVector)
+void PlayerManager::OnCollide(const GoriLib::Collidable& _colider)
 {
-	this->player->FixMoveVector(_fixVector);
+	this->player->OnCollide(_colider);
 }
 
 /// <summary>
@@ -108,14 +108,6 @@ const bool PlayerManager::IsAttack()const
 	return this->player->IsAttack();
 }
 
-const Collider PlayerManager::GetCharacterCollider()
-{
-	return this->player->GetCharacterCollider();
-}
-const Collider PlayerManager::GetAttackCollider()
-{
-	return this->player->GetAttackCollider();
-}
 const int PlayerManager::GetHP()const
 {
 	return this->player->GetHP();

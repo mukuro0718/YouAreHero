@@ -4,22 +4,19 @@
 #pragma once
 
 class BitFlag;
-class Collider;
 class Physics;
 class Collidable;
-class Player : public Collidable
+class Player : public GoriLib::Collidable
 {
 public:
 	Player();//コンストラクタ
 	~Player();//デストラクタ
 
-	void		Initialize(Physics* _physics);		//初期化
-	void		Finalize  (Physics* _physics);		//後処理
-	void		OnCollide ()override;
+	void		Initialize(GoriLib::Physics* _physics);		//初期化
+	void		Finalize  (GoriLib::Physics* _physics);		//後処理
+	void		Update	  (GoriLib::Physics* _physics);		//更新
+	void		OnCollide (const Collidable& _colider)override;//衝突したとき
 
-
-	void		Action	  ();		//アクション
-	void		Update	  ();		//更新
 	const void	Draw	  ()const;	//描画
 
 	/*getter*/
@@ -32,9 +29,6 @@ public:
 	const VECTOR	GetDirection	  ()const { return this->direction; }		  //移動ベクトルの取得
 	const bool		IsMove			  ()const;									  //移動フラグの取得
 	const bool		IsAttack		  ()const;									  //ショットフラグの取得
-	void		FixMoveVector	  (const VECTOR _fixVector);				  //移動ベクトルの修正
-	const Collider	GetCharacterCollider		  ();										  //コライダーの取得
-	const Collider	GetAttackCollider		  ();										  //コライダーの取得
 	const int		GetHP			  ()const { return this->hp; }				  //HPの取得
 private:
 	
@@ -117,7 +111,7 @@ private:
 	};
 
 	/*内部処理関数*/
-		  void UpdateVelocity	 ();		//速度の更新
+		  void UpdateSpeed	 ();		//速度の更新
 		  void UpdateMoveVector	 ();		//移動ベクトルの更新
 		  void UpdateRotation	 ();		//回転率の更新
 		  void Move				 ();		//移動
@@ -136,14 +130,10 @@ private:
 	/*メンバ変数*/
 
 	BitFlag*			state;						//状態
-	Collider*			collider[COLLIDER_NUM];		//コライダークラス
-	VECTOR				moveVector;					//移動ベクトル
 	VECTOR				direction;					//向いている方向
-	VECTOR				fixVector;					//補正ベクトル
 	VECTOR				moveVectorRotation;			//移動ベクトル用回転値
 	VECTOR				wasd;						//wasd入力
 	VECTOR				lStick;						//lStick入力(上:Z+ 下:Z- 左:x- 右:x+)
-	float				velocity;					//速度
 	std::vector<int>	frameCount;					//フレームカウント
 	std::vector<bool>	isCount;					//カウントをするか
 	std::map<unsigned int, int> attackAnimationMap;//攻撃アニメーションマップ
@@ -157,6 +147,10 @@ private:
 	int hitNumber;
 	int attackNumber;
 	bool isDraw;
+
+
 	int modelHandle;
+	float speed;
+	bool isGround;
 };
 

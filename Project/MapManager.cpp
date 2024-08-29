@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "GoriLib.h"
 #include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
-#include "MapManager.h"
 #include "BossMap.h"
 #include "Skydome.h"
+#include "MapManager.h"
 
 
 /// <summary>
@@ -16,8 +17,6 @@ MapManager::MapManager()
 {
 	this->ground  = new BossMap();
 	this->skydome = new Skydome();
-
-	Initialize();
 }
 
 /// <summary>
@@ -32,18 +31,34 @@ MapManager::~MapManager()
 /// <summary>
 /// 初期化
 /// </summary>
-void MapManager::Initialize()
+void MapManager::Initialize(GoriLib::Physics* _physics)
 {
-	this->ground->Initialize();
+	this->ground->Initialize(_physics);
 	this->skydome->Initialize();
+}
+
+/// <summary>
+/// 後処理
+/// </summary>
+void MapManager::Finalize(GoriLib::Physics* _physics)
+{
+	this->ground->Finalize(_physics);
 }
 
 /// <summary>
 /// 更新
 /// </summary>
-void MapManager::Update() 
+void MapManager::Update(GoriLib::Physics* _physics)
 {
-	this->ground->Update();
+	this->ground->Update(_physics);
+}
+
+/// <summary>
+/// 移動ベクトルの補正
+/// </summary>
+void MapManager::OnCollide(const GoriLib::Collidable& _colider)
+{
+	this->ground->OnCollide(_colider);
 }
 
 /// <summary>
