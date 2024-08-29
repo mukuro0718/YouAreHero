@@ -3,8 +3,8 @@
 #include "UseJson.h"
 #include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
+#include "Mylib.h"
 #include "Animation.h"
-#include "Model.h"
 #include "BitFlag.h"
 #include "LoadingAsset.h"
 #include "InputManager.h"
@@ -18,8 +18,7 @@
 /// コンストラクタ
 /// </summary>
 Player::Player()
-	: model				(nullptr)
-	, moveVector		{ 0.0f, 0.0f, 0.0f }
+	: moveVector		{ 0.0f, 0.0f, 0.0f }
 	, direction			{ 0.0f, 0.0f, 0.0f }
 	, fixVector			{ 0.0f, 0.0f, 0.0f }
 	, moveVectorRotation{ 0.0f, 0.0f, 0.0f }
@@ -27,13 +26,13 @@ Player::Player()
 	, lStick			{ 0.0f, 0.0f, 0.0f }
 	, velocity			(0.0f)
 	, attackComboCount  (0)
+	, modelHandle		(-1)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
 	/*インスタンスの作成*/
-	this->model = new Model(asset.GetModel(LoadingAsset::ModelType::PLAYER));
 	this->state = new BitFlag();
 	for (int i = 0; i < this->COLLIDER_NUM; i++)
 	{
@@ -52,7 +51,6 @@ Player::Player()
 	vector<int> animationIndex = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_INDEX"];
 	this->nowAnimation = static_cast<int>(AnimationType::IDLE);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
-	this->model->AddAnimation(animationHandle, animationIndex);
 	this->attackAnimationMap.emplace(this->MAIN_ATTACK_1, static_cast<int>(AnimationType::MAIN_1));
 	this->attackAnimationMap.emplace(this->MAIN_ATTACK_2, static_cast<int>(AnimationType::MAIN_2));
 	this->attackAnimationMap.emplace(this->SPECIAL_ATTACK, static_cast<int>(AnimationType::SPECIAL));
@@ -65,7 +63,6 @@ Player::Player()
 /// </summary>
 Player::~Player()
 {
-	DeleteMemberInstance(this->model);
 	DeleteMemberInstance(this->state);
 	for (int i = 0; i < this->COLLIDER_NUM; i++)
 	{
@@ -75,22 +72,40 @@ Player::~Player()
 	this->isCount.clear();
 }
 
-void Player::Initialize()
+/// <summary>
+/// 初期化
+/// </summary>
+void Player::Initialize(Physics* _physics)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
 	/*jsonデータを各定数型に代入*/
 	const VECTOR position = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_POSITION"]);//座標
 	const VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_ROTATION"]);//回転率
 	const VECTOR scale = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	 //拡大率
+
+	/*変数の初期化*/
 	this->velocity = 0.0f;
 	this->direction = VGet(0.0f, 0.0f, -1.0f);
 	this->hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];	 //拡大率
-	/*モデルのトランスフォームの設定*/
-	this->model->SetTransform(position, rotation, scale);
+
+	/*モデルの読み込み*/
+	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::PLAYER));
+
+	/*物理情報に自信を登録*/
+	_physics->Entry(this);
 }
 
+/// <summary>
+/// 後処理
+/// </summary>
+void Player::Finalize(Physics* _physics)
+{
+	/*物理登録の解除*/
+	_physics->Exit(this);
+}
 /// <summary>
 /// アクション
 /// </summary>
@@ -793,4 +808,9 @@ void Player::CalcDamage(const int _damage)
 			this->state->SetFlag(this->SMALL_IMPACT);
 		}
 	}
+}
+
+void Player::OnCollide()
+{
+	printfDx("プレイヤー当たった");
 }

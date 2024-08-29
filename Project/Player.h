@@ -3,16 +3,21 @@
 //===============================================
 #pragma once
 
-class Model;
 class BitFlag;
 class Collider;
-class Player
+class Physics;
+class Collidable;
+class Player : public Collidable
 {
 public:
 	Player();//コンストラクタ
 	~Player();//デストラクタ
 
-	void		Initialize();		//初期化
+	void		Initialize(Physics* _physics);		//初期化
+	void		Finalize  (Physics* _physics);		//後処理
+	void		OnCollide ()override;
+
+
 	void		Action	  ();		//アクション
 	void		Update	  ();		//更新
 	const void	Draw	  ()const;	//描画
@@ -130,7 +135,6 @@ private:
 	const bool DontAnyAction()const;
 	/*メンバ変数*/
 
-	Model*				model;						//モデル
 	BitFlag*			state;						//状態
 	Collider*			collider[COLLIDER_NUM];		//コライダークラス
 	VECTOR				moveVector;					//移動ベクトル
@@ -153,5 +157,6 @@ private:
 	int hitNumber;
 	int attackNumber;
 	bool isDraw;
+	int modelHandle;
 };
 
