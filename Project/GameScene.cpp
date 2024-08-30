@@ -47,7 +47,7 @@ void GameScene::Initialize()
 	/*‰Šú‰»*/
 	camera.Initialize();
 	map.Initialize(this->physics);
-	enemy.Initialize();
+	enemy.Initialize(this->physics);
 	player.Initialize(this->physics);
 	ui.Initialize();
 }
@@ -62,7 +62,7 @@ void GameScene::Finalize()
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	map.Finalize(this->physics);
-	enemy.Initialize();
+	enemy.Finalize(this->physics);
 	player.Finalize(this->physics);
 }
 
@@ -80,14 +80,12 @@ void GameScene::Update()
 	auto& enemy		  = Singleton<EnemyManager>		 ::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 
-	enemy.Action();
-
 	/*XVˆ—*/
 	input.Update();
 	debug.Update();
 	camera.Update();
 	map.Update(this->physics);
-	enemy.Update();
+	enemy.Update(this->physics);
 	player.Update(this->physics);
 	ui.Update();
 	this->physics->Update();

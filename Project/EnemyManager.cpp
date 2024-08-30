@@ -1,5 +1,7 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "GoriLib.h"
+#include "GameObjectTag.h"
 #include "Boss.h"
 #include "Vector4.h"
 #include "Collider.h"
@@ -25,24 +27,32 @@ EnemyManager::~EnemyManager()
 /// <summary>
 /// 初期化
 /// </summary>
-void EnemyManager::Initialize()
+void EnemyManager::Initialize(GoriLib::Physics* _physics)
 {
-	this->boss->Initialize();
+	this->boss->Initialize(_physics);
 }
 /// <summary>
 /// 更新
 /// </summary>
-void EnemyManager::Update()
+void EnemyManager::Update(GoriLib::Physics* _physics)
 {
-	this->boss->Update();
+	this->boss->Update(_physics);
 }
 /// <summary>
 /// アクション
 /// </summary>
-void EnemyManager::Action()
+void EnemyManager::Finalize(GoriLib::Physics* _physics)
 {
-	this->boss->Action();
+	this->boss->Finalize(_physics);
 }
+/// <summary>
+/// 当たったか
+/// </summary>
+void EnemyManager::OnCollide(const GoriLib::Collidable& _colider)
+{
+	this->boss->OnCollide(_colider);
+}
+
 /// <summary>
 /// 描画
 /// </summary>
@@ -63,14 +73,6 @@ const VECTOR EnemyManager::GetHeadPosition()const
 	return this->boss->GetHeadPosition();
 }
 
-const Collider EnemyManager::GetCharacterCollider()
-{
-	return this->boss->GetCharacterCollider();
-}
-const Collider EnemyManager::GetAttackCollider()
-{
-	return this->boss->GetAttackCollider();
-}
 /// <summary>
 /// ダメージの取得
 /// </summary>

@@ -6,7 +6,7 @@
   "INIT_SCALE": [ 0.1, 0.1, 0.1 ],
   "INIT_ROTATION": [ 0.0, 0.0, 0.0 ],
   "HIT_RADIUS": 5.0,
-  "VELOCITY": 0.35,
+  "SPEED": 0.35,
   "REST_COUNT": 120,
   "GRAVITY": -5.0,
   "HIT_HEIGHT": 10.0,

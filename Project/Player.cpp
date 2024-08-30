@@ -12,7 +12,6 @@
 #include "InputManager.h"
 #include "CameraManager.h"
 #include "EnemyManager.h"
-#include "Collider.h"
 
 /// <summary>
 /// コンストラクタ
@@ -83,9 +82,9 @@ void Player::Initialize(GoriLib::Physics* _physics)
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
 	/*jsonデータを各定数型に代入*/
-	const VECTOR position = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_POSITION"]);//座標
-	const VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_ROTATION"]);//回転率
-	const VECTOR scale = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	 //拡大率
+	const VECTOR POSITION = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_POSITION"]);//座標
+	const VECTOR ROTATION = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_ROTATION"]);//回転率
+	const VECTOR SCALE = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	 //拡大率
 
 	/*変数の初期化*/
 	this->direction = VGet(0.0f, 0.0f, -1.0f);
@@ -99,9 +98,9 @@ void Player::Initialize(GoriLib::Physics* _physics)
 	
 	/*物理挙動の初期化*/
 	this->rigidbody.Initialize(true);
-	this->rigidbody.SetPosition(position);
-	this->rigidbody.SetRotation(rotation);
-	this->rigidbody.SetScale(scale);
+	this->rigidbody.SetPosition(POSITION);
+	this->rigidbody.SetRotation(ROTATION);
+	this->rigidbody.SetScale(SCALE);
 	this->speed = json.GetJson(JsonManager::FileType::PLAYER)["SPEED"];
 
 	this->state->SetFlag(this->IDLE);

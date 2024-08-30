@@ -55,7 +55,7 @@ const void PlayerManager::Draw()const
 }
 
 /// <summary>
-/// ˆÚ“®ƒxƒNƒgƒ‹‚Ì•â³
+/// “–‚½‚Á‚½‚©
 /// </summary>
 void PlayerManager::OnCollide(const GoriLib::Collidable& _colider)
 {

@@ -3,26 +3,26 @@
 //===============================================
 #pragma once
 
-class Model;
 class BitFlag;
-class Collider;
-class Boss
+class Physics;
+class Collidable;
+class Animation;
+class Boss : public GoriLib::Collidable
 {
 public:
 	Boss();//コンストラクタ
 	~Boss();//デストラクタ
 
-	void Initialize();		//初期化
-	void		Action();
-	void		Update();	//更新
+	void		Initialize(GoriLib::Physics* _physics);		//初期化
+	void		Finalize(GoriLib::Physics* _physics);		//後処理
+	void		Update(GoriLib::Physics* _physics);		//更新
+	void		OnCollide(const Collidable& _colider)override;//衝突したとき
 	const void	Draw()const;//描画
 	void CalcDamage(const int _damage) { this->hp -= _damage; }
 	const int		GetDamage()const;									  //ダメージの取得
 	const int		GetHP()const { return this->hp; }				  //HPの取得
 	const VECTOR GetHeadPosition()const;
 	const VECTOR GetPosition()const;
-	const Collider GetCharacterCollider();
-	const Collider GetAttackCollider();
 	const int GetAttackNumber()const { return this->attackNumber; }
 	const int GetHitNumber()const { return this->hitNumber; }
 	void SetHitNumber(const int _attackNumber) { this->hitNumber = _attackNumber; }
@@ -134,10 +134,9 @@ private:
 	void AddItemFunction(const unsigned int _item, const FlagsState _update);//項目ごとの関数の追加
 	
 	/*メンバ変数*/
-	Model*						model;					//モデル
+	Animation*					animation;					//モデル
 	BitFlag*					state;					//状態
-	Collider*					collider[COLLIDER_NUM];	//コライダー
-	float						velocity;				//速度
+	float						speed;				//速度
 	VECTOR						moveVector;				//移動ベクトル
 	VECTOR						direction;
 	VECTOR						moveTarget;				//移動目標
@@ -149,10 +148,11 @@ private:
 	std::vector<int>	frameCount;					//フレームカウント
 	std::vector<bool>	isCount;					//カウントをするか
 
+	int modelHandle;
 	int nowAnimation;
 	float animationPlayTime;
 	float dot;
-
+	bool isGround;
 	float targetRange;
 	int attackComboCount;//攻撃コンボ回数
 	float jumpPower;

@@ -11,9 +11,10 @@ class EnemyManager : public Singleton<EnemyManager>
 public:
 	friend class Singleton<EnemyManager>;
 
-		  void Initialize();
-		  void Update	 ();
-		  void Action	 ();	 //アクション
+	void Initialize(GoriLib::Physics* _physics); //初期化
+	void Finalize(GoriLib::Physics* _physics);
+	void Update(GoriLib::Physics* _physics); //更新
+	void OnCollide(const GoriLib::Collidable& _colider); //移動ベクトルの修正
 	const void Draw		 ()const;
 
 	/*getter*/
