@@ -6,6 +6,7 @@
 class BitFlag;
 class Physics;
 class Collidable;
+class Animation;
 class Player : public GoriLib::Collidable
 {
 public:
@@ -130,6 +131,7 @@ private:
 	/*メンバ変数*/
 
 	BitFlag*			state;						//状態
+	Animation*			animation;					//アニメーション
 	VECTOR				direction;					//向いている方向
 	VECTOR				moveVectorRotation;			//移動ベクトル用回転値
 	VECTOR				wasd;						//wasd入力
@@ -138,6 +140,7 @@ private:
 	std::vector<bool>	isCount;					//カウントをするか
 	std::map<unsigned int, int> attackAnimationMap;//攻撃アニメーションマップ
 	std::map<int, unsigned int> attackComboStateMap;//コンボに応じて攻撃のビットフラグを返す
+	int attackType;
 	float				jumpPower;					//ジャンプ力
 	int					nowAnimation;				//アニメーション
 	float				animationPlayTime;			//アニメーション再生時間
