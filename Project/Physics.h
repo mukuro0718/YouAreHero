@@ -46,6 +46,7 @@ namespace GoriLib
 
 		//à íuï‚ê≥ÅAåàíË
 		void FixNextPosition(Collidable* _primary, Collidable* _secondary)const;
+		void DamageCalc(Collidable* _primary, Collidable* _secondary)const;
 		void FixPosition();
 	};
 }

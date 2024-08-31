@@ -12,6 +12,7 @@
 #include "InputManager.h"
 #include "CameraManager.h"
 #include "EnemyManager.h"
+#include "PlayerAttackManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -46,6 +47,9 @@ Player::Player()
 	this->attackAnimationMap.emplace(this->MAIN_ATTACK_1, static_cast<int>(AnimationType::MAIN_1));
 	this->attackAnimationMap.emplace(this->MAIN_ATTACK_2, static_cast<int>(AnimationType::MAIN_2));
 	this->attackAnimationMap.emplace(this->SPECIAL_ATTACK, static_cast<int>(AnimationType::SPECIAL));
+	this->attackTypeMap.emplace(this->MAIN_ATTACK_1, static_cast<int>(AttackType::MAIN_1));
+	this->attackTypeMap.emplace(this->MAIN_ATTACK_2, static_cast<int>(AttackType::MAIN_2));
+	this->attackTypeMap.emplace(this->SPECIAL_ATTACK, static_cast<int>(AttackType::SPECIAL));
 	this->attackComboStateMap.emplace(0, this->MAIN_ATTACK_1);
 	this->attackComboStateMap.emplace(1, this->MAIN_ATTACK_2);
 	//アニメーションの追加
@@ -60,6 +64,7 @@ Player::Player()
 	auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
 	capsuleColiderData->radius = json.GetJson(JsonManager::FileType::PLAYER)["RADIUS"];
 	capsuleColiderData->height = json.GetJson(JsonManager::FileType::PLAYER)["HIT_HEIGHT"];
+	capsuleColiderData->isCutDamage = false;
 }
 
 /// <summary>
@@ -80,6 +85,7 @@ void Player::Initialize(GoriLib::Physics* _physics)
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
+	auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
 
 	/*jsonデータを各定数型に代入*/
 	const VECTOR POSITION = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_POSITION"]);//座標
@@ -88,7 +94,7 @@ void Player::Initialize(GoriLib::Physics* _physics)
 
 	/*変数の初期化*/
 	this->direction = VGet(0.0f, 0.0f, -1.0f);
-	this->hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];	 //拡大率
+	capsuleColiderData->hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];	 //拡大率
 
 	/*モデルの読み込み*/
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::PLAYER));
@@ -105,6 +111,7 @@ void Player::Initialize(GoriLib::Physics* _physics)
 
 	this->state->SetFlag(this->IDLE);
 	this->animation->Attach(&this->modelHandle);
+	this->hitNumber = 0;
 }
 
 /// <summary>
@@ -142,7 +149,6 @@ void Player::Update(GoriLib::Physics* _physics)
 	/*アクション*/
 	LockOn();
 	Block();
-	Avoid();
 	Attack();
 	Move();
 
@@ -546,10 +552,14 @@ void Player::Block()
 	{
 		this->state->ClearFlag(this->MASK_MOVE);
 		this->state->SetFlag(this->BLOCK);
+		auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
+		capsuleColiderData->isCutDamage = true;
 	}
 	else
 	{
 		this->state->ClearFlag(this->BLOCK);
+		auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
+		capsuleColiderData->isCutDamage = false;
 	}
 }
 
@@ -568,11 +578,21 @@ void Player::Avoid()
 		this->state->ClearFlag(this->AVOID);
 	}
 
+	if (FrameCount(static_cast<int>(FrameCountType::AVOID), json.GetJson(JsonManager::FileType::PLAYER)["AVOID_MAX_FRAME"]))
+	{
+		auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
+		capsuleColiderData->isCutDamage = false;
+	}
+
+
 	if (!CanAvoid())return;
 
 	if (pad & PAD_INPUT_4)
 	{
 		this->state->SetFlag(this->AVOID);
+		this->isCount[static_cast<int>(FrameCountType::AVOID)] = true;
+		auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
+		capsuleColiderData->isCutDamage = true;
 	}
 
 }
@@ -584,6 +604,8 @@ void Player::Attack()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& input = Singleton<InputManager> ::GetInstance();
 	auto& json = Singleton<JsonManager>  ::GetInstance();
+	auto& attack = Singleton<PlayerAttackManager>  ::GetInstance();
+
 	int pad = input.GetPadState();
 
 	/*攻撃アニメーションが終了していたらフラグを下す*/
@@ -606,6 +628,8 @@ void Player::Attack()
 		}
 		this->frameCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = 0;
 		this->isCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = true;
+		attack.OnIsStart(this->attackTypeMap[this->attackType]);
+		this->hitNumber++;
 	}
 	else if (pad & PAD_INPUT_2)
 	{
@@ -615,6 +639,8 @@ void Player::Attack()
 		this->attackComboCount = 0;
 		this->frameCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = 0;
 		this->isCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = false;
+		attack.OnIsStart(this->attackTypeMap[this->attackType]);
+		this->hitNumber++;
 	}
 
 	/*一定時間Xを押していなかったらコンボを途切れさせる*/
@@ -719,4 +745,11 @@ void Player::OnCollide(const Collidable& _colider)
 
 	message += "と当たった\n";
 	printfDx(message.c_str());
+}
+
+//HPの取得
+const int Player::GetHP()const
+{ 
+	auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
+	return capsuleColiderData->GetHP();
 }

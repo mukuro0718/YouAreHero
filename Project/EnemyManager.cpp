@@ -74,19 +74,8 @@ const VECTOR EnemyManager::GetHeadPosition()const
 }
 
 /// <summary>
-/// ダメージの取得
-/// </summary>
-const int EnemyManager::GetDamage()const
-{
-	return this->boss->GetDamage();
-}
-/// <summary>
 /// ダメージ処理
 /// </summary>
-void EnemyManager::CalcDamage(const int _damage)
-{
-	return this->boss->CalcDamage(_damage);
-}
 const int EnemyManager::GetHP()const
 {
 	return this->boss->GetHP();

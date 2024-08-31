@@ -9,7 +9,9 @@
 #include "Debug.h"
 #include "InputManager.h"
 #include "PlayerManager.h"
+#include "PlayerAttackManager.h"
 #include "EnemyManager.h"
+#include "BossAttackManager.h"
 #include "UIManager.h"
 
 using namespace GoriLib;
@@ -41,7 +43,9 @@ void GameScene::Initialize()
 	auto& camera = Singleton<CameraManager>::GetInstance();
 	auto& map = Singleton<MapManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
+	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
+	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 	
 	/*èâä˙âª*/
@@ -49,6 +53,9 @@ void GameScene::Initialize()
 	map.Initialize(this->physics);
 	enemy.Initialize(this->physics);
 	player.Initialize(this->physics);
+	playerAttack.Initialize(this->physics);
+	enemyAttack.Initialize(this->physics);
+
 	ui.Initialize();
 }
 
@@ -61,9 +68,15 @@ void GameScene::Finalize()
 	auto& map = Singleton<MapManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
+	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
+	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
+
 	map.Finalize(this->physics);
 	enemy.Finalize(this->physics);
 	player.Finalize(this->physics);
+	playerAttack.Finalize(this->physics);
+	enemyAttack.Finalize(this->physics);
+
 }
 
 /// <summary>
@@ -77,7 +90,9 @@ void GameScene::Update()
 	auto& camera	  = Singleton<CameraManager>	 ::GetInstance();
 	auto& map		  = Singleton<MapManager>		 ::GetInstance();
 	auto& player	  = Singleton<PlayerManager>	 ::GetInstance();
+	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
 	auto& enemy		  = Singleton<EnemyManager>		 ::GetInstance();
+	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 
 	/*çXêVèàóù*/
@@ -87,6 +102,9 @@ void GameScene::Update()
 	map.Update(this->physics);
 	enemy.Update(this->physics);
 	player.Update(this->physics);
+	playerAttack.Update(this->physics);
+	enemyAttack.Update(this->physics);
+
 	ui.Update();
 	this->physics->Update();
 	/*èIóπèàóù*/
@@ -102,8 +120,10 @@ const void GameScene::Draw()const
 	auto& debug		  = Singleton<Debug>			 ::GetInstance();
 	auto& map		  = Singleton<MapManager>		 ::GetInstance();
 	auto& player	  = Singleton<PlayerManager>	 ::GetInstance();
+	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
 	auto& camera	  = Singleton<CameraManager>	 ::GetInstance();
 	auto& enemy		  = Singleton<EnemyManager>		 ::GetInstance();
+	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 	auto& ui		  = Singleton<UIManager>::GetInstance();
 
 	/*ï`âÊ*/
@@ -112,6 +132,9 @@ const void GameScene::Draw()const
 	debug.Draw();
 	enemy.Draw();
 	player.Draw();
+	playerAttack.Draw();
+	enemyAttack.Draw();
+
 	ui.Draw();
 }
 

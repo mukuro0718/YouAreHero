@@ -8,6 +8,8 @@ ColliderDataCapsule::ColliderDataCapsule(bool _isTrigger)
 	: ColliderData(ColliderData::Kind::CAPSULE, _isTrigger)
 	, radius(0.0f)
 	, height(0.0f)
+	, hp(0)
+	, hitNumber(0)
 {
 	//ˆ—‚È‚µ
 }

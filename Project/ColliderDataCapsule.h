@@ -10,8 +10,12 @@ namespace GoriLib
 	{
 	public:
 		ColliderDataCapsule(bool _isTrigger);
-
+		const int GetHP()const { return this->hp; }
+		const int GetHitNumber()const { return this->hitNumber; }
 		float radius;
 		float height;
+		int hp;
+		int hitNumber;
+		bool isCutDamage;
 	};
 }

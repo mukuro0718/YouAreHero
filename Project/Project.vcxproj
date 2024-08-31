@@ -140,10 +140,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="Attack.cpp" />
     <ClCompile Include="BitFlag.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BossAttack.cpp" />
+    <ClCompile Include="BossAttackManager.cpp" />
     <ClCompile Include="ButtonUI.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collidable.cpp" />
@@ -151,6 +151,7 @@
     <ClCompile Include="ColliderDataCapsule.cpp" />
     <ClCompile Include="ColliderDataPlane.cpp" />
     <ClCompile Include="ColliderDataSphere.cpp" />
+    <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="HPUI.cpp" />
     <ClCompile Include="Physics.cpp" />
@@ -169,7 +170,11 @@
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="PlayerAttackManager.cpp" />
+    <ClCompile Include="PlayerMain_1Attack.cpp" />
+    <ClCompile Include="PlayerMain_2Attack.cpp" />
     <ClCompile Include="PlayerManager.cpp" />
+    <ClCompile Include="PlayerSpecialAttack.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="SceneChanger.cpp" />
@@ -183,10 +188,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
-    <ClInclude Include="Attack.h" />
     <ClInclude Include="BitFlag.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossAttack.h" />
+    <ClInclude Include="BossAttackManager.h" />
     <ClInclude Include="ButtonUI.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collidable.h" />
@@ -195,6 +200,7 @@
     <ClInclude Include="ColliderDataCapsule.h" />
     <ClInclude Include="ColliderDataPlane.h" />
     <ClInclude Include="ColliderDataSphere.h" />
+    <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="GameObjectTag.h" />
     <ClInclude Include="HPUI.h" />
@@ -210,7 +216,11 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="PlayerAttackManager.h" />
+    <ClInclude Include="PlayerMain_1Attack.h" />
+    <ClInclude Include="PlayerMain_2Attack.h" />
     <ClInclude Include="PlayerManager.h" />
+    <ClInclude Include="PlayerSpecialAttack.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="Singleton.h" />

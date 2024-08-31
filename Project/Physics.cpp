@@ -255,33 +255,54 @@ bool Physics::IsCollide(const Collidable* _objectA, const Collidable* _objectB)c
 	/*球と球*/
 	if (aKind == ColliderData::Kind::SPHERE && bKind == ColliderData::Kind::SPHERE)
 	{
+		//auto aTob = VSub(_objectB->nextPosition, _objectA->nextPosition);
+		//auto aTobLength = VSize(aTob);
+
+		///*互いの距離が、それぞれの半径の合計よりも小さければ当たる*/
+		//auto objectAColliderData = dynamic_cast<ColliderDataSphere*>(_objectA->colliderData);
+		//auto objectBColliderData = dynamic_cast<ColliderDataSphere*>(_objectB->colliderData);
+		//isHit = (aTobLength < objectAColliderData->radius + objectBColliderData->radius);
+	}
+	/*カプセルとカプセル*/
+	else if (aKind == ColliderData::Kind::CAPSULE && bKind == ColliderData::Kind::CAPSULE)
+	{
 		auto aTob = VSub(_objectB->nextPosition, _objectA->nextPosition);
 		auto aTobLength = VSize(aTob);
 
 		/*互いの距離が、それぞれの半径の合計よりも小さければ当たる*/
-		auto objectAColliderData = dynamic_cast<ColliderDataSphere*>(_objectA->colliderData);
-		auto objectBColliderData = dynamic_cast<ColliderDataSphere*>(_objectB->colliderData);
+		auto objectAColliderData = dynamic_cast<ColliderDataCapsule*>(_objectA->colliderData);
+		auto objectBColliderData = dynamic_cast<ColliderDataCapsule*>(_objectB->colliderData);
 		isHit = (aTobLength < objectAColliderData->radius + objectBColliderData->radius);
 	}
+
 	/*球とカプセル*/
-	else if ((aKind == ColliderData::Kind::SPHERE && bKind == ColliderData::Kind::CAPSULE) || 
-			 (aKind == ColliderData::Kind::CAPSULE && bKind == ColliderData::Kind::SPHERE))
+	else if ((aKind == ColliderData::Kind::SPHERE && bKind == ColliderData::Kind::CAPSULE) ||
+		(aKind == ColliderData::Kind::CAPSULE && bKind == ColliderData::Kind::SPHERE))
 	{
-		ColliderData* sphereDataBase = _objectA->colliderData;
-		VECTOR sphereCenter = _objectA->nextPosition;
-		ColliderData* capsuleDataBase = _objectB->colliderData;
-		VECTOR capsuleUnder = _objectB->nextPosition;
-		if (bKind == ColliderData::Kind::SPHERE)
+		auto aTag = _objectA->GetTag();
+		auto bTag = _objectB->GetTag();
+		if ((aTag == GameObjectTag::BOSS && bTag == GameObjectTag::PLAYER_ATTACK) ||
+			(aTag == GameObjectTag::PLAYER && bTag == GameObjectTag::BOSS_ATTACK))
 		{
-			sphereDataBase = _objectB->colliderData;
-			sphereCenter = _objectB->nextPosition;
-			capsuleDataBase = _objectA->colliderData;
-			capsuleUnder = _objectA->nextPosition;
+			ColliderData* sphereDataBase = _objectA->colliderData;
+			VECTOR sphereCenter = _objectA->nextPosition;
+			ColliderData* capsuleDataBase = _objectB->colliderData;
+			VECTOR capsuleUnder = _objectB->nextPosition;
+			if (bKind == ColliderData::Kind::SPHERE)
+			{
+				sphereDataBase = _objectB->colliderData;
+				sphereCenter = _objectB->nextPosition;
+				capsuleDataBase = _objectA->colliderData;
+				capsuleUnder = _objectA->nextPosition;
+			}
+			auto sphereColliderData = dynamic_cast<ColliderDataSphere*>(sphereDataBase);
+			auto capsuleColliderData = dynamic_cast<ColliderDataCapsule*>(capsuleDataBase);
+			if (sphereColliderData->GetHitNumber() != capsuleColliderData->GetHitNumber())
+			{
+				VECTOR capsuleTop = VGet(capsuleUnder.x, capsuleUnder.y + capsuleColliderData->height, capsuleUnder.z);
+				isHit = HitCheck_Sphere_Capsule(sphereCenter, sphereColliderData->radius, capsuleUnder, capsuleTop, capsuleColliderData->radius);
+			}
 		}
-		auto sphereColliderData = dynamic_cast<ColliderDataSphere*>(sphereDataBase);
-		auto capsuleColliderData = dynamic_cast<ColliderDataCapsule*>(capsuleDataBase);
-		VECTOR capsuleTop = VGet(capsuleUnder.x, capsuleUnder.y + capsuleColliderData->height, capsuleUnder.z);
-		isHit = HitCheck_Sphere_Capsule(sphereCenter, sphereColliderData->radius, capsuleUnder, capsuleTop, capsuleColliderData->radius);
 	}
 	/*カプセルと平面の当たり判定*/
 	else if ((aKind == ColliderData::Kind::CAPSULE && bKind == ColliderData::Kind::PLANE) ||
@@ -301,30 +322,58 @@ bool Physics::IsCollide(const Collidable* _objectA, const Collidable* _objectB)c
 
 void Physics::FixNextPosition(Collidable* primary, Collidable* secondary)const
 {
-	//当たり判定の種別ごとに補正方法を変える
+	/*当たり判定の種別ごとに補正方法を変える*/
 	auto primaryKind = primary->colliderData->GetKind();
 	auto secondaryKind = secondary->colliderData->GetKind();
 
 	//球同士の位置補正
 	if (primaryKind == ColliderData::Kind::SPHERE && secondaryKind == ColliderData::Kind::SPHERE)
 	{
+		//VECTOR primaryToSecondary = VSub(secondary->nextPosition, primary->nextPosition);
+		//VECTOR primaryToSecondaryNorm = VNorm(primaryToSecondary);
+
+		//auto primaryColliderData = dynamic_cast<ColliderDataSphere*> (primary->colliderData);
+		//auto secondaryColliderData = dynamic_cast<ColliderDataSphere*> (secondary->colliderData);
+		////そのままだとちょうど当たる位置になるので少し余分に離す
+		//float awayDist = primaryColliderData->radius + secondaryColliderData->radius + 0.0001f;
+		//VECTOR primaryToNewSecondaryPosition = VScale(primaryToSecondaryNorm, awayDist);
+		//VECTOR fixedPosition = VAdd(primary->nextPosition, primaryToNewSecondaryPosition);
+		//secondary->nextPosition = fixedPosition;
+	}
+	//カプセル同士の位置補正
+	else if (primaryKind == ColliderData::Kind::CAPSULE && secondaryKind == ColliderData::Kind::CAPSULE)
+	{
 		VECTOR primaryToSecondary = VSub(secondary->nextPosition, primary->nextPosition);
 		VECTOR primaryToSecondaryNorm = VNorm(primaryToSecondary);
 
-		auto primaryColliderData = dynamic_cast<ColliderDataSphere*> (primary->colliderData);
-		auto secondaryColliderData = dynamic_cast<ColliderDataSphere*> (secondary->colliderData);
+		auto primaryColliderData = dynamic_cast<ColliderDataCapsule*> (primary->colliderData);
+		auto secondaryColliderData = dynamic_cast<ColliderDataCapsule*> (secondary->colliderData);
 		//そのままだとちょうど当たる位置になるので少し余分に離す
 		float awayDist = primaryColliderData->radius + secondaryColliderData->radius + 0.0001f;
 		VECTOR primaryToNewSecondaryPosition = VScale(primaryToSecondaryNorm, awayDist);
 		VECTOR fixedPosition = VAdd(primary->nextPosition, primaryToNewSecondaryPosition);
 		secondary->nextPosition = fixedPosition;
 	}
-	//平面とカプセル
+	//平面とカプセル(平面はSTATICなので、必ずprimaryがPLANEになる)
 	else if (primaryKind == ColliderData::Kind::PLANE && secondaryKind == ColliderData::Kind::CAPSULE)
 	{
 		VECTOR fixedPosition = secondary->nextPosition;
 		fixedPosition.y = 0.0f;
 		secondary->nextPosition = fixedPosition;
+	}
+	//球とカプセル(球はSTATICなので、必ずprimaryがSPHEREになる)
+	else if (primaryKind == ColliderData::Kind::SPHERE && secondaryKind == ColliderData::Kind::CAPSULE)
+	{
+		auto primaryColliderData = dynamic_cast<ColliderDataSphere*> (primary->colliderData);
+		auto secondaryColliderData = dynamic_cast<ColliderDataCapsule*> (secondary->colliderData);
+		if (secondaryColliderData->hitNumber != primaryColliderData->hitNumber)
+		{
+			if (!secondaryColliderData->isCutDamage)
+			{
+				secondaryColliderData->hp -= primaryColliderData->damage;
+			}
+			secondaryColliderData->hitNumber = primaryColliderData->hitNumber;
+		}
 	}
 	else
 	{
@@ -346,4 +395,9 @@ void Physics::FixPosition()
 		//位置確定
 		item->rigidbody.SetPosition(item->nextPosition);
 	}
+}
+
+void Physics::DamageCalc(Collidable* _primary, Collidable* _secondary)const
+{
+
 }

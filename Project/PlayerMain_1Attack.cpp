@@ -5,32 +5,30 @@
 #include "DeleteInstance.h"
 #include "GoriLib.h"
 #include "GameObjectTag.h"
-#include "BossAttack.h"
-#include "EnemyManager.h"
+#include "PlayerMain_1Attack.h"
+#include "PlayerManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-BossAttack::BossAttack(const int _attackNum)
-	: Collidable(Collidable::Priority::STATIC, GameObjectTag::BOSS_ATTACK, GoriLib::ColliderData::Kind::SPHERE, false)
+PlayerMain_1Attack::PlayerMain_1Attack()
+	: Collidable(Collidable::Priority::STATIC, GameObjectTag::PLAYER_ATTACK, GoriLib::ColliderData::Kind::SPHERE, false)
 	, isStartHitCheck(false)
 	, frameCount(0)
 	, damage(0)
 	, radius(0.0f)
-	, basePosition(VGet(0.0f, 0.0f, 0.0f))
+	, basePosition(VGet(0.0f,0.0f,0.0f))
 	, direction(VGet(0.0f, 0.0f, 0.0f))
 	, isDontStartPrevFrame(false)
-	, attackNum(_attackNum)
-	, stackSpeed(0.0f)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
-	this->radius = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackNum];
+	this->radius = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_RADIUS"][this->ATTACK_NUM];
 	/*コライダーデータの作成*/
 	auto sphereColiderData = dynamic_cast<GoriLib::ColliderDataSphere*>(this->colliderData);
 	sphereColiderData->radius = this->radius;
-	sphereColiderData->damage = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_DAMAGE"][this->attackNum];
+	sphereColiderData->damage = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_DAMAGE"][this->ATTACK_NUM];
 	sphereColiderData->hitNumber = 0;
 
 }
@@ -38,7 +36,7 @@ BossAttack::BossAttack(const int _attackNum)
 /// <summary>
 /// デストラクタ
 /// </summary>
-BossAttack::~BossAttack()
+PlayerMain_1Attack::~PlayerMain_1Attack()
 {
 
 }
@@ -46,7 +44,7 @@ BossAttack::~BossAttack()
 /// <summary>
 /// 初期化
 /// </summary>
-void BossAttack::Initialize(GoriLib::Physics* _physics)
+void PlayerMain_1Attack::Initialize(GoriLib::Physics* _physics)
 {
 	/*コライダーの初期化*/
 	Collidable::Initialize(_physics);
@@ -63,7 +61,7 @@ void BossAttack::Initialize(GoriLib::Physics* _physics)
 /// <summary>
 /// 後処理
 /// </summary>
-void BossAttack::Finalize(GoriLib::Physics* _physics)
+void PlayerMain_1Attack::Finalize(GoriLib::Physics* _physics)
 {
 	/*物理登録の解除*/
 	Collidable::Finalize(_physics);
@@ -71,11 +69,11 @@ void BossAttack::Finalize(GoriLib::Physics* _physics)
 /// <summary>
 /// 更新
 /// </summary>
-void BossAttack::Update(GoriLib::Physics* _physics, const VECTOR _position, const VECTOR _direction, const bool _isMove, const float _speed)
+void PlayerMain_1Attack::Update(GoriLib::Physics* _physics, const VECTOR _position, const VECTOR _direction)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& enemy = Singleton<EnemyManager>::GetInstance();
+	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	/*当たり判定の確認が開始している*/
 	if (this->isStartHitCheck)
@@ -83,31 +81,23 @@ void BossAttack::Update(GoriLib::Physics* _physics, const VECTOR _position, cons
 		if (!this->isDontStartPrevFrame)
 		{
 			auto sphereColiderData = dynamic_cast<GoriLib::ColliderDataSphere*>(this->colliderData);
-			sphereColiderData->hitNumber = enemy.GetHitNumber();
+			sphereColiderData->hitNumber = player.GetHitNumber();
 			this->isDontStartPrevFrame = true;
-			this->stackSpeed = 0.0f;
 		}
 		//変数の準備
-		const int START_HIT_CHECK_FRAME = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_FRAME"][this->attackNum];
-		const int END_HIT_CHECK_FRAME = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"][this->attackNum];
-		const float POSITION_OFFSET = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"][this->attackNum];
-		const float Y_OFFSET = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"][this->attackNum];
+		const int START_HIT_CHECK_FRAME = json.GetJson(JsonManager::FileType::PLAYER)["START_HIT_CHECK_FRAME"][this->ATTACK_NUM];
+		const int END_HIT_CHECK_FRAME = json.GetJson(JsonManager::FileType::PLAYER)["END_HIT_CHECK_FRAME"][this->ATTACK_NUM];
+		const float POSITION_OFFSET = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET"][this->ATTACK_NUM];
+		const float Y_OFFSET = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"][this->ATTACK_NUM];
+		VECTOR position = VScale(this->direction, POSITION_OFFSET);
+		position.y += Y_OFFSET;
+		position = VAdd(this->basePosition, position);
 
 		//フレームを増やす
 		this->frameCount++;
 		//フレームが定数を超えていなかったら早期リターン
 		if (this->frameCount < START_HIT_CHECK_FRAME)return;
-
 		//当たり判定の座標のセット
-		VECTOR position = VScale(this->direction, POSITION_OFFSET);
-		position.y += Y_OFFSET;
-		position = VAdd(this->basePosition, position);
-		if (_isMove)
-		{
-			this->stackSpeed += _speed;
-			position = VAdd(position, VScale(this->direction, this->stackSpeed));
-		}
-
 		this->rigidbody.SetPosition(position);
 		//フレームが定数を超えていたら当たり判定開始フラグを下す
 		if (this->frameCount > END_HIT_CHECK_FRAME)
@@ -128,7 +118,7 @@ void BossAttack::Update(GoriLib::Physics* _physics, const VECTOR _position, cons
 /// <summary>
 /// 衝突したか
 /// </summary>
-void BossAttack::OnCollide(const Collidable& _colider)
+void PlayerMain_1Attack::OnCollide(const Collidable& _colider)
 {
 	//std::string message = "プレイヤーの攻撃が";
 	//if (_colider.GetTag() == GameObjectTag::BOSS)
@@ -144,7 +134,7 @@ void BossAttack::OnCollide(const Collidable& _colider)
 /// <summary>
 /// 描画
 /// </summary>
-const void BossAttack::Draw()const
+const void PlayerMain_1Attack::Draw()const
 {
 #if _DEBUG
 	if (this->isStartHitCheck)
@@ -152,6 +142,6 @@ const void BossAttack::Draw()const
 		DrawSphere3D(this->rigidbody.GetPosition(), this->radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
 	}
 	VECTOR position = rigidbody.GetPosition();
-	printfDx("MAIN_1_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+		printfDx("MAIN_1_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
 #endif // _DEBUG
 }

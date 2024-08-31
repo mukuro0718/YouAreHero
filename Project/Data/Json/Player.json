@@ -16,7 +16,7 @@
   "SWITCH_MOVE_STATE_MAX_FRAME": 30,
   "CONBO_RESET_MAX_FRAME": 60,
   "SWITCH_LOCK_ON_MAX_FRAME": 30,
-  "SWITCH_AVOID_MAX_FRAME": 120,
+  "AVOID_MAX_FRAME": 10,
   "ANIMATION_HANDLE": [
     "Asset/Animation/Player/Move/Idle.mv1",
     "Asset/Animation/Player/Move/Idle_Play.mv1",
@@ -75,29 +75,15 @@
     0.5,
     0.8,
     0.8,
-    0.5
+    0.8
   ],
 
   "ATTACK_COMBO_NUM": 2,
 
-  "ATTACK_OFFSET_SCALE": [
-    16.0,
-    16.0,
-    27.0
-  ],
-  "ATTACK_OFFSET_Y": [
-    6.0,
-    6.0,
-    6.0
-  ],
-  "ATTACK_RADIUS": [
-    5.0,
-    5.0,
-    5.0
-  ],
-  "ATTACK_DAMAGE": [
-    11,
-    12,
-    50
-  ]
+  "START_HIT_CHECK_FRAME": [10,10,10],
+  "END_HIT_CHECK_FRAME": [60,60,60],
+  "ATTACK_OFFSET": [ 5.0, 5.0, 5.0 ],
+  "ATTACK_OFFSET_Y": [ 6.0, 10.0, 6.0 ],
+  "ATTACK_RADIUS": [ 5.0, 5.0, 5.0 ],
+  "ATTACK_DAMAGE": [ 11, 12, 50 ]
 }

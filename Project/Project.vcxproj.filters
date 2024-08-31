@@ -142,9 +142,6 @@
     <Filter Include="Object\Attack">
       <UniqueIdentifier>{85c3ea9d-90a4-4cd5-92a5-ce5cf6df9bba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Attack\Type">
-      <UniqueIdentifier>{393b1d76-aa34-4633-a94f-65da079d1a24}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Collision\Collidable">
       <UniqueIdentifier>{b656a8a7-846e-44c9-8717-25400c3584b3}</UniqueIdentifier>
     </Filter>
@@ -156,6 +153,21 @@
     </Filter>
     <Filter Include="Collision\ColliderData">
       <UniqueIdentifier>{f3d0129b-8896-4d85-8dec-a50e94735d5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Attack\Manager">
+      <UniqueIdentifier>{ac5a6d95-5018-43cd-bb9c-984bb81bfe34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Attack\Manager\Type">
+      <UniqueIdentifier>{e192b15f-29c7-4394-8fc8-677630071b65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Attack\Manager\Type\Player">
+      <UniqueIdentifier>{832e6b1d-5ffc-4efb-8198-033046818b12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Attack\Manager\Type\Boss">
+      <UniqueIdentifier>{89d86286-0469-4cc7-8c21-cf9703bdd411}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect">
+      <UniqueIdentifier>{7932e36d-11f9-4909-b064-c775dbf5a0f7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -256,12 +268,6 @@
     <ClCompile Include="ButtonUI.cpp">
       <Filter>UI\ButtonUI</Filter>
     </ClCompile>
-    <ClCompile Include="Attack.cpp">
-      <Filter>Object\Attack</Filter>
-    </ClCompile>
-    <ClCompile Include="BossAttack.cpp">
-      <Filter>Object\Attack\Type</Filter>
-    </ClCompile>
     <ClCompile Include="Rigidbody.cpp">
       <Filter>Collision\Rigidbody</Filter>
     </ClCompile>
@@ -279,6 +285,27 @@
     </ClCompile>
     <ClCompile Include="ColliderDataPlane.cpp">
       <Filter>Collision\ColliderData</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAttackManager.cpp">
+      <Filter>Object\Attack\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="BossAttackManager.cpp">
+      <Filter>Object\Attack\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMain_1Attack.cpp">
+      <Filter>Object\Attack\Manager\Type\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMain_2Attack.cpp">
+      <Filter>Object\Attack\Manager\Type\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerSpecialAttack.cpp">
+      <Filter>Object\Attack\Manager\Type\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BossAttack.cpp">
+      <Filter>Object\Attack\Manager\Type\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectManager.cpp">
+      <Filter>Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -396,12 +423,6 @@
     <ClInclude Include="ButtonUI.h">
       <Filter>UI\ButtonUI</Filter>
     </ClInclude>
-    <ClInclude Include="Attack.h">
-      <Filter>Object\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="BossAttack.h">
-      <Filter>Object\Attack\Type</Filter>
-    </ClInclude>
     <ClInclude Include="Rigidbody.h">
       <Filter>Collision\Rigidbody</Filter>
     </ClInclude>
@@ -428,6 +449,27 @@
     </ClInclude>
     <ClInclude Include="ColliderDataPlane.h">
       <Filter>Collision\ColliderData</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAttackManager.h">
+      <Filter>Object\Attack\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="BossAttackManager.h">
+      <Filter>Object\Attack\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMain_1Attack.h">
+      <Filter>Object\Attack\Manager\Type\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMain_2Attack.h">
+      <Filter>Object\Attack\Manager\Type\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSpecialAttack.h">
+      <Filter>Object\Attack\Manager\Type\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BossAttack.h">
+      <Filter>Object\Attack\Manager\Type\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectManager.h">
+      <Filter>Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

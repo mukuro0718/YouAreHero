@@ -18,9 +18,8 @@ public:
 	void		Update(GoriLib::Physics* _physics);		//更新
 	void		OnCollide(const Collidable& _colider)override;//衝突したとき
 	const void	Draw()const;//描画
-	void CalcDamage(const int _damage) { this->hp -= _damage; }
 	const int		GetDamage()const;									  //ダメージの取得
-	const int		GetHP()const { return this->hp; }				  //HPの取得
+	const int		GetHP()const;				  //HPの取得
 	const VECTOR GetHeadPosition()const;
 	const VECTOR GetPosition()const;
 	const int GetAttackNumber()const { return this->attackNumber; }
@@ -33,7 +32,7 @@ private:
 	typedef std::function<void(void)> FlagsState;//フラグごとの実行したい関数（引数、返り値無し）
 
 	/*静的定数*/
-	static constexpr int COUNT_NUM = 1;
+	static constexpr int COUNT_NUM = 2;
 	static constexpr int COLLIDER_NUM = 2;//コライダーの数
 	//基本状態
 	static constexpr unsigned int DYING	= (1 << 0);//デス
@@ -77,6 +76,7 @@ private:
 	enum class FrameCountType
 	{
 		REST = 0,
+		ATTACK = 1,
 	};
 	enum class AttackType
 	{
@@ -157,10 +157,10 @@ private:
 	int attackComboCount;//攻撃コンボ回数
 	float jumpPower;
 	bool isHitAttack;
-	int hp;
-	int damage;
 	int hitNumber;
 	int attackNumber;
 	bool isDraw;
+	int attackType;
+
 };
 

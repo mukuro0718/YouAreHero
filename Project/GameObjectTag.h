@@ -6,4 +6,6 @@ enum class GameObjectTag
 	BOSS,	//É{ÉX
 	GROUND,	//ínñ 
 	WALL,	//ï«
+	PLAYER_ATTACK,
+	BOSS_ATTACK,
 };

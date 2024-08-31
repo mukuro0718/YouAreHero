@@ -13,6 +13,7 @@
 #include "PlayerManager.h"
 #include "CameraManager.h"
 #include "Vector4.h"
+#include "BossAttackManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -91,6 +92,7 @@ Boss::Boss()
 	auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
 	capsuleColiderData->radius = json.GetJson(JsonManager::FileType::PLAYER)["HIT_RADIUS"];
 	capsuleColiderData->height = json.GetJson(JsonManager::FileType::PLAYER)["HIT_HEIGHT"];
+	capsuleColiderData->isCutDamage = false;
 }
 
 /// <summary>
@@ -117,9 +119,9 @@ void Boss::Initialize(GoriLib::Physics* _physics)
 	const VECTOR ROTATION = Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_ROTATION"]);//回転率
 	const VECTOR SCALE = Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_SCALE"]);	 //拡大率
 
+	auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
 	this->speed = 0.0f;
-	this->hp = 1000;
-	this->damage = 5;
+	capsuleColiderData->hp = 1000;
 
 	/*コライダーの初期化*/
 	Collidable::Initialize(_physics);
@@ -175,6 +177,12 @@ void Boss::Update(GoriLib::Physics* _physics)
 	/*アニメーションの更新*/
 	this->nowAnimation = this->stateAnimationMap[this->state->GetFlag()];
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nowAnimation];
+	FrameCount(static_cast<int>(FrameCountType::ATTACK), json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_SLOW_FRAME_COUNT"]);
+	if (this->isCount[static_cast<int>(FrameCountType::ATTACK)])
+	{
+		this->animationPlayTime *= 0.1f;
+	}
+
 	VECTOR position = this->rigidbody.GetPosition();
 	this->animation->Play(&this->modelHandle, position, this->nowAnimation, this->animationPlayTime);
 }
@@ -273,8 +281,10 @@ void Boss::ChangeState()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
+	auto& attack = Singleton<BossAttackManager>::GetInstance();
+	auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
 
-	if (this->hp < 0)
+	if (capsuleColiderData->GetHP() < 0)
 	{
 		this->state->SetFlag(this->DYING);
 		if (this->animation->GetIsChangeAnim())
@@ -320,6 +330,8 @@ void Boss::ChangeState()
 	{
 		int attackType = static_cast<int>(AttackType::THROW_STORN);
 		this->state->SetFlag(this->THROW_STORN);
+		this->hitNumber++;
+		attack.OnIsStart(attackType);
 	}
 	/*もしプレイヤーとの距離が最大距離以上離れていたら追跡する*/
 	else if (TARGET_DISTANCE >= MOVE_DISTANCE)
@@ -344,11 +356,16 @@ void Boss::ChangeState()
 		{
 			this->state->SetFlag(this->PUNCH);
 			attackType = static_cast<int>(AttackType::PUNCH);
+			this->hitNumber++;
+			attack.OnIsStart(attackType);
+			this->isCount[static_cast<int>(FrameCountType::ATTACK)] = true;
 		}
 		else
 		{
 			this->state->SetFlag(this->SLASH);
 			attackType = static_cast<int>(AttackType::SLASH);
+			this->hitNumber++;
+			attack.OnIsStart(attackType);
 		}
 
 
@@ -509,7 +526,7 @@ void Boss::JumpAttack()
 /// <returns></returns>
 const bool Boss::CanRotation()const
 {
-	if (this->state->CheckFlag(this->MASK_ATTACK) || this->state->CheckFlag(this->REST))return false;
+	if (this->state->CheckFlag(this->MASK_ATTACK)/* || this->state->CheckFlag(this->REST)*/)return false;
 	return true;
 }
 
@@ -580,13 +597,6 @@ void Boss::AddItemFunction(const unsigned int _item, const FlagsState _update)
 	add.update = _update;
 	this->stateFunctionMap.emplace(_item, add);
 }
-/// <summary>
-/// ダメージの取得
-/// </summary>
-const int Boss::GetDamage()const
-{
-	return this->damage;
-}
 const bool Boss::IsAttack()const
 {
 	if (this->state->CheckFlag(this->MASK_ATTACK))return true;
@@ -611,4 +621,10 @@ void Boss::OnCollide(const Collidable& _colider)
 
 	message += "と当たった\n";
 	printfDx(message.c_str());
+}
+
+const int Boss::GetHP()const
+{ 
+	auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
+	return capsuleColiderData->GetHP();
 }

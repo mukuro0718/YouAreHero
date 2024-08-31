@@ -21,10 +21,6 @@ public:
 	const int	   GetHP()const;
 	const VECTOR GetPosition()const;//À•W‚Ìæ“¾
 	const VECTOR GetHeadPosition()const;//À•W‚Ìæ“¾
-	const Collider GetCharacterCollider();
-	const Collider GetAttackCollider();
-	void CalcDamage(const int _damage);
-	const int GetDamage()const;
 	const int GetAttackNumber()const;
 	const int GetHitNumber()const;
 	void SetHitNumber(const int _attackNumber);

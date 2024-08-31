@@ -112,15 +112,7 @@ const int PlayerManager::GetHP()const
 {
 	return this->player->GetHP();
 }
-const int PlayerManager::GetAttackNumber()const
-{
-	return this->player->GetAttackNumber();
-}
 const int PlayerManager::GetHitNumber()const
 {
 	return this->player->GetHitNumber();
-}
-void PlayerManager::SetHitNumber(const int _attackNumber)
-{
-	this->player->SetHitNumber(_attackNumber);
 }

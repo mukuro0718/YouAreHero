@@ -21,16 +21,14 @@ public:
 	const void	Draw	  ()const;	//描画
 
 	/*getter*/
-	const int GetAttackNumber()const { return this->attackNumber; }
 	const int GetHitNumber()const { return this->hitNumber; }
-	void SetHitNumber(const int _attackNumber) { this->hitNumber = _attackNumber; }
 	void CalcDamage(const int _damage);
 	const int		GetDamage	  ()const;									  //ダメージの取得
 	const VECTOR	GetPosition		  ()const;									  //座標の取得
 	const VECTOR	GetDirection	  ()const { return this->direction; }		  //移動ベクトルの取得
 	const bool		IsMove			  ()const;									  //移動フラグの取得
 	const bool		IsAttack		  ()const;									  //ショットフラグの取得
-	const int		GetHP			  ()const { return this->hp; }				  //HPの取得
+	const int		GetHP()const;				  //HPの取得
 private:
 	
 
@@ -79,7 +77,7 @@ private:
 		SWITCH_MOVE_STATE = 0,
 		ATTACK_INTERVAL = 1,//攻撃待機
 		SWITCH_LOCK_ON = 2,//攻撃待機
-		SWITCH_AVOID = 3,//回避
+		AVOID = 3,//回避
 	};
 	enum class AttackType
 	{
@@ -140,15 +138,14 @@ private:
 	std::vector<bool>	isCount;					//カウントをするか
 	std::map<unsigned int, int> attackAnimationMap;//攻撃アニメーションマップ
 	std::map<int, unsigned int> attackComboStateMap;//コンボに応じて攻撃のビットフラグを返す
+	std::map<unsigned int, int> attackTypeMap;
 	int attackType;
 	float				jumpPower;					//ジャンプ力
 	int					nowAnimation;				//アニメーション
 	float				animationPlayTime;			//アニメーション再生時間
-	int					hp;
 	int damage;
 	int attackComboCount;
 	int hitNumber;
-	int attackNumber;
 	bool isDraw;
 
 

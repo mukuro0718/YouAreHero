@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "EffekseerForDXLib.h"
 #include "UseJson.h"
 #include "ScreenSetup.h"
 
@@ -51,5 +52,27 @@ int ScreenSetup::Initialize()
 #else
     ChangeWindowMode(FALSE);
 #endif// _DEBUG
+    //DirectX11を使用するようにする
+    SetUseDirect3DVersion(DX_DIRECT3D_11);
+    //effekseerを初期化
+    //引数には画面に描画する最大パーティクル数を設定
+    Effekseer_Init(8000);
+    // フルスクリーンウインドウの切り替えでリソースが消えるのを防ぐ。
+    // Effekseerを使用する場合は必ず設定する。
+    SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
+
+    // DXライブラリのデバイスロストした時のコールバックを設定する。
+    // ウインドウとフルスクリーンの切り替えが発生する場合は必ず実行する。
+    // ただし、DirectX11を使用する場合は実行する必要はない。
+    Effekseer_SetGraphicsDeviceLostCallbackFunctions();
+
+    // Zバッファを有効にする。
+    // Effekseerを使用する場合、2DゲームでもZバッファを使用する。
+    SetUseZBuffer3D(TRUE);
+
+    // Zバッファへの書き込みを有効にする。
+    // Effekseerを使用する場合、2DゲームでもZバッファを使用する。
+    SetWriteZBuffer3D(TRUE);
+
     return 0;
 }
