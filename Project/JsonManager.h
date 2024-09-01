@@ -20,12 +20,14 @@ public:
 		IMAGE_PATH		= 4,
 		FONT_PATH		= 5,
 		SOUND_PATH		= 6,
-		MAP			= 7,
+		MAP				= 7,
 		CAMERA			= 8,
 		PLAYER			= 9,
 		ENEMY			= 10,
 		DEBUG			= 11,
 		UI				= 12,
+		EFFECT_PATH		= 13,
+		EFFECT			= 14,
 	};
 
 	void LoadFileAgain();

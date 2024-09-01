@@ -151,6 +151,7 @@
     <ClCompile Include="ColliderDataCapsule.cpp" />
     <ClCompile Include="ColliderDataPlane.cpp" />
     <ClCompile Include="ColliderDataSphere.cpp" />
+    <ClCompile Include="Effect.cpp" />
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="HPUI.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="ColliderDataCapsule.h" />
     <ClInclude Include="ColliderDataPlane.h" />
     <ClInclude Include="ColliderDataSphere.h" />
+    <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="GameObjectTag.h" />
@@ -245,6 +247,8 @@
   <ItemGroup>
     <None Include="Data\Json\Camera.json" />
     <None Include="Data\Json\Debug.json" />
+    <None Include="Data\Json\Effect.json" />
+    <None Include="Data\Json\EffectPath.json" />
     <None Include="Data\Json\Enemy.json" />
     <None Include="Data\Json\FontPath.json" />
     <None Include="Data\Json\FPSController.json" />

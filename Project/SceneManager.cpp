@@ -49,6 +49,7 @@ void SceneManager::Update()
 		this->mainScene->Update();
 
 		/*シーンの描画*/
+		this->fps->Draw();
 		this->mainScene->Draw();
 		
 		/*シーンの変更*/

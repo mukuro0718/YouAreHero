@@ -15,14 +15,16 @@ public:
 	void		OnCollide(const GoriLib::Collidable& _colider);//è’ìÀÇµÇΩÇ∆Ç´
 	const void	Draw()const;	//ï`âÊ
 	void		OnIsStart(const int _index);
+	const VECTOR GetPosition(const int _index);
+	const VECTOR GetThrowPosition();
 private:
 	static constexpr int ATTACK_NUM = 3;
 	enum class AttackType
 	{
 		NONE = -1,
-		PUNCH = 0,//ârè•
-		SLASH = 1,//ârè•
-		THROW_STORN = 2,//ÉRÉìÉ{
+		SLASH = 0,//ârè•
+		ROTATE_PUNCH = 1,//ârè•
+		JUMP_ATTACK = 2,//ÉRÉìÉ{
 	};
 	std::vector<BossAttack*> attack;
 	int hitNumber;

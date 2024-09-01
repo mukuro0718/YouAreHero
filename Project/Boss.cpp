@@ -14,6 +14,7 @@
 #include "CameraManager.h"
 #include "Vector4.h"
 #include "BossAttackManager.h"
+#include "EffectManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -76,9 +77,9 @@ Boss::Boss()
 	this->stateAnimationMap.emplace(this->ROAR, static_cast<int>(AnimationType::ROAR));
 	this->stateAnimationMap.emplace(this->WALK, static_cast<int>(AnimationType::WALK));
 	this->stateAnimationMap.emplace(this->REST, static_cast<int>(AnimationType::IDLE));
-	this->stateAnimationMap.emplace(this->PUNCH, static_cast<int>(AnimationType::PUNCH));
 	this->stateAnimationMap.emplace(this->SLASH, static_cast<int>(AnimationType::SLASH));
-	this->stateAnimationMap.emplace(this->THROW_STORN, static_cast<int>(AnimationType::THROW_STORN));
+	this->stateAnimationMap.emplace(this->ROTATE_PUNCH, static_cast<int>(AnimationType::ROTATE_PUNCH));
+	this->stateAnimationMap.emplace(this->JUMP_ATTACK, static_cast<int>(AnimationType::JUMP_ATTACK));
 	this->stateAnimationMap.emplace(this->HURRICANE_KICK, static_cast<int>(AnimationType::HURRICANE_KICK));
 	this->stateAnimationMap.emplace(this->GRAND_SLAM, static_cast<int>(AnimationType::GRAND_SLAM));
 	this->stateAnimationMap.emplace(this->FLAME_MAGIC, static_cast<int>(AnimationType::FLAME_MAGIC));
@@ -159,12 +160,12 @@ void Boss::Update(GoriLib::Physics* _physics)
 	VECTOR start = rigidbody.GetPosition();
 	VECTOR end = VGet(start.x, start.y + capsuleColliderData->height, start.z);
 	auto hitObjects = _physics->IsCollideLine(start, end);
-	isGround = false;
+	this->isGround = false;
 	for (const auto& object : hitObjects)
 	{
 		if (object->GetTag() == GameObjectTag::GROUND)
 		{
-			isGround = true;
+			this->isGround = true;
 			break;
 		}
 	}
@@ -177,14 +178,16 @@ void Boss::Update(GoriLib::Physics* _physics)
 	/*アニメーションの更新*/
 	this->nowAnimation = this->stateAnimationMap[this->state->GetFlag()];
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nowAnimation];
-	FrameCount(static_cast<int>(FrameCountType::ATTACK), json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_SLOW_FRAME_COUNT"]);
-	if (this->isCount[static_cast<int>(FrameCountType::ATTACK)])
+	FrameCount(static_cast<int>(FrameCountType::SLASH), json.GetJson(JsonManager::FileType::ENEMY)["SLASH_SLOW_FRAME_COUNT"]);
+	FrameCount(static_cast<int>(FrameCountType::ROTATE_PUNCH), json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_PUNCH_SLOW_FRAME_COUNT"]);
+	if (this->isCount[static_cast<int>(FrameCountType::SLASH)] || this->isCount[static_cast<int>(FrameCountType::ROTATE_PUNCH)])
 	{
 		this->animationPlayTime *= 0.1f;
 	}
 
 	VECTOR position = this->rigidbody.GetPosition();
 	this->animation->Play(&this->modelHandle, position, this->nowAnimation, this->animationPlayTime);
+	this->rigidbody.SetPosition(position);
 }
 
 /// <summary>
@@ -281,6 +284,7 @@ void Boss::ChangeState()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
+	auto& effect = Singleton<EffectManager>::GetInstance();
 	auto& attack = Singleton<BossAttackManager>::GetInstance();
 	auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
 
@@ -322,16 +326,23 @@ void Boss::ChangeState()
 	const float TARGET_DISTANCE = VSize(VSub(player.GetPosition(), this->rigidbody.GetPosition()));//プレイヤーとの距離を求める
 	const float MOVE_DISTANCE = json.GetJson(JsonManager::FileType::ENEMY)["MOVE_DISTANCE"];//目標との最大距離
 	const float THROW_DISTANCE = json.GetJson(JsonManager::FileType::ENEMY)["THROW_DISTANCE"];//目標との最大距離
+	const float MOVE_DISTANCE_2 = json.GetJson(JsonManager::FileType::ENEMY)["MOVE_DISTANCE_2"];//目標との最大距離
 	
 	this->state->ClearFlag(this->WALK | this->IDLE);
 
-	/*石を投げる*/
-	if (TARGET_DISTANCE >= THROW_DISTANCE)
+	if (TARGET_DISTANCE >= MOVE_DISTANCE_2)
 	{
-		int attackType = static_cast<int>(AttackType::THROW_STORN);
-		this->state->SetFlag(this->THROW_STORN);
-		this->hitNumber++;
+		this->state->SetFlag(this->WALK);
+	}
+	/*石を投げる*/
+	else if (TARGET_DISTANCE >= THROW_DISTANCE)
+	{
+		int attackType = static_cast<int>(AttackType::JUMP_ATTACK);
+		this->state->SetFlag(this->JUMP_ATTACK);
+		this->attackNumber++;
 		attack.OnIsStart(attackType);
+		effect.OnIsBossThrowEffect();
+		this->isCount[static_cast<int>(FrameCountType::JUMP_ATTACK)] = true;
 	}
 	/*もしプレイヤーとの距離が最大距離以上離れていたら追跡する*/
 	else if (TARGET_DISTANCE >= MOVE_DISTANCE)
@@ -354,18 +365,21 @@ void Boss::ChangeState()
 		int type = GetRand(1);
 		if (type == 0)
 		{
-			this->state->SetFlag(this->PUNCH);
-			attackType = static_cast<int>(AttackType::PUNCH);
-			this->hitNumber++;
+			this->state->SetFlag(this->SLASH);
+			attackType = static_cast<int>(AttackType::SLASH);
+			this->attackNumber++;
 			attack.OnIsStart(attackType);
-			this->isCount[static_cast<int>(FrameCountType::ATTACK)] = true;
+			this->isCount[static_cast<int>(FrameCountType::SLASH)] = true;
+			effect.OnIsBossPunchEffect();
 		}
 		else
 		{
-			this->state->SetFlag(this->SLASH);
-			attackType = static_cast<int>(AttackType::SLASH);
-			this->hitNumber++;
+			this->state->SetFlag(this->ROTATE_PUNCH);
+			attackType = static_cast<int>(AttackType::ROTATE_PUNCH);
+			this->attackNumber++;
 			attack.OnIsStart(attackType);
+			this->isCount[static_cast<int>(FrameCountType::ROTATE_PUNCH)] = true;
+			effect.OnIsBossSlashEffect();
 		}
 
 
@@ -447,6 +461,21 @@ void Boss::UpdateVelocity()
 	{
 		this->speed = json.GetJson(JsonManager::FileType::ENEMY)["SPEED"];
 	}
+	else if (this->state->CheckFlag(this->JUMP_ATTACK))
+	{
+		if (this->isCount[static_cast<int>(FrameCountType::JUMP_ATTACK)])
+		{
+			this->speed = json.GetJson(JsonManager::FileType::ENEMY)["SPEED"];
+			if (FrameCount(static_cast<int>(FrameCountType::JUMP_ATTACK), json.GetJson(JsonManager::FileType::ENEMY)["JUMP_MOVE_FRAME_COUNT"]))
+			{
+				this->speed = 0.0f;
+			}
+		}
+		else
+		{
+			this->speed = 0.0f;
+		}
+	}
 	else
 	{
 		this->speed = 0.0f;
@@ -500,24 +529,6 @@ void Boss::DecideOfAttack()
 
 	/*攻撃をランダムで決める*/
 
-}
-
-/// <summary>
-/// 突進攻撃
-/// </summary>
-void Boss::RushAttack()
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
-	
-}
-/// <summary>
-/// ジャンプ攻撃
-/// </summary>
-void Boss::JumpAttack()
-{
-	
 }
 
 /// <summary>
@@ -602,7 +613,14 @@ const bool Boss::IsAttack()const
 	if (this->state->CheckFlag(this->MASK_ATTACK))return true;
 	return false;
 }
-
+const VECTOR Boss::GetDirection()const
+{
+	return this->rigidbody.GetDirection();
+}
+const VECTOR Boss::GetRotation()const
+{
+	return this->rigidbody.GetRotation();
+}
 const VECTOR Boss::GetHeadPosition()const
 {
 	return MV1GetFramePosition(this->modelHandle, 7);

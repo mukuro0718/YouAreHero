@@ -14,6 +14,7 @@ public:
 	void Average();			//FPSの平均を算出
 	void Wait();			//目標FPSになるよう待機
 	void UpdateTargetFPS(); //目標FPSの更新
+	const void Draw()const;
 private:
 	/*メンバ変数*/
 	double	fps;		//fps

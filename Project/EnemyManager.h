@@ -20,12 +20,15 @@ public:
 	/*getter*/
 	const int	   GetHP()const;
 	const VECTOR GetPosition()const;//座標の取得
+	const VECTOR GetDirection()const;//向きの取得
+	const VECTOR GetRotation()const;//向きの取得
 	const VECTOR GetHeadPosition()const;//座標の取得
 	const int GetAttackNumber()const;
 	const int GetHitNumber()const;
 	void SetHitNumber(const int _attackNumber);
 	const bool IsAttack()const;
 	void OnIsHitAttack();
+	const int GetModelHandle()const;
 private:
 	/*内部処理関数*/
 	EnemyManager();//コンストラクタ

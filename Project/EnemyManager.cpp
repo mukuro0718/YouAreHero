@@ -72,17 +72,26 @@ const VECTOR EnemyManager::GetHeadPosition()const
 {
 	return this->boss->GetHeadPosition();
 }
-
+/// <summary>
+/// Œü‚«‚Ìæ“¾
+/// </summary>
+const VECTOR EnemyManager::GetDirection()const
+{
+	return this->boss->GetDirection();
+}
+/// <summary>
+/// ‰ñ“]—¦‚Ìæ“¾
+/// </summary>
+const VECTOR EnemyManager::GetRotation()const
+{
+	return this->boss->GetRotation();
+}
 /// <summary>
 /// ƒ_ƒ[ƒWˆ—
 /// </summary>
 const int EnemyManager::GetHP()const
 {
 	return this->boss->GetHP();
-}
-const int EnemyManager::GetAttackNumber()const
-{
-	return this->boss->GetAttackNumber();
 }
 const int EnemyManager::GetHitNumber()const
 {
@@ -99,4 +108,8 @@ const bool EnemyManager::IsAttack()const
 void EnemyManager::OnIsHitAttack()
 {
 	this->boss->OnIsHitAttack();
+}
+const int EnemyManager::GetModelHandle()const
+{
+	return this->boss->GetModelHandle();
 }

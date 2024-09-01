@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "EffekseerForDXLib.h"
 #include "GoriLib.h"
 #include "UseSTL.h"
 #include "GameObjectTag.h"
@@ -13,6 +14,7 @@
 #include "EnemyManager.h"
 #include "BossAttackManager.h"
 #include "UIManager.h"
+#include "EffectManager.h"
 
 using namespace GoriLib;
 
@@ -93,6 +95,7 @@ void GameScene::Update()
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
 	auto& enemy		  = Singleton<EnemyManager>		 ::GetInstance();
 	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
+	auto& effect = Singleton<EffectManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 
 	/*çXêVèàóù*/
@@ -104,7 +107,7 @@ void GameScene::Update()
 	player.Update(this->physics);
 	playerAttack.Update(this->physics);
 	enemyAttack.Update(this->physics);
-
+	effect.Update();
 	ui.Update();
 	this->physics->Update();
 	/*èIóπèàóù*/
@@ -124,6 +127,7 @@ const void GameScene::Draw()const
 	auto& camera	  = Singleton<CameraManager>	 ::GetInstance();
 	auto& enemy		  = Singleton<EnemyManager>		 ::GetInstance();
 	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
+	auto& effect = Singleton<EffectManager>::GetInstance();
 	auto& ui		  = Singleton<UIManager>::GetInstance();
 
 	/*ï`âÊ*/
@@ -134,7 +138,7 @@ const void GameScene::Draw()const
 	player.Draw();
 	playerAttack.Draw();
 	enemyAttack.Draw();
-
+	effect.Draw();
 	ui.Draw();
 }
 

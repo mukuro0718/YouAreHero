@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "EffekseerForDXLib.h"
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "LoadingAsset.h"
@@ -20,6 +21,7 @@ LoadingAsset::LoadingAsset()
 	vector<string> fontName = json.GetJson(JsonManager::FileType::FONT_PATH)["NAME"];
 	vector<int> fontSize = json.GetJson(JsonManager::FileType::FONT_PATH)["SIZE"];
 	vector<int> fontThick = json.GetJson(JsonManager::FileType::FONT_PATH)["THICK"];
+	vector<string> effectPath = json.GetJson(JsonManager::FileType::EFFECT_PATH)["PATH"];
 	/*モデルのロード*/
 	for (int i = 0; i < modelPath.size(); i++)
 	{
@@ -41,8 +43,13 @@ LoadingAsset::LoadingAsset()
 	{
 		this->fontHandle.emplace_back(CreateFontToHandle(fontName[static_cast<int>(FontName::Honoka)].c_str(), fontSize[i], fontThick[i], DX_FONTTYPE_EDGE, DX_CHARSET_DEFAULT, 4));
 	}
-	
-
+	/*エフェクトのロード*/
+	for (int i = 0; i < effectPath.size(); i++)
+	{
+		this->effectHandle.emplace_back(LoadEffekseerEffect(effectPath[i].c_str(), 1.0f));
+	}
+	//フラグを立てることで非同期ロードが可能になる
+	SetUseASyncLoadFlag(TRUE);
 }
 
 /// <summary>

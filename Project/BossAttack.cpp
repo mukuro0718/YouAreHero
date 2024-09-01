@@ -46,7 +46,7 @@ BossAttack::~BossAttack()
 /// <summary>
 /// 初期化
 /// </summary>
-void BossAttack::Initialize(GoriLib::Physics* _physics)
+void BossAttack::Initialize(GoriLib::Physics* _physics, const float _radius)
 {
 	/*コライダーの初期化*/
 	Collidable::Initialize(_physics);
@@ -57,8 +57,11 @@ void BossAttack::Initialize(GoriLib::Physics* _physics)
 	this->isStartHitCheck = false;
 	this->frameCount = 0;
 	this->basePosition = VGet(0.0f, 500.0f, 0.0f);
-	this->direction = VGet(0.0f, 0.0f, 0.0f);
+	this->direction = VGet(0.0f, 0.0f, -1.0f);
 	this->isDontStartPrevFrame = false;
+	auto sphereColiderData = dynamic_cast<GoriLib::ColliderDataSphere*>(this->colliderData);
+	sphereColiderData->radius = _radius;
+
 }
 /// <summary>
 /// 後処理
@@ -80,6 +83,7 @@ void BossAttack::Update(GoriLib::Physics* _physics, const VECTOR _position, cons
 	/*当たり判定の確認が開始している*/
 	if (this->isStartHitCheck)
 	{
+
 		if (!this->isDontStartPrevFrame)
 		{
 			auto sphereColiderData = dynamic_cast<GoriLib::ColliderDataSphere*>(this->colliderData);
@@ -98,14 +102,19 @@ void BossAttack::Update(GoriLib::Physics* _physics, const VECTOR _position, cons
 		//フレームが定数を超えていなかったら早期リターン
 		if (this->frameCount < START_HIT_CHECK_FRAME)return;
 
+		VECTOR position;
 		//当たり判定の座標のセット
-		VECTOR position = VScale(this->direction, POSITION_OFFSET);
-		position.y += Y_OFFSET;
-		position = VAdd(this->basePosition, position);
 		if (_isMove)
 		{
+			position = VScale(this->direction, POSITION_OFFSET);
+			position.y += Y_OFFSET;
+			position = VAdd(this->basePosition, position);
 			this->stackSpeed += _speed;
 			position = VAdd(position, VScale(this->direction, this->stackSpeed));
+		}
+		else
+		{
+			position = _position;
 		}
 
 		this->rigidbody.SetPosition(position);
@@ -154,4 +163,9 @@ const void BossAttack::Draw()const
 	VECTOR position = rigidbody.GetPosition();
 	printfDx("MAIN_1_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
 #endif // _DEBUG
+}
+
+const VECTOR BossAttack::GetPosition()const
+{
+	return this->rigidbody.GetPosition();
 }

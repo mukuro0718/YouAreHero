@@ -11,12 +11,13 @@ public:
 	BossAttack(const int _attackNum);//コンストラクタ
 	~BossAttack();//デストラクタ
 
-	void		Initialize(GoriLib::Physics* _physics);							//初期化
+	void		Initialize(GoriLib::Physics* _physics, const float _radius);							//初期化
 	void		Finalize(GoriLib::Physics* _physics);							//後処理
 	void		Update(GoriLib::Physics* _physics, const VECTOR _position, const VECTOR _direction, const bool _isMove, const float _speed);	//更新
 	void		OnCollide(const Collidable& _colider)override;					//衝突したとき
 	void		OnIsStart() { this->isStartHitCheck = true; }
 	const void	Draw()const;												//描画
+	const VECTOR GetPosition()const;
 private:
 	bool isStartHitCheck;
 	bool isDontStartPrevFrame;

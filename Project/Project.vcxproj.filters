@@ -307,6 +307,9 @@
     <ClCompile Include="EffectManager.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPSController.h">
@@ -471,6 +474,9 @@
     <ClInclude Include="EffectManager.h">
       <Filter>Effect</Filter>
     </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\Json\Camera.json">
@@ -513,6 +519,12 @@
       <Filter>Json\File</Filter>
     </None>
     <None Include="Data\Json\UI.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\EffectPath.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\Effect.json">
       <Filter>Json\File</Filter>
     </None>
   </ItemGroup>

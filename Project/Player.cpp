@@ -23,6 +23,7 @@ Player::Player()
 	, isGround			(false)
 	, speed				(0.0f)
 	, attackComboCount  (0)
+	, prevHitNum		(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -111,7 +112,7 @@ void Player::Initialize(GoriLib::Physics* _physics)
 
 	this->state->SetFlag(this->IDLE);
 	this->animation->Attach(&this->modelHandle);
-	this->hitNumber = 0;
+	this->attackNumber = 0;
 }
 
 /// <summary>
@@ -509,6 +510,11 @@ void Player::UpdateAnimation()
 }
 void Player::Reaction()
 {
+	auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
+	if (this->prevHitNum != capsuleColiderData->GetHitNumber())
+	{
+
+	}
 }
 
 /// <summary>
@@ -629,7 +635,7 @@ void Player::Attack()
 		this->frameCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = 0;
 		this->isCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = true;
 		attack.OnIsStart(this->attackTypeMap[this->attackType]);
-		this->hitNumber++;
+		this->attackNumber++;
 	}
 	else if (pad & PAD_INPUT_2)
 	{
@@ -640,7 +646,7 @@ void Player::Attack()
 		this->frameCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = 0;
 		this->isCount[static_cast<int>(FrameCountType::ATTACK_INTERVAL)] = false;
 		attack.OnIsStart(this->attackTypeMap[this->attackType]);
-		this->hitNumber++;
+		this->attackNumber++;
 	}
 
 	/*一定時間Xを押していなかったらコンボを途切れさせる*/

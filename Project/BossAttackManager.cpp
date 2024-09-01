@@ -37,9 +37,10 @@ BossAttackManager::~BossAttackManager()
 /// </summary>
 void BossAttackManager::Initialize(GoriLib::Physics* _physics)
 {
+	auto& json = Singleton<JsonManager>::GetInstance();
 	for (int i = 0; i < this->ATTACK_NUM; i++)
 	{
-		this->attack[i]->Initialize(_physics);
+		this->attack[i]->Initialize(_physics,json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][i]);
 	}
 }
 /// <summary>
@@ -60,21 +61,12 @@ void BossAttackManager::Update(GoriLib::Physics* _physics)
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
-	VECTOR position = enemy.GetPosition();
-	VECTOR direction = VSub(player.GetPosition(), position);
+	VECTOR direction = VSub(player.GetPosition(), enemy.GetPosition());
 	direction = VNorm(direction);
-
-	for (int i = 0; i < this->ATTACK_NUM; i++)
-	{
-		if (i == static_cast<int>(AttackType::THROW_STORN))
-		{
-			this->attack[i]->Update(_physics, position, direction, true, 0.8f);
-		}
-		else
-		{
-			this->attack[i]->Update(_physics, position, direction, false, 0.0f);
-		}
-	}
+	int modelHandle = enemy.GetModelHandle();
+	this->attack[static_cast<int>(AttackType::SLASH)]->Update(_physics, MV1GetFramePosition(modelHandle,11), direction, false, 0.8f);
+	this->attack[static_cast<int>(AttackType::ROTATE_PUNCH)]->Update(_physics, MV1GetFramePosition(modelHandle, 15), direction, false, 0.8f);
+	this->attack[static_cast<int>(AttackType::JUMP_ATTACK)]->Update(_physics, MV1GetFramePosition(modelHandle, 1), direction, false, 0.0f);
 }
 /// <summary>
 /// 衝突したか
@@ -101,4 +93,12 @@ const void BossAttackManager::Draw()const
 void BossAttackManager::OnIsStart(const int _index)
 {
 	this->attack[_index]->OnIsStart();
+}
+const VECTOR BossAttackManager::GetPosition(const int _index)
+{
+	return this->attack[_index]->GetPosition();
+}
+const VECTOR BossAttackManager::GetThrowPosition()
+{
+	return this->attack[static_cast<int>(AttackType::JUMP_ATTACK)]->GetPosition();
 }

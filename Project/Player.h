@@ -21,7 +21,7 @@ public:
 	const void	Draw	  ()const;	//描画
 
 	/*getter*/
-	const int GetHitNumber()const { return this->hitNumber; }
+	const int GetHitNumber()const { return this->attackNumber; }
 	void CalcDamage(const int _damage);
 	const int		GetDamage	  ()const;									  //ダメージの取得
 	const VECTOR	GetPosition		  ()const;									  //座標の取得
@@ -107,6 +107,7 @@ private:
 		MAIN_1				 = 15,//詠唱
 		MAIN_2				 = 16,//詠唱
 		SPECIAL				 = 17,//コンボ
+		BLOCK_IMPACT		 = 18,
 	};
 
 	/*内部処理関数*/
@@ -145,11 +146,12 @@ private:
 	float				animationPlayTime;			//アニメーション再生時間
 	int damage;
 	int attackComboCount;
-	int hitNumber;
+	int attackNumber;
 	bool isDraw;
 
 
 	int modelHandle;
+	int prevHitNum;
 	float speed;
 	bool isGround;
 };

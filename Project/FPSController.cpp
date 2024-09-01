@@ -68,6 +68,10 @@ void FPSController::Average()
 		this->count++;
 	}
 }
+const void FPSController::Draw()const
+{
+	printfDx("fps:%f\n", this->fps);
+}
 
 ///// <summary>
 ///// targetFPS‚ÌXV

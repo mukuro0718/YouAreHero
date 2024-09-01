@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "EffekseerForDXLib.h"
 #include "GoriLib.h"
 #include "UseSTL.h"
 #include "UseJson.h"
@@ -52,6 +53,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     //Singleton<JsonLoader>   ::DeleteInstance();
     //Singleton<JsonManager>  ::DeleteInstance();
 
+    // Effekseerを終了する。
+    Effkseer_End();
     // ＤＸライブラリの後始末
     DxLib_End();
 

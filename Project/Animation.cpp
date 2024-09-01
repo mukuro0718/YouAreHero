@@ -60,28 +60,34 @@ void Animation::Attach(int* modelHandle)
 /// <summary>
 /// アニメーションの再生
 /// </summary>
-void Animation::Play(int* modelHandle, VECTOR& _position, const int _nextAnimation, const float _animationPlayTime)
+void Animation::Play(int* _modelHandle, VECTOR& _position, const int _nextAnimation, const float _animationPlayTime)
 {
 	/*もし今までアタッチしていたアニメーションと次のアニメーションが違うなら*/
 	if (this->nowAnimation != _nextAnimation)
 	{
+		VECTOR MovePosition = MV1GetFramePosition(*_modelHandle, 1);
+		float yOffset = MovePosition.y - _position.y;
+		_position = MovePosition;
+		_position.y -= yOffset;
+
 		this->prevAnimation = this->nowAnimation;
 		this->nowAnimation = _nextAnimation;
 		this->isChange = false;
 		this->animationPlayTime = 0.0f;
+		MV1SetAttachAnimTime(*_modelHandle, this->animationAttachIndex, this->animationPlayTime);
 		//アニメーションのアタッチ
-		Attach(modelHandle);
+		Attach(_modelHandle);
 	}
 
 	/*アニメーションのブレンド率をセット*/
-	MV1SetAttachAnimBlendRate(*modelHandle, this->prevAnimationAttachIndex, 1.0f - this->animationRate);
-	MV1SetAttachAnimBlendRate(*modelHandle, this->animationAttachIndex, this->animationRate);
+	MV1SetAttachAnimBlendRate(*_modelHandle, this->prevAnimationAttachIndex, 1.0f - this->animationRate);
+	MV1SetAttachAnimBlendRate(*_modelHandle, this->animationAttachIndex, this->animationRate);
 
 	/*ブレンド率が1以上だったら*/
 	if (this->animationRate >= 1.0f)
 	{
 		//前のアタッチしていたアニメーションをデタッチする
-		MV1DetachAnim(*modelHandle, this->prevAnimationAttachIndex);
+		MV1DetachAnim(*_modelHandle, this->prevAnimationAttachIndex);
 	}
 	else
 	{
@@ -91,11 +97,16 @@ void Animation::Play(int* modelHandle, VECTOR& _position, const int _nextAnimati
 
 		/*アニメーション再生時間を進める*/
 		this->animationPlayTime += _animationPlayTime;
-		MV1SetAttachAnimTime(*modelHandle, this->animationAttachIndex, this->animationPlayTime);
+		MV1SetAttachAnimTime(*_modelHandle, this->animationAttachIndex, this->animationPlayTime);
 	/*再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す*/
 	if (this->animationPlayTime >= this->animationTotalTime)
 	{
+		VECTOR MovePosition = MV1GetFramePosition(*_modelHandle, 1);
+		float yOffset = MovePosition.y - _position.y;
+		_position = MovePosition;
+		_position.y -= yOffset;
 		this->animationPlayTime = 0.0f;
 		this->isChange = true;
+		MV1SetAttachAnimTime(*_modelHandle, this->animationAttachIndex, this->animationPlayTime);
 	}
 }

@@ -18,22 +18,23 @@ public:
 	void		Update(GoriLib::Physics* _physics);		//更新
 	void		OnCollide(const Collidable& _colider)override;//衝突したとき
 	const void	Draw()const;//描画
-	const int		GetDamage()const;									  //ダメージの取得
-	const int		GetHP()const;				  //HPの取得
+	const int	GetDamage()const;									  //ダメージの取得
+	const int	GetHP()const;				  //HPの取得
+	const VECTOR GetDirection()const;
+	const VECTOR GetRotation()const;
 	const VECTOR GetHeadPosition()const;
 	const VECTOR GetPosition()const;
-	const int GetAttackNumber()const { return this->attackNumber; }
-	const int GetHitNumber()const { return this->hitNumber; }
-	void SetHitNumber(const int _attackNumber) { this->hitNumber = _attackNumber; }
+	const int GetHitNumber()const { return this->attackNumber; }
+	void SetHitNumber(const int _attackNumber) { this->attackNumber = _attackNumber; }
 	const bool IsAttack()const;
 	void OnIsHitAttack() { this->isHitAttack = true; }
+	const int GetModelHandle()const { return this->modelHandle; }
 private:
 	/*ファンクション*/
 	typedef std::function<void(void)> FlagsState;//フラグごとの実行したい関数（引数、返り値無し）
 
 	/*静的定数*/
-	static constexpr int COUNT_NUM = 2;
-	static constexpr int COLLIDER_NUM = 2;//コライダーの数
+	static constexpr int COUNT_NUM = 4;
 	//基本状態
 	static constexpr unsigned int DYING	= (1 << 0);//デス
 	static constexpr unsigned int IDLE	= (1 << 1);//待機
@@ -41,9 +42,9 @@ private:
 	static constexpr unsigned int WALK	= (1 << 3);//歩き
 	static constexpr unsigned int REST	= (1 << 4);//休憩
 	//フェーズ１
-	static constexpr unsigned int PUNCH		  = (1 << 5);//パンチ
-	static constexpr unsigned int SLASH		  = (1 << 6);//スラッシュ
-	static constexpr unsigned int THROW_STORN = (1 << 7);//投石
+	static constexpr unsigned int SLASH		  = (1 << 5);//パンチ
+	static constexpr unsigned int ROTATE_PUNCH = (1 << 6);//スラッシュ
+	static constexpr unsigned int JUMP_ATTACK = (1 << 7);//投石
 	//フェーズ２
 	static constexpr unsigned int HURRICANE_KICK = (1 << 8);//回転蹴り
 	static constexpr unsigned int GRAND_SLAM	 = (1 << 9);//地面をたたく
@@ -55,7 +56,7 @@ private:
 	static constexpr unsigned int DARK_FIELD	   = (1 << 13);//ダークフィールド（範囲内にダメージ）
 	static constexpr unsigned int METEO			   = (1 << 14);//隕石
 
-	static constexpr unsigned int MASK_ATTACK = PUNCH | SLASH | THROW_STORN |HURRICANE_KICK | GRAND_SLAM |FLAME_MAGIC | LIGHTNING 
+	static constexpr unsigned int MASK_ATTACK = SLASH | ROTATE_PUNCH | JUMP_ATTACK |HURRICANE_KICK | GRAND_SLAM |FLAME_MAGIC | LIGHTNING
 											   | CONTINUOUS_SLASH | COMBO | DARK_FIELD | METEO;
 	static constexpr unsigned int MASK_ALL = MASK_ATTACK | WALK | DYING | REST | REST | IDLE;
 	
@@ -76,14 +77,16 @@ private:
 	enum class FrameCountType
 	{
 		REST = 0,
-		ATTACK = 1,
+		SLASH = 1,
+		JUMP_ATTACK = 2,
+		ROTATE_PUNCH = 3,
 	};
 	enum class AttackType
 	{
 		NONE			 = -1,
-		PUNCH			 = 0,//パンチ
-		SLASH			 = 1,//スラッシュ
-		THROW_STORN		 = 2,//投石
+		SLASH			 = 0,//パンチ
+		ROTATE_PUNCH	 = 1,//スラッシュ
+		JUMP_ATTACK		 = 2,//投石
 		HURRICANE_KICK	 = 3,//回転蹴り
 		GRAND_SLAM		 = 4,//地面をたたく
 		FLAME_MAGIC		 = 5,//火炎放射
@@ -98,9 +101,9 @@ private:
 		IDLE			 = 1,//待機
 		ROAR			 = 2,//咆哮
 		WALK			 = 3,//歩き
-		PUNCH			 = 4,//パンチ
-		SLASH			 = 5,//スラッシュ
-		THROW_STORN		 = 6,//投石
+		SLASH = 4,//パンチ
+		ROTATE_PUNCH = 5,//スラッシュ
+		JUMP_ATTACK = 6,//投石
 		HURRICANE_KICK	 = 7,//回転蹴り
 		GRAND_SLAM		 = 8,//地面をたたく
 		FLAME_MAGIC		 = 9,//火炎放射
@@ -122,8 +125,6 @@ private:
 		  void Death			();
 		  void Reaction			();
 		  void DecideOfAttack	();//攻撃を決める
-		  void RushAttack		();//突進攻撃
-		  void JumpAttack		();//ジャンプ攻撃
 		  void ChangeState		();
 		  bool FrameCount		(const int _index, const int _maxFrame);
 	unsigned int GetState		();
@@ -157,7 +158,6 @@ private:
 	int attackComboCount;//攻撃コンボ回数
 	float jumpPower;
 	bool isHitAttack;
-	int hitNumber;
 	int attackNumber;
 	bool isDraw;
 	int attackType;

@@ -12,6 +12,8 @@
     "Data/Json/Player.json",
     "Data/Json/Enemy.json",
     "Data/Json/Debug.json",
-    "Data/Json/UI.json"
+    "Data/Json/UI.json",
+    "Data/Json/EffectPath.json",
+    "Data/Json/Effect.json"
   ]
 }
