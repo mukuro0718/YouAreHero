@@ -92,25 +92,22 @@ const int PlayerManager::GetDamage()const
 {
 	return this->player->GetDamage();
 }
-/// <summary>
-/// ダメージ処理
-/// </summary>
-void PlayerManager::CalcDamage(const int _damage)
-{
-	return this->player->CalcDamage(_damage);
-}
 
 /// <summary>
 /// ショットフラグ
 /// </summary>
-const bool PlayerManager::IsAttack()const
+const bool PlayerManager::GetIsSlash()const
 {
-	return this->player->IsAttack();
+	return this->player->GetIsSlash();
 }
 
 const int PlayerManager::GetHP()const
 {
 	return this->player->GetHP();
+}
+const float PlayerManager::GetStamina()const
+{
+	return this->player->GetStamina();
 }
 const int PlayerManager::GetHitNumber()const
 {

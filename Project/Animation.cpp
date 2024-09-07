@@ -79,6 +79,12 @@ void Animation::Play(int* _modelHandle, VECTOR& _position, const int _nextAnimat
 		Attach(_modelHandle);
 	}
 
+	/*アニメーション変更許可フラグが立っていたら下す（本来ならすでに降りているはずだが、同じアニメーションを再生しようとすると立ったままになる）*/
+	if (this->isChange)
+	{
+		this->isChange = false;
+	}
+
 	/*アニメーションのブレンド率をセット*/
 	MV1SetAttachAnimBlendRate(*_modelHandle, this->prevAnimationAttachIndex, 1.0f - this->animationRate);
 	MV1SetAttachAnimBlendRate(*_modelHandle, this->animationAttachIndex, this->animationRate);
@@ -95,9 +101,10 @@ void Animation::Play(int* _modelHandle, VECTOR& _position, const int _nextAnimat
 		this->animationRate += 0.1f;
 	}
 
-		/*アニメーション再生時間を進める*/
-		this->animationPlayTime += _animationPlayTime;
-		MV1SetAttachAnimTime(*_modelHandle, this->animationAttachIndex, this->animationPlayTime);
+	/*アニメーション再生時間を進める*/
+	this->animationPlayTime += _animationPlayTime;
+	MV1SetAttachAnimTime(*_modelHandle, this->animationAttachIndex, this->animationPlayTime);
+
 	/*再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す*/
 	if (this->animationPlayTime >= this->animationTotalTime)
 	{

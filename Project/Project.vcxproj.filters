@@ -163,11 +163,41 @@
     <Filter Include="Object\Attack\Manager\Type\Player">
       <UniqueIdentifier>{832e6b1d-5ffc-4efb-8198-033046818b12}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Attack\Manager\Type\Boss">
-      <UniqueIdentifier>{89d86286-0469-4cc7-8c21-cf9703bdd411}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Effect">
       <UniqueIdentifier>{7932e36d-11f9-4909-b064-c775dbf5a0f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action">
+      <UniqueIdentifier>{5933574b-c5b6-424f-b742-962dab35536c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BossAction">
+      <UniqueIdentifier>{bcb51280-93f9-4050-a12f-9d9d9b5ee39a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Chase">
+      <UniqueIdentifier>{c57bcfed-c421-41a6-968d-4c8a1b3aed38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Death">
+      <UniqueIdentifier>{49e4a844-95ed-4781-ba48-d47f4f734bbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack">
+      <UniqueIdentifier>{4b018703-84ac-4fa5-856c-702a94ee4945}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\RotatePunch">
+      <UniqueIdentifier>{17381d64-3256-44b1-b394-6a4de3bc67c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\JumpAttack">
+      <UniqueIdentifier>{2397f971-7a1e-4be2-82a3-38011d67f06f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\HurricaneKick">
+      <UniqueIdentifier>{64b22979-5b93-4fb1-9dd8-51116bcc828b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\SlashAttack">
+      <UniqueIdentifier>{5046fb6c-d270-4c6c-b072-f9df910186a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\FlyAttack">
+      <UniqueIdentifier>{3a4bbd0b-f247-4c81-95ce-736cb968d8cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\Base">
+      <UniqueIdentifier>{89d86286-0469-4cc7-8c21-cf9703bdd411}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -292,23 +322,41 @@
     <ClCompile Include="BossAttackManager.cpp">
       <Filter>Object\Attack\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerMain_1Attack.cpp">
+    <ClCompile Include="PlayerAttack.cpp">
       <Filter>Object\Attack\Manager\Type\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerMain_2Attack.cpp">
-      <Filter>Object\Attack\Manager\Type\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerSpecialAttack.cpp">
-      <Filter>Object\Attack\Manager\Type\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="BossAttack.cpp">
-      <Filter>Object\Attack\Manager\Type\Boss</Filter>
     </ClCompile>
     <ClCompile Include="EffectManager.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp">
       <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="BossAction.cpp">
+      <Filter>Object\Character\Enemy\Action\BossAction</Filter>
+    </ClCompile>
+    <ClCompile Include="BossChase.cpp">
+      <Filter>Object\Character\Enemy\Action\Chase</Filter>
+    </ClCompile>
+    <ClCompile Include="BossDeath.cpp">
+      <Filter>Object\Character\Enemy\Action\Death</Filter>
+    </ClCompile>
+    <ClCompile Include="BossSlashAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\Attack\SlashAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="BossAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\Attack\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="BossHurricaneKick.cpp">
+      <Filter>Object\Character\Enemy\Action\Attack\HurricaneKick</Filter>
+    </ClCompile>
+    <ClCompile Include="BossJumpAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\Attack\JumpAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="BossRotatePunch.cpp">
+      <Filter>Object\Character\Enemy\Action\Attack\RotatePunch</Filter>
+    </ClCompile>
+    <ClCompile Include="BossFlyAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\Attack\FlyAttack</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -459,23 +507,41 @@
     <ClInclude Include="BossAttackManager.h">
       <Filter>Object\Attack\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerMain_1Attack.h">
+    <ClInclude Include="PlayerAttack.h">
       <Filter>Object\Attack\Manager\Type\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerMain_2Attack.h">
-      <Filter>Object\Attack\Manager\Type\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerSpecialAttack.h">
-      <Filter>Object\Attack\Manager\Type\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="BossAttack.h">
-      <Filter>Object\Attack\Manager\Type\Boss</Filter>
     </ClInclude>
     <ClInclude Include="EffectManager.h">
       <Filter>Effect</Filter>
     </ClInclude>
     <ClInclude Include="Effect.h">
       <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="BossAction.h">
+      <Filter>Object\Character\Enemy\Action\BossAction</Filter>
+    </ClInclude>
+    <ClInclude Include="BossChase.h">
+      <Filter>Object\Character\Enemy\Action\Chase</Filter>
+    </ClInclude>
+    <ClInclude Include="BossDeath.h">
+      <Filter>Object\Character\Enemy\Action\Death</Filter>
+    </ClInclude>
+    <ClInclude Include="BossSlashAttack.h">
+      <Filter>Object\Character\Enemy\Action\Attack\SlashAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="BossAttack.h">
+      <Filter>Object\Character\Enemy\Action\Attack\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="BossHurricaneKick.h">
+      <Filter>Object\Character\Enemy\Action\Attack\HurricaneKick</Filter>
+    </ClInclude>
+    <ClInclude Include="BossJumpAttack.h">
+      <Filter>Object\Character\Enemy\Action\Attack\JumpAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="BossRotatePunch.h">
+      <Filter>Object\Character\Enemy\Action\Attack\RotatePunch</Filter>
+    </ClInclude>
+    <ClInclude Include="BossFlyAttack.h">
+      <Filter>Object\Character\Enemy\Action\Attack\FlyAttack</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

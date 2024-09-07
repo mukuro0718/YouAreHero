@@ -2,7 +2,10 @@
 
 class Physics;
 class Collidable;
-class BossAttack;
+namespace GoriLib
+{
+	class BossAttack;
+}
 class BossAttackManager
 {
 public:
@@ -18,15 +21,16 @@ public:
 	const VECTOR GetPosition(const int _index);
 	const VECTOR GetThrowPosition();
 private:
-	static constexpr int ATTACK_NUM = 3;
 	enum class AttackType
 	{
-		NONE = -1,
-		SLASH = 0,//詠唱
-		ROTATE_PUNCH = 1,//詠唱
-		JUMP_ATTACK = 2,//コンボ
+		NONE		   = -1,
+		SLASH		   = 0,//スラッシュ
+		FLY_ATTACK	   = 1,//飛び攻撃
+		HURRICANE_KICK = 2,//回転蹴り
+		JUMP_ATTACK	   = 3,//ジャンプアタック
+		ROTATE_PUNCH   = 4,//回転パンチ
 	};
-	std::vector<BossAttack*> attack;
+	std::vector<GoriLib::BossAttack*> attack;
 	int hitNumber;
 };
 

@@ -5,9 +5,7 @@
 #include "DeleteInstance.h"
 #include "GoriLib.h"
 #include "GameObjectTag.h"
-#include "PlayerMain_1Attack.h"
-#include "PlayerMain_2Attack.h"
-#include "PlayerSpecialAttack.h"
+#include "PlayerAttack.h"
 #include "PlayerAttackManager.h"
 #include "PlayerManager.h"
 
@@ -16,9 +14,7 @@
 /// </summary>
 PlayerAttackManager::PlayerAttackManager()
 {
-	this->main1 = new PlayerMain_1Attack();
-	this->main2 = new PlayerMain_2Attack();
-	this->special = new PlayerSpecialAttack();
+	this->attack = new PlayerAttack();
 }
 
 /// <summary>
@@ -26,9 +22,7 @@ PlayerAttackManager::PlayerAttackManager()
 /// </summary>
 PlayerAttackManager::~PlayerAttackManager()
 {
-	DeleteMemberInstance(this->main1);
-	DeleteMemberInstance(this->main2);
-	DeleteMemberInstance(this->special);
+	DeleteMemberInstance(this->attack);
 }
 
 /// <summary>
@@ -36,18 +30,14 @@ PlayerAttackManager::~PlayerAttackManager()
 /// </summary>
 void PlayerAttackManager::Initialize(GoriLib::Physics* _physics)
 {
-	this->main1->Initialize(_physics);
-	this->main2->Initialize(_physics);
-	this->special->Initialize(_physics);
+	this->attack->Initialize(_physics);
 }
 /// <summary>
 /// å„èàóù
 /// </summary>
 void PlayerAttackManager::Finalize(GoriLib::Physics* _physics)
 {
-	this->main1->Finalize(_physics);
-	this->main2->Finalize(_physics);
-	this->special->Finalize(_physics);
+	this->attack->Finalize(_physics);
 }
 /// <summary>
 /// çXêV
@@ -59,18 +49,20 @@ void PlayerAttackManager::Update(GoriLib::Physics* _physics)
 	VECTOR position = player.GetPosition();
 	VECTOR direction = player.GetDirection();
 
-	this->main1->Update(_physics, position, direction);
-	this->main2->Update(_physics, position, direction);
-	this->special->Update(_physics, position, direction);
+	/*çUåÇÇµÇƒÇ¢ÇÈÇ©ÇÃîªíË*/
+	if (!this->attack->GetIsStart() && player.GetIsSlash())
+	{
+		this->attack->OnIsStart();
+	}
+
+	this->attack->Update(_physics, position, direction);
 }
 /// <summary>
 /// è’ìÀÇµÇΩÇ©
 /// </summary>
 void PlayerAttackManager::OnCollide(const GoriLib::Collidable& _colider)
 {
-	this->main1->OnCollide(_colider);
-	this->main2->OnCollide(_colider);
-	this->special->OnCollide(_colider);
+	this->attack->OnCollide(_colider);
 }
 
 /// <summary>
@@ -78,23 +70,10 @@ void PlayerAttackManager::OnCollide(const GoriLib::Collidable& _colider)
 /// </summary>
 const void PlayerAttackManager::Draw()const
 {
-	this->main1->Draw();
-	this->main2->Draw();
-	this->special->Draw();
+	this->attack->Draw();
 }
 
 void PlayerAttackManager::OnIsStart(const int _index)
 {
-	switch (_index)
-	{
-	case static_cast<int>(AttackType::MAIN_1):
-		this->main1->OnIsStart();
-		break;
-	case static_cast<int>(AttackType::MAIN_2):
-		this->main2->OnIsStart();
-		break;
-	case static_cast<int>(AttackType::SPECIAL):
-		this->special->OnIsStart();
-		break;
-	}
+	this->attack->OnIsStart();
 }

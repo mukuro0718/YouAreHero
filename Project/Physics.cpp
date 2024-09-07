@@ -282,7 +282,9 @@ bool Physics::IsCollide(const Collidable* _objectA, const Collidable* _objectB)c
 		auto aTag = _objectA->GetTag();
 		auto bTag = _objectB->GetTag();
 		if ((aTag == GameObjectTag::BOSS && bTag == GameObjectTag::PLAYER_ATTACK) ||
-			(aTag == GameObjectTag::PLAYER && bTag == GameObjectTag::BOSS_ATTACK))
+			(aTag == GameObjectTag::PLAYER && bTag == GameObjectTag::BOSS_ATTACK) ||
+			(aTag == GameObjectTag::BOSS_ATTACK && bTag == GameObjectTag::PLAYER) ||
+			(aTag == GameObjectTag::PLAYER_ATTACK && bTag == GameObjectTag::BOSS))
 		{
 			ColliderData* sphereDataBase = _objectA->colliderData;
 			VECTOR sphereCenter = _objectA->nextPosition;

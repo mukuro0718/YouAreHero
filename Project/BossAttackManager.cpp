@@ -6,19 +6,26 @@
 #include "GoriLib.h"
 #include "GameObjectTag.h"
 #include "BossAttack.h"
+#include "BossSlashAttack.h"
+#include "BossHurricaneKick.h"
+#include "BossJumpAttack.h"
+#include "BossFlyAttack.h"
+#include "BossRotatePunch.h"
 #include "BossAttackManager.h"
 #include "EnemyManager.h"
 #include "PlayerManager.h"
 
+using namespace GoriLib;
 /// <summary>
 /// コンストラクタ
 /// </summary>
 BossAttackManager::BossAttackManager()
 {
-	for (int i = 0; i < this->ATTACK_NUM; i++)
-	{
-		this->attack.emplace_back(new BossAttack(i));
-	}
+	this->attack.emplace_back(new BossSlashAttack	(static_cast<int>(AttackType::SLASH)));
+	this->attack.emplace_back(new BossFlyAttack		(static_cast<int>(AttackType::FLY_ATTACK)));
+	this->attack.emplace_back(new BossHurricaneKick	(static_cast<int>(AttackType::HURRICANE_KICK)));
+	this->attack.emplace_back(new BossJumpAttack	(static_cast<int>(AttackType::JUMP_ATTACK)));
+	this->attack.emplace_back(new BossRotatePunch	(static_cast<int>(AttackType::ROTATE_PUNCH)));
 }
 
 /// <summary>
@@ -26,7 +33,7 @@ BossAttackManager::BossAttackManager()
 /// </summary>
 BossAttackManager::~BossAttackManager()
 {
-	for (int i = 0; i < this->ATTACK_NUM; i++)
+	for (int i = 0; i < this->attack.size(); i++)
 	{
 		DeleteMemberInstance(this->attack[i]);
 	}
@@ -37,10 +44,9 @@ BossAttackManager::~BossAttackManager()
 /// </summary>
 void BossAttackManager::Initialize(GoriLib::Physics* _physics)
 {
-	auto& json = Singleton<JsonManager>::GetInstance();
-	for (int i = 0; i < this->ATTACK_NUM; i++)
+	for (int i = 0; i < this->attack.size(); i++)
 	{
-		this->attack[i]->Initialize(_physics,json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][i]);
+		this->attack[i]->Initialize(_physics);
 	}
 }
 /// <summary>
@@ -48,7 +54,7 @@ void BossAttackManager::Initialize(GoriLib::Physics* _physics)
 /// </summary>
 void BossAttackManager::Finalize(GoriLib::Physics* _physics)
 {
-	for (int i = 0; i < this->ATTACK_NUM; i++)
+	for (int i = 0; i < this->attack.size(); i++)
 	{
 		this->attack[i]->Finalize(_physics);
 	}
@@ -58,22 +64,17 @@ void BossAttackManager::Finalize(GoriLib::Physics* _physics)
 /// </summary>
 void BossAttackManager::Update(GoriLib::Physics* _physics)
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& enemy = Singleton<EnemyManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
-	VECTOR direction = VSub(player.GetPosition(), enemy.GetPosition());
-	direction = VNorm(direction);
-	int modelHandle = enemy.GetModelHandle();
-	this->attack[static_cast<int>(AttackType::SLASH)]->Update(_physics, MV1GetFramePosition(modelHandle,11), direction, false, 0.8f);
-	this->attack[static_cast<int>(AttackType::ROTATE_PUNCH)]->Update(_physics, MV1GetFramePosition(modelHandle, 15), direction, false, 0.8f);
-	this->attack[static_cast<int>(AttackType::JUMP_ATTACK)]->Update(_physics, MV1GetFramePosition(modelHandle, 1), direction, false, 0.0f);
+	for (int i = 0; i < this->attack.size(); i++)
+	{
+		this->attack[i]->Update(_physics);
+	}
 }
 /// <summary>
 /// 衝突したか
 /// </summary>
 void BossAttackManager::OnCollide(const GoriLib::Collidable& _colider)
 {
-	for (int i = 0; i < this->ATTACK_NUM; i++)
+	for (int i = 0; i < this->attack.size(); i++)
 	{
 		this->attack[i]->OnCollide(_colider);
 	}
@@ -84,7 +85,7 @@ void BossAttackManager::OnCollide(const GoriLib::Collidable& _colider)
 /// </summary>
 const void BossAttackManager::Draw()const
 {
-	for (int i = 0; i < this->ATTACK_NUM; i++)
+	for (int i = 0; i < this->attack.size(); i++)
 	{
 		this->attack[i]->Draw();
 	}

@@ -22,8 +22,9 @@ public:
 	const VECTOR   GetPosition			()const;//À•W‚Ìæ“¾
 	const VECTOR   GetDirection			()const;//À•W‚Ìæ“¾
 	const bool     IsMove				()const;//ˆÚ“®‚µ‚½‚©
-	const bool	   IsAttack				()const;//UŒ‚‚µ‚½‚©
+	const bool	   GetIsSlash()const;//UŒ‚‚µ‚½‚©
 	const int	   GetHP				()const;
+	const float	   GetStamina			()const;
 	const int GetAttackNumber()const;
 	const int GetHitNumber()const;
 	void SetHitNumber(const int _attackNumber);

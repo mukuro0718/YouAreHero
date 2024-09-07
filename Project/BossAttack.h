@@ -3,31 +3,39 @@
 //===========================================
 #pragma once
 
-class Physics;
-class Collidable;
-class BossAttack : public GoriLib::Collidable
+namespace GoriLib
 {
-public:
-	BossAttack(const int _attackNum);//コンストラクタ
-	~BossAttack();//デストラクタ
+	class Physics;
+	class Collidable;
+	class ColliderData;
+	class BossAttack abstract : public GoriLib::Collidable
+	{
+	public:
+		BossAttack(Priority _priority, GameObjectTag _tag, ColliderData::Kind _colliderKind, bool _isTrigger);//コンストラクタ
+		~BossAttack();//デストラクタ
 
-	void		Initialize(GoriLib::Physics* _physics, const float _radius);							//初期化
-	void		Finalize(GoriLib::Physics* _physics);							//後処理
-	void		Update(GoriLib::Physics* _physics, const VECTOR _position, const VECTOR _direction, const bool _isMove, const float _speed);	//更新
-	void		OnCollide(const Collidable& _colider)override;					//衝突したとき
-	void		OnIsStart() { this->isStartHitCheck = true; }
-	const void	Draw()const;												//描画
-	const VECTOR GetPosition()const;
-private:
-	bool isStartHitCheck;
-	bool isDontStartPrevFrame;
-	int	 frameCount;
-	int	 damage;
-	float radius;
-	VECTOR basePosition;
-	VECTOR direction;
-	int attackNum;
-	float stackSpeed;
-	//当たり判定のスフィアと座標はCollidableが持つため、発生タイミングを管理する
-};
+		virtual void	Initialize(GoriLib::Physics* _physics) abstract;//初期化
+		virtual void	Finalize(GoriLib::Physics* _physics);//後処理
+		virtual void	Update(GoriLib::Physics* _physics) abstract;//更新
+		virtual void	OnCollide(const Collidable& _colider) override;//衝突したとき
+		virtual const void	Draw()const						 abstract;//描画
+		void	OnIsStart() { this->isStartHitCheck = true; }	  //当たり判定開始フラグを立てる
+		const	VECTOR	GetPosition()const;							  //座標の取得
+	protected:
+		/*内部処理関数*/
+		virtual void		SetRadius(const float _radius) abstract;//半径のセット
+		virtual const float GetRadius() const			   abstract;//半径の取得
+		const VECTOR Convert(std::vector<float> _in);
 
+		/*メンバ変数*/
+		int		frameCount;			 //フレームカウント
+		int		damage;				 //ダメージ
+		int		attackIndex;		 //攻撃番号
+		float	stackSpeed;			 //蓄積したスピード
+		VECTOR	basePosition;		 //元の座標
+		VECTOR	direction;			 //方向
+		bool	isStartHitCheck;	 //当たり判定を行うか
+		bool	isDontStartPrevFrame;//前フレームで当たり判定が行われていたか
+		//当たり判定のスフィアと座標はCollidableが持つため、発生タイミングを管理する
+	};
+}

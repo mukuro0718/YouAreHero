@@ -2,9 +2,7 @@
 
 class Physics;
 class Collidable;
-class PlayerMain_1Attack;
-class PlayerMain_2Attack;
-class PlayerSpecialAttack;
+class PlayerAttack;
 class PlayerAttackManager
 {
 public:
@@ -25,9 +23,7 @@ private:
 		MAIN_2 = 1,//ârè•
 		SPECIAL = 2,//ÉRÉìÉ{
 	};
-	PlayerMain_1Attack* main1;
-	PlayerMain_2Attack* main2;
-	PlayerSpecialAttack* special;
+	PlayerAttack* attack;
 	int hitNumber;
 };
 

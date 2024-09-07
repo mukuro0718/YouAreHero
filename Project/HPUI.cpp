@@ -43,10 +43,11 @@ void HPUI::Initialize()
 	/*‰Šú‰»*/
 	int playerHP = player.GetHP();
 	int bossHP = enemy.GetHP();
+	float playerStamina = player.GetStamina();
 
 	this->playerHP.SetRange(playerHP, 0, playerHP);
 	this->bossHP.SetRange(bossHP, 0, bossHP);
-	this->playerStamina.SetRange(500, 0, 500);
+	this->playerStamina.SetRange(playerStamina, 0, playerStamina);
 }
 
 /// <summary>
@@ -61,9 +62,11 @@ void HPUI::Update()
 	/*HPŒvŽZ*/
 	this->playerHP.SetNow(player.GetHP());
 	this->bossHP.SetNow(enemy.GetHP());
+	this->playerStamina.SetNow(player.GetStamina());
 
 	this->playerHP.PrevDecrease();
 	this->bossHP.PrevDecrease();
+	this->playerStamina.PrevDecrease();
 }
 
 /// <summary>
@@ -98,7 +101,7 @@ const void HPUI::Draw()const
 		Box box;
 		int height;
 		int indexBase = json.GetJson(JsonManager::FileType::UI)["PLAYER_INDEX_BASE"];
-		int nowStamina =/* static_cast<int>(this->playerHP.GetNow() / this->playerHP.GetMax() * indexBase)*/indexBase;
+		int nowStamina =static_cast<int>(this->playerStamina.GetNow() / this->playerStamina.GetMax() * indexBase);
 		position.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_POSITION"]);
 		height = json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_HEIGHT"];
 

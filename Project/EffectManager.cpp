@@ -18,8 +18,8 @@ EffectManager::EffectManager()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
-	this->boss.emplace_back(new Effect(asset.GetEffect(LoadingAsset::EffectType::BOSS_PUNCH)));
 	this->boss.emplace_back(new Effect(asset.GetEffect(LoadingAsset::EffectType::BOSS_SLASH)));
+	this->boss.emplace_back(new Effect(asset.GetEffect(LoadingAsset::EffectType::BOSS_PUNCH)));
 	this->boss.emplace_back(new Effect(asset.GetEffect(LoadingAsset::EffectType::BOSS_THROW)));
 }
 /// <summary>
@@ -43,36 +43,32 @@ void EffectManager::Update()
 	// DXライブラリのカメラとEffekseerのカメラを同期する。
 	Effekseer_Sync3DSetting();
 	{
-		VECTOR position = enemy.GetPosition();
-		position.y += json.GetJson(JsonManager::FileType::EFFECT)["BOSS_PUNCH_Y_OFFSET"];
-		VECTOR scale = Convert(json.GetJson(JsonManager::FileType::EFFECT)["BOSS_PUNCH_SCALE"]);
-		VECTOR rotation = enemy.GetRotation();
-		const int START_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_PUNCH_START_FRAME"];
-		const int END_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_PUNCH_END_FRAME"];
-		this->boss[static_cast<int>(BossEffect::PUNCH)]->Update(START_FRAME, END_FRAME, position, rotation, scale);
+		//VECTOR position = enemy.GetPosition();
+		//position.y += json.GetJson(JsonManager::FileType::EFFECT)["BOSS_SLASH_Y_OFFSET"];
+		//VECTOR scale = Convert(json.GetJson(JsonManager::FileType::EFFECT)["BOSS_SLASH_SCALE"]);
+		//VECTOR rotation = enemy.GetRotation();
+		//const int START_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_SLASH_START_FRAME"];
+		//const int END_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_SLASH_END_FRAME"];
+		//this->boss[static_cast<int>(BossEffect::SLASH)]->Update(START_FRAME, END_FRAME, position, rotation, scale);
 	}
 	{
 		/*使用する値の準備*/
-		VECTOR position = enemy.GetPosition();
-		VECTOR rotation = enemy.GetRotation();
-		VECTOR scale = Convert(json.GetJson(JsonManager::FileType::EFFECT)["BOSS_SLASH_SCALE"]);
-		position.y += json.GetJson(JsonManager::FileType::EFFECT)["BOSS_SLASH_Y_OFFSET"];
-		const int START_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_SLASH_START_FRAME"];
-		const int END_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_SLASH_END_FRAME"];
-		this->boss[static_cast<int>(BossEffect::SLASH)]->Update(START_FRAME, END_FRAME, position, rotation, scale);
+		//VECTOR position = position = MV1GetFramePosition(enemy.GetModelHandle(), 4);
+		//VECTOR rotation = enemy.GetRotation();
+		//VECTOR scale = Convert(json.GetJson(JsonManager::FileType::EFFECT)["BOSS_PUNCH_SCALE"]);
+		//position.y += json.GetJson(JsonManager::FileType::EFFECT)["BOSS_PUNCH_Y_OFFSET"];
+		//const int START_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_PUNCH_START_FRAME"];
+		//const int END_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_PUNCH_END_FRAME"];
+		//this->boss[static_cast<int>(BossEffect::ROTATE_PUNCH)]->Update(START_FRAME, END_FRAME, position, rotation, scale);
 	}
 	{
 		/*使用する値の準備*/
-		VECTOR position = bossAttack.GetThrowPosition();
-		if (position.y >= 500.0f)
-		{
-			position = MV1GetFramePosition(enemy.GetModelHandle(), 15);
-		}
-		VECTOR rotation = { 0.0f,0.0f,0.0f };		 //回転率
-		VECTOR scale = Convert(json.GetJson(JsonManager::FileType::EFFECT)["BOSS_THROW_SCALE"]);
-		const int START_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_THROW_START_FRAME"];
-		const int END_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_THROW_END_FRAME"];
-		this->boss[static_cast<int>(BossEffect::THROW)]->Update(START_FRAME, END_FRAME, position, rotation,scale);
+		//VECTOR position = enemy.GetPosition();
+		//VECTOR rotation = { 0.0f,0.0f,0.0f };		 //回転率
+		//VECTOR scale = Convert(json.GetJson(JsonManager::FileType::EFFECT)["BOSS_THROW_SCALE"]);
+		//const int START_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_THROW_START_FRAME"];
+		//const int END_FRAME = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_THROW_END_FRAME"];
+		//this->boss[static_cast<int>(BossEffect::JUMP_ATTACK)]->Update(START_FRAME, END_FRAME, position, rotation,scale);
 	}
 }
 /// <summary>
@@ -82,22 +78,22 @@ const void EffectManager::Draw()const
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	for (int i = 0; i < json.GetJson(JsonManager::FileType::EFFECT)["BOSS_EFFECT_NUM"]; i++)
-	{
-		this->boss[i]->Draw();
-	}
-}
-void EffectManager::OnIsBossPunchEffect()
-{
-	this->boss[static_cast<int>(BossEffect::PUNCH)]->OnIsPlayEffect();
+	//for (int i = 0; i < json.GetJson(JsonManager::FileType::EFFECT)["BOSS_EFFECT_NUM"]; i++)
+	//{
+	//	this->boss[i]->Draw();
+	//}
 }
 void EffectManager::OnIsBossSlashEffect()
 {
 	this->boss[static_cast<int>(BossEffect::SLASH)]->OnIsPlayEffect();
 }
-void EffectManager::OnIsBossThrowEffect()
+void EffectManager::OnIsBossRotatePunchEffect()
 {
-	this->boss[static_cast<int>(BossEffect::THROW)]->OnIsPlayEffect();
+	this->boss[static_cast<int>(BossEffect::ROTATE_PUNCH)]->OnIsPlayEffect();
+}
+void EffectManager::OnIsBossJumpAttackEffect()
+{
+	this->boss[static_cast<int>(BossEffect::JUMP_ATTACK)]->OnIsPlayEffect();
 }
 /// <summary>
 /// vector<float>をVECTORに変換

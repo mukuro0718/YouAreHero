@@ -21,8 +21,8 @@ namespace GoriLib
 		std::list<Collidable*> IsCollideLine(const VECTOR& _start, const VECTOR& _end)const;
 
 		//重力と最大重力加速度
-		static constexpr float GRAVITY = -0.01f;
-		static constexpr float MAX_GRAVITY_ACCEL = -0.15f;
+		static constexpr float GRAVITY = -0.1f;
+		static constexpr float MAX_GRAVITY_ACCEL = -2.0f;
 	private:
 		static constexpr int BEFORE_FIX_INFO_COLOR = 0x0000ff;//補正前情報色
 		static constexpr int AIM_INFO_COLOR = 0x0000aa;//補正前予定情報色
