@@ -7,6 +7,7 @@
 #include "SceneBase.h"
 
 class GoriLib::Physics;
+class BitFlag;
 class GameScene : public SceneBase
 {
 public:
@@ -27,8 +28,7 @@ private:
 	/*内部処理関数*/
 	void ChangeState();//ゲームの状態の変更
 
-	unsigned int gameState;//ゲームの状態（本当はScene~にしたかったが、ほかの命名と被るため変更）
-
+	BitFlag* gameState;//ゲームの状態（本当はScene~にしたかったが、ほかの命名と被るため変更）
 	class GoriLib::Physics* physics;
 };
 

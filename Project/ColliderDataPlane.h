@@ -1,5 +1,5 @@
 //==========================================
-// @brief •½–Ê‚ÌColliderData
+// @brief •½–Ê(¡‰ñ‚Í‰~Œ`‚É‚·‚é‚Ì‚Å”¼Œa‚à‚Â)‚ÌColliderData
 //==========================================
 #pragma once
 
@@ -12,5 +12,6 @@ namespace GoriLib
 		ColliderDataPlane(bool _isTrigger);
 
 		VECTOR norm;//–@ü
+		float radius;
 	};
 }

@@ -157,7 +157,7 @@ void Player::Update(GoriLib::Physics* _physics)
 		}
 	}
 	/*フラグの初期化*/
-	this->state->ClearFlag(this->MASK_ALL);
+	this->state->ClearFlag(this->MASK_ALWAYS_TURN_OFF);
 
 	/*アクション*/
 	Death();
@@ -172,6 +172,10 @@ void Player::Update(GoriLib::Physics* _physics)
 	if (DontAnyAction()) 
 	{ 
 		this->state->SetFlag(this->IDLE); 
+	}
+	else
+	{
+		this->state->ClearFlag(this->IDLE);
 	}
 
 	//状態が歩きまたは待機の時のみスタミナを回復する（その他スタミナ消費はその場所で行っている
@@ -503,10 +507,34 @@ void Player::UpdateAnimation()
 }
 void Player::Reaction()
 {
-	auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
-	if (this->prevHitNum != capsuleColiderData->GetHitNumber())
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>  ::GetInstance();
+	
+	if (this->state->CheckFlag(this->MASK_REACTION) && this->animation->GetIsChangeAnim())
 	{
+		this->state->ClearFlag(this->MASK_ALL);
+	}
 
+	/*ヒット番号を取得*/
+	auto capsuleColiderData = dynamic_cast<GoriLib::ColliderDataCapsule*>(this->colliderData);
+	int nowHitNum = capsuleColiderData->GetHitNumber();
+
+	/*現在のヒット番号と前のヒット番号が異なっていたら*/
+	if (this->prevHitNum != nowHitNum)
+	{
+		//ガード中
+		if (this->state->CheckFlag(this->BLOCK))
+		{
+			this->state->ClearFlag(this->MASK_ALL);
+			this->state->SetFlag(this->BLOCK_REACTION);
+			CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]);
+		}
+		else
+		{
+			this->state->ClearFlag(this->MASK_ALL);
+			this->state->SetFlag(this->REACTION);
+		}
+		this->prevHitNum = nowHitNum;
 	}
 }
 
@@ -563,14 +591,19 @@ void Player::Block()
 	/*ブロックできるか*/
 	if (!CanBlock())return;
 
+	/*消費スタミナは足りるのか*/
+	if (!CanAction(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]))return;
+
 	/*LTが押されたか*/
 	if (pad & PAD_INPUT_7)
 	{
 		this->state->SetFlag(this->BLOCK);
+		capsuleColiderData->isCutDamage = true;
 	}
 	else
 	{
 		this->state->ClearFlag(this->BLOCK);
+		capsuleColiderData->isCutDamage = false;
 	}
 }
 /// <summary>
@@ -690,11 +723,12 @@ bool Player::FrameCount(const int _index, const int _maxFrame)
 
 const bool Player::CanRotation()const
 {
-	if (this->state->CheckFlag(this->REACTION))		return false;//リアクション
+	if (this->state->CheckFlag(this->MASK_REACTION))		return false;//リアクション
 	if (this->state->CheckFlag(this->DEATH)	)		return false;//デス
 	if (this->state->CheckFlag(this->ROLL))			return false;//回避
-	if (this->state->CheckFlag(this->MASK_ATTACK))	return false;//回避
+	if (this->state->CheckFlag(this->MASK_ATTACK))	return false;//攻撃
 	if (this->state->CheckFlag(this->JUMP))			return false;//ジャンプ
+	if (this->state->CheckFlag(this->BLOCK))		return false;//防御
 	return true;
 }
 const bool Player::CanRolling()const
@@ -710,7 +744,7 @@ const bool Player::CanRolling()const
 }
 const bool Player::CanAttack()const
 {
-	if (this->state->CheckFlag(this->REACTION))	return false;//リアクション
+	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
 	if (this->state->CheckFlag(this->DEATH))	return false;//デス
 	if (this->state->CheckFlag(this->ROLL))		return false;//回避
 	if (this->state->CheckFlag(this->SLASH))	return false;//回避
@@ -718,7 +752,7 @@ const bool Player::CanAttack()const
 }
 const bool Player::CanBlock()const
 {
-	if (this->state->CheckFlag(this->REACTION))	return false;//リアクション
+	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
 	if (this->state->CheckFlag(this->DEATH))	return false;//デス
 	if (this->state->CheckFlag(this->ROLL))		return false;//回避
 	if (this->state->CheckFlag(this->SLASH))	return false;//攻撃
@@ -727,7 +761,7 @@ const bool Player::CanBlock()const
 }
 const bool Player::CanJump()const
 {
-	if (this->state->CheckFlag(this->REACTION))	return false;//リアクション
+	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
 	if (this->state->CheckFlag(this->DEATH))	return false;//デス
 	if (this->state->CheckFlag(this->ROLL))		return false;//回避
 	if (this->state->CheckFlag(this->SLASH))	return false;//攻撃
@@ -737,11 +771,12 @@ const bool Player::CanJump()const
 const bool Player::DontAnyAction()const
 {
 	if (this->state->CheckFlag(this->MASK_ATTACK))	return false;//攻撃
-	if (this->state->CheckFlag(this->REACTION))		return false;//リアクション
+	if (this->state->CheckFlag(this->MASK_REACTION))		return false;//リアクション
 	if (this->state->CheckFlag(this->ROLL))			return false;//回避
 	if (this->state->CheckFlag(this->DEATH))		return false;//ブロック
 	if (this->state->CheckFlag(this->MASK_MOVE))	return false;//移動
 	if (this->state->CheckFlag(this->JUMP))			return false;//ジャンプ
+	if (this->state->CheckFlag(this->BLOCK))		return false;//ジャンプ
 	return true;
 }
 

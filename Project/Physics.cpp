@@ -310,13 +310,27 @@ bool Physics::IsCollide(const Collidable* _objectA, const Collidable* _objectB)c
 	else if ((aKind == ColliderData::Kind::CAPSULE && bKind == ColliderData::Kind::PLANE) ||
 		(aKind == ColliderData::Kind::PLANE && bKind == ColliderData::Kind::CAPSULE))
 	{
-		VECTOR capsuleUnder = _objectA->nextPosition;
+		ColliderData* planeDataBase = _objectA->colliderData;
+		VECTOR planeCenter = _objectA->rigidbody.GetPosition();
+		VECTOR capsuleUnder = _objectB->nextPosition;
+		if (bKind == ColliderData::Kind::PLANE)
+		{
+			planeDataBase = _objectB->colliderData;
+			planeCenter = _objectB->nextPosition;
+			capsuleUnder = _objectA->nextPosition;
+		}
+		auto planeColliderData = dynamic_cast<ColliderDataPlane*>(planeDataBase);
+
 		if (bKind == ColliderData::Kind::CAPSULE)
 		{
 			capsuleUnder = _objectB->nextPosition;
 		}
-		/*今は地面が平らで、地面のみ平面を持っているので、当たり判定はY座標(０以下かどうか)を比べることで行う*/
-		isHit = (capsuleUnder.y < 0.0f);
+		/*今は地面が円形の平面を持っているので、当たり判定はY座標(０以下かどうか)と平面の中心座標が平面の半径居ないかを判定する*/
+		float distance = VSize(VSub(capsuleUnder, planeCenter));
+		if ((capsuleUnder.y < 0.0f) || (distance > planeColliderData->radius))
+		{
+			isHit = true;
+		}
 	}
 	return isHit;
 }
@@ -359,7 +373,18 @@ void Physics::FixNextPosition(Collidable* primary, Collidable* secondary)const
 	//平面とカプセル(平面はSTATICなので、必ずprimaryがPLANEになる)
 	else if (primaryKind == ColliderData::Kind::PLANE && secondaryKind == ColliderData::Kind::CAPSULE)
 	{
+		auto primaryColliderData = dynamic_cast<ColliderDataPlane*> (primary->colliderData);
+
 		VECTOR fixedPosition = secondary->nextPosition;
+		VECTOR secondaryToPrimary = VSub(secondary->nextPosition, primary->rigidbody.GetPosition());
+		float distance = VSize(secondaryToPrimary);
+		float fixValue = 0.0f;
+
+		if (distance > primaryColliderData->radius)
+		{
+			fixValue = primaryColliderData->radius - distance;
+			fixedPosition = VAdd(fixedPosition, VScale(VNorm(secondaryToPrimary), fixValue));
+		}
 		fixedPosition.y = 0.0f;
 		secondary->nextPosition = fixedPosition;
 	}
@@ -376,6 +401,7 @@ void Physics::FixNextPosition(Collidable* primary, Collidable* secondary)const
 			}
 			secondaryColliderData->hitNumber = primaryColliderData->hitNumber;
 		}
+		
 	}
 	else
 	{

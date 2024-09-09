@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -181,15 +181,20 @@
     <ClCompile Include="PlayerAttackManager.cpp" />
     <ClCompile Include="PlayerAttack.cpp" />
     <ClCompile Include="PlayerManager.cpp" />
+    <ClCompile Include="ResultUI.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="BossRotatePunch.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="SceneChanger.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="SceneState.cpp" />
+    <ClCompile Include="SceneUI.cpp" />
     <ClCompile Include="ScreenSetup.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="Skydome.cpp" />
+    <ClCompile Include="TitleUI.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="TutorialUI.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VECTORtoUseful.cpp" />
   </ItemGroup>
@@ -235,11 +240,16 @@
     <ClInclude Include="PlayerAttack.h" />
     <ClInclude Include="PlayerManager.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="ResultUI.h" />
     <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="BossRotatePunch.h" />
+    <ClInclude Include="SceneState.h" />
+    <ClInclude Include="SceneUI.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="DeleteInstance.h" />
     <ClInclude Include="Skydome.h" />
+    <ClInclude Include="TitleUI.h" />
+    <ClInclude Include="TutorialUI.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="UseJson.h" />
     <ClInclude Include="JsonLoader.h" />

@@ -4,6 +4,7 @@
 #include "UseSTL.h"
 #include "GameObjectTag.h"
 #include "GameScene.h"
+#include "BitFlag.h"
 #include "SceneChanger.h"
 #include "CameraManager.h"
 #include "MapManager.h"
@@ -15,6 +16,7 @@
 #include "BossAttackManager.h"
 #include "UIManager.h"
 #include "EffectManager.h"
+#include "SceneState.h"
 
 using namespace GoriLib;
 
@@ -22,8 +24,10 @@ using namespace GoriLib;
 /// コンストラクタ
 /// </summary>
 GameScene::GameScene()
-	: gameState(this->TITLE)
+	: gameState(nullptr)
 {
+	this->gameState = new BitFlag();
+	this->gameState->SetFlag(this->TITLE);
 	this->physics = new GoriLib::Physics;
 	Initialize();
 }
@@ -87,16 +91,17 @@ void GameScene::Finalize()
 void GameScene::Update()
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& input		  = Singleton<InputManager>		 ::GetInstance();
-	auto& debug		  = Singleton<Debug>			 ::GetInstance();
-	auto& camera	  = Singleton<CameraManager>	 ::GetInstance();
-	auto& map		  = Singleton<MapManager>		 ::GetInstance();
-	auto& player	  = Singleton<PlayerManager>	 ::GetInstance();
+	auto& input = Singleton<InputManager>		 ::GetInstance();
+	auto& debug = Singleton<Debug>			 ::GetInstance();
+	auto& camera = Singleton<CameraManager>	 ::GetInstance();
+	auto& map = Singleton<MapManager>		 ::GetInstance();
+	auto& player = Singleton<PlayerManager>	 ::GetInstance();
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
-	auto& enemy		  = Singleton<EnemyManager>		 ::GetInstance();
+	auto& enemy = Singleton<EnemyManager>		 ::GetInstance();
 	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 	auto& effect = Singleton<EffectManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
+	auto& sceneState = Singleton<SceneState>::GetInstance();
 
 	/*更新処理*/
 	input.Update();
@@ -110,6 +115,8 @@ void GameScene::Update()
 	effect.Update();
 	ui.Update();
 	this->physics->Update();
+	sceneState.Update();
+
 	/*終了処理*/
 	ChangeState();
 }
@@ -120,24 +127,24 @@ void GameScene::Update()
 const void GameScene::Draw()const
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& debug		  = Singleton<Debug>			 ::GetInstance();
-	auto& map		  = Singleton<MapManager>		 ::GetInstance();
-	auto& player	  = Singleton<PlayerManager>	 ::GetInstance();
+	auto& debug = Singleton<Debug>			 ::GetInstance();
+	auto& map = Singleton<MapManager>		 ::GetInstance();
+	auto& player = Singleton<PlayerManager>	 ::GetInstance();
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
-	auto& camera	  = Singleton<CameraManager>	 ::GetInstance();
-	auto& enemy		  = Singleton<EnemyManager>		 ::GetInstance();
+	auto& camera = Singleton<CameraManager>	 ::GetInstance();
+	auto& enemy = Singleton<EnemyManager>		 ::GetInstance();
 	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 	auto& effect = Singleton<EffectManager>::GetInstance();
-	auto& ui		  = Singleton<UIManager>::GetInstance();
+	auto& ui = Singleton<UIManager>::GetInstance();
 
 	/*描画*/
 	camera.Draw();
 	map.Draw();
 	debug.Draw();
 	enemy.Draw();
+	enemyAttack.Draw();
 	player.Draw();
 	playerAttack.Draw();
-	enemyAttack.Draw();
 	effect.Draw();
 	ui.Draw();
 }
@@ -147,15 +154,5 @@ const void GameScene::Draw()const
 /// </summary>
 void GameScene::ChangeState()
 {
-	/*タイトル中に何かボタンが押されたら*/
-	this->gameState = this->TUTORIAL;
-
-	/*チュートリアルがすべて終了したら*/
-	this->gameState = this->GAME;
-
-	/*ボスまたはプレイヤーのHPが０になったら*/
-	this->gameState = this->RESULT;
-
-	/*リザルトの表示が終わったら*/
-	this->gameState = this->TITLE;
+	
 }

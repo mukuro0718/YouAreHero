@@ -199,6 +199,9 @@
     <Filter Include="Object\Character\Enemy\Action\Attack\Base">
       <UniqueIdentifier>{89d86286-0469-4cc7-8c21-cf9703bdd411}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\Scene">
+      <UniqueIdentifier>{44aa4494-94f5-490b-a745-bbc830e4c3f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -357,6 +360,21 @@
     </ClCompile>
     <ClCompile Include="BossFlyAttack.cpp">
       <Filter>Object\Character\Enemy\Action\Attack\FlyAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneUI.cpp">
+      <Filter>UI\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleUI.cpp">
+      <Filter>UI\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="TutorialUI.cpp">
+      <Filter>UI\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultUI.cpp">
+      <Filter>UI\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneState.cpp">
+      <Filter>Scene\Changer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -542,6 +560,21 @@
     </ClInclude>
     <ClInclude Include="BossFlyAttack.h">
       <Filter>Object\Character\Enemy\Action\Attack\FlyAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneUI.h">
+      <Filter>UI\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleUI.h">
+      <Filter>UI\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="TutorialUI.h">
+      <Filter>UI\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultUI.h">
+      <Filter>UI\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneState.h">
+      <Filter>Scene\Changer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

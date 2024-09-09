@@ -1,10 +1,13 @@
 {
   "PATH": [
-    "Asset/Font/Honoka_Shin_Mincho_L.otf"
+    "Asset/Font/Honoka_Shin_Mincho_L.otf",
+    "Asset/Font/batmanforeveralternate.ttf"
   ],
   "NAME": [
-    "ほのか新明朝 Light"
+    "ほのか新明朝 Light",
+    "BatmanForeverAlternate"
   ],
+  "TYPE": [ 0, 0],
   "SIZE": [50,30 ],
   "THICK": [64,64 ]
 }

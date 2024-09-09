@@ -22,6 +22,7 @@ BossMap::BossMap()
 	/*コライダーデータの作成*/
 	auto planeColiderData = dynamic_cast<GoriLib::ColliderDataPlane*>(this->colliderData);
 	planeColiderData->norm = Convert(json.GetJson(JsonManager::FileType::MAP)["MAP_NORM"]);
+	planeColiderData->radius = json.GetJson(JsonManager::FileType::MAP)["MAP_SCALE"];
 }
 
 /// <summary>

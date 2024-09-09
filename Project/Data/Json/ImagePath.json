@@ -9,33 +9,9 @@
     "Asset/Image/UI/RB.png",
     "Asset/Image/UI/RS.png",
 
-    "Asset/Image/UI/Bar/BossHPBarCenter.png",
-    "Asset/Image/UI/Bar/BossHPBarRight.png",
-    "Asset/Image/UI/Bar/BossHPBarLeft.png",
-
-    "Asset/Image/UI/Bar/BossHPBarCenterHolder.png",
-    "Asset/Image/UI/Bar/BossHPBarRightHolder.png",
-    "Asset/Image/UI/Bar/BossHPBarLeftHolder.png",
-    "Asset/Image/UI/Bar/BossHPIconHolder.png",
-
-    "Asset/Image/UI/Bar/PlayerHPBarCenter.png",
-    "Asset/Image/UI/Bar/PlayerHPBarRight.png",
-    "Asset/Image/UI/Bar/PlayerHPBarLeft.png",
-
-    "Asset/Image/UI/Bar/PlayerHPBarCenterHolder.png",
-    "Asset/Image/UI/Bar/PlayerHPBarRightHolder.png",
-    "Asset/Image/UI/Bar/PlayerHPBarLeftHolder.png",
-    "Asset/Image/UI/Bar/PlayerHPIconHolder.png",
-
-    "Asset/Image/UI/Bar/StaminaBarCenter.png",
-    "Asset/Image/UI/Bar/StaminaBarRight.png",
-    "Asset/Image/UI/Bar/StaminaBarLeft.png",
-
-    "Asset/Image/UI/Bar/StaminaBarCenterHolder.png",
-    "Asset/Image/UI/Bar/StaminaBarRightHolder.png",
-    "Asset/Image/UI/Bar/StaminaBarLeftHolder.png",
-    "Asset/Image/UI/Bar/StaminaIconHolder.png",
-    "Asset/Image/UI/Bar/HPIcon.png",
-    "Asset/Image/UI/Bar/Stamina.png"
+    "Asset/Image/UI/GameClearLogo.png",
+    "Asset/Image/UI/GameOverLogo.png",
+    "Asset/Image/UI/PressALogo.png",
+    "Asset/Image/UI/TitleLogo.png"
   ]
 }

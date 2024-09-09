@@ -49,11 +49,12 @@ private:
 	static constexpr unsigned int WALK_RIGHT	 = (1 << 11); //歩き
 	static constexpr unsigned int SLASH			 = (1 << 12); //歩き
 	//マスク
-	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = ROLL | REACTION;
-	static constexpr unsigned int MASK_ATTACK = SLASH;
 	static constexpr unsigned int MASK_REACTION = BLOCK_REACTION | REACTION;
+	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = ROLL | MASK_REACTION | RUNNING | BLOCK;
+	static constexpr unsigned int MASK_ATTACK = SLASH;
 	static constexpr unsigned int MASK_MOVE = WALK_BACK | WALK_FRONT | WALK_LEFT | WALK_RIGHT | RUNNING; //移動マスク
-	static constexpr unsigned int MASK_ALL = MASK_MOVE | IDLE ;
+	static constexpr unsigned int MASK_ALWAYS_TURN_OFF = MASK_MOVE | IDLE;
+	static constexpr unsigned int MASK_ALL = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION | BLOCK | ROLL | JUMP;
 	static constexpr unsigned int MASK_CAN_VELOCITY = MASK_MOVE | ROLL | JUMP;
 	/*列挙体*/
 	//コライダーの種類

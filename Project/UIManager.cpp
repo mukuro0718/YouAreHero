@@ -5,7 +5,7 @@
 #include "HPUI.h"
 #include "ButtonUI.h"
 #include "UIManager.h"
-
+#include "SceneState.h"
 
 /// <summary>
 /// コンストラクタ
@@ -44,6 +44,8 @@ void UIManager::Initialize()
 /// </summary>
 void UIManager::Update()
 {
+	auto& sceneState = Singleton<SceneState>::GetInstance();
+
 	this->hp->Update();
 	this->button->Update();
 }
@@ -53,6 +55,8 @@ void UIManager::Update()
 /// </summary>
 const void UIManager::Draw()const
 {
+	auto& sceneState = Singleton<SceneState>::GetInstance();
+
 	this->hp->Draw();
 	this->button->Draw();
 }
