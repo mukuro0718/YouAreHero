@@ -1,8 +1,6 @@
 #include <DxLib.h>
 #include "EffekseerForDXLib.h"
-#include "GoriLib.h"
 #include "UseSTL.h"
-#include "GameObjectTag.h"
 #include "GameScene.h"
 #include "BitFlag.h"
 #include "SceneChanger.h"
@@ -17,8 +15,7 @@
 #include "UIManager.h"
 #include "EffectManager.h"
 #include "SceneState.h"
-
-using namespace GoriLib;
+#include "CollisionManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -28,7 +25,6 @@ GameScene::GameScene()
 {
 	this->gameState = new BitFlag();
 	this->gameState->SetFlag(this->TITLE);
-	this->physics = new GoriLib::Physics;
 	Initialize();
 }
 
@@ -37,7 +33,6 @@ GameScene::GameScene()
 /// </summary>
 GameScene::~GameScene()
 {
-	delete(this->physics);
 }
 
 /// <summary>
@@ -56,12 +51,11 @@ void GameScene::Initialize()
 	
 	/*初期化*/
 	camera.Initialize();
-	map.Initialize(this->physics);
-	enemy.Initialize(this->physics);
-	player.Initialize(this->physics);
-	playerAttack.Initialize(this->physics);
-	enemyAttack.Initialize(this->physics);
-
+	map.Initialize();
+	player.Initialize();
+	enemy.Initialize();
+	playerAttack.Initialize();
+	enemyAttack.Initialize();
 	ui.Initialize();
 }
 
@@ -77,11 +71,11 @@ void GameScene::Finalize()
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
 	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 
-	map.Finalize(this->physics);
-	enemy.Finalize(this->physics);
-	player.Finalize(this->physics);
-	playerAttack.Finalize(this->physics);
-	enemyAttack.Finalize(this->physics);
+	map.Finalize();
+	enemy.Finalize();
+	player.Finalize();
+	playerAttack.Finalize();
+	enemyAttack.Finalize();
 
 }
 
@@ -102,19 +96,20 @@ void GameScene::Update()
 	auto& effect = Singleton<EffectManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 	auto& sceneState = Singleton<SceneState>::GetInstance();
+	auto& collision = Singleton<CollisionManager>::GetInstance();
 
 	/*更新処理*/
 	input.Update();
 	debug.Update();
 	camera.Update();
-	map.Update(this->physics);
-	enemy.Update(this->physics);
-	player.Update(this->physics);
-	playerAttack.Update(this->physics);
-	enemyAttack.Update(this->physics);
+	map.Update();
+	enemy.Update();
+	player.Update();
+	playerAttack.Update();
+	enemyAttack.Update();
 	effect.Update();
 	ui.Update();
-	this->physics->Update();
+	collision.Update();
 	sceneState.Update();
 
 	/*終了処理*/

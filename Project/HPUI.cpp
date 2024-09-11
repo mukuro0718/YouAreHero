@@ -1,5 +1,4 @@
 #include <DxLib.h>
-#include "GoriLib.h"
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "LoadingAsset.h"

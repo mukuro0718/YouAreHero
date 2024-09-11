@@ -13,6 +13,9 @@ public:
 	void Initialize();		//‰Šú‰»
 	const void Draw()const;	//•`‰æ
 private:
-	Model* model;//ƒ‚ƒfƒ‹
+	int model;//ƒ‚ƒfƒ‹
+	VECTOR position;
+	VECTOR rotation;
+	VECTOR scale;
 };
 

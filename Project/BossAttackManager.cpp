@@ -3,8 +3,6 @@
 #include "UseJson.h"
 #include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
-#include "GoriLib.h"
-#include "GameObjectTag.h"
 #include "BossAttack.h"
 #include "BossSlashAttack.h"
 #include "BossHurricaneKick.h"
@@ -15,7 +13,6 @@
 #include "EnemyManager.h"
 #include "PlayerManager.h"
 
-using namespace GoriLib;
 /// <summary>
 /// コンストラクタ
 /// </summary>
@@ -42,41 +39,31 @@ BossAttackManager::~BossAttackManager()
 /// <summary>
 /// 初期化
 /// </summary>
-void BossAttackManager::Initialize(GoriLib::Physics* _physics)
+void BossAttackManager::Initialize()
 {
 	for (int i = 0; i < this->attack.size(); i++)
 	{
-		this->attack[i]->Initialize(_physics);
+		this->attack[i]->Initialize();
 	}
 }
 /// <summary>
 /// 後処理
 /// </summary>
-void BossAttackManager::Finalize(GoriLib::Physics* _physics)
+void BossAttackManager::Finalize()
 {
 	for (int i = 0; i < this->attack.size(); i++)
 	{
-		this->attack[i]->Finalize(_physics);
+		this->attack[i]->Finalize();
 	}
 }
 /// <summary>
 /// 更新
 /// </summary>
-void BossAttackManager::Update(GoriLib::Physics* _physics)
+void BossAttackManager::Update()
 {
 	for (int i = 0; i < this->attack.size(); i++)
 	{
-		this->attack[i]->Update(_physics);
-	}
-}
-/// <summary>
-/// 衝突したか
-/// </summary>
-void BossAttackManager::OnCollide(const GoriLib::Collidable& _colider)
-{
-	for (int i = 0; i < this->attack.size(); i++)
-	{
-		this->attack[i]->OnCollide(_colider);
+		this->attack[i]->Update();
 	}
 }
 
@@ -98,8 +85,4 @@ void BossAttackManager::OnIsStart(const int _index)
 const VECTOR BossAttackManager::GetPosition(const int _index)
 {
 	return this->attack[_index]->GetPosition();
-}
-const VECTOR BossAttackManager::GetThrowPosition()
-{
-	return this->attack[static_cast<int>(AttackType::JUMP_ATTACK)]->GetPosition();
 }

@@ -1,5 +1,4 @@
 #include <DxLib.h>
-#include "GoriLib.h"
 #include "SceneManager.h"
 #include "GameScene.h"
 #include "LoadScene.h"

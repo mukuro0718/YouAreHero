@@ -1,20 +1,17 @@
 #pragma once
 
-class Physics;
-class Collidable;
 class PlayerAttack;
 class PlayerAttackManager
 {
 public:
-	PlayerAttackManager();//コンストラクタ
+	PlayerAttackManager ();//コンストラクタ
 	~PlayerAttackManager();//デストラクタ
 
-	void		Initialize(GoriLib::Physics* _physics);		//初期化
-	void		Finalize(GoriLib::Physics* _physics);		//後処理
-	void		Update(GoriLib::Physics* _physics);		//更新
-	void		OnCollide(const GoriLib::Collidable& _colider);//衝突したとき
-	const void	Draw()const;	//描画
-	void		OnIsStart(const int _index);
+	void		Initialize();				 //初期化
+	void		Finalize  ();				 //後処理
+	void		Update	  ();				 //更新
+	const void	Draw	  ()const;			 //描画
+	void		OnIsStart ();//開始フラグを立てる
 private:
 	enum class AttackType
 	{

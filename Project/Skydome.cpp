@@ -1,8 +1,6 @@
 #include <DxLib.h>
-#include "UseSTL.h"
 #include "UseJson.h"
 #include "VECTORtoUseful.h"
-#include "Model.h"
 #include "LoadingAsset.h"
 #include "Skydome.h"
 
@@ -10,12 +8,12 @@
 /// コンストラクタ
 /// </summary>
 Skydome::Skydome()
-	: model(nullptr)
+	: model(-1)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
-	this->model = new Model(asset.GetModel(LoadingAsset::ModelType::SKYDOME));
+	this->model = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::SKYDOME));
 }
 
 /// <summary>
@@ -35,11 +33,12 @@ void Skydome::Initialize()
 	const VECTOR position = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_POSITION"]);
 	const VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_ROTATION"]);
 	const VECTOR scale = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_SCALE"]);
-	const VECTOR addPositionAndPosition = position + position;
 
 
 	/*モデルのトランスフォームの設定*/
-	this->model->SetTransform(position, rotation, scale);
+	this->position = position;
+	this->rotation = rotation;
+	this->scale = scale;
 }
 
 /// <summary>
@@ -47,5 +46,8 @@ void Skydome::Initialize()
 /// </summary>
 const void Skydome::Draw()const
 {
-	this->model->Draw();
+	MV1SetPosition(this->model,this->position);
+	MV1SetRotationXYZ(this->model,this->rotation);
+	MV1SetScale(this->model,this->scale);
+	MV1DrawModel(this->model);
 }

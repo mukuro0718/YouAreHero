@@ -3,8 +3,8 @@
 #include "UseJson.h"
 #include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
-#include "GoriLib.h"
-#include "GameObjectTag.h"
+#include "Rigidbody.h"
+
 #include "PlayerAttack.h"
 #include "PlayerAttackManager.h"
 #include "PlayerManager.h"
@@ -28,41 +28,28 @@ PlayerAttackManager::~PlayerAttackManager()
 /// <summary>
 /// 初期化
 /// </summary>
-void PlayerAttackManager::Initialize(GoriLib::Physics* _physics)
+void PlayerAttackManager::Initialize()
 {
-	this->attack->Initialize(_physics);
+	this->attack->Initialize();
 }
 /// <summary>
 /// 後処理
 /// </summary>
-void PlayerAttackManager::Finalize(GoriLib::Physics* _physics)
+void PlayerAttackManager::Finalize()
 {
-	this->attack->Finalize(_physics);
+	this->attack->Finalize();
 }
 /// <summary>
 /// 更新
 /// </summary>
-void PlayerAttackManager::Update(GoriLib::Physics* _physics)
+void PlayerAttackManager::Update()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
-	VECTOR position = player.GetPosition();
-	VECTOR direction = player.GetDirection();
+	VECTOR position = player.GetRigidbody().GetPosition();
+	VECTOR direction = player.GetRigidbody().GetDirection();
 
-	/*攻撃しているかの判定*/
-	if (!this->attack->GetIsStart() && player.GetIsSlash())
-	{
-		this->attack->OnIsStart();
-	}
-
-	this->attack->Update(_physics, position, direction);
-}
-/// <summary>
-/// 衝突したか
-/// </summary>
-void PlayerAttackManager::OnCollide(const GoriLib::Collidable& _colider)
-{
-	this->attack->OnCollide(_colider);
+	this->attack->Update(position, direction);
 }
 
 /// <summary>
@@ -73,7 +60,7 @@ const void PlayerAttackManager::Draw()const
 	this->attack->Draw();
 }
 
-void PlayerAttackManager::OnIsStart(const int _index)
+void PlayerAttackManager::OnIsStart()
 {
 	this->attack->OnIsStart();
 }

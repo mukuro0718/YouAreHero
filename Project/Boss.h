@@ -3,43 +3,21 @@
 //===============================================
 #pragma once
 
-class BitFlag;
-class Physics;
-class Collidable;
-class Animation;
-class Boss : public GoriLib::Collidable
+class Character;
+class Boss : public Character
 {
 public:
 	Boss();//コンストラクタ
 	~Boss();//デストラクタ
 
-	void		Initialize(GoriLib::Physics* _physics);		//初期化
-	void		Finalize(GoriLib::Physics* _physics);		//後処理
-	void		Update(GoriLib::Physics* _physics);		//更新
-	void		OnCollide(const Collidable& _colider)override;//衝突したとき
-	const void	Draw()const;//描画
+	void		Initialize		 () override;		//初期化
+	void		Finalize		 () override;		//後処理
+	void		Update			 () override;		//更新
+	const void	DrawCharacterInfo()const override;//描画
 
 	/*getter*/
-	const int	 GetDamage		()const;									  //ダメージの取得
-	const int	 GetHP			()const;				  //HPの取得
-	const VECTOR GetDirection	()const;
-	const VECTOR GetRotation	()const;
 	const VECTOR GetHeadPosition()const;
-	const VECTOR GetPosition	()const;
-	const int	 GetHitNumber	()const { return this->attackNumber; }
-	const bool	 IsAttack		()const;
-		  void	 OnIsHitAttack	()		{ this->isHitAttack = true; }
-	const int	 GetModelHandle	()const { return this->modelHandle; }
-	const VECTOR GetVelocity	()const { return this->GetVelocity(); }
-
-	/*setter*/
-	void SetHitNumber(const int _attackNumber)	{ this->attackNumber = _attackNumber; }
-	void SetVelocity (const VECTOR _velocity)	{ this->rigidbody.SetVelocity(_velocity); }
-	void SetRotation (const VECTOR _rotation)	{ this->rigidbody.SetRotation(_rotation); }
-	void SetSpeed	 (const float _speed)		{ this->speed = _speed; }
-	/*らーぷ関数*/
-	float  Lerp(const float _start, const float _end, const float _percent);	//らーぷ関数
-	VECTOR Lerp(const VECTOR _start, const VECTOR _end, const VECTOR _percent);//らーぷ関数
+	const bool	 GetIsAttack	()const override;
 private:
 	/*ファンクション*/
 	typedef std::function<void(void)> FlagsState;//フラグごとの実行したい関数（引数、返り値無し）
@@ -146,21 +124,13 @@ private:
 	std::vector<int>			frameCount;				//フレームカウント
 	std::vector<bool>			isCount;				//カウントをするか
 	std::vector<int>			attackCombo;			//攻撃コンボ
-	Animation*					animation;				//アニメーション
-	BitFlag*					state;					//状態
 	VECTOR						moveTarget;				//移動目標
-	float						speed;					//速度
 	float						animationPlayTime;		//アニメーション再生時間
-	bool						isGround;				//地面と当たったか
-	bool						isHitAttack;			//攻撃が当たったか
-	bool						isDraw;					//描画するか
 	int							attackComboCount;		//攻撃コンボ回数
 	int							attackComboIndexOffset;	//攻撃コンボ回数を設定するためのインデックスオフセット
-	int							attackNumber;			//攻撃の番号
 	int							nowAnimation;			//現在のアニメーション
 	int							attackType;				//攻撃の種類
 	int							nowPhase;				//現在のフェーズ
 	int							prevPhase;				//前のフェーズ
-	int							modelHandle;			//モデルハンドル
 };
 

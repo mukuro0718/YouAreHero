@@ -1,8 +1,6 @@
 #include <DxLib.h>
 #include "Rigidbody.h"
 
-using namespace GoriLib;
-
 /// <summary>
 /// コンストラクタ
 /// </summary>

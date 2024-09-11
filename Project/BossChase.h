@@ -1,5 +1,7 @@
 #pragma once
 
+class Character;
+class Rigidbody;
 class BossAction;
 class BossChase : public BossAction
 {
@@ -9,7 +11,7 @@ public:
 
 	void Initialize	() override;
 	void Finalize	() override;
-	void Update		(Boss* _boss) override;
+	Rigidbody& Update		(Character& _boss) override;
 private:
 	
 };

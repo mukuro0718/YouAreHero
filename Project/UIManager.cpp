@@ -16,9 +16,6 @@ UIManager::UIManager()
 	/*インスタンスの生成*/
 	this->hp = new HPUI();
 	this->button = new ButtonUI();
-
-	/*初期化*/
-	Initialize();
 }
 
 /// <summary>

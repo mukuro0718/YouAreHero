@@ -1,8 +1,8 @@
 #include <DxLib.h>
-#include "GoriLib.h"
 #include "UseJson.h"
 #include "UseSTL.h"
 #include "VECTORtoUseful.h"
+#include "Rigidbody.h"
 #include "Camera.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"
@@ -53,7 +53,7 @@ void Camera::Initialize()
 	vector<float> TARGET_OFFSET   = json.GetJson(JsonManager::FileType::CAMERA)["TARGET_OFFSET"];//カメラ座標オフセット
 
 	/*メンバ変数の初期化*/
-	this->nowTarget		  = player.GetPosition() + Convert(TARGET_OFFSET);		//注視点
+	this->nowTarget		  = player.GetRigidbody().GetPosition() + Convert(TARGET_OFFSET);		//注視点
 	this->nextTarget	  = this->nowTarget;										//注視点
 	this->direction		  = Convert(FIRST_DIRECTION);							//カメラの向き
 	this->length		  = FIRST_LENGTH;											//注視点からの距離
@@ -128,7 +128,7 @@ void Camera::UpdateTarget()
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	/*プレイヤーの座標に補正値を足して注視点とする*/
-	this->nextTarget = player.GetPosition() + Convert(json.GetJson(JsonManager::FileType::CAMERA)["TARGET_OFFSET"]);
+	this->nextTarget = player.GetRigidbody().GetPosition() + Convert(json.GetJson(JsonManager::FileType::CAMERA)["TARGET_OFFSET"]);
 
 	this->nowTarget = Lerp(this->nowTarget, this->nextTarget, VGet(0.3f, 0.3f, 0.3f));
 

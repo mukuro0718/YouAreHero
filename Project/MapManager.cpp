@@ -1,6 +1,5 @@
 #include <DxLib.h>
 #include "UseSTL.h"
-#include "GoriLib.h"
 #include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
 #include "BossMap.h"
@@ -31,34 +30,26 @@ MapManager::~MapManager()
 /// <summary>
 /// 初期化
 /// </summary>
-void MapManager::Initialize(GoriLib::Physics* _physics)
+void MapManager::Initialize()
 {
-	this->ground->Initialize(_physics);
+	this->ground->Initialize();
 	this->skydome->Initialize();
 }
 
 /// <summary>
 /// 後処理
 /// </summary>
-void MapManager::Finalize(GoriLib::Physics* _physics)
+void MapManager::Finalize()
 {
-	this->ground->Finalize(_physics);
+	this->ground->Finalize();
 }
 
 /// <summary>
 /// 更新
 /// </summary>
-void MapManager::Update(GoriLib::Physics* _physics)
+void MapManager::Update()
 {
-	this->ground->Update(_physics);
-}
-
-/// <summary>
-/// 移動ベクトルの補正
-/// </summary>
-void MapManager::OnCollide(const GoriLib::Collidable& _colider)
-{
-	this->ground->OnCollide(_colider);
+	this->ground->Update();
 }
 
 /// <summary>

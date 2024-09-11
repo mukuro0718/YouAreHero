@@ -11,6 +11,7 @@ class UIManager : public Singleton<UIManager>
 {
 public:
 	friend class Singleton<UIManager>;
+	virtual ~UIManager();//デストラクタ
 
 	void Initialize();		//初期化
 	void Update();		//更新
@@ -19,7 +20,6 @@ public:
 private:
 	/*内部処理関数*/
 	UIManager();//コンストラクタ
-	~UIManager();//デストラクタ
 
 	/*メンバ変数*/
 	HPUI* hp;

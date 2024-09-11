@@ -3,7 +3,8 @@
 //================================================
 #pragma once
 
-class Boss;
+class Character;
+class Rigidbody;
 class BossAction abstract
 {
 public:
@@ -12,7 +13,7 @@ public:
 
 	virtual void Initialize	() abstract;
 	virtual void Finalize	() abstract;
-	virtual void Update		(Boss* _boss) abstract;
+	virtual Rigidbody& Update		(Character& _boss) abstract;
 
 protected:
 };

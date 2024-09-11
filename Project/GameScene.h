@@ -6,7 +6,6 @@
 #pragma once
 #include "SceneBase.h"
 
-class GoriLib::Physics;
 class BitFlag;
 class GameScene : public SceneBase
 {
@@ -29,6 +28,5 @@ private:
 	void ChangeState();//ゲームの状態の変更
 
 	BitFlag* gameState;//ゲームの状態（本当はScene~にしたかったが、ほかの命名と被るため変更）
-	class GoriLib::Physics* physics;
 };
 

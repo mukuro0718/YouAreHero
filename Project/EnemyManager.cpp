@@ -1,10 +1,9 @@
 #include <DxLib.h>
 #include "UseSTL.h"
-#include "GoriLib.h"
-#include "GameObjectTag.h"
+#include "CharacterData.h"
+#include "Rigidbody.h"
+#include "Character.h"
 #include "Boss.h"
-#include "Vector4.h"
-#include "Collider.h"
 #include "EnemyManager.h"
 
 /// <summary>
@@ -27,30 +26,23 @@ EnemyManager::~EnemyManager()
 /// <summary>
 /// 初期化
 /// </summary>
-void EnemyManager::Initialize(GoriLib::Physics* _physics)
+void EnemyManager::Initialize()
 {
-	this->boss->Initialize(_physics);
+	this->boss->Initialize();
 }
 /// <summary>
 /// 更新
 /// </summary>
-void EnemyManager::Update(GoriLib::Physics* _physics)
+void EnemyManager::Update()
 {
-	this->boss->Update(_physics);
+	this->boss->Update();
 }
 /// <summary>
 /// アクション
 /// </summary>
-void EnemyManager::Finalize(GoriLib::Physics* _physics)
+void EnemyManager::Finalize()
 {
-	this->boss->Finalize(_physics);
-}
-/// <summary>
-/// 当たったか
-/// </summary>
-void EnemyManager::OnCollide(const GoriLib::Collidable& _colider)
-{
-	this->boss->OnCollide(_colider);
+	this->boss->Finalize();
 }
 
 /// <summary>
@@ -62,30 +54,21 @@ const void EnemyManager::Draw()const
 }
 
 /// <summary>
-/// 座標の取得
+/// ダメージデータの取得
 /// </summary>
-const VECTOR EnemyManager::GetPosition()const
+const CharacterData& EnemyManager::GetCharacterData()const
 {
-	return this->boss->GetPosition();
+	return this->boss->GetCharacterData();
 }
-const VECTOR EnemyManager::GetHeadPosition()const
-{
-	return this->boss->GetHeadPosition();
-}
+
 /// <summary>
-/// 向きの取得
+/// リジッドボディの取得
 /// </summary>
-const VECTOR EnemyManager::GetDirection()const
+const Rigidbody& EnemyManager::GetRigidbody()const
 {
-	return this->boss->GetDirection();
+	return this->boss->GetRigidbody();
 }
-/// <summary>
-/// 回転率の取得
-/// </summary>
-const VECTOR EnemyManager::GetRotation()const
-{
-	return this->boss->GetRotation();
-}
+
 /// <summary>
 /// ダメージ処理
 /// </summary>
@@ -93,22 +76,18 @@ const int EnemyManager::GetHP()const
 {
 	return this->boss->GetHP();
 }
-const int EnemyManager::GetHitNumber()const
-{
-	return this->boss->GetHitNumber();
-}
-void EnemyManager::SetHitNumber(const int _attackNumber)
-{
-	this->boss->SetHitNumber(_attackNumber);
-}
+
+/// <summary>
+/// 攻撃フラグの取得
+/// </summary>
 const bool EnemyManager::IsAttack()const
 {
-	return this->boss->IsAttack();
+	return this->boss->GetIsAttack();
 }
-void EnemyManager::OnIsHitAttack()
-{
-	this->boss->OnIsHitAttack();
-}
+
+/// <summary>
+/// モデルハンドルの取得
+/// </summary>
 const int EnemyManager::GetModelHandle()const
 {
 	return this->boss->GetModelHandle();

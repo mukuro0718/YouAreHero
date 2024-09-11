@@ -5,7 +5,7 @@
   "MAX_HIT_POSITION_OFFSET": [ 5.0, 5.0, 5.0 ],
   "MIN_HIT_POSITION_OFFSET": [ -5.0, -5.0, -5.0 ],
   "INIT_POSITION": [ 0.0, 0.0, 0.0 ],
-  "INIT_SCALE": [ 0.1, 0.1, 0.1 ],
+  "INIT_SCALE": [ 0.09, 0.09,0.09 ],
   "INIT_ROTATION": [ 0.0, 0.0, 0.0 ],
   "COMBO_COUNT": [ 2, 3, 5 ],
   "HIT_RADIUS": 6.0,

@@ -1,25 +1,18 @@
 #pragma once
 
-class Physics;
-class Collidable;
-namespace GoriLib
-{
-	class BossAttack;
-}
+class BossAttack;
 class BossAttackManager
 {
 public:
 	BossAttackManager();//コンストラクタ
 	~BossAttackManager();//デストラクタ
 
-	void		Initialize(GoriLib::Physics* _physics);		//初期化
-	void		Finalize(GoriLib::Physics* _physics);		//後処理
-	void		Update(GoriLib::Physics* _physics);		//更新
-	void		OnCollide(const GoriLib::Collidable& _colider);//衝突したとき
-	const void	Draw()const;	//描画
-	void		OnIsStart(const int _index);
-	const VECTOR GetPosition(const int _index);
-	const VECTOR GetThrowPosition();
+	void		 Initialize	();					//初期化
+	void		 Finalize	();					//後処理
+	void		 Update		();					//更新
+	const void	 Draw		()const;			//描画
+	void		 OnIsStart	(const int _index);	//開始フラグを立てる
+	const VECTOR GetPosition(const int _index);	//座標の取得
 private:
 	enum class AttackType
 	{
@@ -30,7 +23,7 @@ private:
 		JUMP_ATTACK	   = 3,//ジャンプアタック
 		ROTATE_PUNCH   = 4,//回転パンチ
 	};
-	std::vector<GoriLib::BossAttack*> attack;
+	std::vector<BossAttack*> attack;
 	int hitNumber;
 };
 

@@ -1,8 +1,6 @@
 #include <DxLib.h>
 #include "UseSTL.h"
-#include "GoriLib.h"
-#include "GameObjectTag.h"
-#include "VECTORtoUseful.h"
+#include "Character.h"
 #include "Player.h"
 #include "PlayerManager.h"
 
@@ -26,25 +24,25 @@ PlayerManager::~PlayerManager()
 /// <summary>
 /// 初期化
 /// </summary>
-void PlayerManager::Initialize(GoriLib::Physics* _physics)
+void PlayerManager::Initialize()
 {
-	this->player->Initialize(_physics);
+	this->player->Initialize();
 }
 
 /// <summary>
 /// 後処理
 /// </summary>
-void PlayerManager::Finalize(GoriLib::Physics* _physics)
+void PlayerManager::Finalize()
 {
-	this->player->Finalize(_physics);
+	this->player->Finalize();
 }
 
 /// <summary>
 /// 更新
 /// </summary>
-void PlayerManager::Update(GoriLib::Physics* _physics)
+void PlayerManager::Update()
 {
-	this->player->Update(_physics);
+	this->player->Update();
 }
 /// <summary>
 /// 描画
@@ -55,27 +53,19 @@ const void PlayerManager::Draw()const
 }
 
 /// <summary>
-/// 当たったか
+/// ダメージデータの取得
 /// </summary>
-void PlayerManager::OnCollide(const GoriLib::Collidable& _colider)
+const CharacterData& PlayerManager::GetCharacterData()const
 {
-	this->player->OnCollide(_colider);
+	return this->player->GetCharacterData();
 }
 
 /// <summary>
-/// 座標の取得
+/// リジッドボディの取得
 /// </summary>
-const VECTOR PlayerManager::GetPosition()const
+const Rigidbody& PlayerManager::GetRigidbody()const
 {
-	return this->player->GetPosition();
-}
-
-/// <summary>
-/// 向いている方向の取得
-/// </summary>
-const VECTOR PlayerManager::GetDirection()const
-{
-	return this->player->GetDirection();
+	return this->player->GetRigidbody();
 }
 
 /// <summary>
@@ -83,22 +73,15 @@ const VECTOR PlayerManager::GetDirection()const
 /// </summary>
 const bool PlayerManager::IsMove()const
 {
-	return this->player->IsMove();
+	auto player = dynamic_cast<Player&>(*this->player);
+	return player.IsMove();
 }
-/// <summary>
-/// ダメージの取得
-/// </summary>
-const int PlayerManager::GetDamage()const
-{
-	return this->player->GetDamage();
-}
-
 /// <summary>
 /// ショットフラグ
 /// </summary>
-const bool PlayerManager::GetIsSlash()const
+const bool PlayerManager::GetIsAttack()const
 {
-	return this->player->GetIsSlash();
+	return this->player->GetIsAttack();
 }
 
 const int PlayerManager::GetHP()const
@@ -107,9 +90,6 @@ const int PlayerManager::GetHP()const
 }
 const float PlayerManager::GetStamina()const
 {
-	return this->player->GetStamina();
-}
-const int PlayerManager::GetHitNumber()const
-{
-	return this->player->GetHitNumber();
+	auto& player = dynamic_cast<Player&>(*this->player);
+	return player.GetStamina();
 }

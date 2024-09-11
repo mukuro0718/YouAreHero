@@ -3,7 +3,9 @@
 #include "UseJson.h"
 #include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
-#include "GoriLib.h"
+#include "Rigidbody.h"
+#include "ColliderData.h"
+#include "PlaneColliderData.h"
 #include "LoadingAsset.h"
 #include "BossMap.h"
 
@@ -11,7 +13,7 @@
 /// コンストラクタ
 /// </summary>
 BossMap::BossMap()
-	: Collidable(Collidable::Priority::STATIC, GameObjectTag::GROUND, GoriLib::ColliderData::Kind::PLANE, false)
+	: collider(nullptr)
 	, modelHandle(-1)
 {
 	/*シングルトンクラスのインスタンスの取得*/
@@ -20,7 +22,8 @@ BossMap::BossMap()
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::FINALY_BOSS_STAGE));
 	
 	/*コライダーデータの作成*/
-	auto planeColiderData = dynamic_cast<GoriLib::ColliderDataPlane*>(this->colliderData);
+	this->collider = new PlaneColliderData(ColliderData::Priority::STATIC, GameObjectTag::GROUND);
+	auto planeColiderData = dynamic_cast<PlaneColliderData*>(this->collider);
 	planeColiderData->norm = Convert(json.GetJson(JsonManager::FileType::MAP)["MAP_NORM"]);
 	planeColiderData->radius = json.GetJson(JsonManager::FileType::MAP)["MAP_SCALE"];
 }
@@ -32,7 +35,7 @@ BossMap::~BossMap()
 {
 }
 
-void BossMap::Initialize(GoriLib::Physics* _physics)
+void BossMap::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -42,52 +45,34 @@ void BossMap::Initialize(GoriLib::Physics* _physics)
 	const VECTOR ROTATION = Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_ROTATION"]);
 	const VECTOR SCALE	  = Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_SCALE"]);	
 
-	/*コライダーの初期化*/
-	Collidable::Initialize(_physics);
-
 	/*物理挙動の初期化*/
-	this->rigidbody.Initialize(false);
-	this->rigidbody.SetPosition(POSITION);
-	this->rigidbody.SetRotation(ROTATION);
-	this->rigidbody.SetScale(SCALE);
+	this->collider->rigidbody.Initialize(false);
+	this->collider->rigidbody.SetPosition(POSITION);
+	this->collider->rigidbody.SetRotation(ROTATION);
+	this->collider->rigidbody.SetScale(SCALE);
 }
 /// <summary>
 /// 更新
 /// </summary>
-void BossMap::Finalize(GoriLib::Physics* _physics)
+void BossMap::Finalize()
 {
 	/*物理登録の解除*/
-	Collidable::Finalize(_physics);
+	DeleteMemberInstance(this->collider);
 }
 /// <summary>
 /// 更新
 /// </summary>
-void BossMap::Update(GoriLib::Physics* _physics)
+void BossMap::Update()
 {
-}
-void BossMap::OnCollide(const Collidable& _colider)
-{
-	std::string message = "地面が";
-	if (_colider.GetTag() == GameObjectTag::BOSS)
-	{
-		message += "ボス";
-	}
-	else if (_colider.GetTag() == GameObjectTag::GROUND)
-	{
-		message += "プレイヤー";
-	}
-
-	message += "と当たった\n";
-	printfDx(message.c_str());
 }
 /// <summary>
 /// 描画
 /// </summary>
 const void BossMap::Draw()const
 {
-	MV1SetPosition(this->modelHandle, this->rigidbody.GetPosition());
-	MV1SetRotationXYZ(this->modelHandle, this->rigidbody.GetRotation());
-	MV1SetScale(this->modelHandle, this->rigidbody.GetScale());
+	MV1SetPosition	 (this->modelHandle, this->collider->rigidbody.GetPosition());
+	MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());
+	MV1SetScale		 (this->modelHandle, this->collider->rigidbody.GetScale());
 	MV1DrawModel(this->modelHandle);
 }
 

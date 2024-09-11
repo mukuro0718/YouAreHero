@@ -4,30 +4,24 @@
 #pragma once
 #include "Singleton.h"
 
-class Boss;
-class Collider;
+class Character;
+class CharacterData;
+class Rigidbody;
 class EnemyManager : public Singleton<EnemyManager>
 {
 public:
 	friend class Singleton<EnemyManager>;
 
-	void Initialize(GoriLib::Physics* _physics); //初期化
-	void Finalize(GoriLib::Physics* _physics);
-	void Update(GoriLib::Physics* _physics); //更新
-	void OnCollide(const GoriLib::Collidable& _colider); //移動ベクトルの修正
+	void Initialize(); //初期化
+	void Finalize();
+	void Update(); //更新
 	const void Draw		 ()const;
 
 	/*getter*/
 	const int	   GetHP()const;
-	const VECTOR GetPosition()const;//座標の取得
-	const VECTOR GetDirection()const;//向きの取得
-	const VECTOR GetRotation()const;//向きの取得
-	const VECTOR GetHeadPosition()const;//座標の取得
-	const int GetAttackNumber()const;
-	const int GetHitNumber()const;
-	void SetHitNumber(const int _attackNumber);
+	const CharacterData& GetCharacterData()const;
+	const Rigidbody& GetRigidbody()const;
 	const bool IsAttack()const;
-	void OnIsHitAttack();
 	const int GetModelHandle()const;
 private:
 	/*内部処理関数*/
@@ -35,6 +29,6 @@ private:
 	~EnemyManager();//デストラクタ
 
 	/*メンバ変数*/
-	Boss* boss;//ボス
+	Character* boss;//ボス
 };
 

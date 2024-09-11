@@ -4,22 +4,21 @@
 //===========================================
 #pragma once
 
-class Physics;
-class Collidable;
-class BossMap : public GoriLib::Collidable
+class ColliderData;
+class BossMap
 {
 public:
 	BossMap();//コンストラクタ
 	~BossMap();//デストラクタ
 
-	void		Initialize(GoriLib::Physics* _physics);		//初期化
-	void		Finalize(GoriLib::Physics* _physics);		//後処理
-	void		Update(GoriLib::Physics* _physics);		//更新
-	void		OnCollide(const Collidable& _colider)override;//衝突したとき
-	const void Draw()const;	//描画
+	void		Initialize();		//初期化
+	void		Finalize();		//後処理
+	void		Update();		//更新
+	const void	Draw()const;	//描画
 
 private:
 	/*メンバ変数*/
 	int modelHandle;
+	ColliderData* collider;
 };
 

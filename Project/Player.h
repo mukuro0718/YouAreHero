@@ -3,37 +3,25 @@
 //===============================================
 #pragma once
 
-class BitFlag;
-class Physics;
-class Collidable;
-class Animation;
-class Player : public GoriLib::Collidable
+class Character;
+class Player : public Character
 {
 public:
 	Player();//コンストラクタ
 	~Player();//デストラクタ
 
-	void		Initialize(GoriLib::Physics* _physics);			//初期化
-	void		Finalize  (GoriLib::Physics* _physics);			//後処理
-	void		Update	  (GoriLib::Physics* _physics);			//更新
-	void		OnCollide (const Collidable& _colider)override;	//衝突したとき
-	const void	Draw	  ()const;								//描画
+	void		Initialize		 () override;		//初期化
+	void		Finalize		 () override;		//後処理
+	void		Update			 () override;		//更新
+	const void	DrawCharacterInfo()const override;	//描画
 
 	/*getter*/
-	const int		GetHitNumber()const { return this->attackNumber; }//攻撃番号の取得
-	const int		GetDamage	()const;							  //ダメージの取得
-	const VECTOR	GetPosition	()const;							  //座標の取得
-	const VECTOR	GetDirection()const { return this->direction; }	  //移動ベクトルの取得
-	const bool		IsMove		()const;							  //移動フラグの取得
-	const bool		GetIsSlash ()const;							  //ショットフラグの取得
-	const int		GetHP		()const;							  //HPの取得
-	const float		GetStamina	()const;
+	const bool		IsMove		()const;//移動フラグの取得
+	const bool		GetIsAttack	()const override;//ショットフラグの取得
+	const int GetStamina()const;
 private:
-	
-
 	/*静的定数*/
 	static constexpr int COUNT_NUM = 4;//フレームカウントの数
-	static constexpr int COLLIDER_NUM = 2;//コライダーの数
 	//プレイヤーの状態
 	static constexpr unsigned int IDLE			 = (1 << 0); //待機
 	static constexpr unsigned int ROLL			 = (1 << 1); //回避
@@ -112,28 +100,15 @@ private:
 	void CalcStamina(const float _staminaConsumed);//スタミナの回復処理
 	/*メンバ変数*/
 
-	BitFlag*			state;						//状態
-	Animation*			animation;					//アニメーション
-	VECTOR				direction;					//向いている方向
 	VECTOR				moveVectorRotation;			//移動ベクトル用回転値
 	std::vector<int>	frameCount;					//フレームカウント
 	std::vector<bool>	isCount;					//カウントをするか
-	int attackType;
 	std::map<unsigned int, int> animationMap;
 	float				jumpPower;					//ジャンプ力
 	int					nowAnimation;				//アニメーション
 	float				animationPlayTime;			//アニメーション再生時間
-	int damage;
+	int attackType;
 	int attackComboCount;
-	int attackNumber;
-	bool isDraw;
-
-
-	int modelHandle;
-	int prevHitNum;
-	float speed;
-	bool isGround;
-	float stamina;
 	bool isLockOn;
 };
 
