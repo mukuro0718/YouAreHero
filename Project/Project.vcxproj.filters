@@ -202,6 +202,33 @@
     <Filter Include="Collision\CharacterData\Enemy">
       <UniqueIdentifier>{6b6284fe-8353-433d-bd87-affe2af9cbdf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Parameter">
+      <UniqueIdentifier>{228e8d31-1860-4ea2-ad39-9e943544e666}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\SlashAttack">
+      <UniqueIdentifier>{c86ce186-bbb7-4871-96ec-53f24fd5e23e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\FlyAttack">
+      <UniqueIdentifier>{bfd04c36-d4c8-4bcc-8af2-34746ec8b36a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\RotateKick">
+      <UniqueIdentifier>{6a5db568-ae42-4078-860d-4dfc02aca0ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\StabAttack">
+      <UniqueIdentifier>{0faff77c-c466-4dca-ae17-86cb7e5de5fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\RotatePunch">
+      <UniqueIdentifier>{321d2b4d-7104-4481-a2a5-aacc63e8d10b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\LongRangeAttack">
+      <UniqueIdentifier>{2ef7dec8-de89-4f58-a93c-0e718ed17701}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\SummonAttack">
+      <UniqueIdentifier>{f33ef835-9a3a-41b1-9ab3-6be5e0f30745}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Rest">
+      <UniqueIdentifier>{8183cf00-6ee3-47f8-93e9-9e550f11fa27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -399,6 +426,12 @@
     </ClCompile>
     <ClCompile Include="PlayerAttackData.cpp">
       <Filter>Collision\AttackData</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionParameter.cpp">
+      <Filter>Object\Character\Enemy\Action\Parameter</Filter>
+    </ClCompile>
+    <ClCompile Include="BossRest.cpp">
+      <Filter>Object\Character\Enemy\Action\Rest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -617,6 +650,12 @@
     </ClInclude>
     <ClInclude Include="PlayerAttackData.h">
       <Filter>Collision\AttackData</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionParameter.h">
+      <Filter>Object\Character\Enemy\Action\Parameter</Filter>
+    </ClInclude>
+    <ClInclude Include="BossRest.h">
+      <Filter>Object\Character\Enemy\Action\Rest</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

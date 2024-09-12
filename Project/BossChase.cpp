@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "UseJson.h"
+#include "ActionParameter.h"
 #include "Rigidbody.h"
 #include "BossAction.h"
 #include "Character.h"
@@ -37,6 +38,7 @@ Rigidbody& BossChase::Update(Character& _boss)
 		  VECTOR rotation	  = _boss.GetRigidbody().GetRotation();	//回転率
 		  VECTOR nextRotation = VGet(0.0f, 0.0f, 0.0f);
 		  Rigidbody out;
+
 	/*回転率の設定*/
 	//プレイヤーから自分の座標までのベクトルを出す
 	VECTOR positonToTargetVector = VSub(position, TARGET);
@@ -65,4 +67,35 @@ Rigidbody& BossChase::Update(Character& _boss)
 	out.SetVelocity(newVelocity);
 
 	return out;
+}
+
+/// <summary>
+/// パラメーターの計算
+/// </summary>
+void BossChase::CalcParameter(const int _hp, const int _angryValue, const float _distance)
+{
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
+	/*追加する欲求値*/
+	int addDesireValue = 0;
+
+	/*もしHPが０以下だったら欲求値を０にする*/
+	if (_hp <= 0)
+	{
+		addDesireValue = -this->parameter->MAX_PARAMETER;
+	}
+
+	/*もしボスとプレイヤーの間が定数以上離れていたら欲求値を倍増させる*/
+	else if (_distance >= json.GetJson(JsonManager::FileType::ENEMY)["MOVE_DISTANCE"])
+	{
+		addDesireValue = this->parameter->MAX_PARAMETER;
+	}
+	else
+	{
+		addDesireValue = 1;
+	}
+
+	/*欲求値を増加させる*/
+	this->parameter->AddDesireValue(addDesireValue);
 }

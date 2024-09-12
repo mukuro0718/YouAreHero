@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ActionParameter.cpp" />
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AttackData.cpp" />
     <ClCompile Include="BitFlag.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="BossDeath.cpp" />
     <ClCompile Include="BossFlyAttack.cpp" />
     <ClCompile Include="BossJumpAttack.cpp" />
+    <ClCompile Include="BossRest.cpp" />
     <ClCompile Include="BossSlashAttack.cpp" />
     <ClCompile Include="ButtonUI.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -207,6 +209,7 @@
     <ClCompile Include="VECTORtoUseful.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActionParameter.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AttackData.h" />
     <ClInclude Include="BitFlag.h" />
@@ -220,6 +223,7 @@
     <ClInclude Include="BossDeath.h" />
     <ClInclude Include="BossFlyAttack.h" />
     <ClInclude Include="BossJumpAttack.h" />
+    <ClInclude Include="BossRest.h" />
     <ClInclude Include="BossSlashAttack.h" />
     <ClInclude Include="ButtonUI.h" />
     <ClInclude Include="Camera.h" />
