@@ -83,7 +83,7 @@ void BossHurricaneKick::Update()
 		//フレームを増やす
 		this->frameCount++;
 		//フレームが定数を超えていなかったら早期リターン
-		if (this->frameCount < START_HIT_CHECK_FRAME)return;
+		//if (this->frameCount < START_HIT_CHECK_FRAME)return;
 
 		//今回の攻撃中に当たり判定フラグが一度もたっていなかったら
 		if (!this->isNotOnHit)

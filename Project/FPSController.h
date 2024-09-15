@@ -21,4 +21,5 @@ private:
 	int		startTime;//Œv‘ªŠJnŠÔ
 	int		count;	//ˆ—‰ñ”
 	int		targetFPS;
+	bool isDebug;
 };

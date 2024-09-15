@@ -1,0 +1,13 @@
+#pragma once
+#include "ActionParameter.h"
+#include "BossAction.h"
+#include "BossChaseAction.h"
+#include "BossDeathAction.h"
+#include "BossRestAction.h"
+#include "BossIdleAction.h"
+#include "BossRoarAction.h"
+#include "BossHurricaneKickAction.h"
+#include "BossRotatePunchAction.h"
+#include "BossSlashAction.h"
+#include "BossFlyAction.h"
+#include "BossStabAction.h"

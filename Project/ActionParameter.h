@@ -12,9 +12,14 @@ public:
 	~ActionParameter(){}//デストラクタ
 
 	void AddDesireValue(const int _addValue);
+	bool CalcInterval();
+	void SetInterval(const int _set);
+	const int GetWeight(const int _sum)const;
 
-	static constexpr int MAX_PARAMETER = 255;
-	int desireValue;//欲求値
+	static constexpr float MAX_PARAMETER = 255.0f;
+	static constexpr float BASE_ADD_DESIRE_VALUE = 1.0f;
+	static constexpr float BASE_WEIGHT = 100.0f;
+	float desireValue;//欲求値
 	int interval;	//インターバル
 };
 

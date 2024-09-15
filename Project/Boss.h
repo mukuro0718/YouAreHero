@@ -4,6 +4,7 @@
 #pragma once
 
 class Character;
+class BossAction;
 class Boss : public Character
 {
 public:
@@ -13,15 +14,24 @@ public:
 	void		Initialize		 () override;		//初期化
 	void		Finalize		 () override;		//後処理
 	void		Update			 () override;		//更新
-	const void	DrawCharacterInfo()const override;//描画
+	const void	DrawCharacterInfo() const override;//描画
 
 	/*getter*/
-	const VECTOR GetHeadPosition()const;
-	const bool	 GetIsAttack	()const override;
+	const float  GetSpeed				()const { return this->speed; }
+	const VECTOR GetHeadPosition		()const;
+	const VECTOR GetNowMoveTarget		()const { return this->moveTarget; }
+	const bool	 GetIsAttack			()const override;
+	const int	 GetNowPhase			()const { return this->nowPhase; }									//今のフェー	ズの取得
+	const int	 GetPrevPhase			()const { return this->prevPhase; }								//前のフェーズの取得
+	const float	 GetAnimationPlayTime	()const;															//アニメーション再生時間の取得
+	const float  GetNowAnimationPlayTime()const { return this->animationPlayTime; }
+		  void	 UnifyPhases			() { this->prevPhase = this->nowPhase; }							//フェーズを統一する
+		  void	 SetNowMoveTarget		(const VECTOR _moveTarget) { this->moveTarget = _moveTarget; }
+		  void	 SetRotation			(const VECTOR _rotation);											//回転率の設定
+		  void	 SetVelocity			(const VECTOR _velocity);											//移動ベクトルの設定
+		  void	 SetSpeed				(const float _speed) { this->speed = _speed; }						//速さの設定
+		  void	 SetAnimationPlayTime	(const float _playTime) { this->animationPlayTime = _playTime; }
 private:
-	/*ファンクション*/
-	typedef std::function<void(void)> FlagsState;//フラグごとの実行したい関数（引数、返り値無し）
-
 	/*静的定数*/
 	static constexpr int COUNT_NUM = 6;
 	//基本状態
@@ -40,12 +50,6 @@ private:
 	static constexpr unsigned int MASK_ATTACK = SLASH | ROTATE_PUNCH | JUMP_ATTACK |HURRICANE_KICK | FLY_ATTACK;
 	static constexpr unsigned int MASK_ALL = MASK_ATTACK | WALK | DYING | REST | REST | IDLE | ROAR;
 	
-	/*クラス*/
-	class FlagsStateSet
-	{
-	public:
-		FlagsState update;
-	};
 	/*列挙体*/
 	//コライダーの種類
 	enum class ColliderType
@@ -91,6 +95,19 @@ private:
 		JUMP_ATTACK		= 7,//突き刺し攻撃
 		ROTATE_PUNCH	= 8,//回転パンチ
 	};
+	enum class ActionType
+	{
+		DYING			= 0,//デス
+		IDLE			= 1,//待機
+		ROAR			= 2,//咆哮
+		WALK			= 3,//歩き
+		REST			= 4,//歩き
+		SLASH			= 5,//スラッシュ
+		FLY_ATTACK		= 6,//飛び攻撃
+		HURRICANE_KICK	= 7,//回転蹴り
+		JUMP_ATTACK		= 8,//突き刺し攻撃
+		ROTATE_PUNCH	= 9,//回転パンチ
+	};
 
 	/*内部処理関数*/
 		  void Roar				();//咆哮
@@ -112,7 +129,6 @@ private:
 		  void SetAttackComboCount();
 		  void SetAttackCombo();
 		  void SetPhase();
-		  void AddItemFunction(const unsigned int _item, const FlagsState _update);//項目ごとの関数の追加
 		  void OnEffectFlag(const int _attack);
 		  void SetAttackFlag(const int _attack);
 		  void SlowAnimationPlayTime(const FrameCountType _type, const int _targetCount, const float _maxTime);
@@ -121,9 +137,11 @@ private:
 
 	/*メンバ変数*/
 	std::map<unsigned int, int>	stateAnimationMap;		//項目ごとのアニメーション
+	std::map<int, unsigned int>	actionTypeMap;			//アクションタイプ
 	std::vector<int>			frameCount;				//フレームカウント
 	std::vector<bool>			isCount;				//カウントをするか
 	std::vector<int>			attackCombo;			//攻撃コンボ
+	std::vector<BossAction*>	parameters;				//アクションパラメーター（本来は、ここに各行動を入れたい）
 	VECTOR						moveTarget;				//移動目標
 	float						animationPlayTime;		//アニメーション再生時間
 	int							attackComboCount;		//攻撃コンボ回数
@@ -132,5 +150,6 @@ private:
 	int							attackType;				//攻撃の種類
 	int							nowPhase;				//現在のフェーズ
 	int							prevPhase;				//前のフェーズ
+	int actionType;
 };
 

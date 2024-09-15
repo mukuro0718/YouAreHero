@@ -14,6 +14,9 @@
 #include "BitFlag.h"
 #include "Animation.h"
 #include "Character.h"
+
+#include "BossActionHeader.h"
+
 #include "Boss.h"
 
 #include "LoadingAsset.h"
@@ -34,6 +37,7 @@ Boss::Boss()
 	, attackType			(0)
 	, nowPhase				(0)
 	, prevPhase				(-1)
+	, actionType(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json  = Singleton<JsonManager>::GetInstance();
@@ -73,10 +77,33 @@ Boss::Boss()
 	this->stateAnimationMap.emplace(this->HURRICANE_KICK, static_cast<int>(AnimationType::HURRICANE_KICK));
 	this->stateAnimationMap.emplace(this->JUMP_ATTACK, static_cast<int>(AnimationType::JUMP_ATTACK));
 	this->stateAnimationMap.emplace(this->ROTATE_PUNCH, static_cast<int>(AnimationType::ROTATE_PUNCH));
+	/*アクションマップの作成*/
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::DYING),this->DYING);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::IDLE),this->IDLE);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROAR),this->ROAR);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::WALK),this->WALK);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::REST),this->REST);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH),this->SLASH);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::FLY_ATTACK),this->FLY_ATTACK);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::HURRICANE_KICK),this->HURRICANE_KICK);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::JUMP_ATTACK),this->JUMP_ATTACK);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROTATE_PUNCH),this->ROTATE_PUNCH);
 
 	/*コライダーデータの作成*/
 	CharacterData* data = new BossData();
 	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, data);
+
+	/*アクションパラメーターの作成*/
+	this->parameters.emplace_back(new BossDeathAction());
+	this->parameters.emplace_back(new BossIdleAction());
+	this->parameters.emplace_back(new BossRoarAction());
+	this->parameters.emplace_back(new BossChaseAction());
+	this->parameters.emplace_back(new BossRestAction());
+	this->parameters.emplace_back(new BossSlashAction());
+	this->parameters.emplace_back(new BossFlyAction());
+	this->parameters.emplace_back(new BossHurricaneKickAction());
+	this->parameters.emplace_back(new BossStabAction());
+	this->parameters.emplace_back(new BossRotatePunchAction());
 }
 
 /// <summary>
@@ -108,7 +135,8 @@ void Boss::Initialize()
 
 	/*フェーズの設定*/
 	SetPhase();
-	this->prevPhase = this->nowPhase;
+
+	//this->prevPhase = this->nowPhase;
 
 	/*攻撃コンボの初期化*/
 	this->attackComboCount = -1;
@@ -127,9 +155,6 @@ void Boss::Initialize()
 	this->collider->rigidbody.SetPosition(POSITION);
 	this->collider->rigidbody.SetRotation(ROTATION);
 	this->collider->rigidbody.SetScale(SCALE);
-
-	/*状態を待機状態に初期化*/
-	this->state->SetFlag(this->ROAR);
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
@@ -153,25 +178,22 @@ void Boss::Update()
 	/*フェーズの初期化*/
 	SetPhase();
 
-	/*移動処理*/
-	Move();
+	/*ここですべてのパラメータの計算を行う*/
+	for (auto& item : this->parameters)
+	{
+		item->CalcParameter(*this);
+	}
 
 	/*状態の切り替え*/
 	ChangeState();
-	if (!this->state->CheckFlag(this->MASK_ALL))
-	{
-		this->state->SetFlag(this->IDLE);
-	}
+
+	//ここに各アクションごとの更新処理を入れたい
+	this->parameters[this->actionType]->Update(*this);
 
 	/*アニメーションの更新*/
-	this->nowAnimation = this->stateAnimationMap[this->state->GetFlag()];
-	//再生時間の設定
-	float animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nowAnimation];
-	SlowAnimationPlayTime(FrameCountType::SLASH, json.GetJson(JsonManager::FileType::ENEMY)["SLASH_SLOW_FRAME_COUNT"], animationPlayTime);
-	SlowAnimationPlayTime(FrameCountType::ROTATE_PUNCH, json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_PUNCH_SLOW_FRAME_COUNT"], animationPlayTime);
-	SlowAnimationPlayTime(FrameCountType::JUMP_ATTACK, json.GetJson(JsonManager::FileType::ENEMY)["STAB_SLOW_FRAME_COUNT"], animationPlayTime);
-	AddAnimationPlayTime(FrameCountType::HURRICANE_KICK, json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_ADD_FRAME_COUNT"], animationPlayTime);
-	SlowAnimationPlayTime(FrameCountType::FLY_ATTACK, json.GetJson(JsonManager::FileType::ENEMY)["FLY_ATTACK_SLOW_FRAME_COUNT"], animationPlayTime);
+	unsigned int nowState = this->state->GetFlag();
+	this->nowAnimation = this->stateAnimationMap[nowState];
+	
 	//アニメーションの再生
 	VECTOR position = this->collider->rigidbody.GetPosition();
 	this->animation->Play(&this->modelHandle, position, this->nowAnimation, this->animationPlayTime);
@@ -184,20 +206,20 @@ void Boss::Update()
 void Boss::Roar()
 {
 	/*咆哮中にアニメーションが終了していたらフラグを下す*/
-	if (this->state->CheckFlag(this->ROAR) && this->animation->GetIsChangeAnim())
-	{
-		this->state->ClearFlag(this->ROAR);
-		this->prevPhase = this->nowPhase;
-	}
+	//if (this->state->CheckFlag(this->ROAR) && this->animation->GetIsChangeAnim())
+	//{
+	//	this->state->ClearFlag(this->ROAR);
+	//	this->prevPhase = this->nowPhase;
+	//}
 
-	/*咆哮できるか*/
-	CanRoar();
+	///*咆哮できるか*/
+	//CanRoar();
 
-	if (this->nowPhase != this->prevPhase)
-	{
-		this->state->ClearFlag(this->MASK_ALL);
-		this->state->SetFlag(this->ROAR);
-	}
+	//if (this->nowPhase != this->prevPhase)
+	//{
+	//	this->state->ClearFlag(this->MASK_ALL);
+	//	this->state->SetFlag(this->ROAR);
+	//}
 }
 
 /// <summary>
@@ -245,77 +267,46 @@ void Boss::Attack()
 }
 void Boss::ChangeState()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
-	auto& effect = Singleton<EffectManager>::GetInstance();
-	auto& attack = Singleton<BossAttackManager>::GetInstance();
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
-	auto& data = dynamic_cast<BossData&>(*collider.data);
-
-	/*デス処理*/
-	//デスしているか
-	if (data.hp < 0)
+	/*選択されているか調べる*/
+	bool isSelect		= false;//選択されているか
+	int  sumDesireValue = 0;	//欲求値の合計
+	for (auto& item : this->parameters)
 	{
-		this->state->SetFlag(this->DYING);
-		if (this->animation->GetIsChangeAnim())
-		{
-			this->isAlive = false;
-		}
+		isSelect		= item->GetIsSelect();
+		sumDesireValue += item->GetDesireValue();
+		if (isSelect)return;
 	}
-	//デスしていなければ
-	if (this->state->CheckFlag(this->DYING))return;
-
-	/*咆哮処理*/
-	Roar();
-	//咆哮していたら
-	if (this->state->CheckFlag(this->ROAR))return;
-
-	/*休憩処理*/
-	//休憩するか
-	if (CanRest())
-	{
-		//コンボカウントが0だったら
-		if (this->attackComboCount < 0)
-		{
-			this->state->ClearFlag(this->MASK_ALL);
-			this->state->SetFlag(this->REST);
-			this->isCount[static_cast<int>(FrameCountType::REST)] = true;
-		}
-		else
-		{
-			this->state->ClearFlag(this->MASK_ALL);
-		}
-	}
-	//休憩中ならカウントを進める
-	if (this->state->CheckFlag(this->REST))
-	{
-		//もしカウントが終了していたらフラグを下す
-		if (FrameCount(static_cast<int>(FrameCountType::REST), json.GetJson(JsonManager::FileType::ENEMY)["REST_FRAME_COUNT"]))
-		{
-			this->state->ClearFlag(this->REST);
-			this->state->SetFlag(this->IDLE);
-		}
-	}
-	//休憩中じゃなければ早期リターン
-	if (this->state->CheckFlag(this->REST) || this->state->CheckFlag(this->MASK_ATTACK))return;
-
-	/*移動するか*/
-	const float TARGET_DISTANCE = VSize(VSub(player.GetRigidbody().GetPosition(), this->collider->rigidbody.GetPosition()));//プレイヤーとの距離を求める
-	const float MOVE_DISTANCE = json.GetJson(JsonManager::FileType::ENEMY)["MOVE_DISTANCE"];//移動をする距離
 	
-	this->state->ClearFlag(this->WALK | this->IDLE);
+	/*今立っているフラグを下す*/
+	unsigned int clearFlag = this->actionTypeMap[this->actionType];
+	this->state->ClearFlag(clearFlag);
 
-	/*歩いて近づく3*/
-	if (TARGET_DISTANCE >= MOVE_DISTANCE)
+	/*選択されていなかったら*/
+	if (!isSelect)
 	{
-		this->state->SetFlag(this->WALK);
+		//各行動の期待値を求める
+		std::vector<int> actionWeight;//重み
+		for (auto& item : this->parameters)
+		{
+			actionWeight.emplace_back(item->GetWeight(sumDesireValue));
+		}
+		//重みをランダムで出す
+		int randomWeight = GetRand(this->parameters[0]->GetBaseWeight() - 1);
+		//forでvectorを回し、重みが０以下になったところのアクションを行う
+		for (int i = 0; i < actionWeight.size(); i++)
+		{
+			randomWeight -= actionWeight[i];
+			if (randomWeight < 0)
+			{
+				this->actionType = i;
+				this->parameters[i]->OnIsSelect();
+				break;
+			}
+		}
 	}
-	/*攻撃*/
-	else
-	{
-		SetAttackCombo();
-	}
+
+	unsigned int setFlag = this->actionTypeMap[this->actionType];
+	this->state->SetFlag(setFlag);
 }
 
 /// <summary>
@@ -323,21 +314,20 @@ void Boss::ChangeState()
 /// </summary>
 const void Boss::DrawCharacterInfo()const
 {
-	//VECTOR position = this->rigidbody.GetPosition();
-	//VECTOR rotation = this->rigidbody.GetRotation();
-	//printfDx("Boss_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-	//printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
-	//printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
-	//printfDx("%d:IDLE					\n", this->state->CheckFlag(this->IDLE));
-	//printfDx("%d:ROAR					\n", this->state->CheckFlag(this->ROAR));
-	//printfDx("%d:WALK					\n", this->state->CheckFlag(this->WALK));
-	//printfDx("%d:REST					\n", this->state->CheckFlag(this->REST));
-	//printfDx("%d:SLASH					\n", this->state->CheckFlag(this->SLASH));
-	//printfDx("%d:FLY_ATTACK				\n", this->state->CheckFlag(this->FLY_ATTACK));
-	//printfDx("%d:HURRICANE_KICK			\n", this->state->CheckFlag(this->HURRICANE_KICK));
-	//printfDx("%d:JUMP_ATTACK			\n", this->state->CheckFlag(this->JUMP_ATTACK));
-	//printfDx("%d:ROTATE_PUNCH			\n", this->state->CheckFlag(this->ROTATE_PUNCH));
-	//printfDx("%d:BOSS_HIT_NUM			\n", this->GetHitNumber());
+	VECTOR position = this->collider->rigidbody.GetPosition();
+	VECTOR rotation = this->collider->rigidbody.GetRotation();
+	printfDx("Boss_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+	printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
+	printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
+	printfDx("%d:IDLE					\n", this->state->CheckFlag(this->IDLE));
+	printfDx("%d:ROAR					\n", this->state->CheckFlag(this->ROAR));
+	printfDx("%d:WALK					\n", this->state->CheckFlag(this->WALK));
+	printfDx("%d:REST					\n", this->state->CheckFlag(this->REST));
+	printfDx("%d:SLASH					\n", this->state->CheckFlag(this->SLASH));
+	printfDx("%d:FLY_ATTACK				\n", this->state->CheckFlag(this->FLY_ATTACK));
+	printfDx("%d:HURRICANE_KICK			\n", this->state->CheckFlag(this->HURRICANE_KICK));
+	printfDx("%d:JUMP_ATTACK			\n", this->state->CheckFlag(this->JUMP_ATTACK));
+	printfDx("%d:ROTATE_PUNCH			\n", this->state->CheckFlag(this->ROTATE_PUNCH));
 }
 
 /// <summary>
@@ -509,6 +499,16 @@ const bool Boss::GetIsAttack()const
 const VECTOR Boss::GetHeadPosition()const
 {
 	return MV1GetFramePosition(this->modelHandle, 7);
+}
+
+/// <summary>
+/// アニメーション再生時間の取得
+/// </summary>
+const float Boss::GetAnimationPlayTime()const
+{
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+	return json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 }
 
 /// <summary>
@@ -700,4 +700,20 @@ void Boss::SetAttackCombo()
 	OnEffectFlag(this->attackType);
 	this->isCount[this->attackType] = true;
 	this->attackComboCount--;
+}
+
+/// <summary>
+/// 回転率の設定
+/// </summary>
+void Boss::SetRotation(const VECTOR _rotation)
+{
+	this->collider->rigidbody.SetRotation(_rotation);
+}
+
+/// <summary>
+/// 移動ベクトルの設定
+/// </summary>
+void Boss::SetVelocity(const VECTOR _velocity)
+{
+	this->collider->rigidbody.SetVelocity(_velocity);
 }

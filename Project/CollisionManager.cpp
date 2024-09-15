@@ -308,7 +308,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			if (attackColliderData.data->isDoHitCheck)
 			{
 				VECTOR attackCapsuleTop = attackColliderData.topPositon;
-				VECTOR characterCapsuleTop = characterColliderData.topPositon;
+				VECTOR characterCapsuleTop = VAdd(characterCapsuleUnder, characterColliderData.topPositon);
 				isHit = HitCheck_Capsule_Capsule(attackCapsuleUnder, attackCapsuleTop, attackColliderData.radius, characterCapsuleUnder, characterCapsuleTop, characterColliderData.radius);
 			}
 		}

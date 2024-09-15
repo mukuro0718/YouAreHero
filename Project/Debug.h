@@ -16,6 +16,7 @@ public:
 	const void Draw()const;	//描画
 
 	/*getter*/
+	const bool CheckFPSFlag()const;
 	const bool CheckCameraFlag()const;//カメラのデバック機能がONになっているかどうか
 private:
 	/*ファンクション*/

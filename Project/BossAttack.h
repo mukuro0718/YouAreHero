@@ -4,6 +4,7 @@
 #pragma once
 
 class ColliderData;
+class BossAction;
 class BossAttack abstract
 {
 public:

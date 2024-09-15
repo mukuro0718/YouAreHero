@@ -16,6 +16,7 @@
 #include "EffectManager.h"
 #include "SceneState.h"
 #include "CollisionManager.h"
+#include "Debug.h"
 
 /// <summary>
 /// コンストラクタ
@@ -48,6 +49,7 @@ void GameScene::Initialize()
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
+	auto& debug = Singleton<Debug>::GetInstance();
 	
 	/*初期化*/
 	camera.Initialize();
@@ -57,6 +59,7 @@ void GameScene::Initialize()
 	playerAttack.Initialize();
 	enemyAttack.Initialize();
 	ui.Initialize();
+	debug.Initialize();
 }
 
 /// <summary>
@@ -99,6 +102,7 @@ void GameScene::Update()
 	auto& collision = Singleton<CollisionManager>::GetInstance();
 
 	/*更新処理*/
+	debug.Update();
 	input.Update();
 	debug.Update();
 	camera.Update();
@@ -133,9 +137,9 @@ const void GameScene::Draw()const
 	auto& ui = Singleton<UIManager>::GetInstance();
 
 	/*描画*/
+	debug.Draw();
 	camera.Draw();
 	map.Draw();
-	debug.Draw();
 	enemy.Draw();
 	enemyAttack.Draw();
 	player.Draw();

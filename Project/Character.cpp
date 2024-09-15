@@ -92,3 +92,11 @@ const Rigidbody& Character::GetRigidbody()const
 {
 	return this->collider->rigidbody;
 }
+
+/// <summary>
+/// アニメーション変更フラグの取得
+/// </summary>
+const bool Character::GetIsChangeAnimation()const
+{
+	return this->animation->GetIsChangeAnim();
+}

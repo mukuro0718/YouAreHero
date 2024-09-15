@@ -13,7 +13,6 @@ public:
 	const void	 Draw		()const;			//描画
 	void		 OnIsStart	(const int _index);	//開始フラグを立てる
 	const VECTOR GetPosition(const int _index);	//座標の取得
-private:
 	enum class AttackType
 	{
 		NONE		   = -1,
@@ -23,6 +22,7 @@ private:
 		JUMP_ATTACK	   = 3,//ジャンプアタック
 		ROTATE_PUNCH   = 4,//回転パンチ
 	};
+private:
 	std::vector<BossAttack*> attack;
 	int hitNumber;
 };

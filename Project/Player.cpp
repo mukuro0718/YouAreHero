@@ -186,23 +186,23 @@ const void Player::DrawCharacterInfo()const
 	VECTOR position = this->collider->rigidbody.GetPosition();
 	VECTOR rotation = this->collider->rigidbody.GetRotation();
 #if _DEBUG
-	printfDx("PLAYER_POSITION X:%f,Y:%f,Z:%f	\n", position.x, position.y, position.z);
-	printfDx("PLAYER_ROTATION X:%f,Y:%f,Z:%f	\n", rotation.x, rotation.y, rotation.z);
-	printfDx("PLAYER_SPEED:%f					\n", this->speed);
-	printfDx("%d:IDLE							\n", this->state->CheckFlag(this->IDLE));
-	printfDx("%d:LOCK_ON						\n", this->isLockOn);
-	printfDx("%d:ROLL							\n", this->state->CheckFlag(this->ROLL));
-	printfDx("%d:DEATH						\n", this->state->CheckFlag(this->DEATH));
-	printfDx("%d:BLOCK						\n", this->state->CheckFlag(this->BLOCK));
-	printfDx("%d:JUMP							\n", this->state->CheckFlag(this->JUMP));
-	printfDx("%d:REACTION						\n", this->state->CheckFlag(this->REACTION));
-	printfDx("%d:BLOCK_REACTION				\n", this->state->CheckFlag(this->BLOCK_REACTION));
-	printfDx("%d:RUNNING						\n", this->state->CheckFlag(this->RUNNING));
-	printfDx("%d:WALK_BACK					\n", this->state->CheckFlag(this->WALK_BACK));
-	printfDx("%d:WALK_FRONT					\n", this->state->CheckFlag(this->WALK_FRONT));
-	printfDx("%d:WALK_LEFT					\n", this->state->CheckFlag(this->WALK_LEFT));
-	printfDx("%d:WALK_RIGHT					\n", this->state->CheckFlag(this->WALK_RIGHT));
-	printfDx("%d:SLASH						\n", this->state->CheckFlag(this->SLASH));
+	//printfDx("PLAYER_POSITION X:%f,Y:%f,Z:%f	\n", position.x, position.y, position.z);
+	//printfDx("PLAYER_ROTATION X:%f,Y:%f,Z:%f	\n", rotation.x, rotation.y, rotation.z);
+	//printfDx("PLAYER_SPEED:%f					\n", this->speed);
+	//printfDx("%d:IDLE							\n", this->state->CheckFlag(this->IDLE));
+	//printfDx("%d:LOCK_ON						\n", this->isLockOn);
+	//printfDx("%d:ROLL							\n", this->state->CheckFlag(this->ROLL));
+	//printfDx("%d:DEATH						\n", this->state->CheckFlag(this->DEATH));
+	//printfDx("%d:BLOCK						\n", this->state->CheckFlag(this->BLOCK));
+	//printfDx("%d:JUMP							\n", this->state->CheckFlag(this->JUMP));
+	//printfDx("%d:REACTION						\n", this->state->CheckFlag(this->REACTION));
+	//printfDx("%d:BLOCK_REACTION				\n", this->state->CheckFlag(this->BLOCK_REACTION));
+	//printfDx("%d:RUNNING						\n", this->state->CheckFlag(this->RUNNING));
+	//printfDx("%d:WALK_BACK					\n", this->state->CheckFlag(this->WALK_BACK));
+	//printfDx("%d:WALK_FRONT					\n", this->state->CheckFlag(this->WALK_FRONT));
+	//printfDx("%d:WALK_LEFT					\n", this->state->CheckFlag(this->WALK_LEFT));
+	//printfDx("%d:WALK_RIGHT					\n", this->state->CheckFlag(this->WALK_RIGHT));
+	//printfDx("%d:SLASH						\n", this->state->CheckFlag(this->SLASH));
 #endif // _DEBUG
 }
 

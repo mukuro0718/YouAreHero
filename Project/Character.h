@@ -21,12 +21,13 @@ public:
 	const void Draw()const;//•`‰æ
 
 	/*getter/setter*/
-	const CharacterData& GetCharacterData()const;
-	const Rigidbody& GetRigidbody()const;
-	const int GetHP()const;
-	virtual const bool GetIsAttack()const abstract;
-	const int	 GetModelHandle()const { return this->modelHandle; }
-
+	virtual const bool			 GetIsAttack		 ()const abstract;
+			const CharacterData& GetCharacterData	 ()const;
+			const Rigidbody&	 GetRigidbody		 ()const;
+			const int			 GetHP				 ()const;
+			const int			 GetModelHandle		 ()const { return this->modelHandle; }
+			const bool			 GetIsChangeAnimation()const;
+				  void			 OffIsAlive			 () { this->isAlive = false; }
 	/*‚ç[‚ÕŠÖ”*/
 	float  Lerp(const float _start, const float _end, const float _percent);	//‚ç[‚ÕŠÖ”
 	VECTOR Lerp(const VECTOR _start, const VECTOR _end, const VECTOR _percent);//‚ç[‚ÕŠÖ”

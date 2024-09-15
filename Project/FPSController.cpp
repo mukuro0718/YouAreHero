@@ -1,6 +1,8 @@
 #include <DxLib.h>
 #include "UseJson.h"
 #include "FPSController.h"
+#include "Debug.h"
+#include "InputManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -28,7 +30,7 @@ FPSController::~FPSController()
 void FPSController::Initialize()
 {
 	/*Jsonマネージャーのインスタンスの取得*/
-	auto& json = JsonManager::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
 
 	fps = 0.0f;
 	startTime = 0;
@@ -41,10 +43,10 @@ void FPSController::Initialize()
 /// </summary>
 void FPSController::Average()
 {
-	//UpdateTargetFPS();
+	UpdateTargetFPS();
 
 	/*Jsonマネージャーのインスタンスの取得*/
-	auto& json = JsonManager::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*カウントが０だったらスタートタイムを初期化*/
 	if (this->count == 0)
@@ -70,40 +72,46 @@ void FPSController::Average()
 }
 const void FPSController::Draw()const
 {
-	printfDx("fps:%f\n", this->fps);
+	/*クラスインスタンスの取得*/
+	auto& debug = Singleton<Debug>::GetInstance();
+
+	if (debug.CheckFPSFlag())
+	{
+		printfDx("FPS:%f\n", this->fps);
+		printfDx("P:+ M:- TARGET_FPS:%d\n", this->targetFPS);
+	}
 }
 
-///// <summary>
-///// targetFPSの更新
-///// </summary>
-//void FPSController::UpdateTargetFPS()
-//{
-//	/*クラスインスタンスの取得*/
-//	auto& debug = DebugMode::GetInstance();
-//	auto& input = InputManager::GetInstance();
-//
-//	if (debug.GetIsShowMenu())
-//	{
-//		if (CheckHitKey(KEY_INPUT_P))
-//		{
-//			targetFps++;
-//			if (targetFps >= 60)
-//			{
-//				targetFps = 60;
-//			}
-//		}
-//		if (CheckHitKey(KEY_INPUT_M))
-//		{
-//			targetFps--;
-//			if (targetFps <= 0)
-//			{
-//				targetFps = 0;
-//			}
-//		}
-//		printfDx("P:+ M:- fps:%d", targetFps);
-//	}
-//}
-//
+/// <summary>
+/// targetFPSの更新
+/// </summary>
+void FPSController::UpdateTargetFPS()
+{
+	/*クラスインスタンスの取得*/
+	auto& debug = Singleton<Debug>::GetInstance();
+	auto& input = Singleton<InputManager>::GetInstance();
+
+	if (debug.CheckFPSFlag())
+	{
+		if (CheckHitKey(KEY_INPUT_P))
+		{
+			this->targetFPS++;
+			if (this->targetFPS >= 60)
+			{
+				this->targetFPS = 60;
+			}
+		}
+		if (CheckHitKey(KEY_INPUT_M))
+		{
+			this->targetFPS--;
+			if (this->targetFPS <= 0)
+			{
+				this->targetFPS = 0;
+			}
+		}
+	}
+}
+
 /// <summary>
 /// 目標FPSになるよう待機
 /// </summary>
