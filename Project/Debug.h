@@ -17,6 +17,8 @@ public:
 
 	/*getter*/
 	const bool CheckFPSFlag()const;
+	const bool CheckPlayerFlag()const;
+	const bool CheckEnemyFlag()const;
 	const bool CheckCameraFlag()const;//カメラのデバック機能がONになっているかどうか
 private:
 	/*ファンクション*/
@@ -33,9 +35,10 @@ private:
 	//項目の種類
 	enum class ItemType
 	{
-		CAMERA = 0,
-		PLAYER = 1,
-		FPS = 2,
+		CAMERA	= 0,
+		PLAYER	= 1,
+		FPS		= 2,
+		ENEMY	= 3,
 	};
 
 	/*静的定数*/
@@ -44,7 +47,8 @@ private:
 	static constexpr unsigned int CAMERA		 = (1 << 0);//カメラ
 	static constexpr unsigned int PLAYER		 = (1 << 1);//プレイヤー
 	static constexpr unsigned int FPS			 = (1 << 2);//FPS
-	static constexpr unsigned int MASK_ALL_FLAGS = CAMERA | PLAYER | FPS;
+	static constexpr unsigned int ENEMY			 = (1 << 3);//エネミー
+	static constexpr unsigned int MASK_ALL_FLAGS = CAMERA | PLAYER | FPS | ENEMY;
 	
 	/*内部処理関数*/
 			   Debug();																			 //コンストラクタ
@@ -53,7 +57,6 @@ private:
 		  void ChangeFlagsState	 ();															 //フラグの状態の変更
 		  void AddItemFunction	 (const int _item,const FlagsState _set,const FlagsState _clear);//項目ごとの関数の追加
 	const bool IsShow			 ()const;														 //デバック項目を表示させるか
-	const void DrawItem			 (const int _x, const int _y, const unsigned int _checkFlag, const std::string _fieldName)const;//項目の描画
 	const unsigned int GetBitFlagInMap(const int _itemName)const;
 	/*メンバ変数*/
 	std::map<int, FlagsStateSet> itemFunctionMap;		//項目ごとの関数

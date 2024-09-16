@@ -170,6 +170,7 @@
     <ClCompile Include="AttackSphereColliderData.cpp" />
     <ClCompile Include="CapsuleColliderData.cpp" />
     <ClCompile Include="CharacterColliderData.cpp" />
+    <ClCompile Include="HitStop.cpp" />
     <ClCompile Include="PlaneColliderData.cpp" />
     <ClCompile Include="PlayerAttackData.cpp" />
     <ClCompile Include="BossRotatePunchAction.cpp" />
@@ -248,6 +249,7 @@
     <ClInclude Include="CapsuleColliderData.h" />
     <ClInclude Include="CharacterColliderData.h" />
     <ClInclude Include="BossActionHeader.h" />
+    <ClInclude Include="HitStop.h" />
     <ClInclude Include="PlaneColliderData.h" />
     <ClInclude Include="PlayerAttackData.h" />
     <ClInclude Include="BossRotatePunchAction.h" />

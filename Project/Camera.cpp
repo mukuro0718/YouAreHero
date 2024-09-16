@@ -125,10 +125,11 @@ void Camera::UpdateTarget()
 {
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
+	//auto& player = Singleton<PlayerManager>::GetInstance();
+	auto& enemy = Singleton<EnemyManager>::GetInstance();
 
 	/*プレイヤーの座標に補正値を足して注視点とする*/
-	this->nextTarget = player.GetRigidbody().GetPosition() + Convert(json.GetJson(JsonManager::FileType::CAMERA)["TARGET_OFFSET"]);
+	this->nextTarget = enemy.GetRigidbody().GetPosition() + Convert(json.GetJson(JsonManager::FileType::CAMERA)["TARGET_OFFSET"]);
 
 	this->nowTarget = Lerp(this->nowTarget, this->nextTarget, VGet(0.3f, 0.3f, 0.3f));
 

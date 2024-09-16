@@ -18,6 +18,7 @@
 #include "CameraManager.h"
 #include "EnemyManager.h"
 #include "PlayerAttackManager.h"
+#include "Debug.h"
 
 /// <summary>
 /// コンストラクタ
@@ -70,7 +71,7 @@ Player::Player()
 
 	/*コライダーデータの作成*/
 	CharacterData* data = new PlayerData;
-	this->collider = new CharacterColliderData(ColliderData::Priority::LOW, GameObjectTag::PLAYER, data);
+	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::PLAYER, data);
 }
 
 /// <summary>
@@ -182,28 +183,32 @@ const void Player::DrawCharacterInfo()const
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& camera = Singleton<CameraManager>::GetInstance();
+	auto& debug = Singleton<Debug>::GetInstance();
 
 	VECTOR position = this->collider->rigidbody.GetPosition();
+	VECTOR direction = this->collider->rigidbody.GetDirection();
 	VECTOR rotation = this->collider->rigidbody.GetRotation();
-#if _DEBUG
-	//printfDx("PLAYER_POSITION X:%f,Y:%f,Z:%f	\n", position.x, position.y, position.z);
-	//printfDx("PLAYER_ROTATION X:%f,Y:%f,Z:%f	\n", rotation.x, rotation.y, rotation.z);
-	//printfDx("PLAYER_SPEED:%f					\n", this->speed);
-	//printfDx("%d:IDLE							\n", this->state->CheckFlag(this->IDLE));
-	//printfDx("%d:LOCK_ON						\n", this->isLockOn);
-	//printfDx("%d:ROLL							\n", this->state->CheckFlag(this->ROLL));
-	//printfDx("%d:DEATH						\n", this->state->CheckFlag(this->DEATH));
-	//printfDx("%d:BLOCK						\n", this->state->CheckFlag(this->BLOCK));
-	//printfDx("%d:JUMP							\n", this->state->CheckFlag(this->JUMP));
-	//printfDx("%d:REACTION						\n", this->state->CheckFlag(this->REACTION));
-	//printfDx("%d:BLOCK_REACTION				\n", this->state->CheckFlag(this->BLOCK_REACTION));
-	//printfDx("%d:RUNNING						\n", this->state->CheckFlag(this->RUNNING));
-	//printfDx("%d:WALK_BACK					\n", this->state->CheckFlag(this->WALK_BACK));
-	//printfDx("%d:WALK_FRONT					\n", this->state->CheckFlag(this->WALK_FRONT));
-	//printfDx("%d:WALK_LEFT					\n", this->state->CheckFlag(this->WALK_LEFT));
-	//printfDx("%d:WALK_RIGHT					\n", this->state->CheckFlag(this->WALK_RIGHT));
-	//printfDx("%d:SLASH						\n", this->state->CheckFlag(this->SLASH));
-#endif // _DEBUG
+	if (debug.CheckPlayerFlag())
+	{
+		printfDx("PLAYER_POSITION X:%f,Y:%f,Z:%f	\n", position.x, position.y, position.z);
+		printfDx("PLAYER_DIRECTION X:%f,Y:%f,Z:%f	\n", direction.x, direction.y, direction.z);
+		printfDx("PLAYER_ROTATION X:%f,Y:%f,Z:%f	\n", rotation.x, rotation.y, rotation.z);
+		printfDx("PLAYER_SPEED:%f					\n", this->speed);
+		printfDx("%d:IDLE							\n", this->state->CheckFlag(this->IDLE));
+		printfDx("%d:LOCK_ON						\n", this->isLockOn);
+		printfDx("%d:ROLL							\n", this->state->CheckFlag(this->ROLL));
+		printfDx("%d:DEATH						\n", this->state->CheckFlag(this->DEATH));
+		printfDx("%d:BLOCK						\n", this->state->CheckFlag(this->BLOCK));
+		printfDx("%d:JUMP							\n", this->state->CheckFlag(this->JUMP));
+		printfDx("%d:REACTION						\n", this->state->CheckFlag(this->REACTION));
+		printfDx("%d:BLOCK_REACTION				\n", this->state->CheckFlag(this->BLOCK_REACTION));
+		printfDx("%d:RUNNING						\n", this->state->CheckFlag(this->RUNNING));
+		printfDx("%d:WALK_BACK					\n", this->state->CheckFlag(this->WALK_BACK));
+		printfDx("%d:WALK_FRONT					\n", this->state->CheckFlag(this->WALK_FRONT));
+		printfDx("%d:WALK_LEFT					\n", this->state->CheckFlag(this->WALK_LEFT));
+		printfDx("%d:WALK_RIGHT					\n", this->state->CheckFlag(this->WALK_RIGHT));
+		printfDx("%d:SLASH						\n", this->state->CheckFlag(this->SLASH));
+	}
 }
 
 /// <summary>
@@ -245,21 +250,13 @@ void Player::UpdateMoveVector()
 	}
 	VECTOR aimVelocity = VScale(direction, this->speed);
 	VECTOR prevVelocity = this->collider->rigidbody.GetVelocity();
-	float yVelocity = prevVelocity.y - this->jumpPower;
+	VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);
 
 	/*ジャンプ力の計算*/
 	if (this->state->CheckFlag(this->JUMP))
 	{
-		const float MIN_POWER = json.GetJson(JsonManager::FileType::PLAYER)["JUMP_POWER"] * -1.0;
-		this->jumpPower += static_cast<float>(json.GetJson(JsonManager::FileType::PLAYER)["JUMP_DECEL"]);
-		if (this->jumpPower < MIN_POWER)
-		{
-			this->jumpPower = 0.0f;
-		}
+		newVelocity.y = json.GetJson(JsonManager::FileType::PLAYER)["JUMP_POWER"];
 	}
-
-	VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y + this->jumpPower, aimVelocity.z);
-
 	this->collider->rigidbody.SetVelocity(newVelocity);
 }
 /// <summary>
@@ -390,22 +387,22 @@ void Player::UpdateRotation()
 
 
 	/*もしロックオンしていたら*/
-	if (this->isLockOn)
-	{
-		/*カメラの向いている方向をもとにモデルの回転率を出す。*/
-		rotation.y = static_cast<float>(
-			-atan2(static_cast<double>(playerToTargetDirection.z), static_cast<double>(playerToTargetDirection.x)));
-		rotation.y -= 90.0f * (DX_PI_F / 180.0f);
-		if (isInputLStick)
-		{
-			lStick = VNorm(lStick);
-			this->moveVectorRotation.y = static_cast<float>(
-				-atan2(static_cast<double>(playerToTargetDirection.z), static_cast<double>(playerToTargetDirection.x))
-				- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
-		}
-	}
-	else
-	{
+	//if (this->isLockOn)
+	//{
+	//	/*カメラの向いている方向をもとにモデルの回転率を出す。*/
+	//	rotation.y = static_cast<float>(
+	//		-atan2(static_cast<double>(playerToTargetDirection.z), static_cast<double>(playerToTargetDirection.x)));
+	//	rotation.y -= 90.0f * (DX_PI_F / 180.0f);
+	//	if (isInputLStick)
+	//	{
+	//		lStick = VNorm(lStick);
+	//		this->moveVectorRotation.y = static_cast<float>(
+	//			-atan2(static_cast<double>(playerToTargetDirection.z), static_cast<double>(playerToTargetDirection.x))
+	//			- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
+	//	}
+	//}
+	//else
+	//{
 		/*カメラの向いている方向と、プレイヤーが最初に向いていた方向をもとにモデルの回転率を出す。*/
 		if (isInputLStick)
 		{
@@ -415,7 +412,7 @@ void Player::UpdateRotation()
 				- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
 			this->moveVectorRotation = rotation;
 		}
-	}
+	//}
 
 	if (isInputLStick || this->isLockOn)
 	{

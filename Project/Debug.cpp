@@ -26,9 +26,12 @@ Debug::Debug()
 	auto playerClear = [this]() { this->flags->ClearFlag(this->PLAYER); };
 	auto fpsSet		 = [this]() { this->flags->SetFlag  (this->FPS); };
 	auto fpsClear	 = [this]() { this->flags->ClearFlag(this->FPS); };
+	auto enemySet = [this]() { this->flags->SetFlag(this->ENEMY); };
+	auto enemyClear = [this]() { this->flags->ClearFlag(this->ENEMY); };
 	AddItemFunction(static_cast<int>(ItemType::CAMERA), cameraSet, cameraClear);
 	AddItemFunction(static_cast<int>(ItemType::PLAYER), playerSet, playerClear);
 	AddItemFunction(static_cast<int>(ItemType::FPS), fpsSet	  , fpsClear);
+	AddItemFunction(static_cast<int>(ItemType::FPS), enemySet, enemyClear);
 }
 
 /// <summary>
@@ -100,6 +103,9 @@ const void Debug::Draw()const
 				break;
 			case static_cast<int>(ItemType::FPS):
 				printfDx("%d:FPS  ", this->flags->CheckFlag(this->FPS));
+				break;
+			case static_cast<int>(ItemType::ENEMY):
+				printfDx("%d:ENEMY  ", this->flags->CheckFlag(this->ENEMY));
 				break;
 			}
 			if (i == this->currentlySelectedItem)printfDx("<=\n");
@@ -222,6 +228,8 @@ const unsigned int Debug::GetBitFlagInMap(const int _itemName)const
 		return this->PLAYER;
 	case static_cast<int>(ItemType::FPS):
 		return this->FPS;
+	case static_cast<int>(ItemType::ENEMY):
+		return this->ENEMY;
 	}
 	return 0;
 }
@@ -238,4 +246,18 @@ const bool Debug::CheckCameraFlag()const
 const bool Debug::CheckFPSFlag()const
 {
 	return this->flags->CheckFlag(this->FPS);
+}
+/// <summary>
+/// エネミーのデバック機能がONになっているかどうか
+/// </summary>
+const bool Debug::CheckEnemyFlag()const
+{
+	return this->flags->CheckFlag(this->ENEMY);
+}
+/// <summary>
+/// プレイヤーのデバック機能がONになっているかどうか
+/// </summary>
+const bool Debug::CheckPlayerFlag()const
+{
+	return this->flags->CheckFlag(this->PLAYER);
 }

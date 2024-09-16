@@ -220,6 +220,9 @@
     <Filter Include="Object\Character\Enemy\Action\Parameter\Death">
       <UniqueIdentifier>{49e4a844-95ed-4781-ba48-d47f4f734bbf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HitStopManager">
+      <UniqueIdentifier>{31fe7dbc-888b-4de1-bcd5-82599d8ac1d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -444,6 +447,9 @@
     </ClCompile>
     <ClCompile Include="BossRoarAction.cpp">
       <Filter>Object\Character\Enemy\Action\Parameter\Roar</Filter>
+    </ClCompile>
+    <ClCompile Include="HitStop.cpp">
+      <Filter>HitStopManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -692,6 +698,9 @@
     </ClInclude>
     <ClInclude Include="BossRoarAction.h">
       <Filter>Object\Character\Enemy\Action\Parameter\Roar</Filter>
+    </ClInclude>
+    <ClInclude Include="HitStop.h">
+      <Filter>HitStopManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

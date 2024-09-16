@@ -109,7 +109,13 @@
     60,
     100
   ],
-
+  "HIT_STOP_TIME": [
+    30,
+    30,
+    30,
+    30,
+    30
+  ],
   "SLASH_SLOW_FRAME_COUNT": 45,
   "ROTATE_PUNCH_SLOW_FRAME_COUNT": 45,
   "STAB_SLOW_FRAME_COUNT": 45,

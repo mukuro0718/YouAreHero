@@ -74,6 +74,7 @@
     1.3
   ],
 
+  "HIT_STOP_TIME": 5,
   "ATTACK_COMBO_NUM": 2,
   "START_HIT_CHECK_FRAME": 5,
   "END_HIT_CHECK_FRAME": 20,

@@ -17,6 +17,7 @@
 #include "SceneState.h"
 #include "CollisionManager.h"
 #include "Debug.h"
+#include "HitStop.h"
 
 /// <summary>
 /// コンストラクタ
@@ -50,6 +51,7 @@ void GameScene::Initialize()
 	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 	auto& debug = Singleton<Debug>::GetInstance();
+	auto& hitStop = Singleton<HitStop>::GetInstance();
 	
 	/*初期化*/
 	camera.Initialize();
@@ -60,6 +62,7 @@ void GameScene::Initialize()
 	enemyAttack.Initialize();
 	ui.Initialize();
 	debug.Initialize();
+	hitStop.Initialize();
 }
 
 /// <summary>
@@ -100,22 +103,24 @@ void GameScene::Update()
 	auto& ui = Singleton<UIManager>::GetInstance();
 	auto& sceneState = Singleton<SceneState>::GetInstance();
 	auto& collision = Singleton<CollisionManager>::GetInstance();
+	auto& hitStop = Singleton<HitStop>::GetInstance();
 
 	/*更新処理*/
 	debug.Update();
 	input.Update();
-	debug.Update();
-	camera.Update();
-	map.Update();
-	enemy.Update();
-	player.Update();
-	playerAttack.Update();
-	enemyAttack.Update();
-	effect.Update();
-	ui.Update();
-	collision.Update();
-	sceneState.Update();
-
+	if (!hitStop.IsHitStop())
+	{
+		camera.Update();
+		map.Update();
+		enemy.Update();
+		player.Update();
+		playerAttack.Update();
+		enemyAttack.Update();
+		effect.Update();
+		ui.Update();
+		collision.Update();
+		sceneState.Update();
+	}
 	/*終了処理*/
 	ChangeState();
 }
@@ -135,8 +140,10 @@ const void GameScene::Draw()const
 	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 	auto& effect = Singleton<EffectManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
+	auto& hitStop = Singleton<HitStop>::GetInstance();
 
 	/*描画*/
+	hitStop.Draw();
 	debug.Draw();
 	camera.Draw();
 	map.Draw();

@@ -80,7 +80,7 @@ void CollisionManager::Update()
 			//最大重力加速度より大きかったらクランプ
 			if (velocity.y < this->MAX_GRAVITY_ACCEL)
 			{
-				velocity = VGet(velocity.x, this->MAX_GRAVITY_ACCEL, velocity.y);
+				velocity = VGet(velocity.x, this->MAX_GRAVITY_ACCEL, velocity.z);
 			}
 		}
 
@@ -366,16 +366,19 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 	//カプセル同士の位置補正
 	else if (primaryKind == ColliderData::Kind::CHARACTER_CAPSULE && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
-		VECTOR primaryToSecondary = VSub(_secondary.GetNextPosition(), _primary.GetNextPosition());
-		VECTOR primaryToSecondaryNorm = VNorm(primaryToSecondary);
+		VECTOR secondaryToPrimary = VSub(_primary.GetNextPosition(), _secondary.GetNextPosition());
+		VECTOR secondaryToPrimaryNorm = VNorm(secondaryToPrimary);
+		float  secondaryToPrimarySize = VSize(secondaryToPrimary);
 
 		auto& primaryColliderData = dynamic_cast<CharacterColliderData&> (_primary);
 		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
+
 		//そのままだとちょうど当たる位置になるので少し余分に離す
-		float awayDist = primaryColliderData.radius + secondaryColliderData.radius + 0.0001f;
-		VECTOR primaryToNewSecondaryPosition = VScale(primaryToSecondaryNorm, awayDist);
-		VECTOR fixedPosition = VAdd(_primary.GetNextPosition(), primaryToNewSecondaryPosition);
-		_secondary.SetNextPosition(fixedPosition);
+		float radiusSum = primaryColliderData.radius + secondaryColliderData.radius;
+		float awayDist = radiusSum - secondaryToPrimarySize + 0.0001f;
+		VECTOR fixedSize = VScale(secondaryToPrimaryNorm, awayDist);
+		VECTOR fixedPosition = VAdd(_primary.GetNextPosition(), fixedSize);
+		_primary.SetNextPosition(fixedPosition);
 	}
 	//平面とカプセル(平面はSTATICなので、必ずprimaryがPLANEになる)
 	else if (primaryKind == ColliderData::Kind::PLANE && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)

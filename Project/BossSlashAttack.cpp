@@ -12,7 +12,7 @@
 #include "BossAttack.h"
 #include "BossSlashAttack.h"
 #include "EnemyManager.h"
-
+#include "Debug.h"
 
 /// <summary>
 /// コンストラクタ
@@ -51,8 +51,9 @@ void BossSlashAttack::Initialize()
 	/*コライダーの初期化*/
 	auto& collider	= dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
 	auto& data		= dynamic_cast<BossAttackData&>(*collider.data);
-	collider.radius = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
-	data.damage		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
+	collider.radius  = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
+	data.damage		 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
+	data.hitStopTime = json.GetJson(JsonManager::FileType::ENEMY)["HIT_STOP_TIME"][this->attackIndex];
 
 	/*変数の初期化*/
 	this->frameCount	  = 0;
@@ -113,13 +114,15 @@ void BossSlashAttack::Update()
 /// </summary>
 const void BossSlashAttack::Draw()const
 {
-#if _DEBUG
-	if (this->isStartHitCheck)
+	auto& debug = Singleton<Debug>::GetInstance();
+	if (debug.CheckEnemyFlag())
 	{
-		auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-		DrawCapsule3D(collider.rigidbody.GetPosition(), collider.topPositon, collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
+		if (this->isStartHitCheck)
+		{
+			auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
+			DrawCapsule3D(collider.rigidbody.GetPosition(), collider.topPositon, collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
+		}
+		VECTOR position = this->collider->rigidbody.GetPosition();
+		printfDx("SLASH_ATTACK X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
 	}
-	VECTOR position = this->collider->rigidbody.GetPosition();
-	printfDx("SLASH_ATTACK X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-#endif // _DEBUG
 }

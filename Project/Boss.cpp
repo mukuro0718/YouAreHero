@@ -3,27 +3,22 @@
 #include "UseJson.h"
 #include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
-
 #include "Rigidbody.h"
-
 #include "CharacterData.h"
 #include "BossData.h"
 #include "ColliderData.h"
 #include "CharacterColliderData.h"
-
 #include "BitFlag.h"
 #include "Animation.h"
 #include "Character.h"
-
 #include "BossActionHeader.h"
-
 #include "Boss.h"
-
 #include "LoadingAsset.h"
 #include "PlayerManager.h"
 #include "CameraManager.h"
 #include "BossAttackManager.h"
 #include "EffectManager.h"
+#include "Debug.h"
 
 /// <summary>
 /// コンストラクタ
@@ -135,8 +130,6 @@ void Boss::Initialize()
 
 	/*フェーズの設定*/
 	SetPhase();
-
-	//this->prevPhase = this->nowPhase;
 
 	/*攻撃コンボの初期化*/
 	this->attackComboCount = -1;
@@ -314,20 +307,24 @@ void Boss::ChangeState()
 /// </summary>
 const void Boss::DrawCharacterInfo()const
 {
-	VECTOR position = this->collider->rigidbody.GetPosition();
-	VECTOR rotation = this->collider->rigidbody.GetRotation();
-	printfDx("Boss_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-	printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
-	printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
-	printfDx("%d:IDLE					\n", this->state->CheckFlag(this->IDLE));
-	printfDx("%d:ROAR					\n", this->state->CheckFlag(this->ROAR));
-	printfDx("%d:WALK					\n", this->state->CheckFlag(this->WALK));
-	printfDx("%d:REST					\n", this->state->CheckFlag(this->REST));
-	printfDx("%d:SLASH					\n", this->state->CheckFlag(this->SLASH));
-	printfDx("%d:FLY_ATTACK				\n", this->state->CheckFlag(this->FLY_ATTACK));
-	printfDx("%d:HURRICANE_KICK			\n", this->state->CheckFlag(this->HURRICANE_KICK));
-	printfDx("%d:JUMP_ATTACK			\n", this->state->CheckFlag(this->JUMP_ATTACK));
-	printfDx("%d:ROTATE_PUNCH			\n", this->state->CheckFlag(this->ROTATE_PUNCH));
+	auto& debug = Singleton<Debug>::GetInstance();
+	if (debug.CheckEnemyFlag())
+	{
+		VECTOR position = this->collider->rigidbody.GetPosition();
+		VECTOR rotation = this->collider->rigidbody.GetRotation();
+		printfDx("Boss_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+		printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
+		printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
+		printfDx("%d:IDLE					\n", this->state->CheckFlag(this->IDLE));
+		printfDx("%d:ROAR					\n", this->state->CheckFlag(this->ROAR));
+		printfDx("%d:WALK					\n", this->state->CheckFlag(this->WALK));
+		printfDx("%d:REST					\n", this->state->CheckFlag(this->REST));
+		printfDx("%d:SLASH					\n", this->state->CheckFlag(this->SLASH));
+		printfDx("%d:FLY_ATTACK				\n", this->state->CheckFlag(this->FLY_ATTACK));
+		printfDx("%d:HURRICANE_KICK			\n", this->state->CheckFlag(this->HURRICANE_KICK));
+		printfDx("%d:JUMP_ATTACK			\n", this->state->CheckFlag(this->JUMP_ATTACK));
+		printfDx("%d:ROTATE_PUNCH			\n", this->state->CheckFlag(this->ROTATE_PUNCH));
+	}
 }
 
 /// <summary>

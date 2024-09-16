@@ -34,7 +34,7 @@ void Rigidbody::Initialize(bool _useGravity)
 void Rigidbody::SetVelocity(const VECTOR& _set)
 {
 	this->velocity = _set;
-	if (VSquareSize(this->velocity) > 0)
+	if (this->velocity.x != 0.0f || this->velocity.z != 0.0f)
 	{
 		this->direction = VNorm(this->velocity);
 	}
