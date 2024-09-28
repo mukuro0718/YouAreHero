@@ -1,41 +1,43 @@
-//==============================================================================
+//===============================================
 // @brief チュートリアルUIクラス
-//	画像・テキストの描画と更新処理を行う
-//==============================================================================
+//===============================================
 #pragma once
 
+class Image;
 class SceneUI;
 class TutorialUI : public SceneUI
 {
 public:
-	TutorialUI();//コンストラクタ
-	~TutorialUI();//デストラクタ
+	TutorialUI();
+	~TutorialUI();
 
-	void Initialize() override;
-	void Update() override;
+	void Initialize()		 override;
+	void Update()		 override;
 	const void Draw()const override;
+	const bool IsEnd()const override;
 private:
+	/*列挙体*/
+	enum class FontType
+	{
+		MAIN = 0,
+		SUB = 1
+	};
+
+	/*静的定数*/
+	static constexpr int TEXT_COLOR = 0xdfffff;
+
+	/*内部処理関数*/
+	std::vector<int>  ReturnAddOffset(const std::vector<int> _position, const std::vector<int> _offset);
+	bool			  IsPressButton();
+	void			  ExtendWindow();
+	void			  ReducedWindow();
 
 	/*メンバ変数*/
-	//画像変数
-	Image logo;
-	Image pressA;
+	Image*		window;				//window画像
+	bool		isPrevPressButton;	//前にボタンが入力されているか
+	bool		isExtendWindow;		//画像を拡大するか
+	bool		isReducedWindow;	//縮小するか
+	bool		isEnd;				//終了するか
+	vector<int> fontHandle;			//フォント
 };
 
-/*
-タイトルロゴ
-
-alpha = 0 から MAX_ALPHA まで毎フレーム+1する
-alpha が増加中にプレイヤーが X を押したら alpha を一気に MAX_ALPHA にする
-*/
-
-/*
-pressA
-
-タイトルロゴの alpha が MAX_ALPHA に到達したら
-alpha = 0 から MAX_ALPHA まで毎フレーム+1する
-MAX_ALPHA に到達したら次は alpha が 0 になるまで毎フレーム -1 ずつ減少させる
-
-Aボタンが押されたら一気に alpha を MAX_ALPHA にした後、
-alpha が 0 になるまで毎フレーム -1 ずつ減少させる
-*/

@@ -17,7 +17,7 @@ private:
 	/*内部処理関数*/
 			 SceneManager();//コンストラクタ
 	virtual ~SceneManager();//デストラクタ
-	void	 SceneChange ();//シーンの変更
+	void SceneChange();
 
 	/*メンバ変数*/
 	static SceneManager* instance;	//唯一のインスタンス

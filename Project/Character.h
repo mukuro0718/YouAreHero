@@ -32,12 +32,12 @@ public:
 	float  Lerp(const float _start, const float _end, const float _percent);	//らーぷ関数
 	VECTOR Lerp(const VECTOR _start, const VECTOR _end, const VECTOR _percent);//らーぷ関数
 protected:
-	Animation* animation;//アニメーション
-	BitFlag* state;//状態
-	ColliderData* collider;//コライダー
-	int modelHandle;//モデルハンドル
-	bool isAlive;//キャラクターが生存しているか
-	bool isGround;//地面に当たっている
-	float speed;//速度
+	Animation*		animation;	//アニメーション
+	BitFlag*		state;		//状態
+	ColliderData*	collider;	//コライダー
+	int				modelHandle;//モデルハンドル
+	bool			isAlive;	//キャラクターが生存しているか
+	bool			isGround;	//地面に当たっている
+	float			speed;		//速度
 };
 

@@ -49,10 +49,10 @@ Boss::Boss()
 	}
 
 	/*アニメーションの設定*/
-	vector<string> animationHandle = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_HANDLE"];
-	vector<int> animationIndex = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_INDEX"];
-	this->nowAnimation = static_cast<int>(AnimationType::IDLE);
-	this->animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
+	vector<string>	animationHandle	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_HANDLE"];
+	vector<int>		animationIndex	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_INDEX"];
+			  this->nowAnimation	  = static_cast<int>(AnimationType::IDLE);
+			  this->animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 	//アニメーションの追加
 	for (int i = 0; i < animationHandle.size(); i++)
 	{
@@ -120,23 +120,40 @@ void Boss::Initialize()
 	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 	auto& data = dynamic_cast<BossData&>(*collider.data);
 
-
 	/*変数の初期化*/
-	collider.radius = json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
-	float height = json.GetJson(JsonManager::FileType::ENEMY)["HIT_HEIGHT"];
-	collider.topPositon = VAdd(collider.rigidbody.GetPosition(), VGet(0.0f, height, 0.0f));
-	data.hp			= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
-	data.isHit		= false;
+	this->isAlive				 = true;
+	this->isGround				 = true;
+	this->speed					 = 0.0f;
+	this->animationPlayTime		 = 0.0f;
+	this->attackComboIndexOffset = 0;
+	this->nowPhase				 = 0;
+	this->attackComboCount		 = -1;
+	this->attackType			 = -1;
+	this->prevPhase				 = -1;
+	this->moveTarget			 = Gori::ORIGIN;
+	this->nowAnimation			 = static_cast<int>(AnimationType::ROAR);
+	this->actionType			 = static_cast<int>(ActionType::ROAR);
+	for (int i = 0; i < this->frameCount.size(); i++)
+	{
+		this->frameCount[i] = 0;
+		this->isCount[i] = false;
+	}
+	for (int i = 0; i < this->attackCombo.size(); i++)
+	{
+		this->attackCombo[i] = false;
+	}
+	for (int i = 0; i < this->parameters.size(); i++)
+	{
+		this->parameters[i]->Initialize();
+	}
+	float height		= json.GetJson(JsonManager::FileType::ENEMY)["HIT_HEIGHT"];
+	collider.topPositon = /*VAdd(collider.rigidbody.GetPosition(),*/ VGet(0.0f, height, 0.0f)/*)*/;
+	collider.radius		= json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
+	data.hp				= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
+	data.isHit			= false;
 
 	/*フェーズの設定*/
 	SetPhase();
-
-	/*攻撃コンボの初期化*/
-	this->attackComboCount = -1;
-
-	/*スピードの初期化*/
-	this->speed = json.GetJson(JsonManager::FileType::ENEMY)["SPEED"];
-	this->speed = 0.0f;
 
 	/*物理挙動の初期化*/
 	//jsonデータを定数に代入
@@ -148,6 +165,12 @@ void Boss::Initialize()
 	this->collider->rigidbody.SetPosition(POSITION);
 	this->collider->rigidbody.SetRotation(ROTATION);
 	this->collider->rigidbody.SetScale(SCALE);
+	MV1SetPosition	 (this->modelHandle, this->collider->rigidbody.GetPosition());
+	MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());
+	MV1SetScale		 (this->modelHandle, this->collider->rigidbody.GetScale());
+
+	this->state->ClearFlag(this->MASK_ALL);
+	this->state->SetFlag(this->ROAR);
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
@@ -171,14 +194,15 @@ void Boss::Update()
 	/*フェーズの初期化*/
 	SetPhase();
 
+	/*状態の切り替え*/
+	ChangeState();
+
 	/*ここですべてのパラメータの計算を行う*/
 	for (auto& item : this->parameters)
 	{
 		item->CalcParameter(*this);
 	}
 
-	/*状態の切り替え*/
-	ChangeState();
 
 	//ここに各アクションごとの更新処理を入れたい
 	this->parameters[this->actionType]->Update(*this);

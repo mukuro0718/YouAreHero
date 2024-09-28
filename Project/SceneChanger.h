@@ -15,7 +15,11 @@ public:
 	//シーンタイプ
 	enum class SceneType
 	{
-		GAME = 0,//ゲーム
+		TITLE		= 0,
+		TUTORIAL	= 1,
+		GAME		= 2,//ゲーム
+		GAME_CLEAR	= 3,
+		GAME_OVER	= 4,
 	};
 
 	void SynchroScene();							//シーンの同期
@@ -33,4 +37,3 @@ private:
 	SceneType			 nowScene;		//現在のシーン
 	SceneType			 nextSceneType;	//次のシーン
 };
-

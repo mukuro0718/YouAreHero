@@ -8,4 +8,5 @@ enum class GameObjectTag
 	WALL,	//•Ç
 	PLAYER_ATTACK,
 	BOSS_ATTACK,
+	CAMERA,
 };

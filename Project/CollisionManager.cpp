@@ -340,6 +340,33 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			isHit = true;
 		}
 	}
+	/*球と平面の当たり判定*/
+	else if ((aKind == ColliderData::Kind::SPHERE && bKind == ColliderData::Kind::PLANE) ||
+		(aKind == ColliderData::Kind::PLANE && bKind == ColliderData::Kind::SPHERE))
+	{
+		ColliderData* planeDataBase = &_objectA;
+		VECTOR planeCenter = _objectA.GetNextPosition();
+		VECTOR sphereCenter = _objectB.GetNextPosition();
+		if (bKind == ColliderData::Kind::PLANE)
+		{
+			planeDataBase = &_objectB;
+			planeCenter = _objectB.GetNextPosition();
+			sphereCenter = _objectA.GetNextPosition();
+		}
+		auto& planeColliderData = dynamic_cast<PlaneColliderData&>(*planeDataBase);
+
+		if (bKind == ColliderData::Kind::SPHERE)
+		{
+			sphereCenter = _objectB.GetNextPosition();
+		}
+		/*今は地面が円形の平面を持っているので、当たり判定はY座標(０以下かどうか)と平面の中心座標が平面の半径居ないかを判定する*/
+		float distance = VSize(VSub(sphereCenter, planeCenter));
+		if ((sphereCenter.y < 0.0f) || (distance > planeColliderData.radius))
+		{
+			isHit = true;
+		}
+	}
+
 	return isHit;
 }
 
@@ -398,7 +425,18 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		fixedPosition.y = 0.0f;
 		_secondary.SetNextPosition(fixedPosition);
 	}
+	//平面とスフィア(平面はSTATICなので、必ずprimaryがPLANEになる)
+	else if (primaryKind == ColliderData::Kind::PLANE && secondaryKind == ColliderData::Kind::SPHERE)
+	{
+		auto& primaryColliderData = dynamic_cast<PlaneColliderData&> (_primary);
 
+		VECTOR fixedPosition = _secondary.GetNextPosition();
+		if (fixedPosition.y < 0.0f)
+		{
+			fixedPosition.y = 0.0f;
+		}
+		_secondary.SetNextPosition(fixedPosition);
+	}
 	//球とカプセル(球はSTATICなので、必ずprimaryがSPHEREになる)
 	else if (primaryKind == ColliderData::Kind::ATTACK_SPHERE && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{

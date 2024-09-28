@@ -24,6 +24,7 @@ public:
 	const bool			 GetIsAttack	 ()const;//UŒ‚‚µ‚½‚©
 	const int			 GetHP			 ()const;
 	const float			 GetStamina		 ()const;
+	const int			 GetHealOrbNum	 ()const;
 	const int			 GetModelHandle	 ()const;
 private:
 	/*“à•”ˆ—ŠÖ”*/

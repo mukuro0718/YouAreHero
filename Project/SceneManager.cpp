@@ -1,6 +1,11 @@
 #include <DxLib.h>
 #include "SceneManager.h"
+#include "SceneBase.h"
 #include "GameScene.h"
+#include "GameClearScene.h"
+#include "GameOverScene.h"
+#include "TitleScene.h"
+#include "TutorialScene.h"
 #include "LoadScene.h"
 #include "SceneChanger.h"
 #include "FPSController.h"
@@ -16,7 +21,7 @@ SceneManager::SceneManager()
 	, fps	   (nullptr)
 {
 	/*インスタンスの作成*/
-	this->mainScene = new GameScene	   ();//メインシーン
+	this->mainScene = new TitleScene   ();//メインシーン
 	this->loadScene = new LoadScene	   ();//ロードシーン
 	this->fps		= new FPSController();//FPSコントローラー
 }
@@ -34,15 +39,9 @@ void SceneManager::Update()
 {
 	if (GetASyncLoadNum() == 0)
 	{
-		/*インプットマネージャーのインスタンスを取得*/
-		//auto& input = InputManager::GetInstance();
-
 		/*画面をきれいにする*/
 		ClearDrawScreen();
 		clsDx();
-
-		/*インプットマネージャーの更新*/
-		//input.Update();
 
 		/*シーンの更新*/
 		this->mainScene->Update();
@@ -69,26 +68,37 @@ void SceneManager::Update()
 		this->loadScene->Draw();
 	}
 }
-/// <summary>
-/// シーンの変更
-/// </summary>
+
+
 void SceneManager::SceneChange()
 {
-	/*シーンチェンジャークラスのインスタンスを取得*/
 	auto& changer = SceneChanger::GetInstance();
 
-	/*もし現在のシーンタイプと前のシーンタイプが異なっていたら処理を行う*/
 	if (changer.GetNowSceneType() != changer.GetNextSceneType())
 	{
-		//シーンタイプによって作成するインスタンスを変える
 		switch (changer.GetNextSceneType())
 		{
+		case SceneChanger::SceneType::TITLE:
+			delete(this->mainScene);
+			this->mainScene = new TitleScene();
+			break;
+		case SceneChanger::SceneType::TUTORIAL:
+			delete(this->mainScene);
+			this->mainScene = new TutorialScene();
+			break;
 		case SceneChanger::SceneType::GAME:
 			delete(this->mainScene);
 			this->mainScene = new GameScene();
 			break;
+		case SceneChanger::SceneType::GAME_CLEAR:
+			delete(this->mainScene);
+			this->mainScene = new GameClearScene();
+			break;
+		case SceneChanger::SceneType::GAME_OVER:
+			delete(this->mainScene);
+			this->mainScene = new GameOverScene();
+			break;
 		}
-		//シーンを同期させる
 		changer.SynchroScene();
 	}
 }

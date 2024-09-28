@@ -30,4 +30,5 @@ void CharacterColliderData::OnHit(const AttackData& _data, const VECTOR _attackP
 		this->data->hp -= _data.damage;
 		hitStop.SetHitStopTime(_data.hitStopTime);
 	}
+	this->data->isHit = true;
 }

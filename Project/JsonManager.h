@@ -28,6 +28,7 @@ public:
 		UI				= 12,
 		EFFECT_PATH		= 13,
 		EFFECT			= 14,
+		BOT				= 15
 	};
 
 	void LoadFileAgain();

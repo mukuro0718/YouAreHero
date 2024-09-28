@@ -141,7 +141,7 @@ private:
 	std::vector<int>			frameCount;				//フレームカウント
 	std::vector<bool>			isCount;				//カウントをするか
 	std::vector<int>			attackCombo;			//攻撃コンボ
-	std::vector<BossAction*>	parameters;				//アクションパラメーター（本来は、ここに各行動を入れたい）
+	std::vector<BossAction*>	parameters;				//アクションパラメーター
 	VECTOR						moveTarget;				//移動目標
 	float						animationPlayTime;		//アニメーション再生時間
 	int							attackComboCount;		//攻撃コンボ回数
@@ -150,6 +150,6 @@ private:
 	int							attackType;				//攻撃の種類
 	int							nowPhase;				//現在のフェーズ
 	int							prevPhase;				//前のフェーズ
-	int actionType;
+	int							actionType;
 };
 

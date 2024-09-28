@@ -161,6 +161,7 @@
     <ClCompile Include="BossSlashAction.cpp" />
     <ClCompile Include="BossSlashAttack.cpp" />
     <ClCompile Include="BossStabAction.cpp" />
+    <ClCompile Include="Bot.cpp" />
     <ClCompile Include="ButtonUI.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Character.cpp" />
@@ -170,10 +171,16 @@
     <ClCompile Include="AttackSphereColliderData.cpp" />
     <ClCompile Include="CapsuleColliderData.cpp" />
     <ClCompile Include="CharacterColliderData.cpp" />
+    <ClCompile Include="GameOverScene.cpp" />
+    <ClCompile Include="GameOverUI.cpp" />
+    <ClCompile Include="GameUI.cpp" />
     <ClCompile Include="HitStop.cpp" />
+    <ClCompile Include="Image.cpp" />
     <ClCompile Include="PlaneColliderData.cpp" />
     <ClCompile Include="PlayerAttackData.cpp" />
     <ClCompile Include="BossRotatePunchAction.cpp" />
+    <ClCompile Include="GameClearScene.cpp" />
+    <ClCompile Include="GameClearUI.cpp" />
     <ClCompile Include="SphereColliderData.cpp" />
     <ClCompile Include="CharacterData.cpp" />
     <ClCompile Include="Effect.cpp" />
@@ -199,7 +206,6 @@
     <ClCompile Include="PlayerAttack.cpp" />
     <ClCompile Include="PlayerData.cpp" />
     <ClCompile Include="PlayerManager.cpp" />
-    <ClCompile Include="ResultUI.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="BossRotatePunch.cpp" />
     <ClCompile Include="SceneBase.cpp" />
@@ -210,8 +216,10 @@
     <ClCompile Include="ScreenSetup.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="Skydome.cpp" />
+    <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="TitleUI.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="TutorialScene.cpp" />
     <ClCompile Include="TutorialUI.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VECTORtoUseful.cpp" />
@@ -239,6 +247,7 @@
     <ClInclude Include="BossSlashAction.h" />
     <ClInclude Include="BossSlashAttack.h" />
     <ClInclude Include="BossStabAction.h" />
+    <ClInclude Include="Bot.h" />
     <ClInclude Include="ButtonUI.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Character.h" />
@@ -249,10 +258,16 @@
     <ClInclude Include="CapsuleColliderData.h" />
     <ClInclude Include="CharacterColliderData.h" />
     <ClInclude Include="BossActionHeader.h" />
+    <ClInclude Include="GameOverScene.h" />
+    <ClInclude Include="GameOverUI.h" />
+    <ClInclude Include="GameUI.h" />
     <ClInclude Include="HitStop.h" />
+    <ClInclude Include="Image.h" />
     <ClInclude Include="PlaneColliderData.h" />
     <ClInclude Include="PlayerAttackData.h" />
     <ClInclude Include="BossRotatePunchAction.h" />
+    <ClInclude Include="GameClearScene.h" />
+    <ClInclude Include="GameClearUI.h" />
     <ClInclude Include="SphereColliderData.h" />
     <ClInclude Include="CharacterData.h" />
     <ClInclude Include="Effect.h" />
@@ -276,7 +291,6 @@
     <ClInclude Include="PlayerData.h" />
     <ClInclude Include="PlayerManager.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="ResultUI.h" />
     <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="BossRotatePunch.h" />
     <ClInclude Include="SceneState.h" />
@@ -284,7 +298,9 @@
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="DeleteInstance.h" />
     <ClInclude Include="Skydome.h" />
+    <ClInclude Include="TitleScene.h" />
     <ClInclude Include="TitleUI.h" />
+    <ClInclude Include="TutorialScene.h" />
     <ClInclude Include="TutorialUI.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="UseJson.h" />
@@ -302,6 +318,7 @@
     <ClInclude Include="VECTORtoUseful.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Data\Json\Bot.json" />
     <None Include="Data\Json\Camera.json" />
     <None Include="Data\Json\Debug.json" />
     <None Include="Data\Json\Effect.json" />

@@ -7,6 +7,7 @@
 
 class HPUI;
 class ButtonUI;
+class SceneUI;
 class UIManager : public Singleton<UIManager>
 {
 public:
@@ -16,6 +17,8 @@ public:
 	void Initialize();		//‰Šú‰»
 	void Update();		//XV
 	const void Draw()const;//•`‰æ
+	const bool IsContinue()const;
+	const bool IsDraw()const;
 
 private:
 	/*“à•”ˆ—ŠÖ”*/
@@ -24,5 +27,7 @@ private:
 	/*ƒƒ“ƒo•Ï”*/
 	HPUI* hp;
 	ButtonUI* button;
+	std::vector<SceneUI*> scene;
+
 };
 

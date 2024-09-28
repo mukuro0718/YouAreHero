@@ -16,34 +16,33 @@ public:
 	const void	DrawCharacterInfo()const override;	//描画
 
 	/*getter*/
-	const bool		IsMove		()const;//移動フラグの取得
-	const bool		GetIsAttack	()const override;//ショットフラグの取得
-	const int GetStamina()const;
+	const bool	IsMove		 ()const;//移動フラグの取得
+	const bool	GetIsAttack	 ()const override;//ショットフラグの取得
+	const int	GetStamina	 ()const;
+	const int	GetHealOrbNum()const { return this->healOrbNum; }
 private:
 	/*静的定数*/
-	static constexpr int COUNT_NUM = 4;//フレームカウントの数
+	static constexpr int COUNT_NUM = 2;//フレームカウントの数
 	//プレイヤーの状態
-	static constexpr unsigned int IDLE			 = (1 << 0); //待機
-	static constexpr unsigned int ROLL			 = (1 << 1); //回避
-	static constexpr unsigned int DEATH			 = (1 << 2); //ブロック
-	static constexpr unsigned int BLOCK			 = (1 << 3); //ブロック
-	static constexpr unsigned int JUMP			 = (1 << 4); //ブロック
-	static constexpr unsigned int REACTION		 = (1 << 5); //ブロック
-	static constexpr unsigned int BLOCK_REACTION = (1 << 6); //ブロック
-	static constexpr unsigned int RUNNING		 = (1 << 7); //歩き
-	static constexpr unsigned int WALK_BACK		 = (1 << 8); //走り
-	static constexpr unsigned int WALK_FRONT	 = (1 << 9); //歩き
-	static constexpr unsigned int WALK_LEFT		 = (1 << 10); //歩き
-	static constexpr unsigned int WALK_RIGHT	 = (1 << 11); //歩き
-	static constexpr unsigned int SLASH			 = (1 << 12); //歩き
+	static constexpr unsigned int IDLE			 = (1 << 0);  //待機
+	static constexpr unsigned int ROLL			 = (1 << 1);  //回避
+	static constexpr unsigned int DEATH			 = (1 << 2);  //デス
+	static constexpr unsigned int BLOCK			 = (1 << 3);  //ブロック
+	static constexpr unsigned int REACTION		 = (1 << 4);  //リアクション
+	static constexpr unsigned int BLOCK_REACTION = (1 << 5);  //ブロックリアクション
+	static constexpr unsigned int STUNNED		 = (1 << 6);  //スタン（大ダウン）
+	static constexpr unsigned int KIP_UP		 = (1 << 7);  //起き上がり
+	static constexpr unsigned int RUNNING		 = (1 << 8);  //走り
+	static constexpr unsigned int WALK_FRONT	 = (1 << 9);  //歩き
+	static constexpr unsigned int SLASH			 = (1 << 10); //攻撃
 	//マスク
-	static constexpr unsigned int MASK_REACTION = BLOCK_REACTION | REACTION;
-	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = ROLL | MASK_REACTION | RUNNING | BLOCK;
-	static constexpr unsigned int MASK_ATTACK = SLASH;
-	static constexpr unsigned int MASK_MOVE = WALK_BACK | WALK_FRONT | WALK_LEFT | WALK_RIGHT | RUNNING; //移動マスク
-	static constexpr unsigned int MASK_ALWAYS_TURN_OFF = MASK_MOVE | IDLE;
-	static constexpr unsigned int MASK_ALL = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION | BLOCK | ROLL | JUMP;
-	static constexpr unsigned int MASK_CAN_VELOCITY = MASK_MOVE | ROLL | JUMP;
+	static constexpr unsigned int MASK_REACTION				 = BLOCK_REACTION | REACTION | STUNNED | KIP_UP;//リアクション
+	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = ROLL | MASK_REACTION | RUNNING | BLOCK;		
+	static constexpr unsigned int MASK_ATTACK				 = SLASH;
+	static constexpr unsigned int MASK_MOVE					 = WALK_FRONT | RUNNING; //移動マスク
+	static constexpr unsigned int MASK_ALWAYS_TURN_OFF		 = MASK_MOVE | IDLE;
+	static constexpr unsigned int MASK_ALL					 = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION | BLOCK | ROLL | DEATH;
+	static constexpr unsigned int MASK_CAN_VELOCITY			 = MASK_MOVE | ROLL;
 	/*列挙体*/
 	//コライダーの種類
 	enum class ColliderType
@@ -55,6 +54,7 @@ private:
 	enum class FrameCountType
 	{
 		AVOID = 0,//回避
+		HEAL = 1,//回復
 	};
 	//アニメーションの種類
 	enum class AnimationType
@@ -63,15 +63,13 @@ private:
 		ROLL			= 1,
 		DEATH			= 2,
 		BLOCK			= 3,
-		JUMP			= 4,
-		REACTION		= 5,
-		BLOCK_REACTION  = 6,
-		RUNNING			= 7,
-		WALK_BACK		= 8,
+		REACTION		= 4,
+		BLOCK_REACTION  = 5,
+		STUNNED			= 6,
+		KIP_UP			= 7,
+		RUNNING			= 8,
 		WALK_FRONT		= 9,
-		WALK_LEFT		= 10,
-		WALK_RIGHT		= 11,
-		SLASH			= 12,
+		SLASH			= 10,
 	};
 
 	/*内部処理関数*/
@@ -79,19 +77,17 @@ private:
 	void UpdateMoveVector();//移動ベクトルの更新
 	void UpdateRotation	 ();//回転率の更新
 	void Move			 ();//移動
-	void LockOn			 ();//ロックオン
 	void Rolling		 ();//回避
-	void Reaction		 ();//リアクションｎ
+	void Reaction		 ();//リアクション
 	void Attack			 ();//攻撃
 	void Death			 ();//デス
 	void Block			 ();//ブロック
-	void Jump			 ();//ジャンプ
+	void Heal();
 	//許可フラグ
 	const bool CanRotation()const;
 	const bool CanRolling()const;
 	const bool CanAttack()const;
 	const bool CanBlock()const;
-	const bool CanJump()const;
 	const bool DontAnyAction()const;
 
 		  void UpdateAnimation	 ();		//現在のアニメーションの更新
@@ -104,11 +100,10 @@ private:
 	std::vector<int>	frameCount;					//フレームカウント
 	std::vector<bool>	isCount;					//カウントをするか
 	std::map<unsigned int, int> animationMap;
-	float				jumpPower;					//ジャンプ力
 	int					nowAnimation;				//アニメーション
 	float				animationPlayTime;			//アニメーション再生時間
-	int attackType;
-	int attackComboCount;
-	bool isLockOn;
+	int					attackComboCount;
+	int					healOrbNum;					//回復オーブの数
+	bool				isHeal;						//回復しているか
 };
 

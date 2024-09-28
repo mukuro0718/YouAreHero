@@ -1,17 +1,26 @@
 {
   "PATH": [
-    "Asset/Image/UI/B.png",
-    "Asset/Image/UI/X.png",
-    "Asset/Image/UI/Y.png",
-    "Asset/Image/UI/LB.png",
-    "Asset/Image/UI/LS.png",
-    "Asset/Image/UI/LT.png",
-    "Asset/Image/UI/RB.png",
-    "Asset/Image/UI/RS.png",
+    "Asset/Image/UI/Icon/EmptyOrb.png",
+    "Asset/Image/UI/Icon/HealIcon.png",
+    "Asset/Image/UI/Icon/HPOrb.png",
+    "Asset/Image/UI/Icon/PauseIcon.png",
+
+    "Asset/Image/UI/Bar/BossHPBar.png",
+    "Asset/Image/UI/Bar/BossHPTable.png",
+    "Asset/Image/UI/Bar/PlayerHPBar.png",
+    "Asset/Image/UI/Bar/PlayerHPTable.png",
+    "Asset/Image/UI/Bar/PlayerStaminaBar.png",
+    "Asset/Image/UI/Bar/PlayerStaminaTable.png",
 
     "Asset/Image/UI/GameClearLogo.png",
     "Asset/Image/UI/GameOverLogo.png",
-    "Asset/Image/UI/PressALogo.png",
-    "Asset/Image/UI/TitleLogo.png"
+    "Asset/Image/UI/PressButtonLogo.png",
+    "Asset/Image/UI/TitleLogo.png",
+    "Asset/Image/UI/Window.png",
+    "Asset/Image/UI/Continue.png",
+    "Asset/Image/UI/End.png",
+    "Asset/Image/UI/Star_01.png",
+    "Asset/Image/UI/Star_02.png",
+    "Asset/Image/UI/Star_03.png"
   ]
 }

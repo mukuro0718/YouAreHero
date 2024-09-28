@@ -17,13 +17,13 @@ public:
 	void Exit(ColliderData& _data);//登録解除
 	void Update();//更新(登録オブジェクトの物理移動、衝突通知)
 private:
-	static constexpr float GRAVITY = -0.01f;//重力
-	static constexpr float MAX_GRAVITY_ACCEL = -0.15f;//最大重力加速度
-	static constexpr int BEFORE_FIX_INFO_COLOR = 0x0000ff;//補正前情報色
-	static constexpr int AIM_INFO_COLOR = 0x0000aa;//補正前予定情報色
-		static constexpr int AFTER_FIX_INFO_COLOR = 0xff00ff;//補正後情報色
-	static constexpr int DIV_NUM = 16;
-	static constexpr int MAX_CHECK_COUNT = 1000;
+	static constexpr float	GRAVITY					= -0.01f;	//重力
+	static constexpr float	MAX_GRAVITY_ACCEL		= -0.5f;	//最大重力加速度
+	static constexpr int	BEFORE_FIX_INFO_COLOR	= 0x0000ff;	//補正前情報色
+	static constexpr int	AIM_INFO_COLOR			= 0x0000aa;	//補正前予定情報色
+	static constexpr int	AFTER_FIX_INFO_COLOR	= 0xff00ff;	//補正後情報色
+	static constexpr int	DIV_NUM					= 16;		//デバック表示図形分割数
+	static constexpr int	MAX_CHECK_COUNT			= 1000;		//当たり判定を確認する最大回数
 
 	std::list<ColliderData*> collidables;//登録されたCollidableのリスト
 

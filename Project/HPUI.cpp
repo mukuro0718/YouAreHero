@@ -14,13 +14,21 @@ HPUI::HPUI()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
-	this->backgroundColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BACKGROUND_COLOR"]);
-	this->playerHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_COLOR"]);
-	this->bossHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_COLOR"]);
-	this->prevPlayerHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_PREV_HP_COLOR"]);
-	this->prevBossHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_PREV_HP_COLOR"]);
-	this->staminaColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["STAMINA_COLOR"]);
+	
+	this->backgroundColor	= ConvertColor(json.GetJson(JsonManager::FileType::UI)["BACKGROUND_COLOR"]		);
+	this->playerHPColor		= ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_COLOR"]		);
+	this->bossHPColor		= ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_COLOR"]			);
+	this->prevPlayerHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_PREV_HP_COLOR"]	);
+	this->prevBossHPColor	= ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_PREV_HP_COLOR"]	);
+	this->staminaColor		= ConvertColor(json.GetJson(JsonManager::FileType::UI)["STAMINA_COLOR"]			);
+	this->playerHPBar		 = asset.GetImage(LoadingAsset::ImageType::PLAYER_HP_BAR);
+	this->playerHPTable		 = asset.GetImage(LoadingAsset::ImageType::PLAYER_HP_TABLE);
+	this->playerStaminaBar	 = asset.GetImage(LoadingAsset::ImageType::PLAYER_STAMINA_BAR);
+	this->playerStaminaTable = asset.GetImage(LoadingAsset::ImageType::PLAYER_STAMINA_TABLE);
+	this->bossHPBar			 = asset.GetImage(LoadingAsset::ImageType::BOSS_HP_BAR);
+	this->bossHPTable		 = asset.GetImage(LoadingAsset::ImageType::BOSS_HP_TABLE);
 }
 
 /// <summary>
@@ -38,15 +46,16 @@ void HPUI::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
-	auto& enemy = Singleton<EnemyManager>::GetInstance();
+	auto& enemy  = Singleton<EnemyManager>::GetInstance();
 	/*初期化*/
-	int playerHP = player.GetHP();
-	int bossHP = enemy.GetHP();
-	float playerStamina = player.GetStamina();
+	int		playerHP	  = player.GetHP();
+	int		bossHP		  = enemy.GetHP();
+	float	playerStamina = player.GetStamina();
 
-	this->playerHP.SetRange(playerHP, 0, playerHP);
-	this->bossHP.SetRange(bossHP, 0, bossHP);
-	this->playerStamina.SetRange(playerStamina, 0, playerStamina);
+	/*範囲の設定*/
+	this->playerHP		.SetRange(playerHP		, 0, playerHP);
+	this->bossHP		.SetRange(bossHP		, 0, bossHP);
+	this->playerStamina	.SetRange(playerStamina	, 0, playerStamina);
 }
 
 /// <summary>
@@ -79,29 +88,35 @@ const void HPUI::Draw()const
 		Vec2d position;
 		Box box;
 		int height;
-		int indexBase = json.GetJson(JsonManager::FileType::UI)["PLAYER_INDEX_BASE"];
+		int indexBase = json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_WIDTH"];
 		int nowHP = static_cast<int>(this->playerHP.GetNow() / this->playerHP.GetMax() * indexBase);
 		int prevHP = static_cast<int>(this->playerHP.GetPrev() / this->playerHP.GetMax() * indexBase);
 		position.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_POSITION"]);
 		height = json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_HEIGHT"];
-
+		Box table;
+		table.Set(json.GetJson(JsonManager::FileType::UI)["HP_TABLE_BOX"]);
 		box.lx = position.x;
 		box.ly = position.y;
 		box.rx = box.lx + indexBase;
 		box.ry = box.ly + height;
 
-		DrawBox(box.lx, box.ly, box.lx + indexBase, box.ry, this->backgroundColor, TRUE);
-		DrawBox(box.lx, box.ly, box.lx + prevHP, box.ry, this->prevPlayerHPColor, TRUE);
-		DrawBox(box.lx, box.ly, box.lx + nowHP, box.ry, this->playerHPColor, TRUE);
+		Vec2d tablePosiiton;
+		tablePosiiton.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_TABLE_POSITION"]);
+
+		DrawGraph		(tablePosiiton.x , tablePosiiton.y , this->playerHPTable, TRUE);
+		DrawBox			(box.lx, box.ly, box.lx + prevHP, box.ry, this->prevPlayerHPColor, TRUE);
+		DrawExtendGraph	(box.lx, box.ly, box.lx + nowHP, box.ry, this->playerHPBar, TRUE);
 	}
 	//STAMINA
 	{
+		Vec2d table;
 		Vec2d position;
 		Box box;
 		int height;
-		int indexBase = json.GetJson(JsonManager::FileType::UI)["PLAYER_INDEX_BASE"];
+		int indexBase = json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_WIDTH"];
 		int nowStamina =static_cast<int>(this->playerStamina.GetNow() / this->playerStamina.GetMax() * indexBase);
 		position.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_POSITION"]);
+		table.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_TABLE_POSITION"]);
 		height = json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_HEIGHT"];
 
 		box.lx = position.x;
@@ -109,18 +124,20 @@ const void HPUI::Draw()const
 		box.rx = box.lx + indexBase;
 		box.ry = box.ly + height;
 
-		DrawBox(box.lx, box.ly, box.lx + indexBase, box.ry, this->backgroundColor, TRUE);
-		DrawBox(box.lx, box.ly, box.lx + nowStamina, box.ry, this->staminaColor, TRUE);
+		DrawGraph(table.x, table.y, this->playerStaminaTable, TRUE);
+		DrawExtendGraph(box.lx, box.ly, box.lx + nowStamina, box.ry, this->playerStaminaBar, TRUE);
 	}
 	//BOSS
 	{
+		Vec2d table;
 		Vec2d position;
 		Box box;
 		int height;
-		int indexBase = json.GetJson(JsonManager::FileType::UI)["BOSS_INDEX_BASE"];
+		int indexBase = json.GetJson(JsonManager::FileType::UI)["BOSS_HP_WIDTH"];
 		int nowHP = static_cast<int>(this->bossHP.GetNow() / this->bossHP.GetMax() * indexBase);
 		int prevHP = static_cast<int>(this->bossHP.GetPrev() / this->bossHP.GetMax() * indexBase);
 		position.Set(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_POSITION"]);
+		table.Set(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_TABLE_POSITION"]);
 		height = json.GetJson(JsonManager::FileType::UI)["BOSS_HP_HEIGHT"];
 
 		box.lx = position.x;
@@ -128,9 +145,9 @@ const void HPUI::Draw()const
 		box.rx = box.lx + indexBase;
 		box.ry = box.ly + height;
 
-		DrawBox(box.lx, box.ly, box.lx + indexBase, box.ry, this->backgroundColor, TRUE);
+		DrawGraph(table.x, table.y, this->bossHPTable, TRUE);
 		DrawBox(box.lx, box.ly, box.lx + prevHP, box.ry, this->prevBossHPColor, TRUE);
-		DrawBox(box.lx, box.ly, box.lx + nowHP, box.ry, this->bossHPColor, TRUE);
+		DrawExtendGraph(box.lx, box.ly, box.lx + nowHP, box.ry, this->bossHPBar, TRUE);
 	}
 }
 /// <summary>

@@ -223,6 +223,42 @@
     <Filter Include="HitStopManager">
       <UniqueIdentifier>{31fe7dbc-888b-4de1-bcd5-82599d8ac1d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\Scene\Image">
+      <UniqueIdentifier>{cf052126-ceb6-459b-bbdb-b3ec3d6f1b67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Type\Title">
+      <UniqueIdentifier>{c7bb2f3e-8881-49cc-9503-a0a56c6be8ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Type\Tutorial">
+      <UniqueIdentifier>{bb1d5038-6afb-4f9c-abc7-95e2578a1db6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Bot">
+      <UniqueIdentifier>{f731babc-5b76-4f31-85c2-3fce41e60e76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scene\Game">
+      <UniqueIdentifier>{171d95ff-3032-437d-b766-3b8dacfa174b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scene\Title">
+      <UniqueIdentifier>{70c3cf82-f898-4a6f-b685-885b8c0ad3c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scene\Tutorial">
+      <UniqueIdentifier>{428ebf5b-faca-456b-8540-351c9c3a5d0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scene\GameClear">
+      <UniqueIdentifier>{160ddbbe-aba5-4ff0-9b8f-3773bb94577a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scene\GameOver">
+      <UniqueIdentifier>{04e3efcb-a57c-4c66-a0bc-fe25bc95e16b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scene\Base">
+      <UniqueIdentifier>{04e2912a-6ce1-439f-9f5c-5f044c75c75b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Type\GameOver">
+      <UniqueIdentifier>{e7e21a4e-e389-4fad-a1e2-0d59e6c505da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Type\GameClear">
+      <UniqueIdentifier>{26a28eac-07f6-4794-a111-235948333028}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -352,18 +388,6 @@
     <ClCompile Include="BossChaseAction.cpp">
       <Filter>Object\Character\Enemy\Action\Parameter\Chase</Filter>
     </ClCompile>
-    <ClCompile Include="SceneUI.cpp">
-      <Filter>UI\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="TitleUI.cpp">
-      <Filter>UI\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="TutorialUI.cpp">
-      <Filter>UI\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="ResultUI.cpp">
-      <Filter>UI\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="SceneState.cpp">
       <Filter>Scene\Changer</Filter>
     </ClCompile>
@@ -450,6 +474,42 @@
     </ClCompile>
     <ClCompile Include="HitStop.cpp">
       <Filter>HitStopManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>UI\Scene\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScene.cpp">
+      <Filter>Scene\Type\Title</Filter>
+    </ClCompile>
+    <ClCompile Include="GameClearScene.cpp">
+      <Filter>Scene\Type\GameClear</Filter>
+    </ClCompile>
+    <ClCompile Include="TutorialScene.cpp">
+      <Filter>Scene\Type\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="Bot.cpp">
+      <Filter>Object\Character\Bot</Filter>
+    </ClCompile>
+    <ClCompile Include="GameUI.cpp">
+      <Filter>UI\Scene\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneUI.cpp">
+      <Filter>UI\Scene\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleUI.cpp">
+      <Filter>UI\Scene\Title</Filter>
+    </ClCompile>
+    <ClCompile Include="TutorialUI.cpp">
+      <Filter>UI\Scene\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="GameOverUI.cpp">
+      <Filter>UI\Scene\GameOver</Filter>
+    </ClCompile>
+    <ClCompile Include="GameClearUI.cpp">
+      <Filter>UI\Scene\GameClear</Filter>
+    </ClCompile>
+    <ClCompile Include="GameOverScene.cpp">
+      <Filter>Scene\Type\GameOver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -603,18 +663,6 @@
     <ClInclude Include="BossChaseAction.h">
       <Filter>Object\Character\Enemy\Action\Parameter\Chase</Filter>
     </ClInclude>
-    <ClInclude Include="SceneUI.h">
-      <Filter>UI\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="TitleUI.h">
-      <Filter>UI\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="TutorialUI.h">
-      <Filter>UI\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="ResultUI.h">
-      <Filter>UI\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="SceneState.h">
       <Filter>Scene\Changer</Filter>
     </ClInclude>
@@ -702,6 +750,42 @@
     <ClInclude Include="HitStop.h">
       <Filter>HitStopManager</Filter>
     </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>UI\Scene\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScene.h">
+      <Filter>Scene\Type\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="GameClearScene.h">
+      <Filter>Scene\Type\GameClear</Filter>
+    </ClInclude>
+    <ClInclude Include="TutorialScene.h">
+      <Filter>Scene\Type\Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="Bot.h">
+      <Filter>Object\Character\Bot</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUI.h">
+      <Filter>UI\Scene\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneUI.h">
+      <Filter>UI\Scene\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleUI.h">
+      <Filter>UI\Scene\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="TutorialUI.h">
+      <Filter>UI\Scene\Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOverUI.h">
+      <Filter>UI\Scene\GameOver</Filter>
+    </ClInclude>
+    <ClInclude Include="GameClearUI.h">
+      <Filter>UI\Scene\GameClear</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOverScene.h">
+      <Filter>Scene\Type\GameOver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\Json\Camera.json">
@@ -750,6 +834,9 @@
       <Filter>Json\File</Filter>
     </None>
     <None Include="Data\Json\Effect.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\Bot.json">
       <Filter>Json\File</Filter>
     </None>
   </ItemGroup>

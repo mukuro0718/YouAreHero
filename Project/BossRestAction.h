@@ -12,6 +12,7 @@ public:
 	BossRestAction();//コンストラクタ
 	virtual ~BossRestAction();//デストラクタ
 
+	void Initialize()				  override;//初期化
 	void Update(Boss& _boss)	override;//パラメータの計算
 	void CalcParameter(const Boss& _boss) override;//パラメーターの計算
 private:

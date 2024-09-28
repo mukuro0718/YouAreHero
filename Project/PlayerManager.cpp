@@ -77,19 +77,35 @@ const bool PlayerManager::IsMove()const
 	return player.IsMove();
 }
 /// <summary>
-/// ショットフラグ
+///	攻撃したか
 /// </summary>
 const bool PlayerManager::GetIsAttack()const
 {
 	return this->player->GetIsAttack();
 }
 
+/// <summary>
+/// HPの取得
+/// </summary>
 const int PlayerManager::GetHP()const
 {
 	return this->player->GetHP();
 }
+
+/// <summary>
+/// スタミナの取得
+/// </summary>
 const float PlayerManager::GetStamina()const
 {
 	auto& player = dynamic_cast<Player&>(*this->player);
 	return player.GetStamina();
+}
+
+/// <summary>
+/// 回復オーブの数の取得
+/// </summary>
+const int PlayerManager::GetHealOrbNum()const
+{
+	auto& player = dynamic_cast<Player&>(*this->player);
+	return player.GetHealOrbNum();
 }

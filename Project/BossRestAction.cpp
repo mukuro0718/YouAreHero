@@ -24,6 +24,15 @@ BossRestAction::~BossRestAction()
 {
 
 }
+/// <summary>
+/// 初期化
+/// </summary>
+void BossRestAction::Initialize()
+{
+	this->isSelect = false;
+	this->isInitialize = false;
+	this->frameCount = 0;
+}
 
 /// <summary>
 /// パラメーターの計算

@@ -10,8 +10,8 @@ class BossAction abstract
 public:
 			 BossAction();	//コンストラクタ
 	virtual ~BossAction(){}	//デストラクタ
-
-	virtual void Update		  (Boss& _boss)		abstract;//更新
+	virtual void Initialize	  ()					abstract;//初期化
+	virtual void Update		  (Boss& _boss)			abstract;//更新
 	virtual void CalcParameter(const Boss& _boss)	abstract;//パラメーターの計算
 
 	/*getter/setter*/

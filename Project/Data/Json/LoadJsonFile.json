@@ -14,6 +14,7 @@
     "Data/Json/Debug.json",
     "Data/Json/UI.json",
     "Data/Json/EffectPath.json",
-    "Data/Json/Effect.json"
+    "Data/Json/Effect.json",
+    "Data/Json/Bot.json"
   ]
 }

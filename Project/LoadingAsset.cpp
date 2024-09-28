@@ -15,14 +15,16 @@ LoadingAsset::LoadingAsset()
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*json内のパスを取得する*/
-	vector<string> modelPath = json.GetJson(JsonManager::FileType::MODEL_PATH)["PATH"];
-	vector<string> imagePath = json.GetJson(JsonManager::FileType::IMAGE_PATH)["PATH"];
-	vector<string> fontPath  = json.GetJson(JsonManager::FileType::FONT_PATH )["PATH"];
-	vector<string> fontName = json.GetJson(JsonManager::FileType::FONT_PATH)["NAME"];
-	vector<int> fontSize = json.GetJson(JsonManager::FileType::FONT_PATH)["SIZE"];
-	vector<int> fontThick = json.GetJson(JsonManager::FileType::FONT_PATH)["THICK"];
-	vector<int> fontType = json.GetJson(JsonManager::FileType::FONT_PATH)["TYPE"];
+	vector<string> modelPath  = json.GetJson(JsonManager::FileType::MODEL_PATH)["PATH"];
+	vector<string> imagePath  = json.GetJson(JsonManager::FileType::IMAGE_PATH)["PATH"];
 	vector<string> effectPath = json.GetJson(JsonManager::FileType::EFFECT_PATH)["PATH"];
+
+	vector<string> fontPath = json.GetJson(JsonManager::FileType::FONT_PATH )["PATH"];
+	vector<string> fontName = json.GetJson(JsonManager::FileType::FONT_PATH)["NAME"];
+
+	vector<int> fontSize  = json.GetJson(JsonManager::FileType::FONT_PATH)["SIZE"];
+	vector<int> fontThick = json.GetJson(JsonManager::FileType::FONT_PATH)["THICK"];
+	vector<int> fontType  = json.GetJson(JsonManager::FileType::FONT_PATH)["TYPE"];
 	/*モデルのロード*/
 	for (int i = 0; i < modelPath.size(); i++)
 	{
@@ -40,7 +42,6 @@ LoadingAsset::LoadingAsset()
 	{
 		AddFontResourceEx(fontPath[i].c_str(), FR_PRIVATE, NULL);
 	}
-	//ほのかフォント
 	for (int i = 0; i < fontSize.size(); i++)
 	{
 		this->fontHandle.emplace_back(CreateFontToHandle(fontName[fontType[i]].c_str(), fontSize[i], fontThick[i], DX_FONTTYPE_EDGE, DX_CHARSET_DEFAULT, 4));

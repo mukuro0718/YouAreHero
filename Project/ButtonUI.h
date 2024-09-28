@@ -31,8 +31,8 @@ private:
 	void DrawFont();
 
 	/*ƒƒ“ƒo•Ï”*/
-	int specialAttackSize;
-	int b, x, y, lb, ls, lt, rb, rs;
+	int healIcon;
+	int healOrb;
+	int emptyOrb;
 	int iconFont, operationFont;
 };
-

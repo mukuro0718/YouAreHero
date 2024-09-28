@@ -1,8 +1,9 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "LoadingAsset.h"
 #include "ButtonUI.h"
+#include "LoadingAsset.h"
+#include "PlayerManager.h"
 
 
 /// <summary>
@@ -13,17 +14,12 @@ ButtonUI::ButtonUI()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
-	this->b = asset.GetImage(LoadingAsset::ImageType::B);
-	this->x = asset.GetImage(LoadingAsset::ImageType::X);
-	this->y = asset.GetImage(LoadingAsset::ImageType::Y);
-	this->lb = asset.GetImage(LoadingAsset::ImageType::LB);
-	this->ls = asset.GetImage(LoadingAsset::ImageType::LS);
-	this->lt = asset.GetImage(LoadingAsset::ImageType::LT);
-	this->rb = asset.GetImage(LoadingAsset::ImageType::RB);
-	this->rs = asset.GetImage(LoadingAsset::ImageType::RS);
-	this->iconFont = asset.GetFont(LoadingAsset::FontType::ICON_UI);
+	this->healIcon = asset.GetImage(LoadingAsset::ImageType::HEAL_ICON);
+	this->healOrb  = asset.GetImage(LoadingAsset::ImageType::HP_ORB);
+	this->emptyOrb = asset.GetImage(LoadingAsset::ImageType::EMPTY_ORB);
+
+	this->iconFont		= asset.GetFont(LoadingAsset::FontType::ICON_UI);
 	this->operationFont = asset.GetFont(LoadingAsset::FontType::OPERATION_UI);
-	this->specialAttackSize = 0;
 }
 
 /// <summary>
@@ -41,9 +37,8 @@ void ButtonUI::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
+
 	/*初期化*/
-	//サイズ
-	this->specialAttackSize = 0;
 }
 
 /// <summary>
@@ -54,11 +49,7 @@ void ButtonUI::Update()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
-	/*特別な攻撃に対するフィルターの処理を行う（クールタイムゲージ）*/
-	if (this->specialAttackSize <= json.GetJson(JsonManager::FileType::UI)["ICON_SIZE"])
-	{
-		this->specialAttackSize++;
-	}
+	/*回復アイコンのリキャストタイムを表示できるようにしたい*/
 	
 }
 
@@ -85,24 +76,39 @@ void ButtonUI::DrawIcon()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	/*変数の準備*/
-	Box xBox,yBox, bBox, ltBox,lbBox,lsBox;
-	/*jsonデータの代入*/
-	xBox.Set(json.GetJson(JsonManager::FileType::UI)["X_BOX"]);
-	yBox.Set(json.GetJson(JsonManager::FileType::UI)["Y_BOX"]);
-	bBox.Set(json.GetJson(JsonManager::FileType::UI)["B_BOX"]);
-	ltBox.Set(json.GetJson(JsonManager::FileType::UI)["LT_BOX"]);
-	lbBox.Set(json.GetJson(JsonManager::FileType::UI)["LB_BOX"]);
-	lsBox.Set(json.GetJson(JsonManager::FileType::UI)["LS_BOX"]);
+	Vec2d healIconPosition;
+	Vec2d orbPosition;
+	int orbXOffset = 0;
+	int drawGraph = -1;
 
-	/*アイコンの描画*/
-	DrawExtendGraph(xBox.lx, xBox.ly, xBox.rx, xBox.ry, this->x, TRUE);
-	DrawExtendGraph(yBox.lx, yBox.ly, yBox.rx, yBox.ry, this->y, TRUE);
-	DrawExtendGraph(bBox.lx, bBox.ly, bBox.rx, bBox.ry, this->b, TRUE);
-	DrawExtendGraph(ltBox.lx, ltBox.ly, ltBox.rx, ltBox.ry, this->lt, TRUE);
-	DrawExtendGraph(lbBox.lx, lbBox.ly, lbBox.rx, lbBox.ry, this->lb, TRUE);
-	DrawExtendGraph(lsBox.lx, lsBox.ly, lsBox.rx, lsBox.ry, this->ls, TRUE);
+	/*jsonデータの代入*/
+	const int NOW_ORB_NUM = player.GetHealOrbNum();
+	const int MAX_ORB_NUM = json.GetJson(JsonManager::FileType::PLAYER)["MAX_HEAL_ORB_NUM"];
+	const int ORB_WIDTH   = json.GetJson(JsonManager::FileType::UI)["ORB_WIDTH"];
+	orbPosition.Set(		json.GetJson(JsonManager::FileType::UI)["ORB_POSITION"]);
+	healIconPosition.Set(	json.GetJson(JsonManager::FileType::UI)["HEAL_ICON_POSITION"]);
+
+
+	/*アイコンテーブルの描画*/
+	DrawGraph(healIconPosition.x, healIconPosition.y, this->healIcon, TRUE);
+
+	/*オーブの描画*/
+	for (int i = 0; i < MAX_ORB_NUM; i++)
+	{
+		if (i - NOW_ORB_NUM < 0)
+		{
+			drawGraph = this->healOrb;
+		}
+		else
+		{
+			drawGraph = this->emptyOrb;
+		}
+		DrawGraph(orbPosition.x + orbXOffset, orbPosition.y, drawGraph, TRUE);
+		orbXOffset += ORB_WIDTH;
+	}
 }
 
 /// <summary>
@@ -110,28 +116,28 @@ void ButtonUI::DrawIcon()
 /// </summary>
 void ButtonUI::DrawFont()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
+	///*シングルトンクラスのインスタンスの取得*/
+	//auto& json = Singleton<JsonManager>::GetInstance();
 
-	/*変数の準備*/
-	Vec2d mainAttackPosition,specialAttackPosition,avoidPosition,blockPosition,dashPosition;
-	int   textColor;
+	///*変数の準備*/
+	//Vec2d mainAttackPosition,specialAttackPosition,avoidPosition,blockPosition,dashPosition;
+	//int   textColor;
 
-	/*jsonデータの代入*/
-	mainAttackPosition		.Set(json.GetJson(JsonManager::FileType::UI)["MAIN_ATTACK_TEXT_POSITION"]);
-	specialAttackPosition	.Set(json.GetJson(JsonManager::FileType::UI)["SPECIAL_ATTACK_TEXT_POSITION"]);
-	avoidPosition			.Set(json.GetJson(JsonManager::FileType::UI)["AVOID_TEXT_POSITION"]);
-	blockPosition			.Set(json.GetJson(JsonManager::FileType::UI)["BLOCK_TEXT_POSITION"]);
-	dashPosition			.Set(json.GetJson(JsonManager::FileType::UI)["DASH_TEXT_POSITION"]);
-	textColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["TEXT_COLOR"]);
+	///*jsonデータの代入*/
+	//mainAttackPosition		.Set(json.GetJson(JsonManager::FileType::UI)["MAIN_ATTACK_TEXT_POSITION"]);
+	//specialAttackPosition	.Set(json.GetJson(JsonManager::FileType::UI)["SPECIAL_ATTACK_TEXT_POSITION"]);
+	//avoidPosition			.Set(json.GetJson(JsonManager::FileType::UI)["AVOID_TEXT_POSITION"]);
+	//blockPosition			.Set(json.GetJson(JsonManager::FileType::UI)["BLOCK_TEXT_POSITION"]);
+	//dashPosition			.Set(json.GetJson(JsonManager::FileType::UI)["DASH_TEXT_POSITION"]);
+	//textColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["TEXT_COLOR"]);
 
 
-	/*背景の描画*/
-	DrawStringToHandle(mainAttackPosition.x	  , mainAttackPosition.y	, "攻撃"	 , textColor, this->iconFont);
-	DrawStringToHandle(specialAttackPosition.x, specialAttackPosition.y	, "スキル"  , textColor, this->iconFont);
-	DrawStringToHandle(avoidPosition.x		  , avoidPosition.y			, "回避"	 , textColor, this->iconFont);
-	DrawStringToHandle(blockPosition.x		  , blockPosition.y			, "ガード"	 , textColor, this->iconFont);
-	DrawStringToHandle(dashPosition.x		  , dashPosition.y			, "ダッシュ", textColor, this->iconFont);
+	///*背景の描画*/
+	//DrawStringToHandle(mainAttackPosition.x	  , mainAttackPosition.y	, "攻撃"	 , textColor, this->iconFont);
+	//DrawStringToHandle(specialAttackPosition.x, specialAttackPosition.y	, "スキル"  , textColor, this->iconFont);
+	//DrawStringToHandle(avoidPosition.x		  , avoidPosition.y			, "回避"	 , textColor, this->iconFont);
+	//DrawStringToHandle(blockPosition.x		  , blockPosition.y			, "ガード"	 , textColor, this->iconFont);
+	//DrawStringToHandle(dashPosition.x		  , dashPosition.y			, "ダッシュ", textColor, this->iconFont);
 }
 /// <summary>
 /// 色取得

@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "EffekseerForDXLib.h"
 #include "UseSTL.h"
+#include "SceneBase.h"
 #include "GameScene.h"
 #include "BitFlag.h"
 #include "SceneChanger.h"
@@ -14,7 +15,6 @@
 #include "BossAttackManager.h"
 #include "UIManager.h"
 #include "EffectManager.h"
-#include "SceneState.h"
 #include "CollisionManager.h"
 #include "Debug.h"
 #include "HitStop.h"
@@ -23,10 +23,7 @@
 /// コンストラクタ
 /// </summary>
 GameScene::GameScene()
-	: gameState(nullptr)
 {
-	this->gameState = new BitFlag();
-	this->gameState->SetFlag(this->TITLE);
 	Initialize();
 }
 
@@ -63,6 +60,7 @@ void GameScene::Initialize()
 	ui.Initialize();
 	debug.Initialize();
 	hitStop.Initialize();
+
 }
 
 /// <summary>
@@ -91,19 +89,19 @@ void GameScene::Finalize()
 void GameScene::Update()
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& input = Singleton<InputManager>		 ::GetInstance();
-	auto& debug = Singleton<Debug>			 ::GetInstance();
-	auto& camera = Singleton<CameraManager>	 ::GetInstance();
-	auto& map = Singleton<MapManager>		 ::GetInstance();
-	auto& player = Singleton<PlayerManager>	 ::GetInstance();
-	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
-	auto& enemy = Singleton<EnemyManager>		 ::GetInstance();
-	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
-	auto& effect = Singleton<EffectManager>::GetInstance();
-	auto& ui = Singleton<UIManager>::GetInstance();
-	auto& sceneState = Singleton<SceneState>::GetInstance();
-	auto& collision = Singleton<CollisionManager>::GetInstance();
-	auto& hitStop = Singleton<HitStop>::GetInstance();
+	auto& input			= Singleton<InputManager>		::GetInstance();
+	auto& debug			= Singleton<Debug>				::GetInstance();
+	auto& camera		= Singleton<CameraManager>		::GetInstance();
+	auto& map			= Singleton<MapManager>			::GetInstance();
+	auto& player		= Singleton<PlayerManager>		::GetInstance();
+	auto& playerAttack	= Singleton<PlayerAttackManager>::GetInstance();
+	auto& enemy			= Singleton<EnemyManager>		::GetInstance();
+	auto& enemyAttack	= Singleton<BossAttackManager>	::GetInstance();
+	auto& effect		= Singleton<EffectManager>		::GetInstance();
+	auto& ui			= Singleton<UIManager>			::GetInstance();
+	auto& collision		= Singleton<CollisionManager>	::GetInstance();
+	auto& hitStop		= Singleton<HitStop>			::GetInstance();
+	auto& sceneChanger	= Singleton<SceneChanger>		::GetInstance();
 
 	/*更新処理*/
 	debug.Update();
@@ -119,10 +117,20 @@ void GameScene::Update()
 		effect.Update();
 		ui.Update();
 		collision.Update();
-		sceneState.Update();
 	}
-	/*終了処理*/
-	ChangeState();
+
+	/*シーンの終了処理*/
+	if (this->IsEnd())
+	{
+		if (player.GetHP() < 0)
+		{
+			sceneChanger.ChangeScene(SceneChanger::SceneType::GAME_OVER);
+		}
+		else
+		{
+			sceneChanger.ChangeScene(SceneChanger::SceneType::GAME_CLEAR);
+		}
+	}
 }
 
 /// <summary>
@@ -156,9 +164,17 @@ const void GameScene::Draw()const
 }
 
 /// <summary>
-/// 終了するか
+/// シーンを終了するか
 /// </summary>
-void GameScene::ChangeState()
+bool GameScene::IsEnd()
 {
-	
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& ui = Singleton<UIManager>::GetInstance();
+
+	/*タイトルシーンが終了可能だったらtrueを返す*/
+	if (ui.IsDraw())
+	{
+		return true;
+	}
+	return false;
 }

@@ -15,33 +15,45 @@ public:
 	{
 		FINALY_BOSS_STAGE,
 		PLAYER,
-		SATELLITE,
-		SHIELD,
 		ENEMY,
-		ENEMY_BODY,
+		BOT,
 		SKYDOME,
 	};
 	//画像の種類
 	enum class ImageType
 	{
-		B,
-		X,
-		Y,
-		LB,
-		LS,
-		LT,
-		RB,
-		RS,
+		EMPTY_ORB,
+		HEAL_ICON,
+		HP_ORB,
+		PAUSE_ICON,
+		
+		BOSS_HP_BAR,
+		BOSS_HP_TABLE,
+		PLAYER_HP_BAR,
+		PLAYER_HP_TABLE,
+		PLAYER_STAMINA_BAR,
+		PLAYER_STAMINA_TABLE,
+
 		GAME_CLEAR,
 		GAME_OVER,
 		PRESS_A,
-		TITLE_LOGO
+		TITLE_LOGO,
+		WINDOW,
+		CONTINUE,
+		END,
+		NONE_STAR,
+		SILVER_STAR,
+		GOLD_STAR,
 	};
 	//フォントのタイプ
 	enum class FontType
 	{
 		ICON_UI,
 		OPERATION_UI,
+		TUTORIAL_UI,
+		TUTORIAL_PRESS_BUTTON,
+		GAME_CLEAR_HEADER,
+		GAME_CLEAR_MAIN,
 	};
 	enum class FontName
 	{

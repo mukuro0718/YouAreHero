@@ -24,6 +24,17 @@ BossDeathAction::~BossDeathAction()
 }
 
 /// <summary>
+/// 初期化
+/// </summary>
+void BossDeathAction::Initialize()
+{
+	this->isSelect = false;
+	this->isInitialize = false;
+	this->frameCount = 0;
+}
+
+
+/// <summary>
 /// パラメーターの計算
 /// </summary>
 void BossDeathAction::Update(Boss& _boss)

@@ -6,7 +6,7 @@
 /// コンストラクタ
 /// </summary>
 SceneChanger::SceneChanger()
-	:nowScene(SceneType::GAME)
+	:nowScene(SceneType::TITLE)
 	, nextSceneType(nowScene)
 {
 

@@ -2,10 +2,8 @@
   "PATH": [
     "Asset/Model/Map/Stage.mv1",
     "Asset/Model/Character/Player.mv1",
-    "Asset/Model/Character/Satellite.mv1",
-    "Asset/Model/Character/Shield.mv1",
     "Asset/Model/Character/Boss.mv1",
-    "Asset/Model/Character/BossBody.mv1",
+    "Asset/Model/Character/Bot.mv1",
     "Asset/Model/Skydome/Dome_X503.mv1"
   ]
 }
