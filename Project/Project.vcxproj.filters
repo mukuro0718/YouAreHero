@@ -259,6 +259,27 @@
     <Filter Include="Scene\Type\GameClear">
       <UniqueIdentifier>{26a28eac-07f6-4794-a111-235948333028}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Effect\Player">
+      <UniqueIdentifier>{e6b6f140-7a77-4a46-9039-0ad0c39a851f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Player\Entry">
+      <UniqueIdentifier>{9d6b2c5f-59f0-4c58-9c11-36095ce8e138}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Boss">
+      <UniqueIdentifier>{3c29b770-8ac6-4904-82d3-dd79bf1ddce2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Boss\Slash">
+      <UniqueIdentifier>{ccf8fbe4-291d-4196-93d5-7be2e127268d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Boss\Entry">
+      <UniqueIdentifier>{21ad70bc-9e04-4e04-8e49-e208c7b716a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Boss\Punch">
+      <UniqueIdentifier>{15d0a1d3-c704-4379-9fb2-3a1c4a7f380c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\BossNameUI">
+      <UniqueIdentifier>{04218eaf-3fe8-48ba-8997-1beca44a20dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -510,6 +531,21 @@
     </ClCompile>
     <ClCompile Include="GameOverScene.cpp">
       <Filter>Scene\Type\GameOver</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerEntryEffect.cpp">
+      <Filter>Effect\Player\Entry</Filter>
+    </ClCompile>
+    <ClCompile Include="BossEntryEffect.cpp">
+      <Filter>Effect\Boss\Entry</Filter>
+    </ClCompile>
+    <ClCompile Include="BossRotatePunchEffect.cpp">
+      <Filter>Effect\Boss\Punch</Filter>
+    </ClCompile>
+    <ClCompile Include="BossSlashEffect.cpp">
+      <Filter>Effect\Boss\Slash</Filter>
+    </ClCompile>
+    <ClCompile Include="BossNameUI.cpp">
+      <Filter>UI\BossNameUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -785,6 +821,21 @@
     </ClInclude>
     <ClInclude Include="GameOverScene.h">
       <Filter>Scene\Type\GameOver</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerEntryEffect.h">
+      <Filter>Effect\Player\Entry</Filter>
+    </ClInclude>
+    <ClInclude Include="BossEntryEffect.h">
+      <Filter>Effect\Boss\Entry</Filter>
+    </ClInclude>
+    <ClInclude Include="BossRotatePunchEffect.h">
+      <Filter>Effect\Boss\Punch</Filter>
+    </ClInclude>
+    <ClInclude Include="BossSlashEffect.h">
+      <Filter>Effect\Boss\Slash</Filter>
+    </ClInclude>
+    <ClInclude Include="BossNameUI.h">
+      <Filter>UI\BossNameUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

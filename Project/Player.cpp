@@ -19,6 +19,7 @@
 #include "EnemyManager.h"
 #include "PlayerAttackManager.h"
 #include "Debug.h"
+#include "EffectManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -98,10 +99,12 @@ void Player::Initialize()
 	const VECTOR SCALE = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	 //拡大率
 
 	/*変数の初期化*/
-	this->isAlive = true;
+	this->isAlive = false;
+	this->isDraw = false;
 	this->isGround = false;
 	this->isHeal = false;
 	this->speed = 0.0f;
+	this->entryInterval = 0;
 	this->moveVectorRotation = Gori::ORIGIN;
 	for (int i = 0; i < this->frameCount.size(); i++)
 	{
@@ -157,41 +160,65 @@ void Player::Update()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-
-	/*フラグの初期化*/
-	this->state->ClearFlag(this->MASK_ALWAYS_TURN_OFF);
-
-	/*アクション*/
-	Death	();//デス処理
-	Reaction();//リアクション処理
-	Attack	();//攻撃処理
-	Move	();//移動処理
-	Rolling	();//回避処理
-	Block	();//防御処理
-	Heal	();//回復処理
-
-	//もし何もアクションをしていなかったらIdleを入れる
-	if (DontAnyAction()) 
-	{ 
-		this->state->SetFlag(this->IDLE); 
+	if (!this->isAlive)
+	{
+		if (this->entryInterval == 0)
+		{
+			auto& effect = Singleton<EffectManager>::GetInstance();
+			effect.OnIsEffect(EffectManager::EffectType::PLAYER_ENTRY);
+		}
+		this->entryInterval++;
+		if (this->entryInterval >= json.GetJson(JsonManager::FileType::PLAYER)["DRAW_INTERVAL"])
+		{
+			this->isDraw = true;
+		}
+		if (this->entryInterval >= json.GetJson(JsonManager::FileType::PLAYER)["ENTRY_INTERVAL"])
+		{
+			this->entryInterval = 0;
+			this->isAlive = true;
+		}
 	}
 	else
 	{
-		this->state->ClearFlag(this->IDLE);
+		/*フラグの初期化*/
+		this->state->ClearFlag(this->MASK_ALWAYS_TURN_OFF);
+
+		/*アクション*/
+		Death();//デス処理
+		Reaction();//リアクション処理
+		Attack();//攻撃処理
+		Move();//移動処理
+		Rolling();//回避処理
+		Block();//防御処理
+		Heal();//回復処理
+
+		//もし何もアクションをしていなかったらIdleを入れる
+		if (DontAnyAction())
+		{
+			this->state->SetFlag(this->IDLE);
+		}
+		else
+		{
+			this->state->ClearFlag(this->IDLE);
+		}
+
+		//状態が歩きまたは待機の時のみスタミナを回復する（その他スタミナ消費はその場所で行っている
+		//スタミナ計算の場所が散らばっているので統一したい
+		if (!this->state->CheckFlag(this->MASK_CANT_RECOVERY_STAMINA))
+		{
+			CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
+		}
+
 	}
 
-	//状態が歩きまたは待機の時のみスタミナを回復する（その他スタミナ消費はその場所で行っている
-	//スタミナ計算の場所が散らばっているので統一したい
-	if (!this->state->CheckFlag(this->MASK_CANT_RECOVERY_STAMINA))
+	if (this->isDraw)
 	{
-		CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
+		/*アニメーションの更新*/
+		UpdateAnimation();
+		float animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
+		VECTOR position = this->collider->rigidbody.GetPosition();
+		this->animation->Play(&this->modelHandle, position, this->nowAnimation, animationPlayTime);
 	}
-
-	/*アニメーションの更新*/
-	UpdateAnimation();
-	float animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
-	VECTOR position = this->collider->rigidbody.GetPosition();
-	this->animation->Play(&this->modelHandle, position, this->nowAnimation, animationPlayTime);
 }
 
 /// <summary>

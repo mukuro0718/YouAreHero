@@ -13,13 +13,14 @@
 /// コンストラクタ
 /// </summary>
 Character::Character()
-	: modelHandle(-1)
-	, animation(nullptr)
-	, state(nullptr)
-	, collider(nullptr)
-	, speed(0.0f)
-	, isAlive(true)
-	, isGround(false)
+	: modelHandle	(-1)
+	, animation		(nullptr)
+	, state			(nullptr)
+	, collider		(nullptr)
+	, speed			(0.0f)
+	, isAlive		(false)
+	, isGround		(false)
+	, entryInterval	(0)
 {
 	this->animation = new Animation();
 	this->state = new BitFlag();
@@ -45,7 +46,7 @@ const void Character::Draw() const
 	DrawCharacterInfo();
 
 	/*モデルの描画*/
-	if (this->isAlive)
+	if (this->isDraw)
 	{
 		MV1SetPosition(this->modelHandle, this->collider->rigidbody.GetPosition());
 		MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());

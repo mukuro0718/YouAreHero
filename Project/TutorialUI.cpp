@@ -23,8 +23,8 @@ TutorialUI::TutorialUI()
 	/*画像クラスインスタンスの作成*/
 	const int WINDOW = asset.GetImage(LoadingAsset::ImageType::WINDOW);
 	this->window = new Image(WINDOW);
-	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::TUTORIAL_UI));
-	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::TUTORIAL_PRESS_BUTTON));
+	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::BAT_70_64));
+	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::BAT_30_32));
 
 	/*初期化*/
 	Initialize();

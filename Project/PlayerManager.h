@@ -26,6 +26,7 @@ public:
 	const float			 GetStamina		 ()const;
 	const int			 GetHealOrbNum	 ()const;
 	const int			 GetModelHandle	 ()const;
+	const bool			 GetIsAlive()const;
 private:
 	/*内部処理関数*/
 	PlayerManager();//コンストラクタ

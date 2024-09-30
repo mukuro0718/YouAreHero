@@ -121,10 +121,12 @@ void Boss::Initialize()
 	auto& data = dynamic_cast<BossData&>(*collider.data);
 
 	/*変数の初期化*/
-	this->isAlive				 = true;
+	this->isAlive				 = false;
 	this->isGround				 = true;
+	this->isDraw = false;
 	this->speed					 = 0.0f;
 	this->animationPlayTime		 = 0.0f;
+	this->entryInterval			 = 0;
 	this->attackComboIndexOffset = 0;
 	this->nowPhase				 = 0;
 	this->attackComboCount		 = -1;
@@ -190,31 +192,53 @@ void Boss::Update()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& player = Singleton<PlayerManager>::GetInstance();
 
-	/*フェーズの初期化*/
-	SetPhase();
-
-	/*状態の切り替え*/
-	ChangeState();
-
-	/*ここですべてのパラメータの計算を行う*/
-	for (auto& item : this->parameters)
+	if (!this->isAlive)
 	{
-		item->CalcParameter(*this);
+		if (player.GetIsAlive())
+		{
+			if (this->entryInterval == json.GetJson(JsonManager::FileType::ENEMY)["ON_ENTRY_EFFECT_INTERVAL"])
+			{
+				auto& effect = Singleton<EffectManager>::GetInstance();
+				effect.OnIsEffect(EffectManager::EffectType::BOSS_ENTRY);
+			}
+			this->entryInterval++;
+			if (this->entryInterval >= json.GetJson(JsonManager::FileType::ENEMY)["ENTRY_INTERVAL"])
+			{
+				this->entryInterval = 0;
+				this->isAlive = true;
+				this->isDraw = true;
+			}
+		}
 	}
+	else
+	{
+		/*フェーズの初期化*/
+		SetPhase();
+
+		/*状態の切り替え*/
+		ChangeState();
+
+		/*ここですべてのパラメータの計算を行う*/
+		for (auto& item : this->parameters)
+		{
+			item->CalcParameter(*this);
+		}
 
 
-	//ここに各アクションごとの更新処理を入れたい
-	this->parameters[this->actionType]->Update(*this);
+		//ここに各アクションごとの更新処理を入れたい
+		this->parameters[this->actionType]->Update(*this);
 
-	/*アニメーションの更新*/
-	unsigned int nowState = this->state->GetFlag();
-	this->nowAnimation = this->stateAnimationMap[nowState];
-	
-	//アニメーションの再生
-	VECTOR position = this->collider->rigidbody.GetPosition();
-	this->animation->Play(&this->modelHandle, position, this->nowAnimation, this->animationPlayTime);
-	this->collider->rigidbody.SetPosition(position);
+		/*アニメーションの更新*/
+		unsigned int nowState = this->state->GetFlag();
+		this->nowAnimation = this->stateAnimationMap[nowState];
+
+		//アニメーションの再生
+		VECTOR position = this->collider->rigidbody.GetPosition();
+		this->animation->Play(&this->modelHandle, position, this->nowAnimation, this->animationPlayTime);
+		this->collider->rigidbody.SetPosition(position);
+	}
 }
 
 /// <summary>
@@ -545,17 +569,16 @@ void Boss::OnEffectFlag(const int _attack)
 	case static_cast<int>(AttackType::NONE):
 		break;
 	case static_cast<int>(AttackType::SLASH):
-		effect.OnIsBossSlashEffect();
+		effect.OnIsEffect(EffectManager::EffectType::BOSS_SLASH);
 		break;
 	case static_cast<int>(AttackType::FLY_ATTACK):
 		break;
 	case static_cast<int>(AttackType::HURRICANE_KICK):
 		break;
 	case static_cast<int>(AttackType::JUMP_ATTACK):
-		effect.OnIsBossJumpAttackEffect();
 		break;
 	case static_cast<int>(AttackType::ROTATE_PUNCH):
-		effect.OnIsBossRotatePunchEffect();
+		effect.OnIsEffect(EffectManager::EffectType::BOSS_ROTATE_PUNCH);
 		break;
 	default:
 		break;

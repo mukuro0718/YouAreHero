@@ -17,6 +17,11 @@
 /// コンストラクタ
 /// </summary>
 GameOverUI::GameOverUI()
+	: isPrevPressButton	(false)
+	, isContinue		(false)
+	, isEnd				(false)
+	, isEndExtend		(false)
+	, type				(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
@@ -25,7 +30,10 @@ GameOverUI::GameOverUI()
 	this->image.emplace_back(new Image(asset.GetImage(LoadingAsset::ImageType::CONTINUE)));
 	this->image.emplace_back(new Image(asset.GetImage(LoadingAsset::ImageType::END)));
 
-	Initialize();
+	/*fontHandleの取得*/
+	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::BAT_200_64));
+	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::BAT_30_64));
+
 }
 
 /// <summary>
@@ -92,7 +100,7 @@ void GameOverUI::Update()
 		{
 			if (this->type == i)
 			{
-				this->image[i]->ScalingGraph(json.GetJson(JsonManager::FileType::UI)["RESULT_IMAGE_TARGET_DRAW_RECT"][i], json.GetJson(JsonManager::FileType::UI)["GAME_OVER_REDUCED_POSITION"][i], json.GetJson(JsonManager::FileType::UI)["GAME_OVER_ADD_VALUE"]);
+				this->image[i]->ScalingGraph(json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TARGET_POSITION"][i], json.GetJson(JsonManager::FileType::UI)["GAME_OVER_REDUCED_POSITION"][i], json.GetJson(JsonManager::FileType::UI)["GAME_OVER_ADD_VALUE_2"]);
 			}
 			else
 			{
@@ -102,7 +110,10 @@ void GameOverUI::Update()
 		/*ボタンが押されていたらリザルト終了*/
 		if (isPressButton)
 		{
-			//typeがContinueだったらtrue/Endだったらfalseを返す
+			if (this->type == static_cast<int>(ImageType::CONTINUE))
+			{
+				this->isContinue = true;
+			}
 			this->isEnd = true;
 		}
 	}
@@ -113,6 +124,15 @@ void GameOverUI::Update()
 /// </summary>
 const void GameOverUI::Draw()const
 {
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& json = Singleton<JsonManager>	::GetInstance();
+	vector<string> text = json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TEXT"];
+	vector<vector<int>> position = json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TEXT_POSITION"];
+	for (int i = 0; i < this->fontHandle.size(); i++)
+	{
+		DrawStringToHandle(position[i][0],position[i][1],text[i].c_str(),this->TEXT_COLOR,this->fontHandle[i]);
+	}
+
 	for (int i = 0; i < this->image.size(); i++)
 	{
 		this->image[i]->Draw();

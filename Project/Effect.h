@@ -1,17 +1,31 @@
+//========================================
+// @brief エフェクトベースクラス
+//========================================
 #pragma once
-class Effect
+
+class Transform;
+class Effect abstract
 {
 public:
 	Effect(const int _effectResourceHandle);//コンストラクタ
-	~Effect(){}//デストラクタ
+	virtual ~Effect(){}//デストラクタ
 
-	void OnIsPlayEffect() { this->isPlayEffect = true; }
-	void Update(const int _startFrame, const int _endFrame, const VECTOR _position, const VECTOR _rotation, const VECTOR _scale);//
+	void Update();//
 	const void Draw()const;
-private:
+	void OnIsPlayEffect() { this->isPlayEffect = true; }
+	
+	/*純粋仮想関数*/
+	virtual void SetInfoToPlayTheEffect() abstract;
+protected:
+	const VECTOR Convert(std::vector<float> _in)const;
+
 	int effectResourceHandle;
 	int playingEffectHandle;
 	int frameCount;
 	bool isPlayEffect;//エフェクトを再生するか
+	int startFrame;
+	int endFrame;
+	Transform* transform;
+	
 };
 

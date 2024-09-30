@@ -43,5 +43,6 @@ private:
 	float			length;			//長さ
 
 	int				frameCount;//フレームカウント
+	int entryInterval;//登場待機時間
 	//HACK:注視点からlength分だけ離した位置にカメラの座標を設定するため、初期directionを反転させた値を保持する
 };

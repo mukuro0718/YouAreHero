@@ -23,6 +23,7 @@ public:
 	const Rigidbody& GetRigidbody()const;
 	const bool IsAttack()const;
 	const int GetModelHandle()const;
+	const bool GetIsAlive()const;
 private:
 	/*内部処理関数*/
 	EnemyManager();//コンストラクタ

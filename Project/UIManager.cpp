@@ -5,6 +5,7 @@
 #include "DeleteInstance.h"
 #include "HPUI.h"
 #include "ButtonUI.h"
+#include "BossNameUI.h"
 #include "SceneUI.h"
 #include "TitleUI.h"
 #include "TutorialUI.h"
@@ -18,11 +19,14 @@
 /// コンストラクタ
 /// </summary>
 UIManager::UIManager()
-	:hp(nullptr)
+	: hp		(nullptr)
+	, button	(nullptr)
+	, bossName	(nullptr)
 {
 	/*インスタンスの生成*/
-	this->hp = new HPUI();
-	this->button = new ButtonUI();
+	this->hp		= new HPUI();
+	this->button	= new ButtonUI();
+	this->bossName	= new BossNameUI();
 	this->scene.emplace_back(new TitleUI());
 	this->scene.emplace_back(new TutorialUI());
 	this->scene.emplace_back(new GameUI());
@@ -37,6 +41,7 @@ UIManager::~UIManager()
 {
 	DeleteMemberInstance(this->hp);
 	DeleteMemberInstance(this->button);
+	DeleteMemberInstance(this->bossName);
 	for (int i = 0; i < this->scene.size(); i++)
 	{
 		DeleteMemberInstance(this->scene[i]);
@@ -61,6 +66,7 @@ void UIManager::Initialize()
 	case SceneChanger::SceneType::GAME:
 		this->hp->Initialize();
 		this->button->Initialize();
+		this->bossName->Initialize();
 		this->scene[static_cast<int>(SceneChanger::SceneType::GAME)]->Initialize();
 		break;
 	case SceneChanger::SceneType::GAME_CLEAR:
@@ -90,6 +96,7 @@ void UIManager::Update()
 	case SceneChanger::SceneType::GAME:
 		this->hp->Update();
 		this->button->Update();
+		this->bossName->Update();
 		this->scene[static_cast<int>(SceneChanger::SceneType::GAME)]->Update();
 		break;
 	case SceneChanger::SceneType::GAME_CLEAR:
@@ -120,6 +127,7 @@ const void UIManager::Draw()const
 		this->scene[static_cast<int>(SceneChanger::SceneType::GAME)]->Draw();
 		this->hp->Draw();
 		this->button->Draw();
+		this->bossName->Draw();
 		break;
 	case SceneChanger::SceneType::GAME_CLEAR:
 		this->scene[static_cast<int>(SceneChanger::SceneType::GAME_CLEAR)]->Draw();
@@ -153,9 +161,9 @@ const bool UIManager::IsDraw()const
 const bool UIManager::IsContinue()const
 {
 	int type = static_cast<int>(SceneChanger::SceneType::GAME_OVER);
-	auto* scene = dynamic_cast<GameOverUI*>(this->scene[type]);
+	auto& scene = dynamic_cast<GameOverUI&>(*this->scene[type]);
 
-	assert(scene == nullptr && "scene pointer is null");
-
-	return scene->IsContinue();
+	//assert(this->scene[type] != GameOverUI && "scene pointer is null");
+	bool isContinue = scene.IsContinue();
+	return isContinue;
 }

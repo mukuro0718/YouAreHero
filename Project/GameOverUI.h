@@ -17,23 +17,32 @@ public:
 	const bool IsEnd()const override;
 	const bool IsContinue()const;
 private:
+	/*静的定数*/
+	static constexpr int TEXT_COLOR = 0xdfffff;
+
 	/*列挙体*/
+	//画像の種類
 	enum class ImageType
 	{
 		CONTINUE,
 		END,
-		WINDOW,//ウィンドウ
+	};
+	//フォントの種類
+	enum class FontType
+	{
+		MAIN,
+		SUB,
 	};
 
 	void SetType();
 	bool IsPressButton();
 
 	std::vector<Image*> image;
+	std::vector<int> fontHandle;
 	bool isPrevPressButton;
 	bool isContinue;
-	bool isGameClear;
 	bool isEnd;
 	bool isEndExtend;
-	int type;//ゲームオーバー時のタイプ（Continue/End）
+	int  type;//ゲームオーバー時のタイプ（Continue/End）
 };
 

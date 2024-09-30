@@ -18,8 +18,8 @@ ButtonUI::ButtonUI()
 	this->healOrb  = asset.GetImage(LoadingAsset::ImageType::HP_ORB);
 	this->emptyOrb = asset.GetImage(LoadingAsset::ImageType::EMPTY_ORB);
 
-	this->iconFont		= asset.GetFont(LoadingAsset::FontType::ICON_UI);
-	this->operationFont = asset.GetFont(LoadingAsset::FontType::OPERATION_UI);
+	this->iconFont		= asset.GetFont(LoadingAsset::FontType::HONOKA_50_64);
+	this->operationFont = asset.GetFont(LoadingAsset::FontType::HONOKA_30_64);
 }
 
 /// <summary>

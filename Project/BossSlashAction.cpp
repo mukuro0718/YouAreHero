@@ -31,9 +31,11 @@ BossSlashAction::~BossSlashAction()
 /// </summary>
 void BossSlashAction::Initialize()
 {
-	this->isSelect = false;
-	this->isInitialize = false;
-	this->frameCount = 0;
+	this->isSelect				 = false;
+	this->isInitialize			 = false;
+	this->frameCount			 = 0;
+	this->parameter->desireValue = 0;
+	this->parameter->interval	 = 0;
 }
 
 /// <summary>
@@ -74,7 +76,7 @@ void BossSlashAction::Update(Boss& _boss)
 		if (!this->isInitialize)
 		{
 			//エフェクトを立てる
-			effect.OnIsBossSlashEffect();
+			effect.OnIsEffect(EffectManager::EffectType::BOSS_SLASH);
 			//攻撃フラグを立てる
 			attack.OnIsStart(static_cast<int>(BossAttackManager::AttackType::SLASH));
 			this->isInitialize = true;

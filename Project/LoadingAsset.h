@@ -48,12 +48,14 @@ public:
 	//フォントのタイプ
 	enum class FontType
 	{
-		ICON_UI,
-		OPERATION_UI,
-		TUTORIAL_UI,
-		TUTORIAL_PRESS_BUTTON,
-		GAME_CLEAR_HEADER,
-		GAME_CLEAR_MAIN,
+		HONOKA_50_64,
+		HONOKA_30_64,
+		BAT_70_64,
+		BAT_30_32,
+		BAT_100_64,
+		BAT_30_64,
+		BAT_200_64,
+		BAT_150_64,
 	};
 	enum class FontName
 	{
@@ -68,9 +70,10 @@ public:
 	//エフェクト
 	enum class EffectType
 	{
-		BOSS_PUNCH,
+		BOSS_ROTATE_PUNCH,
 		BOSS_SLASH,
-		BOSS_THROW,
+		BOSS_ENTRY,
+		PLAYER_ENTRY,
 	};
 
 	/*getter*/

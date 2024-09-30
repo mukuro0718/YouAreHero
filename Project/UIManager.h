@@ -8,6 +8,7 @@
 class HPUI;
 class ButtonUI;
 class SceneUI;
+class BossNameUI;
 class UIManager : public Singleton<UIManager>
 {
 public:
@@ -25,9 +26,10 @@ private:
 	UIManager();//コンストラクタ
 
 	/*メンバ変数*/
-	HPUI* hp;
-	ButtonUI* button;
-	std::vector<SceneUI*> scene;
+	std::vector<SceneUI*>	scene;
+	HPUI*					hp;
+	ButtonUI*				button;
+	BossNameUI*				bossName;
 
 };
 

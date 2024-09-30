@@ -14,11 +14,11 @@ public:
 	Character();//コンストラクタ
 	virtual ~Character();//デストラクタ
 	
-	virtual void Initialize() abstract;//初期化
-	virtual void Finalize() abstract;//後処理
-	virtual void Update() abstract;//更新
-	virtual const void DrawCharacterInfo() const abstract;
-	const void Draw()const;//描画
+	virtual void		Initialize		 () abstract;//初期化
+	virtual void		Finalize		 () abstract;//後処理
+	virtual void		Update			 () abstract;//更新
+	virtual const void	DrawCharacterInfo() const abstract;
+	const void			Draw			 () const;//描画
 
 	/*getter/setter*/
 	virtual const bool			 GetIsAttack		 ()const abstract;
@@ -27,6 +27,7 @@ public:
 			const int			 GetHP				 ()const;
 			const int			 GetModelHandle		 ()const { return this->modelHandle; }
 			const bool			 GetIsChangeAnimation()const;
+			const bool			 GetIsAlive			 ()const { return this->isAlive; }
 				  void			 OffIsAlive			 () { this->isAlive = false; }
 	/*らーぷ関数*/
 	float  Lerp(const float _start, const float _end, const float _percent);	//らーぷ関数
@@ -39,5 +40,7 @@ protected:
 	bool			isAlive;	//キャラクターが生存しているか
 	bool			isGround;	//地面に当たっている
 	float			speed;		//速度
+	int				entryInterval;
+	bool isDraw;
 };
 

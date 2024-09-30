@@ -28,9 +28,11 @@ BossDeathAction::~BossDeathAction()
 /// </summary>
 void BossDeathAction::Initialize()
 {
-	this->isSelect = false;
-	this->isInitialize = false;
-	this->frameCount = 0;
+	this->isSelect				 = false;
+	this->isInitialize			 = false;
+	this->frameCount			 = 0;
+	this->parameter->desireValue = 0;
+	this->parameter->interval	 = 0;
 }
 
 

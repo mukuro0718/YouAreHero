@@ -28,9 +28,11 @@ BossRoarAction::~BossRoarAction()
 /// </summary>
 void BossRoarAction::Initialize()
 {
-	this->isSelect = false;
-	this->isInitialize = false;
-	this->frameCount = 0;
+	this->isSelect				 = false;
+	this->isInitialize			 = false;
+	this->frameCount			 = 0;
+	this->parameter->desireValue = ActionParameter::MAX_PARAMETER;
+	this->parameter->interval	 = 0;
 }
 
 /// <summary>
@@ -85,13 +87,13 @@ void BossRoarAction::CalcParameter(const Boss& _boss)
 	/*もしフェーズが異なっていたら欲求値を最大にする*/
 	if (_boss.GetNowPhase() != _boss.GetPrevPhase())
 	{
-		addDesireValue = this->parameter->MAX_PARAMETER;
+		addDesireValue = ActionParameter::MAX_PARAMETER;
 	}
 
 	/*HPが０以下だったら欲求値を０にする*/
 	else if (_boss.GetHP() <= 0)
 	{
-		addDesireValue = -this->parameter->MAX_PARAMETER;
+		addDesireValue = -ActionParameter::MAX_PARAMETER;
 	}
 
 	/*欲求値を増加させる*/

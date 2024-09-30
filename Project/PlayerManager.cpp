@@ -109,3 +109,11 @@ const int PlayerManager::GetHealOrbNum()const
 	auto& player = dynamic_cast<Player&>(*this->player);
 	return player.GetHealOrbNum();
 }
+
+/// <summary>
+/// ¶‘¶ƒtƒ‰ƒO‚Ìgetter
+/// </summary>
+const bool PlayerManager::GetIsAlive()const
+{
+	return player->GetIsAlive();
+}

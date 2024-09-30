@@ -35,8 +35,8 @@ GameClearUI::GameClearUI()
 	this->starFrame.emplace_back(new Image(asset.GetImage(LoadingAsset::ImageType::NONE_STAR)));
 
 	/*fontHandle�̎擾*/
-	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::GAME_CLEAR_HEADER));
-	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::GAME_CLEAR_MAIN));
+	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::BAT_100_64));
+	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::BAT_30_64));
 
 	//Initialize();
 }

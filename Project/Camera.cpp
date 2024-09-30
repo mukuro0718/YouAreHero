@@ -62,7 +62,7 @@ void Camera::Initialize()
 	/*メンバ変数の初期化*/
 	this->nowTarget			 = enemy.GetRigidbody().GetPosition() + Convert(TARGET_OFFSET);		//注視点
 	this->nextTarget		 = this->nowTarget;										//注視点
-	
+	this->entryInterval		 = 0;
 	
 	this->direction			 = Convert(FIRST_DIRECTION);							//カメラの向き
 	this->length			 = FIRST_LENGTH;											//注視点からの距離
@@ -81,6 +81,19 @@ void Camera::Initialize()
 /// </summary>
 void Camera::Update()
 {
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();//json
+	auto& player = Singleton<PlayerManager>::GetInstance();
+	const int MAX_ENTRY_INTERVAL = json.GetJson(JsonManager::FileType::CAMERA)["ENTRY_CAMERA_INTERVAL"];
+	if (player.GetIsAlive() && this->entryInterval < MAX_ENTRY_INTERVAL)
+	{
+		this->entryInterval++;
+		if (this->entryInterval >= MAX_ENTRY_INTERVAL)
+		{
+			this->entryInterval = MAX_ENTRY_INTERVAL;
+		}
+	}
+
 	/*注視点の更新*/
 	UpdateTarget();
 
@@ -212,19 +225,31 @@ void Camera::UpdateLength()
 {
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();//json
+	auto& player = Singleton<PlayerManager>::GetInstance();
+	auto& enemy = Singleton<EnemyManager>::GetInstance();
 
-	const float MAX_LENGTH = json.GetJson(JsonManager::FileType::CAMERA)["MAX_LENGTH"];
-	const float MIN_LENGTH = json.GetJson(JsonManager::FileType::CAMERA)["MIN_LENGTH"];
+	float maxLength = 0.0f;
+	float minLength = 0.0f;
+	if (player.GetIsAlive() && this->entryInterval < json.GetJson(JsonManager::FileType::CAMERA)["ENTRY_CAMERA_INTERVAL"])
+	{
+		maxLength = json.GetJson(JsonManager::FileType::CAMERA)["MAX_LENGTH"];
+		minLength = json.GetJson(JsonManager::FileType::CAMERA)["MIN_LENGTH"];
+	}
+	else
+	{
+		maxLength = json.GetJson(JsonManager::FileType::CAMERA)["MAX_LENGTH"];
+		minLength = json.GetJson(JsonManager::FileType::CAMERA)["MIN_LENGTH"];
+	}
 	const float LERP_VALUE = json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_LENGTH"];
 
-	/*距離のの補正*/
-	if (this->length >= MAX_LENGTH)
+	/*距離の補正*/
+	if (this->length >= maxLength)
 	{
-		this->length = Lerp(this->length, MAX_LENGTH, LERP_VALUE);
+		this->length = Lerp(this->length, maxLength, LERP_VALUE);
 	}
-	else if (this->length <= MIN_LENGTH)
+	else if (this->length <= minLength)
 	{
-		this->length = Lerp(this->length, MIN_LENGTH, LERP_VALUE);
+		this->length = Lerp(this->length, minLength, LERP_VALUE);
 	}
 }
 
@@ -239,12 +264,23 @@ void Camera::UpdateVelocity()
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 
 	/*次の座標を出す*/
-	const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));
-	const VECTOR POSITION_OFFSET = Convert(json.GetJson(JsonManager::FileType::CAMERA)["POSITION_OFFSET"]);
-		  VECTOR nextPosition	 = VScale(ENEMY_TO_PLAYER, this->length);
-				 nextPosition	 = VAdd(player.GetRigidbody().GetPosition(), nextPosition);
-				 nextPosition	 = VAdd(nextPosition, POSITION_OFFSET);
-
+	VECTOR nextPosition = Gori::ORIGIN;
+	if (player.GetIsAlive() && this->entryInterval < json.GetJson(JsonManager::FileType::CAMERA)["ENTRY_CAMERA_INTERVAL"])
+	{
+		const VECTOR NOW_POSITION = this->collider->rigidbody.GetPosition();
+		const VECTOR CAMERA_TO_TARGET = VNorm(VSub(this->nowTarget, NOW_POSITION));
+		const VECTOR MOVE_VELOCITY = VNorm(VCross(CAMERA_TO_TARGET, Gori::UP_VEC));
+		nextPosition = VNorm(VAdd(NOW_POSITION, MOVE_VELOCITY));
+		nextPosition = VScale(nextPosition, this->length);
+	}
+	else
+	{
+		const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));
+		const VECTOR POSITION_OFFSET = Convert(json.GetJson(JsonManager::FileType::CAMERA)["POSITION_OFFSET"]);
+		nextPosition = VScale(ENEMY_TO_PLAYER, this->length);
+		nextPosition = VAdd(player.GetRigidbody().GetPosition(), nextPosition);
+		nextPosition = VAdd(nextPosition, POSITION_OFFSET);
+	}
 
 	/*補正値*/
 	const VECTOR LERP_VALUE = Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_VELOCITY"]);

@@ -92,3 +92,8 @@ const int EnemyManager::GetModelHandle()const
 {
 	return this->boss->GetModelHandle();
 }
+
+const bool EnemyManager::GetIsAlive()const
+{
+	return this->boss->GetIsAlive();
+}

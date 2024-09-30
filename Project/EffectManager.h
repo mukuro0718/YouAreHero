@@ -6,11 +6,16 @@ class EffectManager : public Singleton<EffectManager>
 {
 public:
 	friend class Singleton<EffectManager>;
-
+	/*列挙体*/
+	enum class EffectType
+	{
+		BOSS_SLASH,
+		BOSS_ROTATE_PUNCH,
+		BOSS_ENTRY,
+		PLAYER_ENTRY,
+	};
 	/*エフェクトの描画用関数*/
-	void OnIsBossSlashEffect();
-	void OnIsBossRotatePunchEffect();
-	void OnIsBossJumpAttackEffect();
+	void OnIsEffect(const EffectType _type);
 	void Update();
 	const void Draw()const;
 private:
@@ -20,15 +25,9 @@ private:
 	EffectManager();//コンストラクタ
 	~EffectManager();//デストラクタ
 	const VECTOR Convert(std::vector<float> _in)const;
-	/*列挙体*/
-	enum class BossEffect
-	{
-		SLASH,
-		ROTATE_PUNCH,
-		JUMP_ATTACK
-	};
+	
 
 	/*メンバ変数*/
-	std::vector<Effect*> boss;
+	std::vector<Effect*> effect;
 };
 
