@@ -1,6 +1,5 @@
 #include <DxLib.h>
 #include "EffekseerForDXLib.h"
-#include "GoriLib.h"
 #include <vector>
 #include "UseJson.h"
 #include "Effect.h"

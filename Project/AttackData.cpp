@@ -2,7 +2,8 @@
 
 AttackData::AttackData()
 	: isDoHitCheck(false)
-	, damage(0)
+	, damage	  (0)
+	, hitStopTime (0)
 {
 
 }

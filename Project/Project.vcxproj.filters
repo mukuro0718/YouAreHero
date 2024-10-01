@@ -837,6 +837,9 @@
     <ClInclude Include="BossNameUI.h">
       <Filter>UI\BossNameUI</Filter>
     </ClInclude>
+    <ClInclude Include="ReactionType.h">
+      <Filter>Data\HeaderFile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\Json\Camera.json">

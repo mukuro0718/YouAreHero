@@ -99,6 +99,11 @@ const void GameUI::Draw()const
 	if (this->type == -1)return;
 
 	this->image[this->type]->Draw();
+	
+	if (this->type == static_cast<int>(Type::LOSE))
+	{
+
+	}
 }
 
 /// <summary>
@@ -121,12 +126,12 @@ void GameUI::SetType()
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 
 	/*プレイヤーのHPが０以下*/
-	if (player.GetHP() <= 0)
+	if (player.GetHP() <= 0 && !player.GetIsAlive())
 	{
 		this->type = static_cast<int>(Type::LOSE);
 	}
 	/*ボスのHPが０以下*/
-	else if (enemy.GetHP() <= 0)
+	else if (enemy.GetHP() <= 0 && !enemy.GetIsAlive())
 	{
 		this->type = static_cast<int>(Type::WIN);
 	}

@@ -278,6 +278,7 @@
     <ClInclude Include="GameClearScene.h" />
     <ClInclude Include="GameClearUI.h" />
     <ClInclude Include="PlayerEntryEffect.h" />
+    <ClInclude Include="ReactionType.h" />
     <ClInclude Include="SphereColliderData.h" />
     <ClInclude Include="CharacterData.h" />
     <ClInclude Include="Effect.h" />

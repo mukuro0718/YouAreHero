@@ -110,44 +110,16 @@ private:
 	};
 
 	/*内部処理関数*/
-		  void Roar				();//咆哮
-		  void UpdateRotation	();//回転率の更新
-		  void UpdateMoveVector	();//移動ベクトルの更新
-		  void UpdateSpeed		();//移動ベクトルの更新
-		  void Move				();//移動
-		  void Attack			();//攻撃
-		  void Rest				();
-		  void Death			();
-		  void Reaction			();
-		  void ChangeState		();
-		  bool FrameCount		(const int _index, const int _maxFrame);
-	const bool CanAttack		()const;//攻撃できるか
-	const bool CanRotation		()const;//回転
-	const bool CanMove			()const;//移動
-	const bool CanRest			()const;//休憩できるか
-	const bool CanRoar			()const;//咆哮できるか
-		  void SetAttackComboCount();
-		  void SetAttackCombo();
-		  void SetPhase();
-		  void OnEffectFlag(const int _attack);
-		  void SetAttackFlag(const int _attack);
-		  void SlowAnimationPlayTime(const FrameCountType _type, const int _targetCount, const float _maxTime);
-		  void AddAnimationPlayTime(const FrameCountType _type, const int _targetCount, const float _maxTime);
-		  void AttackSpeed(const int _type, const float _speed);
+	void ChangeState();
+	void SetPhase	();
 
 	/*メンバ変数*/
 	std::map<unsigned int, int>	stateAnimationMap;		//項目ごとのアニメーション
 	std::map<int, unsigned int>	actionTypeMap;			//アクションタイプ
-	std::vector<int>			frameCount;				//フレームカウント
-	std::vector<bool>			isCount;				//カウントをするか
-	std::vector<int>			attackCombo;			//攻撃コンボ
 	std::vector<BossAction*>	parameters;				//アクションパラメーター
 	VECTOR						moveTarget;				//移動目標
 	float						animationPlayTime;		//アニメーション再生時間
-	int							attackComboCount;		//攻撃コンボ回数
-	int							attackComboIndexOffset;	//攻撃コンボ回数を設定するためのインデックスオフセット
 	int							nowAnimation;			//現在のアニメーション
-	int							attackType;				//攻撃の種類
 	int							nowPhase;				//現在のフェーズ
 	int							prevPhase;				//前のフェーズ
 	int							actionType;

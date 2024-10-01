@@ -3,6 +3,7 @@
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "DeleteInstance.h"
+#include "ReactionType.h"
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "AttackData.h"
@@ -52,6 +53,7 @@ void BossHurricaneKick::Initialize()
 	collider.radius	 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
 	data.damage		 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
 	data.hitStopTime = json.GetJson(JsonManager::FileType::ENEMY)["HIT_STOP_TIME"][this->attackIndex];
+	data.playerReaction = static_cast<int>(Gori::PlayerReactionType::NORMAL);
 
 	/*•Ï”‚Ì‰Šú‰»*/
 	this->frameCount	  = 0;

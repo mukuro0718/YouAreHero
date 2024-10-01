@@ -154,6 +154,11 @@ void Camera::UpdateTarget()
 	case SceneChanger::SceneType::GAME:
 		//次の注視点を出す
 		this->nextTarget = enemy.GetRigidbody().GetPosition();
+		if (player.GetIsAlive() && this->entryInterval < json.GetJson(JsonManager::FileType::CAMERA)["ENTRY_CAMERA_INTERVAL"])
+		{
+			const VECTOR NEXT_TARGET_OFFSET = Convert(json.GetJson(JsonManager::FileType::CAMERA)["ENTRY_CAMERA_OFFSET"]);
+			this->nextTarget = VAdd(this->nextTarget, NEXT_TARGET_OFFSET);
+		}
 		//現在の注視点を出す
 		const VECTOR LERP_PERCENT = Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_TARGET"]);	//線形補完のパーセント
 		this->nowTarget = Lerp(this->nowTarget, this->nextTarget, LERP_PERCENT);

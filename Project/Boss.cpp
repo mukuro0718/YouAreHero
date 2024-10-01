@@ -3,6 +3,7 @@
 #include "UseJson.h"
 #include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
+#include "ReactionType.h"
 #include "Rigidbody.h"
 #include "CharacterData.h"
 #include "BossData.h"
@@ -19,6 +20,7 @@
 #include "BossAttackManager.h"
 #include "EffectManager.h"
 #include "Debug.h"
+#include "HitStop.h"
 
 /// <summary>
 /// コンストラクタ
@@ -26,10 +28,7 @@
 Boss::Boss()
 	: animationPlayTime(0.0f)
 	, moveTarget			{ 0.0f, 0.0f, 0.0f }
-	, attackComboCount		(0)
-	, attackComboIndexOffset(0)
 	, nowAnimation			(0)
-	, attackType			(0)
 	, nowPhase				(0)
 	, prevPhase				(-1)
 	, actionType(0)
@@ -40,13 +39,6 @@ Boss::Boss()
 
 	/*メンバクラスのインスタンスの作成*/
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::ENEMY));
-
-	/*vectorの追加*/
-	for (int i = 0; i < this->COUNT_NUM; i++)
-	{
-		this->frameCount.emplace_back(0);
-		this->isCount.emplace_back(false);
-	}
 
 	/*アニメーションの設定*/
 	vector<string>	animationHandle	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_HANDLE"];
@@ -94,11 +86,11 @@ Boss::Boss()
 	this->parameters.emplace_back(new BossRoarAction());
 	this->parameters.emplace_back(new BossChaseAction());
 	this->parameters.emplace_back(new BossRestAction());
-	this->parameters.emplace_back(new BossSlashAction());
+	/*this->parameters.emplace_back(new BossSlashAction());
 	this->parameters.emplace_back(new BossFlyAction());
 	this->parameters.emplace_back(new BossHurricaneKickAction());
 	this->parameters.emplace_back(new BossStabAction());
-	this->parameters.emplace_back(new BossRotatePunchAction());
+	this->parameters.emplace_back(new BossRotatePunchAction());*/
 }
 
 /// <summary>
@@ -107,9 +99,6 @@ Boss::Boss()
 Boss::~Boss()
 {
 	this->stateAnimationMap.clear();
-	this->frameCount.clear();
-	this->isCount.clear();
-	this->attackCombo.clear();
 }
 
 void Boss::Initialize()
@@ -127,23 +116,11 @@ void Boss::Initialize()
 	this->speed					 = 0.0f;
 	this->animationPlayTime		 = 0.0f;
 	this->entryInterval			 = 0;
-	this->attackComboIndexOffset = 0;
 	this->nowPhase				 = 0;
-	this->attackComboCount		 = -1;
-	this->attackType			 = -1;
 	this->prevPhase				 = -1;
 	this->moveTarget			 = Gori::ORIGIN;
 	this->nowAnimation			 = static_cast<int>(AnimationType::ROAR);
 	this->actionType			 = static_cast<int>(ActionType::ROAR);
-	for (int i = 0; i < this->frameCount.size(); i++)
-	{
-		this->frameCount[i] = 0;
-		this->isCount[i] = false;
-	}
-	for (int i = 0; i < this->attackCombo.size(); i++)
-	{
-		this->attackCombo[i] = false;
-	}
 	for (int i = 0; i < this->parameters.size(); i++)
 	{
 		this->parameters[i]->Initialize();
@@ -193,6 +170,7 @@ void Boss::Update()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
+	auto& hitStop = Singleton<HitStop>			::GetInstance();
 
 	if (!this->isAlive)
 	{
@@ -220,92 +198,30 @@ void Boss::Update()
 		/*状態の切り替え*/
 		ChangeState();
 
-		/*ここですべてのパラメータの計算を行う*/
-		for (auto& item : this->parameters)
+		if (!hitStop.IsHitStop())
 		{
-			item->CalcParameter(*this);
+
+			/*ここですべてのパラメータの計算を行う*/
+			for (auto& item : this->parameters)
+			{
+				item->CalcParameter(*this);
+			}
+
+			/*ここに各アクションごとの更新処理を入れたい*/
+			this->parameters[this->actionType]->Update(*this);
+
+			/*アニメーションの更新*/
+			unsigned int nowState = this->state->GetFlag();
+			this->nowAnimation = this->stateAnimationMap[nowState];
+
+			//アニメーションの再生
+			VECTOR position = this->collider->rigidbody.GetPosition();
+			this->animation->Play(&this->modelHandle, position, this->nowAnimation, this->animationPlayTime);
+			this->collider->rigidbody.SetPosition(position);
 		}
-
-
-		//ここに各アクションごとの更新処理を入れたい
-		this->parameters[this->actionType]->Update(*this);
-
-		/*アニメーションの更新*/
-		unsigned int nowState = this->state->GetFlag();
-		this->nowAnimation = this->stateAnimationMap[nowState];
-
-		//アニメーションの再生
-		VECTOR position = this->collider->rigidbody.GetPosition();
-		this->animation->Play(&this->modelHandle, position, this->nowAnimation, this->animationPlayTime);
-		this->collider->rigidbody.SetPosition(position);
 	}
 }
 
-/// <summary>
-/// 咆哮
-/// </summary>
-void Boss::Roar()
-{
-	/*咆哮中にアニメーションが終了していたらフラグを下す*/
-	//if (this->state->CheckFlag(this->ROAR) && this->animation->GetIsChangeAnim())
-	//{
-	//	this->state->ClearFlag(this->ROAR);
-	//	this->prevPhase = this->nowPhase;
-	//}
-
-	///*咆哮できるか*/
-	//CanRoar();
-
-	//if (this->nowPhase != this->prevPhase)
-	//{
-	//	this->state->ClearFlag(this->MASK_ALL);
-	//	this->state->SetFlag(this->ROAR);
-	//}
-}
-
-/// <summary>
-/// 移動
-/// </summary>
-void Boss::Move()
-{
-	/*回転率を出す*/
-	UpdateRotation();
-
-	/*移動速度の更新*/
-	UpdateSpeed();
-
-	/*移動ベクトルを出す*/
-	UpdateMoveVector();
-}
-
-/// <summary>
-/// ヒットリアクション
-/// </summary>
-void Boss::Reaction()
-{
-
-}
-/// <summary>
-/// 休憩
-/// </summary>
-void Boss::Rest()
-{
-
-}
-/// <summary>
-/// 死亡
-/// </summary>
-void Boss::Death()
-{
-
-}
-/// <summary>
-/// 攻撃
-/// </summary>
-void Boss::Attack()
-{
-	
-}
 void Boss::ChangeState()
 {
 	/*選択されているか調べる*/
@@ -363,178 +279,21 @@ const void Boss::DrawCharacterInfo()const
 		printfDx("Boss_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
 		printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
 		printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
-		printfDx("%d:IDLE					\n", this->state->CheckFlag(this->IDLE));
-		printfDx("%d:ROAR					\n", this->state->CheckFlag(this->ROAR));
-		printfDx("%d:WALK					\n", this->state->CheckFlag(this->WALK));
-		printfDx("%d:REST					\n", this->state->CheckFlag(this->REST));
+		printfDx("%d:IDLE						\n", this->state->CheckFlag(this->IDLE));
+		printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
+		printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
+		printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
 		printfDx("%d:SLASH					\n", this->state->CheckFlag(this->SLASH));
 		printfDx("%d:FLY_ATTACK				\n", this->state->CheckFlag(this->FLY_ATTACK));
 		printfDx("%d:HURRICANE_KICK			\n", this->state->CheckFlag(this->HURRICANE_KICK));
-		printfDx("%d:JUMP_ATTACK			\n", this->state->CheckFlag(this->JUMP_ATTACK));
-		printfDx("%d:ROTATE_PUNCH			\n", this->state->CheckFlag(this->ROTATE_PUNCH));
+		printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
+		printfDx("%d:ROTATE_PUNCH				\n", this->state->CheckFlag(this->ROTATE_PUNCH));
 	}
 }
 
-/// <summary>
-/// 速度の更新
-/// </summary>
-void Boss::UpdateMoveVector()
-{
-	/*移動ベクトルを初期化する*/
-	VECTOR direction = { 0.0f,0.0f,0.0f };
-	VECTOR rotation = this->collider->rigidbody.GetRotation();
-
-	/*回転率をもとに移動ベクトルを出す*/
-	direction = VGet(-sinf(rotation.y), 0.0f, -cosf(rotation.y));
-
-	/*移動ベクトルを正規化*/
-	direction = VNorm(direction);
-
-	VECTOR aimVelocity = VScale(direction, this->speed);
-	VECTOR prevVelocity = this->collider->rigidbody.GetVelocity();
-	VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);
-
-	this->collider->rigidbody.SetVelocity(newVelocity);
-}
-/// <summary>
-/// 速度の更新
-/// </summary>
-void Boss::UpdateSpeed()
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
-	if (this->state->CheckFlag(this->WALK))
-	{
-		this->speed = json.GetJson(JsonManager::FileType::ENEMY)["SPEED"];
-	}
-	else if (this->state->CheckFlag(this->MASK_ATTACK))
-	{
-		AttackSpeed(this->attackType, json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_SPEED"][this->attackType]);
-	}
-	else
-	{
-		this->speed = 0.0f;
-	}
-}
-
-/// <summary>
-/// 回転率の更新
-/// </summary>
-void Boss::UpdateRotation()
-{
-	/*回転できなければ早期リターン*/
-	if (!CanRotation())return;
-
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& player = Singleton<PlayerManager>::GetInstance();
-
-	/*使用する値の準備*/
-	const VECTOR position	 = this->collider->rigidbody.GetPosition();//座標
-		  VECTOR nowRotation = this->collider->rigidbody.GetRotation();//回転率
-		  VECTOR nextMoveTarget = player.GetRigidbody().GetPosition();
-		  
-
-	if (this->state->CheckFlag(this->MASK_ATTACK))
-	{
-		if (this->isCount[this->attackType])
-		{
-			this->moveTarget = nextMoveTarget;
-		}
-		else
-		{
-			if (this->state->CheckFlag(this->HURRICANE_KICK))
-			{
-				this->moveTarget = Lerp(this->moveTarget,nextMoveTarget,VGet(0.01f,0.01f,0.01f));
-			}
-		}
-	}
-	else
-	{
-		this->moveTarget = nextMoveTarget;
-	}
-	
-	/*プレイヤーから自分の座標までのベクトルを出す*/
-	VECTOR positonToTargetVector = VSub(position, this->moveTarget);
-
-	/*アークタンジェントを使って角度を求める*/
-	nowRotation.y = static_cast<float>(atan2(static_cast<double>(positonToTargetVector.x), static_cast<double>(positonToTargetVector.z)));
-
-	/*回転率を代入*/
-	this->collider->rigidbody.SetRotation(nowRotation);
-}
 
 
 
-
-/// <summary>
-/// 回転できるか
-/// </summary>
-/// <returns></returns>
-const bool Boss::CanRotation()const
-{
-	//if (this->state->CheckFlag(this->MASK_ATTACK)/* || this->state->CheckFlag(this->REST)*/)return false;
-	return true;
-}
-
-const bool Boss::CanMove()const
-{
-	if (this->state->CheckFlag(this->MASK_ATTACK))return false;
-	if (this->state->CheckFlag(this->ROAR))return false;
-	return true;
-}
-/// <summary>
-/// 攻撃できるか
-/// </summary>
-const bool Boss::CanAttack()const
-{
-	//if (this->state->CheckFlag(this->PUNCH_ATTACK))		 return false;
-	//if (this->state->CheckFlag(this->KNOCKGROUND_ATTACK))return false;
-	//if (this->state->CheckFlag(this->RUSH_ATTACK))		 return false;
-	//if (this->state->CheckFlag(this->BREATH_ATTACK))	 return false;
-	return true;
-}
-/// <summary>
-/// 休憩できるか
-/// </summary>
-const bool Boss::CanRest()const
-{
-	/*攻撃中かつアニメーションが終了している*/
-	if (this->state->CheckFlag(this->MASK_ATTACK) && this->animation->GetIsChangeAnim())
-	{
-		return true;
-	}
-	return false;
-}
-/// <summary>
-/// 咆哮できるか
-/// </summary>
-const bool Boss::CanRoar()const
-{
-	/*攻撃中かつアニメーションが終了している*/
-	if (this->state->CheckFlag(this->REST)) return true;
-	return false;
-}
-/// <summary>
-/// 指定したフレームの計測
-/// </summary>
-bool Boss::FrameCount(const int _index, const int _maxFrame)
-{
-	/*もしカウントが開始していたら*/
-	if (this->isCount[_index])
-	{
-		//カウントを増加させる
-		this->frameCount[_index]++;
-		//もし最大を越していたらフラグを下してカウントを初期化する
-		if (this->frameCount[_index] >= _maxFrame)
-		{
-			this->isCount[_index] = false;
-			this->frameCount[_index] = 0;
-			return true;
-		}
-	}
-	return false;
-}
 
 const bool Boss::GetIsAttack()const
 {
@@ -557,142 +316,8 @@ const float Boss::GetAnimationPlayTime()const
 }
 
 /// <summary>
-/// エフェクトフラグを立てる
+/// フェーズの設定
 /// </summary>
-void Boss::OnEffectFlag(const int _attack)
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& effect = Singleton<EffectManager>::GetInstance();
-
-	switch (_attack)
-	{
-	case static_cast<int>(AttackType::NONE):
-		break;
-	case static_cast<int>(AttackType::SLASH):
-		effect.OnIsEffect(EffectManager::EffectType::BOSS_SLASH);
-		break;
-	case static_cast<int>(AttackType::FLY_ATTACK):
-		break;
-	case static_cast<int>(AttackType::HURRICANE_KICK):
-		break;
-	case static_cast<int>(AttackType::JUMP_ATTACK):
-		break;
-	case static_cast<int>(AttackType::ROTATE_PUNCH):
-		effect.OnIsEffect(EffectManager::EffectType::BOSS_ROTATE_PUNCH);
-		break;
-	default:
-		break;
-	}
-}
-/// <summary>
-/// 攻撃フラグを立てる
-/// </summary>
-void Boss::SetAttackFlag(const int _attack)
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& effect = Singleton<EffectManager>::GetInstance();
-
-	switch (_attack)
-	{
-	case static_cast<int>(AttackType::NONE):
-		break;
-	case static_cast<int>(AttackType::SLASH):
-		this->state->SetFlag(this->SLASH);
-		break;
-	case static_cast<int>(AttackType::FLY_ATTACK):
-		this->state->SetFlag(this->FLY_ATTACK);
-		break;
-	case static_cast<int>(AttackType::HURRICANE_KICK):
-		this->state->SetFlag(this->HURRICANE_KICK);
-		break;
-	case static_cast<int>(AttackType::JUMP_ATTACK):
-		this->state->SetFlag(this->JUMP_ATTACK);
-		break;
-	case static_cast<int>(AttackType::ROTATE_PUNCH):
-		this->state->SetFlag(this->ROTATE_PUNCH);
-		break;
-	default:
-		break;
-	}
-}
-/// <summary>
-/// アニメーションの再生時間を遅くする
-/// </summary>
-void Boss::SlowAnimationPlayTime(const FrameCountType _type,const int _targetCount, const float _maxTime)
-{
-	int type = static_cast<int>(_type);
-	if (this->attackType == type)
-	{
-		float animationPlayTime = _maxTime;
-		FrameCount(type, _targetCount);
-		if (this->isCount[type])
-		{
-			animationPlayTime *= 0.1f;
-			this->animationPlayTime = animationPlayTime;
-		}
-		else
-		{
-			this->animationPlayTime = _maxTime;
-		}
-	}
-}
-/// <summary>
-/// アニメーションの再生時間を追加
-/// </summary>
-void Boss::AddAnimationPlayTime(const FrameCountType _type, const int _targetCount, const float _maxTime)
-{
-	int type = static_cast<int>(_type);
-	if (this->attackType == type)
-	{
-		if (this->isCount[type])
-		{
-			if (this->frameCount[type] == 0)
-			{
-				this->animationPlayTime = 0.0f;
-			}
-		}
-		FrameCount(type, _targetCount);
-		this->animationPlayTime += _maxTime / static_cast<float>(_targetCount);
-		if (this->animationPlayTime >= _maxTime)
-		{
-			this->animationPlayTime = _maxTime;
-		}
-	}
-}
-/// <summary>
-/// 攻撃時のスピードの設定
-/// </summary>
-void Boss::AttackSpeed(const int _type,const float _speed)
-{
-	if (this->attackType == _type)
-	{
-		if (this->isCount[_type])
-		{
-			this->speed = 0.0f;
-		}
-		else
-		{
-			this->speed = _speed;
-			VECTOR position = this->collider->rigidbody.GetPosition();
-			VECTOR distance = VSub(this->moveTarget, position);
-			float distanceSize = VSize(distance);
-			if (distanceSize < 5.0f)
-			{
-				this->speed = 0.0f;
-			}
-		}
-	}
-}
-
-void Boss::SetAttackComboCount()
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
-	this->attackComboCount = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_COMBO_COUNT"][this->nowPhase];
-	this->attackComboIndexOffset = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_COMBO_INDEX_OFFSET"][this->nowPhase];
-}
-
 void Boss::SetPhase()
 {
 	/*シングルトンクラスのインスタンスの取得*/
@@ -720,31 +345,6 @@ void Boss::SetPhase()
 	}
 }
 
-void Boss::SetAttackCombo()
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& attack = Singleton<BossAttackManager>::GetInstance();
-
-	/*攻撃中だったら早期リターン*/
-	if (this->state->CheckFlag(this->MASK_ATTACK))return;
-
-	//コンボカウントが0だったら
-	if (this->attackComboCount < 0)
-	{
-		SetAttackComboCount();
-		int type = GetRand(this->attackComboCount) + this->attackComboIndexOffset;
-		vector<int> combo = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_COMBO"][type];
-		this->attackCombo = combo;
-	}
-
-	this->attackType = this->attackCombo[this->attackComboCount];
-	SetAttackFlag(this->attackType);
-	attack.OnIsStart(this->attackType);
-	OnEffectFlag(this->attackType);
-	this->isCount[this->attackType] = true;
-	this->attackComboCount--;
-}
 
 /// <summary>
 /// 回転率の設定

@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "ReactionType.h"
 #include "ActionParameter.h"
 #include "Character.h"
 #include "Boss.h"

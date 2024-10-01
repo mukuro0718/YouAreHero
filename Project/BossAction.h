@@ -26,9 +26,9 @@ protected:
 	void OffIsSelect(const int _maxInterval);
 
 	/*メンバ変数*/
-	ActionParameter* parameter;		//パラメータ
-	bool			 isSelect;		//アクションが選択されたか
-	int				 frameCount;	//フレームカウント
-	bool			 isInitialize;	//初期化されたか
+	ActionParameter*		 parameter;		//パラメータ
+	bool					 isSelect;		//アクションが選択されたか
+	int						 frameCount;	//フレームカウント
+	bool					 isInitialize;	//初期化されたか
 };
 

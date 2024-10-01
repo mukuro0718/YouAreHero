@@ -13,7 +13,7 @@
   "COMBO_COUNT": [ 2, 3, 5 ],
   "HIT_RADIUS": 4.0,
   "HIT_HEIGHT": 10.0,
-  "HP": 1000,
+  "HP": 1,
   "ATTACK_COMBO_COUNT": [ 1, 2, 3 ],
   "ATTACK_COMBO_INDEX_OFFSET": [ 0, 2, 5 ],
   "SPEED": 0.8,
@@ -91,11 +91,11 @@
     3.0
   ],
   "ATTACK_DAMAGE": [
-    5,
-    5,
-    5,
-    5,
-    5
+    30,
+    50,
+    10,
+    60,
+    40
   ],
   "START_HIT_CHECK_FRAME": [
     50,
@@ -113,11 +113,11 @@
     100
   ],
   "HIT_STOP_TIME": [
-    30,
-    30,
-    30,
-    30,
-    30
+    10,
+    10,
+    10,
+    10,
+    10
   ],
   "SLASH_SLOW_FRAME_COUNT": 45,
   "ROTATE_PUNCH_SLOW_FRAME_COUNT": 45,
@@ -137,7 +137,7 @@
   "ROTATE_PUNCH_SLOW_PLAY_TIME": 0.08,
   "FLY_SLOW_PLAY_TIME": 0.08,
   "HURRICANE_KICK_ADD_PLAY_TIME": 0.01,
-  "HURRICANE_KICK_MAX_PLAY_TIME": 1.8,
+  "HURRICANE_KICK_MAX_PLAY_TIME": 0.8,
 
   "SLASH_STOP_MOVE_DISTANCE": 10.0,
   "STAB_STOP_MOVE_DISTANCE": 10.0,
@@ -149,5 +149,5 @@
   "STAB_MOVE_SPEED": 5.0,
   "ROTATE_PUNCH_MOVE_SPEED": 5.0,
   "FLY_ADD_MOVE_SPEED": 0.05,
-  "HURRICANE_KICK_MOVE_SPEED": 0.5
+  "HURRICANE_KICK_MOVE_SPEED": 0.3
 }

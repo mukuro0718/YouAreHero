@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "ReactionType.h"
 #include "Character.h"
 #include "Player.h"
 #include "PlayerManager.h"

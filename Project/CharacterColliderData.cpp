@@ -3,7 +3,9 @@
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "CharacterData.h"
+#include "PlayerData.h"
 #include "AttackData.h"
+#include "PlayerAttackData.h"
 #include "CharacterColliderData.h"
 #include "HitStop.h"
 
@@ -31,4 +33,11 @@ void CharacterColliderData::OnHit(const AttackData& _data, const VECTOR _attackP
 		hitStop.SetHitStopTime(_data.hitStopTime);
 	}
 	this->data->isHit = true;
+}
+
+void CharacterColliderData::SetPlayerReaction(const int _type)
+{
+	auto& playerData = dynamic_cast<PlayerData&>(*this->data);
+
+	playerData.playerReaction = _type;
 }

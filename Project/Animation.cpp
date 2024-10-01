@@ -15,6 +15,7 @@ Animation::Animation()
 	, animationPlayTime(0.0f)
 	, isChange(false)
 {
+	this->addAnimationRate = 0.08f;
 }
 
 /// <summary>
@@ -98,7 +99,7 @@ void Animation::Play(int* _modelHandle, VECTOR& _position, const int _nextAnimat
 	else
 	{
 		//ブレンド率を増加
-		this->animationRate += 0.1f;
+		this->animationRate += this->addAnimationRate;
 	}
 
 	/*アニメーション再生時間を進める*/

@@ -1,5 +1,4 @@
 #pragma once
-
 class CharacterData abstract
 {
 public:
@@ -10,5 +9,6 @@ public:
 	bool isHit;//UŒ‚‚Éƒqƒbƒg‚µ‚½‚©
 	VECTOR hitPosition;
 	bool isCutDamage;
+	int playerReaction;
 };
 

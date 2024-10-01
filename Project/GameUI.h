@@ -11,10 +11,10 @@ public:
 	GameUI();
 	~GameUI();
 
-	void Initialize()		 override;
-	void Update()		 override;
-	const void Draw()const override;
-	const bool IsEnd()const override;
+		  void Initialize()		 override;
+		  void Update	 ()		 override;
+	const void Draw		 ()const override;
+	const bool IsEnd	 ()const override;
 private:
 	/*—ñ‹“‘Ì*/
 	enum class Type

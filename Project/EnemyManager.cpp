@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "ReactionType.h"
 #include "CharacterData.h"
 #include "Rigidbody.h"
 #include "Character.h"

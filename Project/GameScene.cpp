@@ -89,35 +89,31 @@ void GameScene::Finalize()
 void GameScene::Update()
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& input			= Singleton<InputManager>		::GetInstance();
-	auto& debug			= Singleton<Debug>				::GetInstance();
-	auto& camera		= Singleton<CameraManager>		::GetInstance();
-	auto& map			= Singleton<MapManager>			::GetInstance();
-	auto& player		= Singleton<PlayerManager>		::GetInstance();
-	auto& playerAttack	= Singleton<PlayerAttackManager>::GetInstance();
-	auto& enemy			= Singleton<EnemyManager>		::GetInstance();
-	auto& enemyAttack	= Singleton<BossAttackManager>	::GetInstance();
-	auto& effect		= Singleton<EffectManager>		::GetInstance();
-	auto& ui			= Singleton<UIManager>			::GetInstance();
-	auto& collision		= Singleton<CollisionManager>	::GetInstance();
-	auto& hitStop		= Singleton<HitStop>			::GetInstance();
-	auto& sceneChanger	= Singleton<SceneChanger>		::GetInstance();
+	auto& input = Singleton<InputManager>		::GetInstance();
+	auto& debug = Singleton<Debug>				::GetInstance();
+	auto& camera = Singleton<CameraManager>		::GetInstance();
+	auto& map = Singleton<MapManager>			::GetInstance();
+	auto& player = Singleton<PlayerManager>		::GetInstance();
+	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
+	auto& enemy = Singleton<EnemyManager>		::GetInstance();
+	auto& enemyAttack = Singleton<BossAttackManager>	::GetInstance();
+	auto& effect = Singleton<EffectManager>		::GetInstance();
+	auto& ui = Singleton<UIManager>			::GetInstance();
+	auto& collision = Singleton<CollisionManager>	::GetInstance();
+	auto& sceneChanger = Singleton<SceneChanger>		::GetInstance();
 
 	/*更新処理*/
 	debug.Update();
 	input.Update();
-	if (!hitStop.IsHitStop())
-	{
-		camera.Update();
-		map.Update();
-		enemy.Update();
-		player.Update();
-		playerAttack.Update();
-		enemyAttack.Update();
-		effect.Update();
-		ui.Update();
-		collision.Update();
-	}
+	camera.Update();
+	map.Update();
+	enemy.Update();
+	player.Update();
+	playerAttack.Update();
+	enemyAttack.Update();
+	effect.Update();
+	ui.Update();
+	collision.Update();
 
 	/*シーンの終了処理*/
 	if (this->IsEnd())

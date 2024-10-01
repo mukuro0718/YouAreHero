@@ -440,12 +440,18 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 	//球とカプセル(球はSTATICなので、必ずprimaryがSPHEREになる)
 	else if (primaryKind == ColliderData::Kind::ATTACK_SPHERE && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
+		
 		auto& primaryColliderData = dynamic_cast<AttackSphereColliderData&> (_primary);
 		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
 		if (primaryColliderData.data->isDoHitCheck)
 		{
 			primaryColliderData.OnHit();
 			secondaryColliderData.OnHit(*primaryColliderData.data, primaryColliderData.GetNextPosition());
+			if (_primary.GetTag() == GameObjectTag::BOSS_ATTACK && _secondary.GetTag() == GameObjectTag::PLAYER)
+			{
+				auto& primaryAttackData = dynamic_cast<BossAttackData&> (*primaryColliderData.data);
+				secondaryColliderData.SetPlayerReaction(primaryAttackData.playerReaction);
+			}
 		}
 	}
 
@@ -458,6 +464,11 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		{
 			primaryColliderData.OnHit();
 			secondaryColliderData.OnHit(*primaryColliderData.data,primaryColliderData.GetNextPosition());
+			if (_primary.GetTag() == GameObjectTag::BOSS_ATTACK && _secondary.GetTag() == GameObjectTag::PLAYER)
+			{
+				auto& primaryAttackData = dynamic_cast<BossAttackData&> (*primaryColliderData.data);
+				secondaryColliderData.SetPlayerReaction(primaryAttackData.playerReaction);
+			}
 		}
 	}
 	else

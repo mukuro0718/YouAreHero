@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "DeleteInstance.h"
+#include "ReactionType.h"
 #include "Rigidbody.h"
 #include "CharacterData.h"
 #include "ColliderData.h"

@@ -13,7 +13,7 @@ public:
     void Add(const int _animationHandle, const int _animatinoIndex);                      //アニメーションの追加
     void Attach (int* _modelHandle);                                                        //アニメーションのアタッチ
     void Play   (int* _modelHandle, VECTOR& _position,const int _nextAnimation, const float _animationPlayTime); //アニメーションの再生時間
-
+    void SetAddRate(const float _animationRate) { this->addAnimationRate = _animationRate; }
     /*getter*/
     const bool GetIsChangeAnim()const { return isChange; }//アニメーションの変更フラグのgetter
 private:
@@ -28,5 +28,6 @@ private:
     int   prevAnimationAttachIndex;       //以前のアニメーションアタッチ番号
     int   prevAnimation;                  //前のアニメーション
     int   nowAnimation;                   //現在のアニメーション
-    int moveAnimationFrameIndex;//アニメーションで移動しているフレームの番号を取得する
+    int   moveAnimationFrameIndex;//アニメーションで移動しているフレームの番号を取得する
+    float addAnimationRate;
 };

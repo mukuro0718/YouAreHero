@@ -22,27 +22,35 @@ public:
 	const int	GetHealOrbNum()const { return this->healOrbNum; }
 private:
 	/*静的定数*/
-	static constexpr int COUNT_NUM = 2;//フレームカウントの数
+	static constexpr int COUNT_NUM = 3;//フレームカウントの数
 	//プレイヤーの状態
-	static constexpr unsigned int IDLE			 = (1 << 0);  //待機
-	static constexpr unsigned int ROLL			 = (1 << 1);  //回避
-	static constexpr unsigned int DEATH			 = (1 << 2);  //デス
-	static constexpr unsigned int BLOCK			 = (1 << 3);  //ブロック
-	static constexpr unsigned int REACTION		 = (1 << 4);  //リアクション
-	static constexpr unsigned int BLOCK_REACTION = (1 << 5);  //ブロックリアクション
-	static constexpr unsigned int STUNNED		 = (1 << 6);  //スタン（大ダウン）
-	static constexpr unsigned int KIP_UP		 = (1 << 7);  //起き上がり
-	static constexpr unsigned int RUNNING		 = (1 << 8);  //走り
-	static constexpr unsigned int WALK_FRONT	 = (1 << 9);  //歩き
-	static constexpr unsigned int SLASH			 = (1 << 10); //攻撃
+	static constexpr unsigned int IDLE			  = (1 << 0);  //待機
+	static constexpr unsigned int AVOID_BACK	  = (1 << 1);  //回避
+	static constexpr unsigned int AVOID_FRONT	  = (1 << 2);  //回避
+	static constexpr unsigned int AVOID_LEFT	  = (1 << 3);  //回避
+	static constexpr unsigned int AVOID_RIGHT	  = (1 << 4);  //回避
+	static constexpr unsigned int DEATH			  = (1 << 5);  //デス
+	static constexpr unsigned int BLOCK			  = (1 << 6);  //ブロック
+	static constexpr unsigned int REACTION		  = (1 << 7);  //リアクション
+	static constexpr unsigned int BLOCK_REACTION  = (1 << 8);  //ブロックリアクション
+	static constexpr unsigned int STUNNED		  = (1 << 9);  //スタン（大ダウン）
+	static constexpr unsigned int KIP_UP		  = (1 << 10);  //起き上がり
+	static constexpr unsigned int STAB_REACT	  = (1 << 11);  //突き刺し攻撃に対するリアクション
+	static constexpr unsigned int THRUST_UP_REACT = (1 << 12);  //アッパー攻撃に対するリアクション
+	static constexpr unsigned int WALK_BACK		  = (1 << 13); //歩き
+	static constexpr unsigned int WALK_FRONT	  = (1 << 14); //歩き
+	static constexpr unsigned int WALK_LEFT		  = (1 << 15); //歩き
+	static constexpr unsigned int WALK_RIGHT	  = (1 << 16); //歩き
+	static constexpr unsigned int SLASH			  = (1 << 17); //攻撃
 	//マスク
 	static constexpr unsigned int MASK_REACTION				 = BLOCK_REACTION | REACTION | STUNNED | KIP_UP;//リアクション
-	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = ROLL | MASK_REACTION | RUNNING | BLOCK;		
+	static constexpr unsigned int MASK_MOVE					 = WALK_FRONT | WALK_BACK | WALK_LEFT | WALK_RIGHT; //移動マスク
+	static constexpr unsigned int MASK_AVOID				 = AVOID_BACK | AVOID_FRONT | AVOID_LEFT | AVOID_RIGHT; //移動マスク
+	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = MASK_AVOID | BLOCK;
 	static constexpr unsigned int MASK_ATTACK				 = SLASH;
-	static constexpr unsigned int MASK_MOVE					 = WALK_FRONT | RUNNING; //移動マスク
 	static constexpr unsigned int MASK_ALWAYS_TURN_OFF		 = MASK_MOVE | IDLE;
-	static constexpr unsigned int MASK_ALL					 = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION | BLOCK | ROLL | DEATH;
-	static constexpr unsigned int MASK_CAN_VELOCITY			 = MASK_MOVE | ROLL;
+	static constexpr unsigned int MASK_ALL					 = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION | BLOCK | MASK_AVOID | DEATH;
+	static constexpr unsigned int MASK_CAN_VELOCITY			 = MASK_MOVE | MASK_AVOID;
 	/*列挙体*/
 	//コライダーの種類
 	enum class ColliderType
@@ -53,23 +61,31 @@ private:
 	//フレームカウントの種類
 	enum class FrameCountType
 	{
-		AVOID = 0,//回避
+		INVINCIBLE = 0,//無敵時間
 		HEAL = 1,//回復
+		AVOID = 2,//回避
 	};
 	//アニメーションの種類
 	enum class AnimationType
 	{
 		IDLE			= 0,
-		ROLL			= 1,
-		DEATH			= 2,
-		BLOCK			= 3,
-		REACTION		= 4,
-		BLOCK_REACTION  = 5,
-		STUNNED			= 6,
-		KIP_UP			= 7,
-		RUNNING			= 8,
-		WALK_FRONT		= 9,
-		SLASH			= 10,
+		AVOID_BACK		= 1,
+		AVOID_FRONT		= 2,
+		AVOID_LEFT		= 3,
+		AVOID_RIGHT		= 4,
+		DEATH			= 5,
+		BLOCK			= 6,
+		REACTION		= 7,
+		BLOCK_REACTION  = 8,
+		STUNNED			= 9,
+		KIP_UP			= 10,
+		STAB_REACT		= 11,
+		THRUST_UP_REACT = 12,
+		WALK_BACK		= 13,
+		WALK_FRONT		= 14,
+		WALK_LEFT		= 15,
+		WALK_RIGHT		= 16,
+		SLASH			= 17,
 	};
 
 	/*内部処理関数*/
@@ -99,7 +115,8 @@ private:
 	VECTOR				moveVectorRotation;			//移動ベクトル用回転値
 	std::vector<int>	frameCount;					//フレームカウント
 	std::vector<bool>	isCount;					//カウントをするか
-	std::map<unsigned int, int> animationMap;
+	std::map<unsigned int, int> animationMap;//アニメーションマップ
+	std::map<int, unsigned int> reactionMap;//リアクションマップ
 	int					nowAnimation;				//アニメーション
 	float				animationPlayTime;			//アニメーション再生時間
 	int					attackComboCount;
