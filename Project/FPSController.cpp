@@ -1,4 +1,4 @@
-#include <DxLib.h>
+#include "DxLib.h"
 #include "UseJson.h"
 #include "FPSController.h"
 #include "Debug.h"
@@ -32,12 +32,22 @@ void FPSController::Initialize()
 	/*Jsonマネージャーのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
-	fps = 0.0f;
-	startTime = 0;
-	count = 0;
-	targetFPS = static_cast<int>(json.GetJson(JsonManager::FileType::FPS_CONTROLLER)["TARGET_FPS"]);
+	this->targetFPS = static_cast<int>(json.GetJson(JsonManager::FileType::FPS_CONTROLLER)["TARGET_FPS"]);
+	this->fps		= 0.0f;
+	this->startTime = 0;
+	this->count		= 0;
+	this->isDebug	= false;
+	this->timeScale = this->NORMAL_TIME_SCALE;
 }
 
+
+void FPSController::CalcStartTime()
+{
+	if (this->count == 0)
+	{
+		this->startTime = GetNowCount();
+	}
+}
 /// <summary>
 /// FPSの平均
 /// </summary>
@@ -48,19 +58,13 @@ void FPSController::Average()
 	/*Jsonマネージャーのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
-	/*カウントが０だったらスタートタイムを初期化*/
-	if (this->count == 0)
-	{
-		this->startTime = GetNowCount();
-	}
-
 	/*カウントが目標FPSになったら*/
-	if (this->count == targetFPS)
+	if (this->count == this->targetFPS)
 	{
 		//現在の時刻を取得
 		int nowTime = GetNowCount();
 		//FPS計算
-		this->fps = 1000.0 / (static_cast<double>((nowTime - this->startTime)) / targetFPS);
+		this->fps = static_cast<double>(this->timeScale / (nowTime - this->startTime) / this->targetFPS);
 		//初期化
 		this->startTime = 0;
 		this->count = 0;
@@ -124,9 +128,9 @@ void FPSController::Wait()
 	int elapsedTime = GetNowCount() - this->startTime;
 	
 	/*待機時間*/
-	int waitTime = this->count * 1000 / static_cast<int>(targetFPS) - elapsedTime;
+	int waitTime = this->count * this->timeScale / static_cast<int>(targetFPS) - elapsedTime;
 	if (waitTime > 0)
 	{
 		Sleep(waitTime);
-	}
+	}	
 }

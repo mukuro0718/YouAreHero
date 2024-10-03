@@ -33,11 +33,12 @@ Player::Player()
 	, animationPlayTime	(0.0f)
 	, isHeal			(false)
 	, moveVectorRotation(Gori::ORIGIN)
+	, hitStop			(nullptr)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
-
+	this->hitStop = new HitStop();
 	/*vectorの追加*/
 	for (int i = 0; i < this->COUNT_NUM; i++)
 	{
@@ -101,32 +102,34 @@ Player::~Player()
 void Player::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& asset = Singleton<LoadingAsset>::GetInstance();
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
-	auto& data = dynamic_cast<PlayerData&>(*collider.data);
+	auto& json		= Singleton<JsonManager>::GetInstance();
+	auto& asset		= Singleton<LoadingAsset>::GetInstance();
+	auto& collider	= dynamic_cast<CharacterColliderData&>(*this->collider);
+	auto& data		= dynamic_cast<PlayerData&>(*collider.data);
+
 	/*jsonデータを各定数型に代入*/
 	const VECTOR POSITION = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_POSITION"]);//座標
-	const VECTOR ROTATION = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_ROTATION"]);//回転率
-	const VECTOR SCALE = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	 //拡大率
-
+	const VECTOR SCALE	  = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	 //拡大率
+		  VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_ROTATION"]);//回転率
+		  rotation.y	  = rotation.y * 180.0f / DX_PI_F;
 	/*変数の初期化*/
-	this->isAlive = false;
-	this->isDraw = false;
-	this->isGround = false;
-	this->isHeal = false;
-	this->speed = 0.0f;
-	this->entryInterval = 0;
+	this->isAlive			 = false;
+	this->isDraw			 = false;
+	this->isGround			 = false;
+	this->isHeal			 = false;
+	this->isInitialize		 = false;
+	this->speed				 = 0.0f;
+	this->entryInterval		 = 0;
 	this->moveVectorRotation = Gori::ORIGIN;
+	this->nowAnimation		 = static_cast<int>(AnimationType::IDLE);
+	this->animationPlayTime	 = 0.0f;
+	this->attackComboCount	 = 0;
+	this->healOrbNum		 = json.GetJson(JsonManager::FileType::PLAYER)["MAX_HEAL_ORB_NUM"];	//最大回復オーブ数
 	for (int i = 0; i < this->frameCount.size(); i++)
 	{
 		this->frameCount[i] = 0;
 		this->isCount[i] = false;
 	}
-	this->nowAnimation = static_cast<int>(AnimationType::IDLE);
-	this->animationPlayTime = 0.0f;
-	this->attackComboCount = 0;
-	this->healOrbNum = json.GetJson(JsonManager::FileType::PLAYER)["MAX_HEAL_ORB_NUM"];	//最大回復オーブ数
 	
 	/*モデルの読み込み*/
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::PLAYER));
@@ -134,7 +137,7 @@ void Player::Initialize()
 	/*コライダーの初期化*/
 	this->collider->rigidbody.Initialize(true);
 	this->collider->rigidbody.SetPosition(POSITION);
-	this->collider->rigidbody.SetRotation(ROTATION);
+	this->collider->rigidbody.SetRotation(rotation);
 	this->collider->rigidbody.SetScale(SCALE);
 	MV1SetPosition	 (this->modelHandle, this->collider->rigidbody.GetPosition());
 	MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());
@@ -172,9 +175,8 @@ void Player::Update()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& hitStop = Singleton<HitStop>			::GetInstance();
 
-	if (!this->isAlive)
+	if (!this->isInitialize)
 	{
 		if (this->entryInterval == 0)
 		{
@@ -190,10 +192,12 @@ void Player::Update()
 		{
 			this->entryInterval = 0;
 			this->isAlive = true;
+			this->isInitialize = true;
 		}
 	}
 	else
 	{
+		if (this->hitStop->IsHitStop()) return;
 
 		/*フラグの初期化*/
 		this->state->ClearFlag(this->MASK_ALWAYS_TURN_OFF);
@@ -203,16 +207,13 @@ void Player::Update()
 		if (!this->state->CheckFlag(this->DEATH))
 		{
 			Reaction();//リアクション処理
-			if (!hitStop.IsHitStop())
-			{
-				Attack();//攻撃処理
-				Move();//移動処理
-				Rolling();//回避処理
-				Block();//防御処理
-				Heal();//回復処理
-			}
+			Attack();//攻撃処理
+			Move();//移動処理
+			Rolling();//回避処理
+			Block();//防御処理
+			Heal();//回復処理
 
-			//もし何もアクションをしていなかったらIdleを入れる
+		//もし何もアクションをしていなかったらIdleを入れる
 			if (DontAnyAction())
 			{
 				this->state->SetFlag(this->IDLE);
@@ -229,9 +230,18 @@ void Player::Update()
 				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
 			}
 		}
+		else
+		{
+			this->speed = 0.0f;
+			VECTOR direction = this->collider->rigidbody.GetDirection();
+			VECTOR aimVelocity = VScale(direction, this->speed);
+			VECTOR prevVelocity = this->collider->rigidbody.GetVelocity();
+			VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);
+			this->collider->rigidbody.SetVelocity(newVelocity);
+		}
 	}
 
-	if (this->isDraw && !hitStop.IsHitStop())
+	if (this->isDraw)
 	{
 		/*アニメーションの更新*/
 		UpdateAnimation();
@@ -253,8 +263,8 @@ const void Player::DrawCharacterInfo()const
 	VECTOR position = this->collider->rigidbody.GetPosition();
 	VECTOR direction = this->collider->rigidbody.GetDirection();
 	VECTOR rotation = this->collider->rigidbody.GetRotation();
-	//if (debug.CheckPlayerFlag())
-	//{
+	if (debug.CheckPlayerFlag())
+	{
 		printfDx("PLAYER_POSITION X:%f,Y:%f,Z:%f	\n", position.x, position.y, position.z);
 		printfDx("PLAYER_DIRECTION X:%f,Y:%f,Z:%f	\n", direction.x, direction.y, direction.z);
 		printfDx("PLAYER_ROTATION X:%f,Y:%f,Z:%f	\n", rotation.x, rotation.y, rotation.z);
@@ -281,7 +291,7 @@ const void Player::DrawCharacterInfo()const
 		auto& characterCollider = dynamic_cast<CharacterColliderData&> (*this->collider);
 		printfDx("%d:REACTION_TYPE				\n", characterCollider.data->playerReaction);
 
-	//}
+	}
 }
 
 /// <summary>
@@ -526,6 +536,13 @@ void Player::Reaction()
 				this->state->ClearFlag(this->MASK_ALL);
 				this->state->SetFlag(this->reactionMap[data.playerReaction]);
 				this->speed = json.GetJson(JsonManager::FileType::PLAYER)["REACTION_SPEED"][data.playerReaction];
+				this->hitStop->SetHitStop
+				(
+					data.hitStopTime,
+					data.hitStopType,
+					data.hitStopDelay,
+					data.slowFactor
+				);
 			}
 		}
 		collider.data->isHit = false;
@@ -762,7 +779,7 @@ const bool Player::CanRotation()const
 {
 	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
 	if (this->state->CheckFlag(this->DEATH)	)			return false;//デス
-	if (this->state->CheckFlag(this->MASK_AVOID))				return false;//回避
+	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
 	if (this->state->CheckFlag(this->MASK_ATTACK))		return false;//攻撃
 	if (this->state->CheckFlag(this->BLOCK))			return false;//防御
 	return true;
@@ -779,9 +796,9 @@ const bool Player::CanRolling()const
 const bool Player::CanAttack()const
 {
 	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
-	if (this->state->CheckFlag(this->DEATH))	return false;//デス
+	if (this->state->CheckFlag(this->DEATH))			return false;//デス
 	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
-	if (this->state->CheckFlag(this->SLASH))	return false;//回避
+	if (this->state->CheckFlag(this->SLASH))			return false;//回避
 	return true;
 }
 const bool Player::CanBlock()const

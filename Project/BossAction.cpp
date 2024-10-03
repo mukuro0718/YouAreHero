@@ -2,7 +2,9 @@
 #include "UseSTL.h"
 #include "ReactionType.h"
 #include "ActionParameter.h"
+#include "HitStop.h"
 #include "Character.h"
+#include "BossAttack.h"
 #include "Boss.h"
 #include "BossAction.h"
 
@@ -11,11 +13,14 @@
 /// </summary>
 BossAction::BossAction()
 	: parameter		(nullptr)
+	, attack		(nullptr)
+	, hitStop		(nullptr)
 	, isSelect		(false)
 	, isInitialize	(false)
 	, frameCount	(0)
 {
 	this->parameter = new ActionParameter();
+	this->hitStop = new HitStop();
 }
 
 /// <summary>

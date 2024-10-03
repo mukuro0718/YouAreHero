@@ -16,4 +16,5 @@ AttackCapsuleColliderData::AttackCapsuleColliderData(const ColliderData::Priorit
 void AttackCapsuleColliderData::OnHit()
 {
 	this->data->isDoHitCheck = false;
+	this->data->isHitAttack = true;
 }

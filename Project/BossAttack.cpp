@@ -7,16 +7,17 @@
 #include "ColliderData.h"
 #include "AttackData.h"
 #include "BossAttackData.h"
+#include "AttackCapsuleColliderData.h"
 #include "BossAttack.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 BossAttack::BossAttack()
-	: collider				(nullptr)
-	, isStartHitCheck		(false)
-	, frameCount			(0)
-	, attackIndex			(0)
+	: collider			(nullptr)
+	, isStartHitCheck	(false)
+	, frameCount		(0)
+	, attackIndex		(0)
 {
 }
 
@@ -56,6 +57,19 @@ void BossAttack::Finalize()
 const VECTOR BossAttack::GetPosition()const
 {
 	return this->collider->rigidbody.GetPosition();
+}
+
+
+const bool BossAttack::GetIsHitAttack()
+{
+	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
+	return collider.data->isHitAttack;
+}
+
+void BossAttack::OffIsHitAttack()
+{
+	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
+	collider.data->isHitAttack = false;
 }
 
 /// <summary>

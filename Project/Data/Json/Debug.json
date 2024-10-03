@@ -10,6 +10,6 @@
   "CURSOR_X": 665,
   "CURSOR_Y": 450,
   "TEXT_SPACE": 50,
-  "ITEM_NAME": [ "CAMERA:", "PLAYER:", "FPS:" ],
-  "ITEM_NUM": 3
+  "ITEM_NAME": [ "CAMERA:", "PLAYER:", "FPS:" ,"ENEMY"],
+  "ITEM_NUM": 4
 }

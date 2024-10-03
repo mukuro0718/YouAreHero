@@ -20,7 +20,7 @@
 #include "BossAttackManager.h"
 #include "EffectManager.h"
 #include "Debug.h"
-#include "HitStop.h"
+#include "HitStopManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -53,17 +53,6 @@ Boss::Boss()
 	//アニメーションのアタッチ
 	this->animation->Attach(&this->modelHandle);
 
-	/*アニメーションマップの設定*/
-	this->stateAnimationMap.emplace(this->DYING, static_cast<int>(AnimationType::DYING));
-	this->stateAnimationMap.emplace(this->IDLE, static_cast<int>(AnimationType::IDLE));
-	this->stateAnimationMap.emplace(this->ROAR, static_cast<int>(AnimationType::ROAR));
-	this->stateAnimationMap.emplace(this->WALK, static_cast<int>(AnimationType::WALK));
-	this->stateAnimationMap.emplace(this->REST, static_cast<int>(AnimationType::IDLE));
-	this->stateAnimationMap.emplace(this->SLASH, static_cast<int>(AnimationType::SLASH));
-	this->stateAnimationMap.emplace(this->FLY_ATTACK, static_cast<int>(AnimationType::FLY_ATTACK));
-	this->stateAnimationMap.emplace(this->HURRICANE_KICK, static_cast<int>(AnimationType::HURRICANE_KICK));
-	this->stateAnimationMap.emplace(this->JUMP_ATTACK, static_cast<int>(AnimationType::JUMP_ATTACK));
-	this->stateAnimationMap.emplace(this->ROTATE_PUNCH, static_cast<int>(AnimationType::ROTATE_PUNCH));
 	/*アクションマップの作成*/
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::DYING),this->DYING);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::IDLE),this->IDLE);
@@ -73,7 +62,7 @@ Boss::Boss()
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH),this->SLASH);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::FLY_ATTACK),this->FLY_ATTACK);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::HURRICANE_KICK),this->HURRICANE_KICK);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::JUMP_ATTACK),this->JUMP_ATTACK);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::STAB),this->STAB);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROTATE_PUNCH),this->ROTATE_PUNCH);
 
 	/*コライダーデータの作成*/
@@ -86,11 +75,11 @@ Boss::Boss()
 	this->parameters.emplace_back(new BossRoarAction());
 	this->parameters.emplace_back(new BossChaseAction());
 	this->parameters.emplace_back(new BossRestAction());
-	/*this->parameters.emplace_back(new BossSlashAction());
+	this->parameters.emplace_back(new BossSlashAction());
 	this->parameters.emplace_back(new BossFlyAction());
 	this->parameters.emplace_back(new BossHurricaneKickAction());
 	this->parameters.emplace_back(new BossStabAction());
-	this->parameters.emplace_back(new BossRotatePunchAction());*/
+	this->parameters.emplace_back(new BossRotatePunchAction());
 }
 
 /// <summary>
@@ -98,7 +87,12 @@ Boss::Boss()
 /// </summary>
 Boss::~Boss()
 {
-	this->stateAnimationMap.clear();
+	this->actionTypeMap.clear();
+	for (int i = 0; i < this->parameters.size(); i++)
+	{
+		DeleteMemberInstance(this->parameters[i]);
+	}
+	this->parameters.clear();
 }
 
 void Boss::Initialize()
@@ -170,24 +164,31 @@ void Boss::Update()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
-	auto& hitStop = Singleton<HitStop>			::GetInstance();
 
+	/*HPがあるときに、生存フラグが立っていなかったら*/
 	if (!this->isAlive)
 	{
-		if (player.GetIsAlive())
+		if (this->GetHP() >= 0)
 		{
-			if (this->entryInterval == json.GetJson(JsonManager::FileType::ENEMY)["ON_ENTRY_EFFECT_INTERVAL"])
+			if (player.GetIsAlive())
 			{
-				auto& effect = Singleton<EffectManager>::GetInstance();
-				effect.OnIsEffect(EffectManager::EffectType::BOSS_ENTRY);
+				if (this->entryInterval == json.GetJson(JsonManager::FileType::ENEMY)["ON_ENTRY_EFFECT_INTERVAL"])
+				{
+					auto& effect = Singleton<EffectManager>::GetInstance();
+					effect.OnIsEffect(EffectManager::EffectType::BOSS_ENTRY);
+				}
+				this->entryInterval++;
+				if (this->entryInterval >= json.GetJson(JsonManager::FileType::ENEMY)["ENTRY_INTERVAL"])
+				{
+					this->entryInterval = 0;
+					this->isAlive = true;
+					this->isDraw = true;
+				}
 			}
-			this->entryInterval++;
-			if (this->entryInterval >= json.GetJson(JsonManager::FileType::ENEMY)["ENTRY_INTERVAL"])
-			{
-				this->entryInterval = 0;
-				this->isAlive = true;
-				this->isDraw = true;
-			}
+		}
+		else
+		{
+			this->isDraw = false;
 		}
 	}
 	else
@@ -198,30 +199,33 @@ void Boss::Update()
 		/*状態の切り替え*/
 		ChangeState();
 
-		if (!hitStop.IsHitStop())
+
+		/*ここですべてのパラメータの計算を行う*/
+		for (auto& item : this->parameters)
 		{
-
-			/*ここですべてのパラメータの計算を行う*/
-			for (auto& item : this->parameters)
-			{
-				item->CalcParameter(*this);
-			}
-
-			/*ここに各アクションごとの更新処理を入れたい*/
-			this->parameters[this->actionType]->Update(*this);
-
-			/*アニメーションの更新*/
-			unsigned int nowState = this->state->GetFlag();
-			this->nowAnimation = this->stateAnimationMap[nowState];
-
-			//アニメーションの再生
-			VECTOR position = this->collider->rigidbody.GetPosition();
-			this->animation->Play(&this->modelHandle, position, this->nowAnimation, this->animationPlayTime);
-			this->collider->rigidbody.SetPosition(position);
+			item->CalcParameter(*this);
 		}
+
+		/*ここに各アクションごとの更新処理を入れたい*/
+		this->parameters[this->actionType]->Update(*this);
+
 	}
 }
 
+void Boss::PlayAnimation()
+{
+	//アニメーションの再生
+	if (this->isAlive)
+	{
+		VECTOR position = this->collider->rigidbody.GetPosition();
+		this->animation->Play(&this->modelHandle, position, this->nowAnimation, this->animationPlayTime);
+		this->collider->rigidbody.SetPosition(position);
+	}
+}
+
+/// <summary>
+/// 状態の変更
+/// </summary>
 void Boss::ChangeState()
 {
 	/*選択されているか調べる*/
@@ -257,11 +261,15 @@ void Boss::ChangeState()
 			{
 				this->actionType = i;
 				this->parameters[i]->OnIsSelect();
+				isSelect = true;
 				break;
 			}
 		}
 	}
-
+	if (!isSelect)
+	{
+		this->actionType = static_cast<int>(ActionType::IDLE);
+	}
 	unsigned int setFlag = this->actionTypeMap[this->actionType];
 	this->state->SetFlag(setFlag);
 }
@@ -286,7 +294,7 @@ const void Boss::DrawCharacterInfo()const
 		printfDx("%d:SLASH					\n", this->state->CheckFlag(this->SLASH));
 		printfDx("%d:FLY_ATTACK				\n", this->state->CheckFlag(this->FLY_ATTACK));
 		printfDx("%d:HURRICANE_KICK			\n", this->state->CheckFlag(this->HURRICANE_KICK));
-		printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
+		printfDx("%d:STAB				\n", this->state->CheckFlag(this->STAB));
 		printfDx("%d:ROTATE_PUNCH				\n", this->state->CheckFlag(this->ROTATE_PUNCH));
 	}
 }

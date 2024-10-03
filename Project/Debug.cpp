@@ -31,7 +31,7 @@ Debug::Debug()
 	AddItemFunction(static_cast<int>(ItemType::CAMERA), cameraSet, cameraClear);
 	AddItemFunction(static_cast<int>(ItemType::PLAYER), playerSet, playerClear);
 	AddItemFunction(static_cast<int>(ItemType::FPS), fpsSet	  , fpsClear);
-	AddItemFunction(static_cast<int>(ItemType::FPS), enemySet, enemyClear);
+	AddItemFunction(static_cast<int>(ItemType::ENEMY), enemySet, enemyClear);
 }
 
 /// <summary>

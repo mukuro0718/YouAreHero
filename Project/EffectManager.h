@@ -12,10 +12,13 @@ public:
 		BOSS_SLASH,
 		BOSS_ROTATE_PUNCH,
 		BOSS_ENTRY,
+		BOSS_IMPACT,
 		PLAYER_ENTRY,
 	};
 	/*エフェクトの描画用関数*/
 	void OnIsEffect(const EffectType _type);
+	void SetPosition(const EffectType _type, const VECTOR _position);
+	void Initialize();
 	void Update();
 	const void Draw()const;
 private:

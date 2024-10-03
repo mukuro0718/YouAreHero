@@ -156,6 +156,7 @@
     <ClCompile Include="BossFlyAction.cpp" />
     <ClCompile Include="BossHurricaneKickAction.cpp" />
     <ClCompile Include="BossIdleAction.cpp" />
+    <ClCompile Include="BossImpactEffect.cpp" />
     <ClCompile Include="BossJumpAttack.cpp" />
     <ClCompile Include="BossNameUI.cpp" />
     <ClCompile Include="BossRotatePunchEffect.cpp" />
@@ -179,6 +180,8 @@
     <ClCompile Include="GameOverUI.cpp" />
     <ClCompile Include="GameUI.cpp" />
     <ClCompile Include="HitStop.cpp" />
+    <ClCompile Include="HitStopData.cpp" />
+    <ClCompile Include="HitStopManager.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="PlaneColliderData.cpp" />
     <ClCompile Include="PlayerAttackData.cpp" />
@@ -247,6 +250,7 @@
     <ClInclude Include="BossFlyAction.h" />
     <ClInclude Include="BossHurricaneKickAction.h" />
     <ClInclude Include="BossIdleAction.h" />
+    <ClInclude Include="BossImpactEffect.h" />
     <ClInclude Include="BossJumpAttack.h" />
     <ClInclude Include="BossNameUI.h" />
     <ClInclude Include="BossRotatePunchEffect.h" />
@@ -271,6 +275,8 @@
     <ClInclude Include="GameOverUI.h" />
     <ClInclude Include="GameUI.h" />
     <ClInclude Include="HitStop.h" />
+    <ClInclude Include="HitStopData.h" />
+    <ClInclude Include="HitStopManager.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="PlaneColliderData.h" />
     <ClInclude Include="PlayerAttackData.h" />

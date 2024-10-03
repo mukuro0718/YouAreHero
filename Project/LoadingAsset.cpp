@@ -25,6 +25,7 @@ LoadingAsset::LoadingAsset()
 	vector<int> fontSize  = json.GetJson(JsonManager::FileType::FONT_PATH)["SIZE"];
 	vector<int> fontThick = json.GetJson(JsonManager::FileType::FONT_PATH)["THICK"];
 	vector<int> fontType  = json.GetJson(JsonManager::FileType::FONT_PATH)["TYPE"];
+	vector<int> fontEdge  = json.GetJson(JsonManager::FileType::FONT_PATH)["EDGE"];
 	/*モデルのロード*/
 	for (int i = 0; i < modelPath.size(); i++)
 	{
@@ -44,7 +45,7 @@ LoadingAsset::LoadingAsset()
 	}
 	for (int i = 0; i < fontSize.size(); i++)
 	{
-		this->fontHandle.emplace_back(CreateFontToHandle(fontName[fontType[i]].c_str(), fontSize[i], fontThick[i], DX_FONTTYPE_EDGE, DX_CHARSET_DEFAULT, 4));
+		this->fontHandle.emplace_back(CreateFontToHandle(fontName[fontType[i]].c_str(), fontSize[i], fontThick[i], DX_FONTTYPE_EDGE, DX_CHARSET_DEFAULT, fontEdge[i]));
 	}
 	/*エフェクトのロード*/
 	for (int i = 0; i < effectPath.size(); i++)

@@ -26,12 +26,12 @@
 void CollisionManager::Entry(ColliderData& _data)
 {
 	/*ìoò^Ç≥ÇÍÇƒÇ¢ÇÈÇ©í≤Ç◊ÇÈ*/
-	bool found = (std::find(collidables.begin(), collidables.end(), &_data) != collidables.end());
+	bool found = (std::find(this->collidables.begin(), this->collidables.end(), &_data) != this->collidables.end());
 
 	/*ìoò^Ç≥ÇÍÇƒÇ¢Ç»Ç©Ç¡ÇΩÇÁ*/
 	if (!found)
 	{
-		collidables.emplace_back(&_data);
+		this->collidables.emplace_back(&_data);
 	}
 	/*ìoò^Ç≥ÇÍÇƒÇ¢ÇΩÇÁÉGÉâÅ[ÇìfÇ≠*/
 	else
@@ -46,12 +46,12 @@ void CollisionManager::Entry(ColliderData& _data)
 void CollisionManager::Exit(ColliderData& _data)
 {
 	/*ìoò^Ç≥ÇÍÇƒÇ¢ÇÈÇ©í≤Ç◊ÇÈ*/
-	bool found = (std::find(collidables.begin(), collidables.end(), &_data) != collidables.end());
+	bool found = (std::find(this->collidables.begin(), this->collidables.end(), &_data) != this->collidables.end());
 
 	/*ìoò^Ç≥ÇÍÇƒÇ¢ÇΩÇÁ*/
 	if (!found)
 	{
-		collidables.remove(&_data);
+		this->collidables.remove(&_data);
 	}
 	/*ìoò^Ç≥ÇÍÇƒÇ¢Ç»Ç©Ç¡ÇΩÇÁÉGÉâÅ[ÇìfÇ≠*/
 	else
@@ -67,7 +67,7 @@ void CollisionManager::Exit(ColliderData& _data)
 void CollisionManager::Update()
 {
 	//à⁄ìÆ
-	for (auto& item : collidables)
+	for (auto& item : this->collidables)
 	{
 		//É|ÉWÉVÉáÉìÇ…à⁄ìÆóÕÇë´Ç∑
 		auto position = item->rigidbody.GetPosition();
@@ -108,12 +108,12 @@ void CollisionManager::Update()
 		}
 		else if (kind == ColliderData::Kind::CHARACTER_CAPSULE)
 		{
-			CharacterColliderData& capsuleData = dynamic_cast<CharacterColliderData&>(*item);
-			float radius = capsuleData.radius;
-			VECTOR topPositionOffset = capsuleData.topPositon;
+			//CharacterColliderData& capsuleData = dynamic_cast<CharacterColliderData&>(*item);
+			//float radius = capsuleData.radius;
+			//VECTOR topPositionOffset = capsuleData.topPositon;
 
-			DrawCapsule3D(position, VAdd(position, topPositionOffset), radius, this->DIV_NUM, this->BEFORE_FIX_INFO_COLOR, this->BEFORE_FIX_INFO_COLOR, FALSE);
-			DrawCapsule3D(nextPosition, VAdd(nextPosition, topPositionOffset), radius, this->DIV_NUM, this->AIM_INFO_COLOR, this->AIM_INFO_COLOR, FALSE);
+			//DrawCapsule3D(position, VAdd(position, topPositionOffset), radius, this->DIV_NUM, this->BEFORE_FIX_INFO_COLOR, this->BEFORE_FIX_INFO_COLOR, FALSE);
+			//DrawCapsule3D(nextPosition, VAdd(nextPosition, topPositionOffset), radius, this->DIV_NUM, this->AIM_INFO_COLOR, this->AIM_INFO_COLOR, FALSE);
 		}
 #endif
 		//ó\íËÉ|ÉWÉVÉáÉìê›íË
@@ -402,7 +402,7 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 
 		//ÇªÇÃÇ‹Ç‹ÇæÇ∆ÇøÇÂÇ§Ç«ìñÇΩÇÈà íuÇ…Ç»ÇÈÇÃÇ≈è≠Çµó]ï™Ç…ó£Ç∑
 		float radiusSum = primaryColliderData.radius + secondaryColliderData.radius;
-		float awayDist = radiusSum - secondaryToPrimarySize + 0.0001f;
+		float awayDist = radiusSum - secondaryToPrimarySize + 0.001f;
 		VECTOR fixedSize = VScale(secondaryToPrimaryNorm, awayDist);
 		VECTOR fixedPosition = VAdd(_primary.GetNextPosition(), fixedSize);
 		_primary.SetNextPosition(fixedPosition);

@@ -14,6 +14,7 @@
 #include "BossSlashAttack.h"
 #include "EnemyManager.h"
 #include "Debug.h"
+#include "HitStop.h"
 
 /// <summary>
 /// コンストラクタ
@@ -52,12 +53,15 @@ void BossSlashAttack::Initialize()
 	/*コライダーの初期化*/
 	auto& collider	= dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
 	auto& data		= dynamic_cast<BossAttackData&>(*collider.data);
-	collider.radius  = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
-	data.damage		 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
-	data.hitStopTime = json.GetJson(JsonManager::FileType::ENEMY)["HIT_STOP_TIME"][this->attackIndex];
+	collider.radius		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
+	data.damage			= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
 	data.playerReaction = static_cast<int>(Gori::PlayerReactionType::BLOW_SMALL);
-
-
+	//ここでのヒットストップ系の変数は、キャラクター側に与えるものになる
+	data.hitStopTime	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
+	data.hitStopType	= static_cast<int>(HitStop::Type::STOP);
+	data.hitStopDelay	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
+	data.slowFactor		= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
+	data.isHitAttack	= false;
 	/*変数の初期化*/
 	this->frameCount	  = 0;
 	this->isStartHitCheck = false;
@@ -108,6 +112,7 @@ void BossSlashAttack::Update()
 			this->isStartHitCheck = false;
 			data.isDoHitCheck = false;
 			this->frameCount = 0;
+			data.isHitAttack = false;
 		}
 	}
 }

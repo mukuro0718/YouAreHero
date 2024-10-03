@@ -10,5 +10,9 @@ public:
 	VECTOR hitPosition;
 	bool isCutDamage;
 	int playerReaction;
+	int hitStopTime;
+	int hitStopType;
+	int hitStopDelay;
+	float slowFactor;
 };
 

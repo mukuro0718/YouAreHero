@@ -18,12 +18,10 @@
 SceneManager::SceneManager()
 	: mainScene(nullptr)
 	, loadScene(nullptr)
-	, fps	   (nullptr)
 {
 	/*インスタンスの作成*/
 	this->mainScene = new TitleScene   ();//メインシーン
 	this->loadScene = new LoadScene	   ();//ロードシーン
-	this->fps		= new FPSController();//FPSコントローラー
 }
 /// <summary>
 /// デストラクタ
@@ -39,6 +37,10 @@ void SceneManager::Update()
 {
 	if (GetASyncLoadNum() == 0)
 	{
+		auto& fps = Singleton<FPSController>::GetInstance();
+
+		fps.CalcStartTime();
+
 		/*画面をきれいにする*/
 		ClearDrawScreen();
 		clsDx();
@@ -47,20 +49,20 @@ void SceneManager::Update()
 		this->mainScene->Update();
 
 		/*シーンの描画*/
-		this->fps->Draw();
+		fps.Draw();
 		this->mainScene->Draw();
 		
 		/*シーンの変更*/
 		SceneChange();
 
 		/*ＦＰＳの平均を算出*/
-		this->fps->Average();
+		fps.Average();
 		
 		/*裏画面の内容を表に反映させる*/
 		ScreenFlip();
 		
 		/*ＦＰＳの処理*/
-		this->fps->Wait();
+		fps.Wait();
 	}
 	else
 	{

@@ -42,5 +42,6 @@ protected:
 	float			speed;		//‘¬“x
 	int				entryInterval;
 	bool isDraw;
+	bool isInitialize;
 };
 

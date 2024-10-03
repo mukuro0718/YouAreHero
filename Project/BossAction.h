@@ -5,6 +5,8 @@
 
 class Boss;
 class ActionParameter;
+class BossAttack;
+class HitStop;
 class BossAction abstract
 {
 public:
@@ -26,6 +28,8 @@ protected:
 	void OffIsSelect(const int _maxInterval);
 
 	/*メンバ変数*/
+	BossAttack*				 attack;		//ボス攻撃クラス
+	HitStop*				 hitStop;		//ヒットストップ
 	ActionParameter*		 parameter;		//パラメータ
 	bool					 isSelect;		//アクションが選択されたか
 	int						 frameCount;	//フレームカウント

@@ -16,4 +16,5 @@ AttackSphereColliderData::AttackSphereColliderData(const ColliderData::Priority 
 void AttackSphereColliderData::OnHit()
 {
 	this->data->isDoHitCheck = false;
+	this->data->isHitAttack = true;
 }

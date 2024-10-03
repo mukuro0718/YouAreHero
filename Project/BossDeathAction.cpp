@@ -6,6 +6,7 @@
 #include "Character.h"
 #include "Boss.h"
 #include "BossDeathAction.h"
+#include "EffectManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -41,14 +42,21 @@ void BossDeathAction::Initialize()
 /// </summary>
 void BossDeathAction::Update(Boss& _boss)
 {
-	/*アクションが選択されているとき*/
-	if (this->isSelect)
+	/*選択されていたら欲求値を０にする*/
+	this->parameter->desireValue = 0;
+
+	/*アニメーションの設定*/
+	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::DYING));
+
+	/*アニメーションの再生*/
+	_boss.PlayAnimation();
+
+	/*もしアニメーションが終了していたら*/
+	if (_boss.GetIsChangeAnimation())
 	{
-		//もしアニメーションが終了していたら
-		if (_boss.GetIsChangeAnimation())
-		{
-			_boss.OffIsAlive();
-		}
+		_boss.OffIsAlive();
+		auto& effect = Singleton<EffectManager>::GetInstance();
+		effect.OnIsEffect(EffectManager::EffectType::BOSS_ENTRY);
 	}
 }
 /// <summary>

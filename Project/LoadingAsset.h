@@ -44,6 +44,15 @@ public:
 		NONE_STAR,
 		SILVER_STAR,
 		GOLD_STAR,
+
+		B_BUTTON,
+		X_BUTTON,
+		Y_BUTTON,
+		LT_BUTTON,
+		PRESS_B_BUTTON,
+		PRESS_X_BUTTON,
+		PRESS_Y_BUTTON,
+		PRESS_LT_BUTTON,
 	};
 	//フォントのタイプ
 	enum class FontType
@@ -56,6 +65,7 @@ public:
 		BAT_30_64,
 		BAT_200_64,
 		BAT_150_64,
+		BAT_32_0,
 	};
 	enum class FontName
 	{
@@ -73,6 +83,7 @@ public:
 		BOSS_ROTATE_PUNCH,
 		BOSS_SLASH,
 		BOSS_ENTRY,
+		BOSS_IMPACT,
 		PLAYER_ENTRY,
 	};
 

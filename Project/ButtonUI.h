@@ -12,6 +12,7 @@ public:
 	void Update();
 	void Draw();	//•`‰æ
 private:
+
 	/*\‘¢‘Ì*/
 	struct Vec2d
 	{
@@ -25,14 +26,22 @@ private:
 		int lx, ly, rx, ry;
 	};
 
+	/*Ã“I’è”*/
+	static constexpr int TEXT_COLOR = 0xc0ffff;
+	static constexpr int PRESS_TEXT_COLOR = 0xffff88;
+	static constexpr int PRESS_OFFSET = 4;
+
 	/*“à•”ˆ—ŠÖ”*/
 	int ConvertColor(const std::vector<int> _color);
 	void DrawIcon();
 	void DrawFont();
+	void DrawButton();
 
 	/*ƒƒ“ƒo•Ï”*/
 	int healIcon;
 	int healOrb;
 	int emptyOrb;
 	int iconFont, operationFont;
+	vector<int> button;
+	int buttonFont;
 };

@@ -4,6 +4,7 @@
 #pragma once
 
 class Character;
+class HitStop;
 class Player : public Character
 {
 public:
@@ -111,7 +112,7 @@ private:
 	const bool CanAction(const float _staminaConsumed)const;
 	void CalcStamina(const float _staminaConsumed);//スタミナの回復処理
 	/*メンバ変数*/
-
+	HitStop* hitStop;
 	VECTOR				moveVectorRotation;			//移動ベクトル用回転値
 	std::vector<int>	frameCount;					//フレームカウント
 	std::vector<bool>	isCount;					//カウントをするか

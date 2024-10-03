@@ -13,6 +13,7 @@
 #include "BossHurricaneKick.h"
 #include "EnemyManager.h"
 #include "Debug.h"
+#include "HitStop.h"
 
 /// <summary>
 /// コンストラクタ
@@ -50,13 +51,19 @@ void BossHurricaneKick::Initialize()
 	/*コライダーの初期化*/
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
 	auto& data = dynamic_cast<BossAttackData&>(*collider.data);
-	collider.radius	 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
-	data.damage		 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
-	data.hitStopTime = json.GetJson(JsonManager::FileType::ENEMY)["HIT_STOP_TIME"][this->attackIndex];
+	collider.radius		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
+	data.damage			= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
 	data.playerReaction = static_cast<int>(Gori::PlayerReactionType::NORMAL);
+	//ここでのヒットストップ系の変数は、キャラクター側に与えるものになる
+	data.hitStopTime	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
+	data.hitStopType	= static_cast<int>(HitStop::Type::STOP);
+	data.hitStopDelay	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
+	data.slowFactor		= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
+	data.isHitAttack	= false;
 
 	/*変数の初期化*/
 	this->frameCount	  = 0;
+	this->hitCheckCount	  = 0;
 	this->isStartHitCheck = false;
 	this->isStartHitCheck = false;
 	this->isNotOnHit	  = false;
@@ -92,19 +99,32 @@ void BossHurricaneKick::Update()
 		//今回の攻撃中に当たり判定フラグが一度もたっていなかったら
 		if (!this->isNotOnHit)
 		{
+			this->hitCheckCount = json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_HIT_COUNT"];
 			data.isDoHitCheck = true;
 			this->isNotOnHit = true;
+		}
+
+		if (!data.isDoHitCheck && this->hitCheckCount != 0)
+		{
+			this->hitCheckInterval++;
+			if (this->hitCheckInterval >= json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_HIT_INTERVAL"])
+			{
+				this->hitCheckInterval = 0;
+				this->hitCheckCount--;
+				data.isDoHitCheck = true;
+			}
 		}
 
 		//当たり判定位置の更新
 		collider.rigidbody.SetPosition(MV1GetFramePosition(enemy.GetModelHandle(), 30));
 		collider.topPositon = MV1GetFramePosition(enemy.GetModelHandle(), 28);
 		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
-		if (this->frameCount > END_HIT_CHECK_FRAME || (this->isNotOnHit && !data.isDoHitCheck))
+		if (this->frameCount > END_HIT_CHECK_FRAME)
 		{
 			this->isStartHitCheck = false;
 			data.isDoHitCheck = false;
 			this->frameCount = 0;
+			data.isHitAttack = false;
 		}
 	}
 }
@@ -115,8 +135,8 @@ void BossHurricaneKick::Update()
 const void BossHurricaneKick::Draw()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
-	if (debug.CheckEnemyFlag())
-	{
+	//if (debug.CheckEnemyFlag())
+	//{
 		if (this->isStartHitCheck)
 		{
 			auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
@@ -126,5 +146,5 @@ const void BossHurricaneKick::Draw()const
 		}
 		VECTOR position = this->collider->rigidbody.GetPosition();
 		printfDx("HURRICANE_KICK X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-	}
+	//}
 }

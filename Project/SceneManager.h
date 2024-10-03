@@ -6,7 +6,6 @@
 #include "Singleton.h"
 
 class SceneBase;
-class FPSController;
 class SceneManager : public Singleton<SceneManager>
 {
 public:
@@ -23,6 +22,5 @@ private:
 	static SceneManager* instance;	//唯一のインスタンス
 	SceneBase*			 mainScene;	//メインシーンインスタンス
 	SceneBase*			 loadScene;	//ロードシーンインスタンス
-	FPSController*		 fps;		//fpsコントローラー
 };
 

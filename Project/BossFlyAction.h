@@ -15,6 +15,5 @@ public:
 	void Update(Boss& _boss)	override;//パラメーターの計算
 	void CalcParameter(const Boss& _boss) override;//パラメーターの計算
 private:
-
 };
 

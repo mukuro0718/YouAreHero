@@ -21,6 +21,15 @@
     "Asset/Image/UI/End.png",
     "Asset/Image/UI/Star_01.png",
     "Asset/Image/UI/Star_02.png",
-    "Asset/Image/UI/Star_03.png"
+    "Asset/Image/UI/Star_03.png",
+
+    "Asset/Image/UI/B_Button.png",
+    "Asset/Image/UI/X_Button.png",
+    "Asset/Image/UI/Y_Button.png",
+    "Asset/Image/UI/LT_Button.png",
+    "Asset/Image/UI/Press_B_Button.png",
+    "Asset/Image/UI/Press_X_Button.png",
+    "Asset/Image/UI/Press_Y_Button.png",
+    "Asset/Image/UI/Press_LT_Button.png"
   ]
 }

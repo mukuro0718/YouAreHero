@@ -16,6 +16,18 @@ Effect::Effect(const int _effectResourceHandle)
 }
 
 /// <summary>
+/// ‰Šú‰»
+/// </summary>
+void Effect::Initialize()
+{
+	this->playingEffectHandle = -1;
+	this->frameCount		  = 0;
+	this->isPlayEffect		  = false;
+	this->startFrame		  = 0;
+	this->endFrame			  = 0;
+}
+
+/// <summary>
 /// XV
 /// </summary>
 void Effect::Update()
@@ -76,4 +88,10 @@ const VECTOR Effect::Convert(std::vector<float> _in)const
 	out.y = _in[1];
 	out.z = _in[2];
 	return out;
+}
+
+
+void Effect::SetPosition(const VECTOR _position)
+{
+	this->transform->SetPosition(_position);
 }

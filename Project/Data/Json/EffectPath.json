@@ -3,6 +3,7 @@
     "Asset/Effect/Boss/BossPunchEffect.efkefc",
     "Asset/Effect/Boss/BossSlashEffect.efkefc",
     "Asset/Effect/Boss/Entry.efkefc",
+    "Asset/Effect/Boss/ImpactEffect.efkefc",
     "Asset/Effect/Player/Entry.efkefc"
   ]
 }

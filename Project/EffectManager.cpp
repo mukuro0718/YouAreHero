@@ -6,6 +6,7 @@
 #include "BossSlashEffect.h"
 #include "BossRotatePunchEffect.h"
 #include "BossEntryEffect.h"
+#include "BossImpactEffect.h"
 #include "PlayerEntryEffect.h"
 #include "EffectManager.h"
 #include "EnemyManager.h"
@@ -24,8 +25,10 @@ EffectManager::EffectManager()
 	this->effect.emplace_back(new BossSlashEffect		 (asset.GetEffect(LoadingAsset::EffectType::BOSS_SLASH)));
 	this->effect.emplace_back(new BossRotatePunchEffect(asset.GetEffect(LoadingAsset::EffectType::BOSS_ROTATE_PUNCH)));
 	this->effect.emplace_back(new BossEntryEffect		 (asset.GetEffect(LoadingAsset::EffectType::BOSS_ENTRY)));
+	this->effect.emplace_back(new BossImpactEffect		 (asset.GetEffect(LoadingAsset::EffectType::BOSS_IMPACT)));
 	this->effect.emplace_back(new PlayerEntryEffect	 (asset.GetEffect(LoadingAsset::EffectType::PLAYER_ENTRY)));
 }
+
 /// <summary>
 /// コンストラクタ
 /// </summary>
@@ -33,17 +36,23 @@ EffectManager::~EffectManager()
 {
 
 }
+
+/// <summary>
+/// 更新
+/// </summary>
+void EffectManager::Initialize()
+{
+	for (int i = 0; i < this->effect.size(); i++)
+	{
+		this->effect[i]->Initialize();
+	}
+}
+
 /// <summary>
 /// 更新
 /// </summary>
 void EffectManager::Update()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& enemy = Singleton<EnemyManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
-	auto& bossAttack = Singleton<BossAttackManager>::GetInstance();
-
 	// DXライブラリのカメラとEffekseerのカメラを同期する。
 	Effekseer_Sync3DSetting();
 	for (int i = 0; i < this->effect.size(); i++)
@@ -56,8 +65,6 @@ void EffectManager::Update()
 /// </summary>
 const void EffectManager::Draw()const
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
 	for (int i = 0; i < this->effect.size(); i++)
 	{
 		this->effect[i]->Draw();
@@ -66,6 +73,10 @@ const void EffectManager::Draw()const
 void EffectManager::OnIsEffect(const EffectType _type)
 {
 	this->effect[static_cast<int>(_type)]->OnIsPlayEffect();
+}
+void EffectManager::SetPosition(const EffectType _type, const VECTOR _position)
+{
+	this->effect[static_cast<int>(_type)]->SetPosition(_position);
 }
 /// <summary>
 /// vector<float>をVECTORに変換

@@ -59,7 +59,10 @@ void GameOverUI::Initialize()
 		this->image[i]->isAddAlpha = true;
 		this->image[i]->SetPosition(json.GetJson(JsonManager::FileType::UI)["GAME_OVER_FIRST_POSITION"][i]);
 	}
-	this->isEndExtend = false;
+	this->isEndExtend		= false;
+	this->isContinue		= false;
+	this->isPrevPressButton = false;
+	this->type				= 0;
 }
 
 

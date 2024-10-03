@@ -7,7 +7,7 @@
 #include "AttackData.h"
 #include "PlayerAttackData.h"
 #include "CharacterColliderData.h"
-#include "HitStop.h"
+#include "HitStopManager.h"
 
 CharacterColliderData::CharacterColliderData(const ColliderData::Priority _priority, const GameObjectTag _tag, CharacterData* _data)
 	: ColliderData(ColliderData::Kind::CHARACTER_CAPSULE, _priority, _tag)
@@ -25,12 +25,15 @@ const CharacterData& CharacterColliderData::GetCharacterData()const
 
 void CharacterColliderData::OnHit(const AttackData& _data, const VECTOR _attackPosition)
 {
-	auto& hitStop = Singleton<HitStop>::GetInstance();
+	auto& hitStop = Singleton<HitStopManager>::GetInstance();
 
 	if (!this->data->isCutDamage)
 	{
 		this->data->hp -= _data.damage;
-		hitStop.SetHitStopTime(_data.hitStopTime);
+		this->data->hitStopTime = _data.hitStopTime;
+		this->data->hitStopType = _data.hitStopType;
+		this->data->hitStopDelay = _data.hitStopDelay;
+		this->data->slowFactor = _data.slowFactor;
 	}
 	this->data->isHit = true;
 }

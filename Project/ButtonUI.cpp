@@ -3,6 +3,7 @@
 #include "UseJson.h"
 #include "ButtonUI.h"
 #include "LoadingAsset.h"
+#include "InputManager.h"
 #include "PlayerManager.h"
 
 
@@ -20,6 +21,16 @@ ButtonUI::ButtonUI()
 
 	this->iconFont		= asset.GetFont(LoadingAsset::FontType::HONOKA_50_64);
 	this->operationFont = asset.GetFont(LoadingAsset::FontType::HONOKA_30_64);
+
+	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::B_BUTTON));
+	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::X_BUTTON));
+	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::Y_BUTTON));
+	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::LT_BUTTON));
+	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_B_BUTTON));
+	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_X_BUTTON));
+	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_Y_BUTTON));
+	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_LT_BUTTON));
+	this->buttonFont = asset.GetFont(LoadingAsset::FontType::BAT_32_0);
 }
 
 /// <summary>
@@ -63,6 +74,9 @@ void ButtonUI::Draw()
 
 	/*アイコンの描画*/
 	DrawIcon();
+
+	/*ボタンの描画*/
+	DrawButton();
 
 	/*アイコンごとの文字の描画*/
 	DrawFont();
@@ -111,33 +125,66 @@ void ButtonUI::DrawIcon()
 	}
 }
 
+void ButtonUI::DrawButton()
+{
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& input = Singleton<InputManager>::GetInstance();
+
+	vector<vector<int>> position = json.GetJson(JsonManager::FileType::UI)["BUTTON_POSITION"];
+	int pad = input.GetPadState();
+	vector<bool> isTrigger;
+	isTrigger.emplace_back(pad & PAD_INPUT_4);
+	isTrigger.emplace_back(pad & PAD_INPUT_1);
+	isTrigger.emplace_back(pad & PAD_INPUT_2);
+	isTrigger.emplace_back(pad & PAD_INPUT_7);
+
+	int drawGraph = -1;
+	for (int i = 0; i < position.size(); i++)
+	{
+		if (isTrigger[i])
+		{
+			drawGraph = this->button[i + this->PRESS_OFFSET];
+		}
+		else
+		{
+			drawGraph = this->button[i];
+		}
+		DrawExtendGraph(position[i][0], position[i][1], position[i][2], position[i][3], drawGraph, TRUE);
+	}
+}
+
 /// <summary>
 /// 背景の描画
 /// </summary>
 void ButtonUI::DrawFont()
 {
-	///*シングルトンクラスのインスタンスの取得*/
-	//auto& json = Singleton<JsonManager>::GetInstance();
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& input = Singleton<InputManager>::GetInstance();
 
-	///*変数の準備*/
-	//Vec2d mainAttackPosition,specialAttackPosition,avoidPosition,blockPosition,dashPosition;
-	//int   textColor;
+	vector<vector<int>> position = json.GetJson(JsonManager::FileType::UI)["BUTTON_TEXT_POSITION"];
+	vector<string> text = json.GetJson(JsonManager::FileType::UI)["BUTTON_TEXT"];
+	int pad = input.GetPadState();
+	vector<bool> isTrigger;
+	isTrigger.emplace_back(pad & PAD_INPUT_4);
+	isTrigger.emplace_back(pad & PAD_INPUT_1);
+	isTrigger.emplace_back(pad & PAD_INPUT_2);
+	isTrigger.emplace_back(pad & PAD_INPUT_7);
 
-	///*jsonデータの代入*/
-	//mainAttackPosition		.Set(json.GetJson(JsonManager::FileType::UI)["MAIN_ATTACK_TEXT_POSITION"]);
-	//specialAttackPosition	.Set(json.GetJson(JsonManager::FileType::UI)["SPECIAL_ATTACK_TEXT_POSITION"]);
-	//avoidPosition			.Set(json.GetJson(JsonManager::FileType::UI)["AVOID_TEXT_POSITION"]);
-	//blockPosition			.Set(json.GetJson(JsonManager::FileType::UI)["BLOCK_TEXT_POSITION"]);
-	//dashPosition			.Set(json.GetJson(JsonManager::FileType::UI)["DASH_TEXT_POSITION"]);
-	//textColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["TEXT_COLOR"]);
-
-
-	///*背景の描画*/
-	//DrawStringToHandle(mainAttackPosition.x	  , mainAttackPosition.y	, "攻撃"	 , textColor, this->iconFont);
-	//DrawStringToHandle(specialAttackPosition.x, specialAttackPosition.y	, "スキル"  , textColor, this->iconFont);
-	//DrawStringToHandle(avoidPosition.x		  , avoidPosition.y			, "回避"	 , textColor, this->iconFont);
-	//DrawStringToHandle(blockPosition.x		  , blockPosition.y			, "ガード"	 , textColor, this->iconFont);
-	//DrawStringToHandle(dashPosition.x		  , dashPosition.y			, "ダッシュ", textColor, this->iconFont);
+	int textColor = 0;
+	for (int i = 0; i < text.size(); i++)
+	{
+		if (isTrigger[i])
+		{
+			textColor = this->PRESS_TEXT_COLOR;
+		}
+		else
+		{
+			textColor = this->TEXT_COLOR;
+		}
+		DrawStringToHandle(position[i][0], position[i][1], text[i].c_str(), textColor, this->buttonFont);
+	}
 }
 /// <summary>
 /// 色取得

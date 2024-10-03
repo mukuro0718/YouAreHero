@@ -493,7 +493,7 @@
     <ClCompile Include="BossRoarAction.cpp">
       <Filter>Object\Character\Enemy\Action\Parameter\Roar</Filter>
     </ClCompile>
-    <ClCompile Include="HitStop.cpp">
+    <ClCompile Include="HitStopManager.cpp">
       <Filter>HitStopManager</Filter>
     </ClCompile>
     <ClCompile Include="Image.cpp">
@@ -546,6 +546,15 @@
     </ClCompile>
     <ClCompile Include="BossNameUI.cpp">
       <Filter>UI\BossNameUI</Filter>
+    </ClCompile>
+    <ClCompile Include="HitStop.cpp">
+      <Filter>HitStopManager</Filter>
+    </ClCompile>
+    <ClCompile Include="HitStopData.cpp">
+      <Filter>HitStopManager</Filter>
+    </ClCompile>
+    <ClCompile Include="BossImpactEffect.cpp">
+      <Filter>Effect\Boss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -783,7 +792,7 @@
     <ClInclude Include="BossRoarAction.h">
       <Filter>Object\Character\Enemy\Action\Parameter\Roar</Filter>
     </ClInclude>
-    <ClInclude Include="HitStop.h">
+    <ClInclude Include="HitStopManager.h">
       <Filter>HitStopManager</Filter>
     </ClInclude>
     <ClInclude Include="Image.h">
@@ -839,6 +848,15 @@
     </ClInclude>
     <ClInclude Include="ReactionType.h">
       <Filter>Data\HeaderFile</Filter>
+    </ClInclude>
+    <ClInclude Include="HitStop.h">
+      <Filter>HitStopManager</Filter>
+    </ClInclude>
+    <ClInclude Include="HitStopData.h">
+      <Filter>HitStopManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BossImpactEffect.h">
+      <Filter>Effect\Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

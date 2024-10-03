@@ -12,12 +12,12 @@
 #include "PlayerManager.h"
 #include "PlayerAttackManager.h"
 #include "EnemyManager.h"
-#include "BossAttackManager.h"
+//#include "BossAttackManager.h"
 #include "UIManager.h"
 #include "EffectManager.h"
 #include "CollisionManager.h"
 #include "Debug.h"
-#include "HitStop.h"
+#include "HitStopManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -45,10 +45,9 @@ void GameScene::Initialize()
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
-	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
+	auto& effect = Singleton<EffectManager>		::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 	auto& debug = Singleton<Debug>::GetInstance();
-	auto& hitStop = Singleton<HitStop>::GetInstance();
 	
 	/*初期化*/
 	camera.Initialize();
@@ -56,11 +55,9 @@ void GameScene::Initialize()
 	player.Initialize();
 	enemy.Initialize();
 	playerAttack.Initialize();
-	enemyAttack.Initialize();
 	ui.Initialize();
 	debug.Initialize();
-	hitStop.Initialize();
-
+	effect.Initialize();
 }
 
 /// <summary>
@@ -73,13 +70,13 @@ void GameScene::Finalize()
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
-	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
+	//auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 
 	map.Finalize();
 	enemy.Finalize();
 	player.Finalize();
 	playerAttack.Finalize();
-	enemyAttack.Finalize();
+	//enemyAttack.Finalize();
 
 }
 
@@ -96,24 +93,26 @@ void GameScene::Update()
 	auto& player = Singleton<PlayerManager>		::GetInstance();
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>		::GetInstance();
-	auto& enemyAttack = Singleton<BossAttackManager>	::GetInstance();
+	//auto& enemyAttack = Singleton<BossAttackManager>	::GetInstance();
 	auto& effect = Singleton<EffectManager>		::GetInstance();
 	auto& ui = Singleton<UIManager>			::GetInstance();
 	auto& collision = Singleton<CollisionManager>	::GetInstance();
 	auto& sceneChanger = Singleton<SceneChanger>		::GetInstance();
+	auto& hitStop = Singleton<HitStopManager>		::GetInstance();
 
 	/*更新処理*/
 	debug.Update();
 	input.Update();
+	hitStop.Update();
 	camera.Update();
 	map.Update();
 	enemy.Update();
 	player.Update();
 	playerAttack.Update();
-	enemyAttack.Update();
+	//enemyAttack.Update();
 	effect.Update();
-	ui.Update();
 	collision.Update();
+	ui.Update();
 
 	/*シーンの終了処理*/
 	if (this->IsEnd())
@@ -141,18 +140,16 @@ const void GameScene::Draw()const
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
 	auto& camera = Singleton<CameraManager>	 ::GetInstance();
 	auto& enemy = Singleton<EnemyManager>		 ::GetInstance();
-	auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
+	//auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 	auto& effect = Singleton<EffectManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
-	auto& hitStop = Singleton<HitStop>::GetInstance();
 
 	/*描画*/
-	hitStop.Draw();
 	debug.Draw();
 	camera.Draw();
 	map.Draw();
 	enemy.Draw();
-	enemyAttack.Draw();
+	//enemyAttack.Draw();
 	player.Draw();
 	playerAttack.Draw();
 	effect.Draw();

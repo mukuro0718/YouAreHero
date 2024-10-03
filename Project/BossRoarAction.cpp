@@ -40,6 +40,15 @@ void BossRoarAction::Initialize()
 /// </summary>
 void BossRoarAction::Update(Boss& _boss)
 {
+	/*死亡していたらisSelectをfalseにして早期リターン*/
+	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
+
+	/*選択されていたら欲求値を０にする*/
+	this->parameter->desireValue = 0;
+
+	/*アニメーションの設定*/
+	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::ROAR));
+
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
@@ -67,6 +76,9 @@ void BossRoarAction::Update(Boss& _boss)
 
 	/*アニメーション再生時間の設定*/
 	_boss.SetAnimationPlayTime(_boss.GetAnimationPlayTime());
+	
+	/*アニメーションの再生*/
+	_boss.PlayAnimation();
 
 	/*咆哮中にアニメーションが終了していたら、選択フラグを下してフェーズを統一する*/
 	if (this->isSelect && _boss.GetIsChangeAnimation())

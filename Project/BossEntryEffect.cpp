@@ -22,7 +22,7 @@ void BossEntryEffect::SetInfoToPlayTheEffect()
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 
-	this->transform->SetPosition(enemy.GetRigidbody().GetPosition());
+	//this->transform->SetPosition(enemy.GetRigidbody().GetPosition());
 	this->transform->SetScale(Convert(json.GetJson(JsonManager::FileType::EFFECT)["BOSS_ENTRY_SCALE"]));
 	this->transform->SetRotation(enemy.GetRigidbody().GetRotation());
 
