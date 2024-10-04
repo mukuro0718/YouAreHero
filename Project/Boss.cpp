@@ -228,47 +228,56 @@ void Boss::PlayAnimation()
 /// </summary>
 void Boss::ChangeState()
 {
-	/*選択されているか調べる*/
-	bool isSelect		= false;//選択されているか
-	int  sumDesireValue = 0;	//欲求値の合計
-	for (auto& item : this->parameters)
-	{
-		isSelect		= item->GetIsSelect();
-		sumDesireValue += item->GetDesireValue();
-		if (isSelect)return;
-	}
-	
-	/*今立っているフラグを下す*/
-	unsigned int clearFlag = this->actionTypeMap[this->actionType];
-	this->state->ClearFlag(clearFlag);
+	auto& debug = Singleton<Debug>::GetInstance();
 
-	/*選択されていなかったら*/
-	if (!isSelect)
+	if (debug.CheckEnemyFlag() && debug.GetActionType() != static_cast<int>(Boss::ActionType::NONE))
 	{
-		//各行動の期待値を求める
-		std::vector<int> actionWeight;//重み
+		this->actionType = debug.GetActionType();
+	}
+	else
+	{
+		/*選択されているか調べる*/
+		bool isSelect = false;//選択されているか
+		int  sumDesireValue = 0;	//欲求値の合計
 		for (auto& item : this->parameters)
 		{
-			actionWeight.emplace_back(item->GetWeight(sumDesireValue));
+			isSelect = item->GetIsSelect();
+			sumDesireValue += item->GetDesireValue();
+			if (isSelect)return;
 		}
-		//重みをランダムで出す
-		int randomWeight = GetRand(this->parameters[0]->GetBaseWeight() - 1);
-		//forでvectorを回し、重みが０以下になったところのアクションを行う
-		for (int i = 0; i < actionWeight.size(); i++)
+
+		/*今立っているフラグを下す*/
+		unsigned int clearFlag = this->actionTypeMap[this->actionType];
+		this->state->ClearFlag(clearFlag);
+
+		/*選択されていなかったら*/
+		if (!isSelect)
 		{
-			randomWeight -= actionWeight[i];
-			if (randomWeight < 0)
+			//各行動の期待値を求める
+			std::vector<int> actionWeight;//重み
+			for (auto& item : this->parameters)
 			{
-				this->actionType = i;
-				this->parameters[i]->OnIsSelect();
-				isSelect = true;
-				break;
+				actionWeight.emplace_back(item->GetWeight(sumDesireValue));
+			}
+			//重みをランダムで出す
+			int randomWeight = GetRand(this->parameters[0]->GetBaseWeight() - 1);
+			//forでvectorを回し、重みが０以下になったところのアクションを行う
+			for (int i = 0; i < actionWeight.size(); i++)
+			{
+				randomWeight -= actionWeight[i];
+				if (randomWeight < 0)
+				{
+					this->actionType = i;
+					this->parameters[i]->OnIsSelect();
+					isSelect = true;
+					break;
+				}
 			}
 		}
-	}
-	if (!isSelect)
-	{
-		this->actionType = static_cast<int>(ActionType::IDLE);
+		if (!isSelect)
+		{
+			this->actionType = static_cast<int>(ActionType::IDLE);
+		}
 	}
 	unsigned int setFlag = this->actionTypeMap[this->actionType];
 	this->state->SetFlag(setFlag);

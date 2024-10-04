@@ -105,6 +105,7 @@ private:
 	};
 	enum class ActionType
 	{
+		NONE = -1,
 		DYING			= 0,//ƒfƒX
 		IDLE			= 1,//‘Ò‹@
 		ROAR			= 2,//™ôšK

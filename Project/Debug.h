@@ -20,6 +20,7 @@ public:
 	const bool CheckPlayerFlag()const;
 	const bool CheckEnemyFlag()const;
 	const bool CheckCameraFlag()const;//カメラのデバック機能がONになっているかどうか
+	const int GetActionType()const { return this->currentlySelectedAction; }
 private:
 	/*ファンクション*/
 	typedef std::function<void(void)> FlagsState;//フラグの切り替えを行う
@@ -40,6 +41,23 @@ private:
 		FPS		= 2,
 		ENEMY	= 3,
 	};
+	//ボスのアクション
+	enum class ActionType
+	{
+		NONE			= -1,
+		DYING			= 0,//デス
+		IDLE			= 1,//待機
+		ROAR			= 2,//咆哮
+		WALK			= 3,//歩き
+		WALK_LEFT		= 4,//歩き
+		WALK_RIGHT		= 5,//歩き
+		REST			= 6,//歩き
+		SLASH			= 7,//スラッシュ
+		FLY_ATTACK		= 8,//飛び攻撃
+		HURRICANE_KICK	= 9,//回転蹴り
+		STAB			= 10,//突き刺し攻撃
+		ROTATE_PUNCH	= 11,//回転パンチ
+	};
 
 	/*静的定数*/
 	static const int COLOR_WHITE;//白色
@@ -58,11 +76,14 @@ private:
 		  void AddItemFunction	 (const int _item,const FlagsState _set,const FlagsState _clear);//項目ごとの関数の追加
 	const bool IsShow			 ()const;														 //デバック項目を表示させるか
 	const unsigned int GetBitFlagInMap(const int _itemName)const;
+	void ChangeBossActionType();
 	/*メンバ変数*/
 	std::map<int, FlagsStateSet> itemFunctionMap;		//項目ごとの関数
-	BitFlag*					 flags;//フラグ（デバック機能の使用状況）
+	BitFlag*					 flags;					//フラグ（デバック機能の使用状況）
 	bool						 isShow;				//デバック項目を表示させるか
 	int							 previousSelectedItem;	//以前選択されていた項目
 	int							 currentlySelectedItem;	//今選択されている項目
+	int prevSelectedAction;
+	int currentlySelectedAction;
 };
 

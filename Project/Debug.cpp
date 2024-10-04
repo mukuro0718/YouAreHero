@@ -261,3 +261,50 @@ const bool Debug::CheckPlayerFlag()const
 {
 	return this->flags->CheckFlag(this->PLAYER);
 }
+
+
+void Debug::ChangeBossActionType()
+{
+	if (CheckEnemyFlag())
+	{
+		/*シングルトンクラスのインスタンスを取得*/
+		auto& json = JsonManager::GetInstance();
+		auto& input = InputManager::GetInstance();
+
+		/*定数型に代入*/
+		const int ITEM_NUM = static_cast<int>(Debug::ActionType::ROTATE_PUNCH) + 1;//項目の数
+
+		/*上下入力がない*/
+		if (CheckHitKeyAll(DX_CHECKINPUT_KEY) == 0)
+		{
+			//以前と今の項目が一致していたらリターンを返す
+			if (this->prevSelectedAction == this->currentlySelectedAction) return;
+			/*項目を一致させる*/
+			this->prevSelectedAction = this->currentlySelectedAction;
+		}
+		else
+		{
+			//以前と今の項目が一致していなかったらリターンを返す
+			if (this->prevSelectedAction != this->currentlySelectedAction) return;
+
+			//上入力があったら
+			if (CheckHitKey(KEY_INPUT_UP))
+			{
+				this->currentlySelectedAction--;
+				if (this->currentlySelectedAction < 0)
+				{
+					this->currentlySelectedAction = 0;
+				}
+			}
+			//下入力があったら
+			else if (CheckHitKey(KEY_INPUT_DOWN))
+			{
+				this->currentlySelectedAction++;
+				if (this->currentlySelectedAction > ITEM_NUM)
+				{
+					this->currentlySelectedAction = ITEM_NUM;
+				}
+			}
+		}
+	}
+}
