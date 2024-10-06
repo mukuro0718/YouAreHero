@@ -31,7 +31,7 @@ public:
 		BOT				= 15
 	};
 
-	void LoadFileAgain();
+	void ReloadingJsonFile(const FileType _type);
 
 	/*getter*/
 	const nlohmann::json GetJson(const FileType _index) { return json[static_cast<int>(_index)]; }//jsonÉfÅ[É^ÇÃgetter

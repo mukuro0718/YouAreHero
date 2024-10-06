@@ -78,10 +78,10 @@ void BossStabAction::Update(Boss& _boss)
 
 		this->hitStop->SetHitStop
 		(
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::STAB)],
 			static_cast<int>(HitStop::Type::STOP),
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)]
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::STAB)],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::STAB)]
 		);
 		this->attack->OffIsHitAttack();
 	}
@@ -201,7 +201,7 @@ void BossStabAction::CalcParameter(const Boss& _boss)
 	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_3))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
-		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["MIDDLE_DISTANCE"])
+		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::STAB)])
 		{
 			this->parameter->desireValue += json.GetJson(JsonManager::FileType::ENEMY)["ADD_STAB_VALUE"];
 		}

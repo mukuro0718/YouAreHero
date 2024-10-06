@@ -54,7 +54,7 @@ void BossFlyAction::Update(Boss& _boss)
 	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
 
 	/*アニメーションの設定*/
-	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::FLY_ATTACK));
+	//_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::FLY_ATTACK));
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
@@ -67,13 +67,13 @@ void BossFlyAction::Update(Boss& _boss)
 		auto& effect = Singleton<EffectManager>::GetInstance();
 		effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
 
-		this->hitStop->SetHitStop
-		(
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
-			static_cast<int>(HitStop::Type::STOP),
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)]
-		);
+		//this->hitStop->SetHitStop
+		//(
+		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
+		//	static_cast<int>(HitStop::Type::STOP),
+		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
+		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)]
+		//);
 		this->attack->OffIsHitAttack();
 	}
 	if (this->hitStop->IsHitStop()) return;
@@ -188,14 +188,14 @@ void BossFlyAction::CalcParameter(const Boss& _boss)
 	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_1))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
-		if (DISTANCE >= json.GetJson(JsonManager::FileType::ENEMY)["MIDDLE_DISTANCE"])
-		{
-			this->parameter->desireValue += json.GetJson(JsonManager::FileType::ENEMY)["ADD_FLY_VALUE"];
-		}
-		else
-		{
-			this->parameter->desireValue = 0;
-		}
+		//if (DISTANCE >= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::FLY_ATTACK)])
+		//{
+		//	this->parameter->desireValue += json.GetJson(JsonManager::FileType::ENEMY)["ADD_FLY_VALUE"];
+		//}
+		//else
+		//{
+		//	this->parameter->desireValue = 0;
+		//}
 	}
 
 }

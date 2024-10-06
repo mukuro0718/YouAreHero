@@ -123,7 +123,7 @@ const void PlayerAttack::Draw()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
 
-	if (debug.CheckPlayerFlag())
+	if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER))
 	{
 		if (this->isStartHitCheck)
 		{

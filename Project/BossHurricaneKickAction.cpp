@@ -18,7 +18,7 @@
 /// </summary>
 BossHurricaneKickAction::BossHurricaneKickAction()
 {
-	this->attack = new BossHurricaneKick(static_cast<int>(BossAttack::AttackType::HURRICANE_KICK));
+	//this->attack = new BossHurricaneKick(static_cast<int>(BossAttack::AttackType::HURRICANE_KICK));
 }
 
 /// <summary>
@@ -52,7 +52,7 @@ void BossHurricaneKickAction::Update(Boss& _boss)
 	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
 
 	/*アニメーションの設定*/
-	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::HURRICANE_KICK));
+	//_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::HURRICANE_KICK));
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
@@ -73,13 +73,13 @@ void BossHurricaneKickAction::Update(Boss& _boss)
 		auto& effect = Singleton<EffectManager>::GetInstance();
 		effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
 
-		this->hitStop->SetHitStop
-		(
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
-			static_cast<int>(HitStop::Type::STOP),
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)]
-		);
+		//this->hitStop->SetHitStop
+		//(
+		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
+		//	static_cast<int>(HitStop::Type::STOP),
+		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
+		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)]
+		//);
 		this->attack->OffIsHitAttack();
 	}
 	if (this->hitStop->IsHitStop()) return;
@@ -93,38 +93,27 @@ void BossHurricaneKickAction::Update(Boss& _boss)
 		this->attack->OnIsStart();
 		this->isInitialize = true;
 		_boss.SetAnimationPlayTime(0.0f);
-	}
-
-	/*カウントの計測*/
-	bool isEndCount = FrameCount(json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_ADD_FRAME_COUNT"]);
-
-	/*移動目標*/
-	if (isEndCount)
-	{
 		//移動ベクトルの設定
 		_boss.SetNowMoveTarget(NEXT_MOVE_TARGET);
 		//プレイヤーから自分の座標までのベクトルを出す
 		positonToTargetVector = VSub(POSITION, NEXT_MOVE_TARGET);
-	}
 
-	/*回転処理*/
-	if (isEndCount)
-	{
+		/*回転処理*/
 		//アークタンジェントを使って角度を求める
 		nowRotation.y = static_cast<float>(atan2(static_cast<double>(positonToTargetVector.x), static_cast<double>(positonToTargetVector.z)));
 		//回転率を代入
 		_boss.SetRotation(nowRotation);
+
 	}
 
 	/*アニメーション再生時間の設定*/
-	{
-		float animationPlayTime = _boss.GetNowAnimationPlayTime();
-		//カウントが終了していなければ
-		animationPlayTime += static_cast<float>(json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_ADD_PLAY_TIME"]);
-		_boss.SetAnimationPlayTime(animationPlayTime);
-		/*アニメーションの再生*/
-		_boss.PlayAnimation();
-	}
+	float animationPlayTime = _boss.GetNowAnimationPlayTime();
+	//カウントが終了していなければ
+	animationPlayTime += static_cast<float>(json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_ADD_PLAY_TIME"]);
+	_boss.SetAnimationPlayTime(animationPlayTime);
+
+	/*アニメーションの再生*/
+	_boss.PlayAnimation();
 
 	/*移動スピードの設定*/
 	float speed = 0.0f;
@@ -185,19 +174,17 @@ void BossHurricaneKickAction::CalcParameter(const Boss& _boss)
 		this->parameter->desireValue = 0;
 	}
 
-	/*Phaseが2以上だったら欲求値を増加する*/
+	/*Phaseが1以上だったら欲求値を増加する*/
 	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_1))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
-		const int MIDDLE_DISTANCE = json.GetJson(JsonManager::FileType::ENEMY)["MIDDLE_DISTANCE"];
-		const int NEAR_DISTANCE  = json.GetJson(JsonManager::FileType::ENEMY)["NEAR_DISTANCE"];
-		if (NEAR_DISTANCE <= DISTANCE && DISTANCE <= MIDDLE_DISTANCE)
-		{
-			this->parameter->desireValue += json.GetJson(JsonManager::FileType::ENEMY)["ADD_HURRICANE_KICK_VALUE"];
-		}
-		else
-		{
-			this->parameter->desireValue = 0;
-		}
+		//if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::HURRICANE_KICK)])
+		//{
+		//	this->parameter->desireValue += json.GetJson(JsonManager::FileType::ENEMY)["ADD_HURRICANE_KICK_VALUE"];
+		//}
+		//else
+		//{
+		//	this->parameter->desireValue = 0;
+		//}
 	}
 }

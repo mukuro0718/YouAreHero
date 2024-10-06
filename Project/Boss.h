@@ -18,6 +18,7 @@ public:
 	void		PlayAnimation();
 
 	/*getter/setter*/
+	const int    GetAngryState			()const { return this->angryState; }		//怒り状態の取得
 	const VECTOR GetHeadPosition		()const;									//頭の座標を取得
 	const float	 GetAnimationPlayTime	()const;									//アニメーション再生時間の取得
 	const bool	 GetIsAttack			()const override;							//コウゲキしたか
@@ -46,10 +47,8 @@ public:
 		 WALK_LEFT		= 4, //歩き
 		 WALK_RIGHT		= 5, //歩き
 		 SLASH			= 6, //スラッシュ
-		 FLY_ATTACK		= 7, //飛び攻撃
-		 HURRICANE_KICK = 8, //回転蹴り
-		 STAB			= 9, //突き刺し攻撃
-		 ROTATE_PUNCH	= 10,//回転パンチ
+		 STAB			= 7, //突き刺し攻撃
+		 ROTATE_PUNCH	= 8,//回転パンチ
 	};
 	//フェーズ
 	enum class Phase
@@ -57,6 +56,20 @@ public:
 		PHASE_1,
 		PHASE_2,
 		PHASE_3,
+	};
+	//攻撃の種類
+	enum class AttackType
+	{
+		NONE		 = -1,
+		SLASH		 = 0,//パンチ
+		STAB		 = 1,//突き刺し攻撃
+		ROTATE_PUNCH = 2,//回転パンチ
+	};
+	enum class AngryStateType
+	{
+		NORMAL,
+		TIRED,
+		ANGRY,
 	};
 private:
 	/*静的定数*/
@@ -69,12 +82,10 @@ private:
 	static constexpr unsigned int REST	= (1 << 4);//休憩
 	//攻撃
 	static constexpr unsigned int SLASH			 = (1 << 5);//パンチ
-	static constexpr unsigned int FLY_ATTACK	 = (1 << 6);//地面をたたく
-	static constexpr unsigned int HURRICANE_KICK = (1 << 7);//回転蹴り
-	static constexpr unsigned int STAB = (1 << 8);//投石
-	static constexpr unsigned int ROTATE_PUNCH	 = (1 << 9);//スラッシュ
+	static constexpr unsigned int STAB			 = (1 << 6);//投石
+	static constexpr unsigned int ROTATE_PUNCH	 = (1 << 7);//スラッシュ
 
-	static constexpr unsigned int MASK_ATTACK = SLASH | ROTATE_PUNCH | STAB |HURRICANE_KICK | FLY_ATTACK;
+	static constexpr unsigned int MASK_ATTACK = SLASH | ROTATE_PUNCH | STAB ;
 	static constexpr unsigned int MASK_ALL	  = MASK_ATTACK | WALK | DYING | REST | REST | IDLE | ROAR;
 	
 	/*列挙体*/
@@ -88,20 +99,9 @@ private:
 	enum class FrameCountType
 	{
 		SLASH			= 0,
-		FLY_ATTACK		= 1,
-		HURRICANE_KICK	= 2,
-		STAB			= 3,
-		ROTATE_PUNCH	= 4,
-		REST			= 5,
-	};
-	enum class AttackType
-	{
-		NONE			 = -1,
-		SLASH			 = 0,//パンチ
-		FLY_ATTACK		 = 1,//地面をたたく
-		HURRICANE_KICK	 = 2,//回転蹴り
-		STAB			 = 3,//突き刺し攻撃
-		ROTATE_PUNCH	 = 4,//回転パンチ
+		STAB			= 1,
+		ROTATE_PUNCH	= 2,
+		REST			= 3,
 	};
 	enum class ActionType
 	{
@@ -114,15 +114,14 @@ private:
 		WALK_RIGHT		= 5,//歩き
 		REST			= 6,//歩き
 		SLASH			= 7,//スラッシュ
-		FLY_ATTACK		= 8,//飛び攻撃
-		HURRICANE_KICK	= 9,//回転蹴り
-		STAB			= 10,//突き刺し攻撃
-		ROTATE_PUNCH	= 11,//回転パンチ
+		STAB			= 8,//突き刺し攻撃
+		ROTATE_PUNCH	= 9,//回転パンチ
 	};
 
 	/*内部処理関数*/
 	void ChangeState();
 	void SetPhase	();
+	void SetAngryState();
 
 	/*メンバ変数*/
 	std::map<int, unsigned int>	actionTypeMap;			//アクションタイプ
@@ -133,6 +132,8 @@ private:
 	int							nowPhase;				//現在のフェーズ
 	int							prevPhase;				//前のフェーズ
 	int							actionType;
-
+	float angryValue;
+	int angryState;
+	int tiredInterval;
 };
 

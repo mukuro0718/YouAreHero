@@ -119,7 +119,7 @@ const void Camera::Draw()const
 	SetCameraPositionAndTarget_UpVecY(this->collider->rigidbody.GetPosition(), this->nowTarget);
 
 	auto& debug = Singleton<Debug>::GetInstance();
-	if (debug.CheckCameraFlag())
+	if (debug.IsShowDebugInfo(Debug::ItemType::CAMERA))
 	{
 		VECTOR position = this->collider->rigidbody.GetPosition();
 		printfDx("CAMERA_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);

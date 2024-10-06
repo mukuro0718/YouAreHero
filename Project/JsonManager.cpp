@@ -48,3 +48,23 @@ void JsonManager::LoadJsonFile()
 		this->json.push_back(loader.GetJsonData(fileName[i]));
 	}
 }
+
+/// <summary>
+/// jsonファイルの読み込み
+/// </summary>
+void JsonManager::ReloadingJsonFile(const FileType _type)
+{
+	const int TYPE = static_cast<int>(_type);
+
+	/*json読み込みクラスのインスタンスを取得*/
+	auto& loader = JsonLoader::GetInstance();
+
+	/*ファイルの名前を保持しているJsonファイルを読み込む*/
+	nlohmann::json baseJson = loader.GetJsonData("Data/Json/LoadJsonFile.json");
+
+	/*読み込んだファイルのデータを保持*/
+	std::vector<std::string> fileName = baseJson["FILE_NAME"];
+
+	//対応するファイル名のjsonを読み込み、保持する
+	this->json[TYPE] = loader.GetJsonData(fileName[TYPE]);
+}

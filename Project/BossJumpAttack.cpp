@@ -122,7 +122,7 @@ void BossJumpAttack::Update()
 const void BossJumpAttack::Draw()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
-	if (debug.CheckEnemyFlag())
+	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
 	{
 		if (this->isStartHitCheck)
 		{

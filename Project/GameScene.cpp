@@ -134,7 +134,6 @@ void GameScene::Update()
 const void GameScene::Draw()const
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& debug = Singleton<Debug>			 ::GetInstance();
 	auto& map = Singleton<MapManager>		 ::GetInstance();
 	auto& player = Singleton<PlayerManager>	 ::GetInstance();
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
@@ -145,7 +144,6 @@ const void GameScene::Draw()const
 	auto& ui = Singleton<UIManager>::GetInstance();
 
 	/*描画*/
-	debug.Draw();
 	camera.Draw();
 	map.Draw();
 	enemy.Draw();

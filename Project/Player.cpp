@@ -60,26 +60,16 @@ Player::Player()
 	this->animation->Attach(&this->modelHandle);
 	//アニメーションマップの設定
 	this->animationMap.emplace(this->IDLE			 , static_cast<int>(AnimationType::IDLE				));
-	this->animationMap.emplace(this->AVOID_BACK		 , static_cast<int>(AnimationType::AVOID_BACK		));
-	this->animationMap.emplace(this->AVOID_FRONT	 , static_cast<int>(AnimationType::AVOID_FRONT		));
-	this->animationMap.emplace(this->AVOID_LEFT		 , static_cast<int>(AnimationType::AVOID_LEFT		));
-	this->animationMap.emplace(this->AVOID_RIGHT	 , static_cast<int>(AnimationType::AVOID_RIGHT		));
+	this->animationMap.emplace(this->AVOID			 , static_cast<int>(AnimationType::AVOID));
 	this->animationMap.emplace(this->DEATH			 , static_cast<int>(AnimationType::DEATH			));
 	this->animationMap.emplace(this->BLOCK			 , static_cast<int>(AnimationType::BLOCK			));
 	this->animationMap.emplace(this->REACTION		 , static_cast<int>(AnimationType::REACTION			));
 	this->animationMap.emplace(this->BLOCK_REACTION	 , static_cast<int>(AnimationType::BLOCK_REACTION	));
-	this->animationMap.emplace(this->STUNNED		 , static_cast<int>(AnimationType::STUNNED			));
-	this->animationMap.emplace(this->KIP_UP			 , static_cast<int>(AnimationType::KIP_UP			));
-	this->animationMap.emplace(this->STAB_REACT		 , static_cast<int>(AnimationType::STAB_REACT		));
-	this->animationMap.emplace(this->THRUST_UP_REACT, static_cast<int>(AnimationType::THRUST_UP_REACT	));
-	this->animationMap.emplace(this->WALK_BACK		 , static_cast<int>(AnimationType::WALK_BACK		));
 	this->animationMap.emplace(this->WALK_FRONT		 , static_cast<int>(AnimationType::WALK_FRONT		));
-	this->animationMap.emplace(this->WALK_LEFT		 , static_cast<int>(AnimationType::WALK_LEFT		));
-	this->animationMap.emplace(this->WALK_RIGHT		 , static_cast<int>(AnimationType::WALK_RIGHT		));
 	this->animationMap.emplace(this->SLASH			 , static_cast<int>(AnimationType::SLASH			));
 
 	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::NORMAL)	 , this->REACTION);
-	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::BLOW_BIG)	 , this->STUNNED);
+	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::BLOW_BIG)	 , this->REACTION);
 	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::BLOW_SMALL), this->REACTION);
 
 	/*コライダーデータの作成*/
@@ -263,29 +253,19 @@ const void Player::DrawCharacterInfo()const
 	VECTOR position = this->collider->rigidbody.GetPosition();
 	VECTOR direction = this->collider->rigidbody.GetDirection();
 	VECTOR rotation = this->collider->rigidbody.GetRotation();
-	if (debug.CheckPlayerFlag())
+	if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER))
 	{
 		printfDx("PLAYER_POSITION X:%f,Y:%f,Z:%f	\n", position.x, position.y, position.z);
 		printfDx("PLAYER_DIRECTION X:%f,Y:%f,Z:%f	\n", direction.x, direction.y, direction.z);
 		printfDx("PLAYER_ROTATION X:%f,Y:%f,Z:%f	\n", rotation.x, rotation.y, rotation.z);
 		printfDx("PLAYER_SPEED:%f					\n", this->speed);
 		printfDx("%d:IDLE							\n", this->state->CheckFlag(this->IDLE));
-		printfDx("%d:AVOID_BACK					\n", this->state->CheckFlag(this->AVOID_BACK));
-		printfDx("%d:AVOID_FRONT					\n", this->state->CheckFlag(this->AVOID_FRONT));
-		printfDx("%d:AVOID_LEFT					\n", this->state->CheckFlag(this->AVOID_LEFT));
-		printfDx("%d:AVOID_RIGHT					\n", this->state->CheckFlag(this->AVOID_RIGHT));
+		printfDx("%d:AVOID						\n", this->state->CheckFlag(this->AVOID));
 		printfDx("%d:DEATH						\n", this->state->CheckFlag(this->DEATH));
 		printfDx("%d:BLOCK						\n", this->state->CheckFlag(this->BLOCK));
 		printfDx("%d:REACTION						\n", this->state->CheckFlag(this->REACTION));
 		printfDx("%d:BLOCK_REACTION				\n", this->state->CheckFlag(this->BLOCK_REACTION));
-		printfDx("%d:STUNNED						\n", this->state->CheckFlag(this->STUNNED));
-		printfDx("%d:KIP_UP						\n", this->state->CheckFlag(this->KIP_UP));
-		printfDx("%d:STAB_REACT					\n", this->state->CheckFlag(this->STAB_REACT));
-		printfDx("%d:THRUST_UP_REACT				\n", this->state->CheckFlag(this->THRUST_UP_REACT));
-		printfDx("%d:WALK_BACK					\n", this->state->CheckFlag(this->WALK_BACK));
 		printfDx("%d:WALK_FRONT					\n", this->state->CheckFlag(this->WALK_FRONT));
-		printfDx("%d:WALK_LEFT					\n", this->state->CheckFlag(this->WALK_LEFT));
-		printfDx("%d:WALK_RIGHT					\n", this->state->CheckFlag(this->WALK_RIGHT));
 		printfDx("%d:SLASH						\n", this->state->CheckFlag(this->SLASH));
 		printfDx("%d:HEAL							\n", this->isHeal);
 		auto& characterCollider = dynamic_cast<CharacterColliderData&> (*this->collider);
@@ -331,12 +311,6 @@ void Player::UpdateMoveVector()
 		//direction = VGet(-sinf(ROTATION.y), 0.0f, -cosf(ROTATION.y));
 		/*移動ベクトルを正規化*/
 		direction = VNorm(direction);
-	}
-	else if (this->state->CheckFlag(this->STUNNED))
-	{
-		auto& enemy = Singleton<EnemyManager>::GetInstance();
-		const VECTOR ENEMY_TO_PLAYER = VSub(this->collider->rigidbody.GetPosition(), enemy.GetRigidbody().GetPosition());
-		direction = VNorm(ENEMY_TO_PLAYER);
 	}
 	VECTOR aimVelocity = VScale(direction, this->speed);
 	VECTOR prevVelocity = this->collider->rigidbody.GetVelocity();
@@ -416,28 +390,7 @@ void Player::UpdateRotation()
 	{
 		isInputLStick = true;
 		/*xとzの値が大きいほうで判定する*/
-		if (lStick.x * lStick.x < lStick.z * lStick.z)
-		{
-			if (lStick.z > 0.0f)
-			{
-				this->state->SetFlag(this->WALK_FRONT);
-			}
-			else
-			{
-				this->state->SetFlag(this->WALK_BACK);
-			}
-		}
-		else
-		{
-			if (lStick.x > 0.0f)
-			{
-				this->state->SetFlag(this->WALK_RIGHT);
-			}
-			else
-			{
-				this->state->SetFlag(this->WALK_LEFT);
-			}
-		}
+		this->state->SetFlag(this->WALK_FRONT);
 	}
 
 
@@ -447,11 +400,11 @@ void Player::UpdateRotation()
 	//求めたベクトルを正規化する
 	cameraDirection = VNorm(cameraDirection);
 
-	/*プレイヤーからボスへの向きを出す*/
-	//ボス座標からプレイヤーの座標へのベクトルを出す
-	playerToTargetDirection = VSub(enemy.GetRigidbody().GetPosition(), this->collider->rigidbody.GetPosition());
-	//求めたベクトルを正規化する
-	playerToTargetDirection = VNorm(playerToTargetDirection);
+	///*プレイヤーからボスへの向きを出す*/
+	////ボス座標からプレイヤーの座標へのベクトルを出す
+	//playerToTargetDirection = VSub(enemy.GetRigidbody().GetPosition(), this->collider->rigidbody.GetPosition());
+	////求めたベクトルを正規化する
+	//playerToTargetDirection = VNorm(playerToTargetDirection);
 
 
 	/*もしロックオンしていたら*/
@@ -460,12 +413,12 @@ void Player::UpdateRotation()
 	{
 		lStick = VNorm(lStick);
 		rotation.y = static_cast<float>(
-			-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))) - 90.0f * (DX_PI_F / 180.0f);
-			//- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
-		this->moveVectorRotation.y = static_cast<float>(
-			- atan2(static_cast<double>(playerToTargetDirection.z), static_cast<double>(playerToTargetDirection.x))
+			-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))/* - 90.0f * (DX_PI_F / 180.0f);*/
 			- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
-		//this->moveVectorRotation = rotation;
+		//this->moveVectorRotation.y = static_cast<float>(
+		//	- atan2(static_cast<double>(playerToTargetDirection.z), static_cast<double>(playerToTargetDirection.x))
+		//	- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
+		this->moveVectorRotation = rotation;
 	}
 
 	if (isInputLStick)
@@ -504,12 +457,7 @@ void Player::Reaction()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>  ::GetInstance();
 	
-	if (this->state->CheckFlag(this->STUNNED) && this->animation->GetIsChangeAnim())
-	{
-		this->state->ClearFlag(this->MASK_ALL);
-		this->state->SetFlag(this->KIP_UP);
-	}
-	else if (this->state->CheckFlag(this->MASK_REACTION) && this->animation->GetIsChangeAnim())
+	if (this->state->CheckFlag(this->MASK_REACTION) && this->animation->GetIsChangeAnim())
 	{
 		this->state->ClearFlag(this->MASK_ALL);
 	}
@@ -613,6 +561,7 @@ void Player::Block()
 		this->state->ClearFlag(this->BLOCK);
 		data.isCutDamage = false;
 	}
+
 }
 
 /// <summary>
@@ -625,6 +574,7 @@ void Player::Heal()
 	auto& json = Singleton<JsonManager>  ::GetInstance();
 	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 	auto& data = dynamic_cast<PlayerData&>(*collider.data);
+	auto& debug = Singleton<Debug>  ::GetInstance();
 
 	/*pad入力*/
 	int pad = input.GetPadState();
@@ -662,6 +612,12 @@ void Player::Heal()
 			}
 		}
 	}
+
+	/*無敵フラグが立っていたら最大HPから変えない*/
+	if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER) && json.GetJson(JsonManager::FileType::DEBUG)["PLAYER_INVINCIBLE"])
+	{
+		data.hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];
+	}
 }
 /// <summary>
 /// 回避
@@ -675,15 +631,10 @@ void Player::Rolling()
 
 	if (this->state->CheckFlag(this->MASK_AVOID))
 	{
-		if (FrameCount(static_cast<int>(FrameCountType::AVOID), json.GetJson(JsonManager::FileType::PLAYER)["AVOID_MAX_FRAME"]))
+		if (this->animation->GetIsChangeAnim())
 		{
 			this->state->ClearFlag(this->MASK_AVOID);
-			this->animation->SetAddRate(0.08f);
 		}
-	}
-	else
-	{
-		this->isCount[static_cast<int>(FrameCountType::AVOID)] = false;
 	}
 
 	if (FrameCount(static_cast<int>(FrameCountType::INVINCIBLE), json.GetJson(JsonManager::FileType::PLAYER)["INVINCIBLE_MAX_FRAME"]))
@@ -701,25 +652,8 @@ void Player::Rolling()
 
 	if ((pad & PAD_INPUT_4) && !this->isCount[static_cast<int>(FrameCountType::AVOID)])
 	{
-		if (this->state->CheckFlag(this->WALK_BACK))
-		{
-			this->state->SetFlag(this->AVOID_BACK);
-		}
-		else if (this->state->CheckFlag(this->WALK_LEFT))
-		{
-			this->state->SetFlag(this->AVOID_LEFT);
-		}
-		else if (this->state->CheckFlag(this->WALK_RIGHT))
-		{
-			this->state->SetFlag(this->AVOID_RIGHT);
-		}
-		else
-		{
-			this->state->SetFlag(this->AVOID_FRONT);
-		}
-		this->animation->SetAddRate(1.0f);
+		this->state->SetFlag(this->AVOID);
 		this->isCount[static_cast<int>(FrameCountType::INVINCIBLE)] = true;
-		this->isCount[static_cast<int>(FrameCountType::AVOID)] = true;
 		auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 		auto& data = dynamic_cast<PlayerData&>(*collider.data);
 		data.isCutDamage = true;

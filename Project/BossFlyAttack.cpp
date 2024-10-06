@@ -121,7 +121,7 @@ void BossFlyAttack::Update()
 const void BossFlyAttack::Draw()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
-	if (debug.CheckEnemyFlag())
+	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
 	{
 		if (this->isStartHitCheck)
 		{

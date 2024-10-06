@@ -24,12 +24,10 @@ public:
 	/*攻撃の種類*/
 	enum class AttackType
 	{
-		NONE = -1,
-		SLASH = 0,//スラッシュ
-		FLY_ATTACK = 1,//飛び攻撃
-		HURRICANE_KICK = 2,//回転蹴り
-		STAB = 3,//ジャンプアタック
-		ROTATE_PUNCH = 4,//回転パンチ
+		NONE		 = -1,
+		SLASH		 = 0,//スラッシュ
+		STAB		 = 1,//ジャンプアタック
+		ROTATE_PUNCH = 2,//回転パンチ
 	};
 protected:
 	/*内部処理関数*/

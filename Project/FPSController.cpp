@@ -53,10 +53,10 @@ void FPSController::CalcStartTime()
 /// </summary>
 void FPSController::Average()
 {
-	UpdateTargetFPS();
-
 	/*Jsonマネージャーのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
+
+	this->targetFPS = static_cast<int>(json.GetJson(JsonManager::FileType::FPS_CONTROLLER)["TARGET_FPS"]);
 
 	/*カウントが目標FPSになったら*/
 	if (this->count == this->targetFPS)
@@ -79,40 +79,10 @@ const void FPSController::Draw()const
 	/*クラスインスタンスの取得*/
 	auto& debug = Singleton<Debug>::GetInstance();
 
-	if (debug.CheckFPSFlag())
+	if (debug.IsShowDebugInfo(Debug::ItemType::FPS))
 	{
 		printfDx("FPS:%f\n", this->fps);
 		printfDx("P:+ M:- TARGET_FPS:%d\n", this->targetFPS);
-	}
-}
-
-/// <summary>
-/// targetFPSの更新
-/// </summary>
-void FPSController::UpdateTargetFPS()
-{
-	/*クラスインスタンスの取得*/
-	auto& debug = Singleton<Debug>::GetInstance();
-	auto& input = Singleton<InputManager>::GetInstance();
-
-	if (debug.CheckFPSFlag())
-	{
-		if (CheckHitKey(KEY_INPUT_P))
-		{
-			this->targetFPS++;
-			if (this->targetFPS >= 60)
-			{
-				this->targetFPS = 60;
-			}
-		}
-		if (CheckHitKey(KEY_INPUT_M))
-		{
-			this->targetFPS--;
-			if (this->targetFPS <= 0)
-			{
-				this->targetFPS = 0;
-			}
-		}
 	}
 }
 

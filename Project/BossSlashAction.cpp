@@ -174,11 +174,11 @@ void BossSlashAction::CalcParameter(const Boss& _boss)
 		this->parameter->desireValue = 0;
 	}
 
-	/*Phaseが2以上だったら欲求値を増加する*/
+	/*Phaseが1以上だったら欲求値を増加する*/
 	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_1))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
-		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["NEAR_DISTANCE"])
+		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::SLASH)])
 		{
 			this->parameter->desireValue += json.GetJson(JsonManager::FileType::ENEMY)["ADD_SLASH_VALUE"];
 		}

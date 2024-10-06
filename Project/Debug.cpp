@@ -5,33 +5,16 @@
 #include "InputManager.h"
 #include "BitFlag.h"
 
-const int Debug::COLOR_WHITE = GetColor(255, 255, 255);//白色
-const int Debug::COLOR_BLACK = GetColor(0, 0, 0);//黒色
-
 /// <summary>
 /// コンストラクタ
 /// </summary>
 Debug::Debug()
-	: flags(nullptr)
-	, currentlySelectedItem(0)
-	, previousSelectedItem(0)
-	, isShow(false)
+	: isReloadingJsonFile(false)
 {
-	this->flags = new BitFlag();
-	;
-	/*関数mapの設定*/
-	auto cameraSet	 = [this]() { this->flags->SetFlag (this->CAMERA); };
-	auto cameraClear = [this]() { this->flags->ClearFlag(this->CAMERA); };
-	auto playerSet	 = [this]() { this->flags->SetFlag  (this->PLAYER); };
-	auto playerClear = [this]() { this->flags->ClearFlag(this->PLAYER); };
-	auto fpsSet		 = [this]() { this->flags->SetFlag  (this->FPS); };
-	auto fpsClear	 = [this]() { this->flags->ClearFlag(this->FPS); };
-	auto enemySet = [this]() { this->flags->SetFlag(this->ENEMY); };
-	auto enemyClear = [this]() { this->flags->ClearFlag(this->ENEMY); };
-	AddItemFunction(static_cast<int>(ItemType::CAMERA), cameraSet, cameraClear);
-	AddItemFunction(static_cast<int>(ItemType::PLAYER), playerSet, playerClear);
-	AddItemFunction(static_cast<int>(ItemType::FPS), fpsSet	  , fpsClear);
-	AddItemFunction(static_cast<int>(ItemType::ENEMY), enemySet, enemyClear);
+	this->jsonIndexMap.emplace(static_cast<int>(ItemType::CAMERA)	, static_cast<int>(JsonManager::FileType::CAMERA));
+	this->jsonIndexMap.emplace(static_cast<int>(ItemType::PLAYER)	, static_cast<int>(JsonManager::FileType::PLAYER));
+	this->jsonIndexMap.emplace(static_cast<int>(ItemType::FPS)		, static_cast<int>(JsonManager::FileType::FPS_CONTROLLER));
+	this->jsonIndexMap.emplace(static_cast<int>(ItemType::ENEMY)	, static_cast<int>(JsonManager::FileType::ENEMY));
 }
 
 /// <summary>
@@ -39,7 +22,7 @@ Debug::Debug()
 /// </summary>
 Debug::~Debug() 
 {
-
+	this->jsonIndexMap.clear();
 }
 
 /// <summary>
@@ -47,11 +30,6 @@ Debug::~Debug()
 /// </summary>
 void Debug::Initialize()
 {
-	/*すべてが１のマスクビットを使って、すべてのビットを下す*/
-	this->flags->ClearFlag(this->MASK_ALL_FLAGS);
-	this->currentlySelectedItem = 0;
-	this->previousSelectedItem = this->currentlySelectedItem;
-	this->isShow = false;
 }
 
 /// <summary>
@@ -59,252 +37,71 @@ void Debug::Initialize()
 /// </summary>
 void Debug::Update()
 {
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& input = InputManager::GetInstance();
-
-	/*PAD入力の取得*/
-	int pad = input.GetPadState();
-	
-	/*デバック項目の表示判定*/
-	this->isShow = IsShow();
-
-	/*選択項目の変更*/
-	ChangeSelectedItem();
-
-	/*on/off切り替え*/
-	ChangeFlagsState();
+	/*Jsonファイルを再読み込み*/
+	this->ReloadingJsonFile();
 }
 
 /// <summary>
-/// 描画
+/// Jsonファイルを再読み込み
 /// </summary>
-const void Debug::Draw()const
+void Debug::ReloadingJsonFile()
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = JsonManager::GetInstance();
-	
-	/*jsonデータを定数型に代入*/
-	const int ITEM_NUM   = json.GetJson(JsonManager::FileType::DEBUG)["ITEM_NUM"];
-	
-	printfDx("O:open B:close Arrow\n");
+	auto& input = Singleton<InputManager>::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
 
-	if (this->isShow)
+	/*もしJsonファイルを再読み込みしていなかったら（押し続けによる連続読み込みを防ぐ）*/
+	if (!this->isReloadingJsonFile)
 	{
-		printfDx("DEBUG_MENU\n");
-		for (int i = 0; i < ITEM_NUM; i++)
+		if (CheckHitKey(KEY_INPUT_R))
 		{
-			switch (i)
+			//読み込みフラグを立てる
+			this->isReloadingJsonFile = true;
+			//デバックJsonファイルを読み込み
+			json.ReloadingJsonFile(JsonManager::FileType::DEBUG);
+			//デバックを使用しないになっていたら早期リターン
+			if (!json.GetJson(JsonManager::FileType::DEBUG)["IS_USE_DEBUG_MODE"])return;
+			//フラグが立っているもののみを再読み込み
+			vector<bool> isShowDebugInfo = json.GetJson(JsonManager::FileType::DEBUG)["SHOW_DEBUG_INFO"];
+			for (int i = 0; i < isShowDebugInfo.size(); i++)
 			{
-			case static_cast<int>(ItemType::CAMERA):
-				printfDx("%d:CAMERA  ", this->flags->CheckFlag(this->CAMERA));
-				break;
-			case static_cast<int>(ItemType::PLAYER):
-				printfDx("%d:PLAYER  ", this->flags->CheckFlag(this->PLAYER));
-				break;
-			case static_cast<int>(ItemType::FPS):
-				printfDx("%d:FPS  ", this->flags->CheckFlag(this->FPS));
-				break;
-			case static_cast<int>(ItemType::ENEMY):
-				printfDx("%d:ENEMY  ", this->flags->CheckFlag(this->ENEMY));
-				break;
+				//フラグが立っていなければ早期リターン
+				if (!isShowDebugInfo[i]) return;
+				//指定されたJsonファイルを再読み込み
+				static_cast<JsonManager::FileType>(i);
+				json.ReloadingJsonFile(static_cast<JsonManager::FileType>(this->jsonIndexMap[i]));
 			}
-			if (i == this->currentlySelectedItem)printfDx("<=\n");
-			else printfDx("\n");
 		}
-	}
-}
-
-
-const bool Debug::IsShow()const
-{
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& input = InputManager::GetInstance();
-
-	/*メニューが開かれていなかったら*/
-	if (!this->isShow)
-	{
-		//コントローラーのstartボタンまたはOキーが押されていなかったらfalseを返す
-		if (!(CheckHitKey(KEY_INPUT_O))) return false;
 	}
 	else
 	{
-		//コントローラーのBボタンまたはBキーが押されていたらfalseを返す
-		if (CheckHitKey(KEY_INPUT_B)) return false;
+		if (!CheckHitKey(KEY_INPUT_R))
+		{
+			this->isReloadingJsonFile = false;
+		}
 	}
 
-	/*上記以外だったらtrueを返す*/
-	return true;
 }
 
 /// <summary>
-/// 選択されている項目の変更
+/// デバックモードを使用するか
 /// </summary>
-void Debug::ChangeSelectedItem()
+const bool Debug::IsUseDebugMode() const
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& json  = JsonManager::GetInstance();
-	auto& input = InputManager::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
 
-	/*定数型に代入*/
-	const int ITEM_NUM	= json.GetJson(JsonManager::FileType::DEBUG)["ITEM_NUM"];//項目の数
-	
-	/*上下入力がない*/
-	if (CheckHitKeyAll(DX_CHECKINPUT_KEY) == 0)
-	{
-		//以前と今の項目が一致していたらリターンを返す
-		if (this->previousSelectedItem == this->currentlySelectedItem) return;
-		/*項目を一致させる*/
-		this->previousSelectedItem = this->currentlySelectedItem;
-	}
-	else
-	{
-		//以前と今の項目が一致していなかったらリターンを返す
-		if (this->previousSelectedItem != this->currentlySelectedItem) return;
-
-		//上入力があったら
-		if (CheckHitKey(KEY_INPUT_UP))
-		{
-			this->currentlySelectedItem--;
-			if (this->currentlySelectedItem < 0)
-			{
-				this->currentlySelectedItem = 0;
-			}
-		}
-		//下入力があったら
-		else if(CheckHitKey(KEY_INPUT_DOWN))
-		{
-			this->currentlySelectedItem++;
-			if (this->currentlySelectedItem > ITEM_NUM)
-			{
-				this->currentlySelectedItem = ITEM_NUM;
-			}
-		}
-	}
+	return json.GetJson(JsonManager::FileType::DEBUG)["IS_USE_DEBUG_MODE"];
 }
 
-void Debug::ChangeFlagsState()
+/// <summary>
+/// デバックモードを使用するか
+/// </summary>
+const bool Debug::IsShowDebugInfo(const ItemType _type) const
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& input = InputManager::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
 
-	/*入力がなければリターンを返す*/
-	if (CheckHitKeyAll(DX_CHECKINPUT_KEY) == 0)return;
-
-	/*右入力*/
-	if (CheckHitKey(KEY_INPUT_RIGHT))
-	{
-		this->itemFunctionMap[this->currentlySelectedItem].set();
-	}
-	/*左入力*/
-	else if (CheckHitKey(KEY_INPUT_LEFT))
-	{
-		this->itemFunctionMap[this->currentlySelectedItem].clear();
-	}
-
-}
-
-/// <summary>
-/// 項目ごとの関数の追加
-/// </summary>
-void Debug::AddItemFunction(const int _item, const FlagsState _set, const FlagsState _clear)
-{
-	FlagsStateSet add;
-	add.set = _set;
-	add.clear = _clear;
-	this->itemFunctionMap.emplace(_item, add);
-}
-
-/// <summary>
-/// マップ内のビットフラグを取得
-/// </summary>
-/// <returns></returns>
-const unsigned int Debug::GetBitFlagInMap(const int _itemName)const
-{
-	switch (_itemName)
-	{
-	case static_cast<int>(ItemType::CAMERA):
-		return this->CAMERA;
-	case static_cast<int>(ItemType::PLAYER):
-		return this->PLAYER;
-	case static_cast<int>(ItemType::FPS):
-		return this->FPS;
-	case static_cast<int>(ItemType::ENEMY):
-		return this->ENEMY;
-	}
-	return 0;
-}
-/// <summary>
-/// カメラのデバック機能がONになっているかどうか
-/// </summary>
-const bool Debug::CheckCameraFlag()const 
-{ 
-	return this->flags->CheckFlag(this->CAMERA);
-}
-/// <summary>
-/// FPSのデバック機能がONになっているかどうか
-/// </summary>
-const bool Debug::CheckFPSFlag()const
-{
-	return this->flags->CheckFlag(this->FPS);
-}
-/// <summary>
-/// エネミーのデバック機能がONになっているかどうか
-/// </summary>
-const bool Debug::CheckEnemyFlag()const
-{
-	return this->flags->CheckFlag(this->ENEMY);
-}
-/// <summary>
-/// プレイヤーのデバック機能がONになっているかどうか
-/// </summary>
-const bool Debug::CheckPlayerFlag()const
-{
-	return this->flags->CheckFlag(this->PLAYER);
-}
-
-
-void Debug::ChangeBossActionType()
-{
-	if (CheckEnemyFlag())
-	{
-		/*シングルトンクラスのインスタンスを取得*/
-		auto& json = JsonManager::GetInstance();
-		auto& input = InputManager::GetInstance();
-
-		/*定数型に代入*/
-		const int ITEM_NUM = static_cast<int>(Debug::ActionType::ROTATE_PUNCH) + 1;//項目の数
-
-		/*上下入力がない*/
-		if (CheckHitKeyAll(DX_CHECKINPUT_KEY) == 0)
-		{
-			//以前と今の項目が一致していたらリターンを返す
-			if (this->prevSelectedAction == this->currentlySelectedAction) return;
-			/*項目を一致させる*/
-			this->prevSelectedAction = this->currentlySelectedAction;
-		}
-		else
-		{
-			//以前と今の項目が一致していなかったらリターンを返す
-			if (this->prevSelectedAction != this->currentlySelectedAction) return;
-
-			//上入力があったら
-			if (CheckHitKey(KEY_INPUT_UP))
-			{
-				this->currentlySelectedAction--;
-				if (this->currentlySelectedAction < 0)
-				{
-					this->currentlySelectedAction = 0;
-				}
-			}
-			//下入力があったら
-			else if (CheckHitKey(KEY_INPUT_DOWN))
-			{
-				this->currentlySelectedAction++;
-				if (this->currentlySelectedAction > ITEM_NUM)
-				{
-					this->currentlySelectedAction = ITEM_NUM;
-				}
-			}
-		}
-	}
+	const int TYPE = static_cast<int>(_type);
+	return json.GetJson(JsonManager::FileType::DEBUG)["SHOW_DEBUG_INFO"][TYPE];
 }

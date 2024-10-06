@@ -123,7 +123,7 @@ void BossSlashAttack::Update()
 const void BossSlashAttack::Draw()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
-	if (debug.CheckEnemyFlag())
+	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
 	{
 		if (this->isStartHitCheck)
 		{

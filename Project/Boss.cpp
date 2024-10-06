@@ -60,8 +60,6 @@ Boss::Boss()
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::WALK),this->WALK);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::REST),this->REST);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH),this->SLASH);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::FLY_ATTACK),this->FLY_ATTACK);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::HURRICANE_KICK),this->HURRICANE_KICK);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::STAB),this->STAB);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROTATE_PUNCH),this->ROTATE_PUNCH);
 
@@ -76,8 +74,8 @@ Boss::Boss()
 	this->parameters.emplace_back(new BossChaseAction());
 	this->parameters.emplace_back(new BossRestAction());
 	this->parameters.emplace_back(new BossSlashAction());
-	this->parameters.emplace_back(new BossFlyAction());
-	this->parameters.emplace_back(new BossHurricaneKickAction());
+	//this->parameters.emplace_back(new BossFlyAction());
+	//this->parameters.emplace_back(new BossHurricaneKickAction());
 	this->parameters.emplace_back(new BossStabAction());
 	this->parameters.emplace_back(new BossRotatePunchAction());
 }
@@ -193,6 +191,9 @@ void Boss::Update()
 	}
 	else
 	{
+		/*怒り状態の設定*/
+		SetAngryState();
+
 		/*フェーズの初期化*/
 		SetPhase();
 
@@ -229,10 +230,15 @@ void Boss::PlayAnimation()
 void Boss::ChangeState()
 {
 	auto& debug = Singleton<Debug>::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
 
-	if (debug.CheckEnemyFlag() && debug.GetActionType() != static_cast<int>(Boss::ActionType::NONE))
+	int debugActionType = json.GetJson(JsonManager::FileType::DEBUG)["BOSS_ACTION"];
+	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY) && debugActionType != static_cast<int>(Boss::ActionType::NONE))
 	{
-		this->actionType = debug.GetActionType();
+		/*今立っているフラグを下す*/
+		unsigned int clearFlag = this->actionTypeMap[this->actionType];
+		this->state->ClearFlag(clearFlag);
+		this->actionType = debugActionType;
 	}
 	else
 	{
@@ -289,7 +295,7 @@ void Boss::ChangeState()
 const void Boss::DrawCharacterInfo()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
-	if (debug.CheckEnemyFlag())
+	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
 	{
 		VECTOR position = this->collider->rigidbody.GetPosition();
 		VECTOR rotation = this->collider->rigidbody.GetRotation();
@@ -301,8 +307,6 @@ const void Boss::DrawCharacterInfo()const
 		printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
 		printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
 		printfDx("%d:SLASH					\n", this->state->CheckFlag(this->SLASH));
-		printfDx("%d:FLY_ATTACK				\n", this->state->CheckFlag(this->FLY_ATTACK));
-		printfDx("%d:HURRICANE_KICK			\n", this->state->CheckFlag(this->HURRICANE_KICK));
 		printfDx("%d:STAB				\n", this->state->CheckFlag(this->STAB));
 		printfDx("%d:ROTATE_PUNCH				\n", this->state->CheckFlag(this->ROTATE_PUNCH));
 	}
@@ -362,6 +366,55 @@ void Boss::SetPhase()
 	}
 }
 
+/// <summary>
+/// 怒り状態の設定
+/// </summary>
+void Boss::SetAngryState()
+{
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
+	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
+	
+	/*怒り状態*/
+	switch (this->angryState)
+	{
+	//怒り
+	case static_cast<int>(AngryStateType::ANGRY):
+		this->angryValue -= 0.01f;
+		if (this->angryValue < 0)
+		{
+			this->angryState = static_cast<int>(AngryStateType::TIRED);
+			this->tiredInterval = 0;
+		}
+		break;
+	//通常
+	case static_cast<int>(AngryStateType::NORMAL):
+		//攻撃が当たっていたら
+		if (collider.data->isHit)
+		{
+			//怒り値を増加
+			this->angryValue++;
+			//最大値から出したランダムな値が、現在の怒り値以内だったら状態を怒りにする
+			int randomAngryValue = GetRand(json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"]);
+			if (randomAngryValue < this->angryValue)
+			{
+				this->angryState = static_cast<int>(AngryStateType::ANGRY);
+			}
+		}
+		break;
+	//疲れ
+	case static_cast<int>(AngryStateType::TIRED):
+		//疲れ時間を増加
+		this->tiredInterval++;
+		//最大値を超えたら状態を通常に変更
+		if (this->tiredInterval >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_INTERVAL"])
+		{
+			this->angryState = static_cast<int>(AngryStateType::NORMAL);
+		}
+		break;
+	}
+}
 
 /// <summary>
 /// 回転率の設定
