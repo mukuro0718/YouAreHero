@@ -1,4 +1,6 @@
 #include <DxLib.h>
+#include <Effekseer.h>
+#include <EffekseerRendererDX11.h>
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "ActionParameter.h"
@@ -8,23 +10,23 @@
 #include "Boss.h"
 #include "HitStop.h"
 #include "BossAttack.h"
-#include "BossHurricaneKick.h"
-#include "BossHurricaneKickAction.h"
+#include "BossSlapAttack.h"
+#include "BossSlapAction.h"
 #include "PlayerManager.h"
 #include "EffectManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-BossHurricaneKickAction::BossHurricaneKickAction()
+BossSlapAction::BossSlapAction()
 {
-	//this->attack = new BossHurricaneKick(static_cast<int>(BossAttack::AttackType::HURRICANE_KICK));
+	this->attack = new BossSlapAttack(static_cast<int>(BossAttack::AttackType::MELEE));
 }
 
 /// <summary>
 /// デストラクタ
 /// </summary>
-BossHurricaneKickAction::~BossHurricaneKickAction()
+BossSlapAction::~BossSlapAction()
 {
 
 }
@@ -32,13 +34,13 @@ BossHurricaneKickAction::~BossHurricaneKickAction()
 /// <summary>
 /// 初期化
 /// </summary>
-void BossHurricaneKickAction::Initialize()
+void BossSlapAction::Initialize()
 {
-	this->isSelect				 = false;
-	this->isInitialize			 = false;
-	this->frameCount			 = 0;
+	this->isSelect = false;
+	this->isInitialize = false;
+	this->frameCount = 0;
 	this->parameter->desireValue = 0;
-	this->parameter->interval	 = 0;
+	this->parameter->interval = 0;
 	this->attack->Initialize();
 	this->hitStop->Initialize();
 }
@@ -46,13 +48,16 @@ void BossHurricaneKickAction::Initialize()
 /// <summary>
 /// パラメーターの計算
 /// </summary>
-void BossHurricaneKickAction::Update(Boss& _boss)
+void BossSlapAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
 	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
 
 	/*アニメーションの設定*/
-	//_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::HURRICANE_KICK));
+	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::SLAP));
+
+	/*攻撃タイプの設定*/
+	_boss.SetAttackType(Boss::AttackType::SLAP);
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
@@ -70,16 +75,16 @@ void BossHurricaneKickAction::Update(Boss& _boss)
 	/*ヒットストップの更新*/
 	if (this->attack->GetIsHitAttack())
 	{
-		auto& effect = Singleton<EffectManager>::GetInstance();
-		effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
+		//auto& effect = Singleton<EffectManager>::GetInstance();
+		//effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
 
-		//this->hitStop->SetHitStop
-		//(
-		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
-		//	static_cast<int>(HitStop::Type::STOP),
-		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
-		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)]
-		//);
+		this->hitStop->SetHitStop
+		(
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::SLAP)],
+			static_cast<int>(HitStop::Type::STOP),
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::SLAP)],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::SLAP)]
+		);
 		this->attack->OffIsHitAttack();
 	}
 	if (this->hitStop->IsHitStop()) return;
@@ -107,9 +112,7 @@ void BossHurricaneKickAction::Update(Boss& _boss)
 	}
 
 	/*アニメーション再生時間の設定*/
-	float animationPlayTime = _boss.GetNowAnimationPlayTime();
-	//カウントが終了していなければ
-	animationPlayTime += static_cast<float>(json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_ADD_PLAY_TIME"]);
+	float animationPlayTime = _boss.GetAnimationPlayTime();
 	_boss.SetAnimationPlayTime(animationPlayTime);
 
 	/*アニメーションの再生*/
@@ -117,9 +120,6 @@ void BossHurricaneKickAction::Update(Boss& _boss)
 
 	/*移動スピードの設定*/
 	float speed = 0.0f;
-	{
-		speed = json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_MOVE_SPEED"];
-	}
 
 	/*移動ベクトルを出す*/
 	{
@@ -143,48 +143,52 @@ void BossHurricaneKickAction::Update(Boss& _boss)
 	{
 		this->isInitialize = false;
 		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_INTERVAL"]);
+		_boss.DecAttackComboCount();
 	}
 }
 
 /// <summary>
 /// パラメーターの計算
 /// </summary>
-void BossHurricaneKickAction::CalcParameter(const Boss& _boss)
+void BossSlapAction::CalcParameter(const Boss& _boss)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	/*距離を求める*/
-	const VECTOR POSITION			= _boss.GetRigidbody().GetPosition();	//座標
-	const VECTOR MOVE_TARGET		= player.GetRigidbody().GetPosition();	//移動目標
+	const VECTOR POSITION = _boss.GetRigidbody().GetPosition();	//座標
+	const VECTOR MOVE_TARGET = player.GetRigidbody().GetPosition();	//移動目標
 	const VECTOR POSITION_TO_TARGET = VSub(POSITION, MOVE_TARGET);	//目標から現在の移動目標へのベクトル
-	const float  DISTANCE			= VSize(POSITION_TO_TARGET);			//距離
+	const float  DISTANCE = VSize(POSITION_TO_TARGET);			//距離
 
-	/*インターバルが残っていたら欲求値を０にする*/
-	if (this->parameter->interval < 0)
-	{
-		this->parameter->interval--;
-		this->parameter->desireValue = 0;
-	}
+	this->parameter->desireValue = 0;
 
 	/*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
-	else if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
+	if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
 	{
-		this->parameter->desireValue = 0;
+		return;
 	}
 
-	/*Phaseが1以上だったら欲求値を増加する*/
-	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_1))
+	/*Phaseが6以上だったら欲求値を増加する*/
+	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_6))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
-		//if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::HURRICANE_KICK)])
-		//{
-		//	this->parameter->desireValue += json.GetJson(JsonManager::FileType::ENEMY)["ADD_HURRICANE_KICK_VALUE"];
-		//}
-		//else
-		//{
-		//	this->parameter->desireValue = 0;
-		//}
+		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::SLAP)])
+		{
+			Boss::AttackType type = _boss.GetPrevAttackType();
+			if (_boss.GetAttackComboCount() == 0)
+			{
+				this->parameter->desireValue = 1;
+			}
+			else if (type == Boss::AttackType::STAB)
+			{
+				this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+			}
+			else
+			{
+				this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DESIRE_VALUE"];
+			}
+		}
 	}
 }

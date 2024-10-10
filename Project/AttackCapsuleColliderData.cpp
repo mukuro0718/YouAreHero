@@ -2,6 +2,7 @@
 #include "UseSTL.h"
 #include "Rigidbody.h"
 #include "ColliderData.h"
+#include "CharacterData.h"
 #include "AttackData.h"
 #include "AttackCapsuleColliderData.h"
 
@@ -13,8 +14,11 @@ AttackCapsuleColliderData::AttackCapsuleColliderData(const ColliderData::Priorit
 {
 	//ˆ—‚È‚µ
 }
-void AttackCapsuleColliderData::OnHit()
+void AttackCapsuleColliderData::OnHit(const CharacterData& _data)
 {
 	this->data->isDoHitCheck = false;
-	this->data->isHitAttack = true;
+	if (!_data.isInvinvible && !_data.isGuard)
+	{
+		this->data->isHitAttack = true;
+	}
 }

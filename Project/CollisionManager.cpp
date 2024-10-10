@@ -445,7 +445,7 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
 		if (primaryColliderData.data->isDoHitCheck)
 		{
-			primaryColliderData.OnHit();
+			primaryColliderData.OnHit(*secondaryColliderData.data);
 			secondaryColliderData.OnHit(*primaryColliderData.data, primaryColliderData.GetNextPosition());
 			if (_primary.GetTag() == GameObjectTag::BOSS_ATTACK && _secondary.GetTag() == GameObjectTag::PLAYER)
 			{
@@ -462,7 +462,7 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
 		if (primaryColliderData.data->isDoHitCheck)
 		{
-			primaryColliderData.OnHit();
+			primaryColliderData.OnHit(*secondaryColliderData.data);
 			secondaryColliderData.OnHit(*primaryColliderData.data,primaryColliderData.GetNextPosition());
 			if (_primary.GetTag() == GameObjectTag::BOSS_ATTACK && _secondary.GetTag() == GameObjectTag::PLAYER)
 			{

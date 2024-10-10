@@ -8,7 +8,8 @@ public:
 	int hp;//HP
 	bool isHit;//UŒ‚‚Éƒqƒbƒg‚µ‚½‚©
 	VECTOR hitPosition;
-	bool isCutDamage;
+	bool isGuard;
+	bool isInvinvible;
 	int playerReaction;
 	int hitStopTime;
 	int hitStopType;

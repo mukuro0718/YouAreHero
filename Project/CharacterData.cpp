@@ -9,7 +9,8 @@ CharacterData::CharacterData()
 	: hp(0)
 	, isHit(false)
 	, hitPosition(VGet(0.0f, 0.0f, 0.0f))
-	, isCutDamage	(false)
+	, isInvinvible	(false)
+	, isGuard	(false)
 	, playerReaction(0)
 {
 

@@ -11,10 +11,13 @@ public:
 	BossMap();//コンストラクタ
 	~BossMap();//デストラクタ
 
-	void		Initialize();		//初期化
-	void		Finalize();		//後処理
-	void		Update();		//更新
-	const void	Draw()const;	//描画
+		  void	Initialize		();		//初期化
+		  void	Finalize		();		//後処理
+		  void	Update			();		//更新
+	const void	Draw			()const;//描画
+
+	/*getter*/
+	const int	GetModelHandle	()const { return this->modelHandle; }
 
 private:
 	/*メンバ変数*/

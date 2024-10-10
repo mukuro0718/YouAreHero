@@ -5,10 +5,13 @@
 #include "DeleteInstance.h"
 #include "BossAttack.h"
 #include "BossSlashAttack.h"
-#include "BossHurricaneKick.h"
-#include "BossJumpAttack.h"
-#include "BossFlyAttack.h"
-#include "BossRotatePunch.h"
+#include "BossStabAttack.h"
+#include "BossRotatePunchAttack.h"
+#include "BossSlapAttack.h"
+#include "BossMeleeAttack.h"
+#include "BossKickAttack.h"
+#include "BossMeleeCombo3Attack.h"
+#include "BossSlashCombo2Attack.h"
 #include "BossAttackManager.h"
 #include "EnemyManager.h"
 #include "PlayerManager.h"
@@ -18,11 +21,14 @@
 /// </summary>
 BossAttackManager::BossAttackManager()
 {
-	this->attack.emplace_back(new BossSlashAttack	(static_cast<int>(AttackType::SLASH)));
-	this->attack.emplace_back(new BossFlyAttack		(static_cast<int>(AttackType::FLY_ATTACK)));
-	this->attack.emplace_back(new BossHurricaneKick	(static_cast<int>(AttackType::HURRICANE_KICK)));
-	this->attack.emplace_back(new BossJumpAttack	(static_cast<int>(AttackType::JUMP_ATTACK)));
-	this->attack.emplace_back(new BossRotatePunch	(static_cast<int>(AttackType::ROTATE_PUNCH)));
+	this->attack.emplace_back(new BossSlashAttack		(static_cast<int>(AttackType::SLASH)));
+	this->attack.emplace_back(new BossStabAttack		(static_cast<int>(AttackType::STAB)));
+	this->attack.emplace_back(new BossRotatePunchAttack	(static_cast<int>(AttackType::ROTATE_PUNCH)));
+	this->attack.emplace_back(new BossSlapAttack		(static_cast<int>(AttackType::SLAP)));
+	this->attack.emplace_back(new BossMeleeAttack		(static_cast<int>(AttackType::MELEE)));
+	this->attack.emplace_back(new BossKickAttack		(static_cast<int>(AttackType::KICK)));
+	this->attack.emplace_back(new BossMeleeCombo3Attack	(static_cast<int>(AttackType::MELEE_COMBO_3)));
+	this->attack.emplace_back(new BossSlashCombo2Attack	(static_cast<int>(AttackType::SLASH_COMBO_2)));
 }
 
 /// <summary>

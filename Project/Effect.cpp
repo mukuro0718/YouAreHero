@@ -4,13 +4,14 @@
 #include "Effect.h"
 
 Effect::Effect(const int _effectResourceHandle)
-	: effectResourceHandle(_effectResourceHandle)
-	, playingEffectHandle(-1)
-	, frameCount(0)
-	, isPlayEffect(false)
-	, startFrame(0)
-	, endFrame(0)
-	, transform(nullptr)
+	: effectResourceHandle	(_effectResourceHandle)
+	, isPlayEffect			(false)
+	, transform				(nullptr)
+	, playingEffectHandle	(-1)
+	, frameCount			(0)
+	, startFrame			(0)
+	, endFrame				(0)
+	, firstFrame			(0)
 {
 	this->transform = new Transform();
 }
@@ -61,7 +62,7 @@ void Effect::Update()
 	if (this->frameCount >= this->endFrame)
 	{
 		this->isPlayEffect = false;
-		this->frameCount = 0;
+		this->frameCount = this->firstFrame;
 		StopEffekseer3DEffect(this->playingEffectHandle);
 		this->playingEffectHandle = -1;
 	}

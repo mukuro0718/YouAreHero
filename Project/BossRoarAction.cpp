@@ -28,10 +28,14 @@ BossRoarAction::~BossRoarAction()
 /// </summary>
 void BossRoarAction::Initialize()
 {
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
 	this->isSelect				 = false;
 	this->isInitialize			 = false;
+	this->isPriority			 = true;
 	this->frameCount			 = 0;
-	this->parameter->desireValue = ActionParameter::MAX_PARAMETER;
+	this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 	this->parameter->interval	 = 0;
 }
 
@@ -41,16 +45,13 @@ void BossRoarAction::Initialize()
 void BossRoarAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
-	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
+	if (_boss.GetHP() <= 0) { this->isSelect = false; return; }
 
 	/*選択されていたら欲求値を０にする*/
 	this->parameter->desireValue = 0;
 
 	/*アニメーションの設定*/
 	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::ROAR));
-
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*使用する値の準備*/
 	const float  SPEED		= 0.0f;								 //スピード
@@ -93,21 +94,15 @@ void BossRoarAction::Update(Boss& _boss)
 /// </summary>
 void BossRoarAction::CalcParameter(const Boss& _boss)
 {
-	/*追加する欲求値*/
-	int addDesireValue = 0;
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
 
-	/*もしフェーズが異なっていたら欲求値を最大にする*/
-	if (_boss.GetNowPhase() != _boss.GetPrevPhase())
+	this->parameter->desireValue = 0;
+	this->isPriority = false;
+
+	/*もしHPが０以下だったら欲求値を０にして優先フラグを下す*/
+	if (_boss.GetHP() <= 0)
 	{
-		addDesireValue = ActionParameter::MAX_PARAMETER;
+		return;
 	}
-
-	/*HPが０以下だったら欲求値を０にする*/
-	else if (_boss.GetHP() <= 0)
-	{
-		addDesireValue = -ActionParameter::MAX_PARAMETER;
-	}
-
-	/*欲求値を増加させる*/
-	this->parameter->AddDesireValue(addDesireValue);
 }

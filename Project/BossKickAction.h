@@ -1,21 +1,19 @@
 //=============================================
-// @brief ボス回転蹴り攻撃アクション
+// @brief ボス飛び攻撃アクション
 //=============================================
 #pragma once
 
 class Boss;
 class BossAction;
-class BossHurricaneKickAction : public BossAction
+class BossKickAction : public BossAction
 {
 public:
-	BossHurricaneKickAction();
-	virtual ~BossHurricaneKickAction();
+	BossKickAction();
+	virtual ~BossKickAction();
 
 	void Initialize()				  override;//初期化
 	void Update(Boss& _boss)	override;//パラメーターの計算
 	void CalcParameter(const Boss& _boss) override;//パラメーターの計算
-
 private:
-
 };
 

@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "EffekseerForDXLib.h"
 #include <iostream>
 #include "UseSTL.h"
 #include "UseJson.h"
@@ -22,6 +23,8 @@
 #include "Debug.h"
 #include "EffectManager.h"
 #include "HitStop.h"
+#include "Shadow.h"
+#include "MapManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -103,11 +106,11 @@ void Player::Initialize()
 		  VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_ROTATION"]);//回転率
 		  rotation.y	  = rotation.y * 180.0f / DX_PI_F;
 	/*変数の初期化*/
-	this->isAlive			 = false;
-	this->isDraw			 = false;
+	this->isAlive			 = true;
+	this->isDraw			 = true;
 	this->isGround			 = false;
 	this->isHeal			 = false;
-	this->isInitialize		 = false;
+	this->isInitialize		 = true;
 	this->speed				 = 0.0f;
 	this->entryInterval		 = 0;
 	this->moveVectorRotation = Gori::ORIGIN;
@@ -138,7 +141,8 @@ void Player::Initialize()
 	collider.radius		= json.GetJson(JsonManager::FileType::PLAYER)["RADIUS"];			//カプセルの半径
 	data.hp				= json.GetJson(JsonManager::FileType::PLAYER)["HP"];				//HP
 	data.stamina		= json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];			//スタミナ
-	data.isCutDamage	= false;															//ダメージをカットするか
+	data.isInvinvible	= false;															//ダメージをカットするか
+	data.isGuard		= false;															//ダメージをカットするか
 	data.isHit			= false;															//攻撃がヒットしたか
 	this->healOrbNum	= json.GetJson(JsonManager::FileType::PLAYER)["MAX_HEAL_ORB_NUM"];	//最大回復オーブ数
 
@@ -166,69 +170,47 @@ void Player::Update()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
-	if (!this->isInitialize)
+	if (this->hitStop->IsHitStop()) return;
+
+	/*フラグの初期化*/
+	this->state->ClearFlag(this->MASK_ALWAYS_TURN_OFF);
+
+	/*アクション*/
+	Death();//デス処理
+	if (!this->state->CheckFlag(this->DEATH))
 	{
-		if (this->entryInterval == 0)
+		Reaction();//リアクション処理
+		Attack();//攻撃処理
+		Move();//移動処理
+		Rolling();//回避処理
+		Block();//防御処理
+		Heal();//回復処理
+
+	//もし何もアクションをしていなかったらIdleを入れる
+		if (DontAnyAction())
 		{
-			auto& effect = Singleton<EffectManager>::GetInstance();
-			effect.OnIsEffect(EffectManager::EffectType::PLAYER_ENTRY);
+			this->state->SetFlag(this->IDLE);
 		}
-		this->entryInterval++;
-		if (this->entryInterval >= json.GetJson(JsonManager::FileType::PLAYER)["DRAW_INTERVAL"])
+		else
 		{
-			this->isDraw = true;
+			this->state->ClearFlag(this->IDLE);
 		}
-		if (this->entryInterval >= json.GetJson(JsonManager::FileType::PLAYER)["ENTRY_INTERVAL"])
+
+		//状態が歩きまたは待機の時のみスタミナを回復する（その他スタミナ消費はその場所で行っている
+		//スタミナ計算の場所が散らばっているので統一したい
+		if (!this->state->CheckFlag(this->MASK_CANT_RECOVERY_STAMINA))
 		{
-			this->entryInterval = 0;
-			this->isAlive = true;
-			this->isInitialize = true;
+			CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
 		}
 	}
 	else
 	{
-		if (this->hitStop->IsHitStop()) return;
-
-		/*フラグの初期化*/
-		this->state->ClearFlag(this->MASK_ALWAYS_TURN_OFF);
-
-		/*アクション*/
-		Death();//デス処理
-		if (!this->state->CheckFlag(this->DEATH))
-		{
-			Reaction();//リアクション処理
-			Attack();//攻撃処理
-			Move();//移動処理
-			Rolling();//回避処理
-			Block();//防御処理
-			Heal();//回復処理
-
-		//もし何もアクションをしていなかったらIdleを入れる
-			if (DontAnyAction())
-			{
-				this->state->SetFlag(this->IDLE);
-			}
-			else
-			{
-				this->state->ClearFlag(this->IDLE);
-			}
-
-			//状態が歩きまたは待機の時のみスタミナを回復する（その他スタミナ消費はその場所で行っている
-			//スタミナ計算の場所が散らばっているので統一したい
-			if (!this->state->CheckFlag(this->MASK_CANT_RECOVERY_STAMINA))
-			{
-				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
-			}
-		}
-		else
-		{
-			this->speed = 0.0f;
-			VECTOR direction = this->collider->rigidbody.GetDirection();
-			VECTOR aimVelocity = VScale(direction, this->speed);
-			VECTOR prevVelocity = this->collider->rigidbody.GetVelocity();
-			VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);
-			this->collider->rigidbody.SetVelocity(newVelocity);
-		}
+		this->speed = 0.0f;
+		VECTOR direction = this->collider->rigidbody.GetDirection();
+		VECTOR aimVelocity = VScale(direction, this->speed);
+		VECTOR prevVelocity = this->collider->rigidbody.GetVelocity();
+		VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);
+		this->collider->rigidbody.SetVelocity(newVelocity);
 	}
 
 	if (this->isDraw)
@@ -246,7 +228,9 @@ void Player::Update()
 /// </summary>
 const void Player::DrawCharacterInfo()const
 {
-	/*シングルトンクラスのインスタンスの取得*/
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& shadow = Singleton<Shadow>::GetInstance();
+	auto& map = Singleton<MapManager>::GetInstance();
 	auto& camera = Singleton<CameraManager>::GetInstance();
 	auto& debug = Singleton<Debug>::GetInstance();
 
@@ -271,6 +255,11 @@ const void Player::DrawCharacterInfo()const
 		auto& characterCollider = dynamic_cast<CharacterColliderData&> (*this->collider);
 		printfDx("%d:REACTION_TYPE				\n", characterCollider.data->playerReaction);
 
+	}
+	if (this->isDraw)
+	{
+		/*かげの描画*/
+		shadow.Draw(map.GetStageModelHandle(), this->collider->rigidbody.GetPosition(), this->SHADOW_HEIGHT, this->SHADOW_SIZE);
 	}
 }
 
@@ -456,6 +445,7 @@ void Player::Reaction()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>  ::GetInstance();
+	auto& effect = Singleton<EffectManager>  ::GetInstance();
 	
 	if (this->state->CheckFlag(this->MASK_REACTION) && this->animation->GetIsChangeAnim())
 	{
@@ -471,6 +461,7 @@ void Player::Reaction()
 		//ガード中
 		if (this->state->CheckFlag(this->BLOCK))
 		{
+			effect.OnIsEffect(EffectManager::EffectType::PLAYER_GUARD_HIT);
 			this->state->ClearFlag(this->MASK_ALL);
 			this->state->SetFlag(this->BLOCK_REACTION);
 			CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]);
@@ -479,8 +470,11 @@ void Player::Reaction()
 		{
 			auto& data = dynamic_cast<PlayerData&>(*collider.data);
 
-			if (!data.isCutDamage)
+			if (!data.isInvinvible)
 			{
+				auto& effect = Singleton<EffectManager>::GetInstance();
+				effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
+
 				this->state->ClearFlag(this->MASK_ALL);
 				this->state->SetFlag(this->reactionMap[data.playerReaction]);
 				this->speed = json.GetJson(JsonManager::FileType::PLAYER)["REACTION_SPEED"][data.playerReaction];
@@ -514,8 +508,6 @@ void Player::Death()
 	{
 		if (this->animation->GetIsChangeAnim())
 		{
-			auto& effect = Singleton<EffectManager>::GetInstance();
-			effect.OnIsEffect(EffectManager::EffectType::PLAYER_ENTRY);
 			this->isAlive = false;
 			this->isDraw = false;
 		}
@@ -554,12 +546,12 @@ void Player::Block()
 	if (pad & PAD_INPUT_7)
 	{
 		this->state->SetFlag(this->BLOCK);
-		data.isCutDamage = true;
+		data.isGuard = true;
 	}
 	else
 	{
 		this->state->ClearFlag(this->BLOCK);
-		data.isCutDamage = false;
+		data.isGuard = false;
 	}
 
 }
@@ -641,7 +633,7 @@ void Player::Rolling()
 	{
 		auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 		auto& data = dynamic_cast<PlayerData&>(*collider.data);
-		data.isCutDamage = false;
+		data.isInvinvible = false;
 	}
 
 	/*今回避できるか*/
@@ -656,7 +648,7 @@ void Player::Rolling()
 		this->isCount[static_cast<int>(FrameCountType::INVINCIBLE)] = true;
 		auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 		auto& data = dynamic_cast<PlayerData&>(*collider.data);
-		data.isCutDamage = true;
+		data.isInvinvible = true;
 		CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["AVOID_STAMINA_CONSUMPTION"]);
 		this->speed = json.GetJson(JsonManager::FileType::PLAYER)["ROLLING_SPEED"];
 	}

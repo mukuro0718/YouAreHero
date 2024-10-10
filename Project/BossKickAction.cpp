@@ -1,4 +1,6 @@
 #include <DxLib.h>
+#include <Effekseer.h>
+#include <EffekseerRendererDX11.h>
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "ActionParameter.h"
@@ -8,30 +10,30 @@
 #include "Boss.h"
 #include "HitStop.h"
 #include "BossAttack.h"
-#include "BossFlyAttack.h"
-#include "BossFlyAction.h"
+#include "BossKickAttack.h"
+#include "BossKickAction.h"
 #include "PlayerManager.h"
 #include "EffectManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-BossFlyAction::BossFlyAction()
+BossKickAction::BossKickAction()
 {
-	this->attack = new BossFlyAttack(static_cast<int>(BossAttack::AttackType::SLASH));
+	this->attack = new BossKickAttack(static_cast<int>(BossAttack::AttackType::KICK));
 }
 
 /// <summary>
 /// デストラクタ
 /// </summary>
-BossFlyAction::~BossFlyAction()
+BossKickAction::~BossKickAction()
 {
 
 }
 /// <summary>
 /// 初期化
 /// </summary>
-void BossFlyAction::Initialize()
+void BossKickAction::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -48,13 +50,16 @@ void BossFlyAction::Initialize()
 /// <summary>
 /// パラメーターの計算
 /// </summary>
-void BossFlyAction::Update(Boss& _boss)
+void BossKickAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
 	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
 
 	/*アニメーションの設定*/
-	//_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::FLY_ATTACK));
+	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::KICK));
+
+	/*攻撃タイプの設定*/
+	_boss.SetAttackType(Boss::AttackType::KICK);
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
@@ -64,16 +69,13 @@ void BossFlyAction::Update(Boss& _boss)
 	/*ヒットストップの更新*/
 	if (this->attack->GetIsHitAttack())
 	{
-		auto& effect = Singleton<EffectManager>::GetInstance();
-		effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
-
-		//this->hitStop->SetHitStop
-		//(
-		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
-		//	static_cast<int>(HitStop::Type::STOP),
-		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)],
-		//	json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::FLY_ATTACK)]
-		//);
+		this->hitStop->SetHitStop
+		(
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::KICK)],
+			static_cast<int>(HitStop::Type::STOP),
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::KICK)],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::KICK)]
+		);
 		this->attack->OffIsHitAttack();
 	}
 	if (this->hitStop->IsHitStop()) return;
@@ -117,12 +119,8 @@ void BossFlyAction::Update(Boss& _boss)
 	{
 		VECTOR nowRotation = _boss.GetRigidbody().GetRotation(); //回転率
 		VECTOR direction = VGet(0.0f, 0.0f, 0.0f);
-		float speed = _boss.GetSpeed();
+		float speed = 0.0f;
 
-		//スピードを加速
-		speed += static_cast<float>(json.GetJson(JsonManager::FileType::ENEMY)["FLY_ADD_MOVE_SPEED"]);
-		//スピードの設定
-		_boss.SetSpeed(speed);
 		//回転率をもとに移動ベクトルを出す
 		direction = VGet(-sinf(nowRotation.y), 0.0f, -cosf(nowRotation.y));
 		//移動ベクトルを正規化
@@ -153,13 +151,14 @@ void BossFlyAction::Update(Boss& _boss)
 	{
 		this->isInitialize = false;
 		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["FLY_INTERVAL"]);
+		_boss.DecAttackComboCount();
 	}
 }
 
 /// <summary>
 /// パラメーターの計算
 /// </summary>
-void BossFlyAction::CalcParameter(const Boss& _boss)
+void BossKickAction::CalcParameter(const Boss& _boss)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -171,31 +170,30 @@ void BossFlyAction::CalcParameter(const Boss& _boss)
 	const VECTOR POSITION_TO_TARGET = VSub(POSITION, MOVE_TARGET);	//目標から現在の移動目標へのベクトル
 	const float  DISTANCE = VSize(POSITION_TO_TARGET);			//距離
 
-	/*インターバルが残っていたら欲求値を０にする*/
-	if (this->parameter->interval < 0)
-	{
-		this->parameter->interval--;
-		this->parameter->desireValue = 0;
-	}
-
+	this->parameter->desireValue = 0;
+	
 	/*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
-	else if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
+	if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
 	{
-		this->parameter->desireValue = 0;
+		return;
 	}
 
-	/*Phaseが2以上だったら欲求値を増加する*/
-	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_1))
+	/*Phaseが8以上だったら欲求値を増加する*/
+	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_8))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
-		//if (DISTANCE >= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::FLY_ATTACK)])
-		//{
-		//	this->parameter->desireValue += json.GetJson(JsonManager::FileType::ENEMY)["ADD_FLY_VALUE"];
-		//}
-		//else
-		//{
-		//	this->parameter->desireValue = 0;
-		//}
+		if (DISTANCE >= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::KICK)])
+		{
+			Boss::AttackType type = _boss.GetPrevAttackType();
+			if (_boss.GetAttackComboCount() == 0)
+			{
+				this->parameter->desireValue = 1;
+			}
+			else
+			{
+				this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DESIRE_VALUE"];
+			}
+		}
 	}
 
 }

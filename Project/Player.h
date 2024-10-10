@@ -23,6 +23,9 @@ public:
 	const int	GetHealOrbNum()const { return this->healOrbNum; }
 private:
 	/*静的定数*/
+		/*静的定数*/
+	const float SHADOW_HEIGHT = 10.0f;
+	const float SHADOW_SIZE = 6.0f;
 	static constexpr int COUNT_NUM = 3;//フレームカウントの数
 	//プレイヤーの状態
 	static constexpr unsigned int IDLE			  = (1 << 0);  //待機

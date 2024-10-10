@@ -15,6 +15,6 @@ public:
 	void Update(Boss& _boss)				override;//パラメータの計算
 	void CalcParameter(const Boss& _boss)	override;//パラメーターの計算
 private:
-	bool isPrevSelect;
+	int maxFrameCount;
 };
 

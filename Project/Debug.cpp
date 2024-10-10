@@ -66,7 +66,7 @@ void Debug::ReloadingJsonFile()
 			for (int i = 0; i < isShowDebugInfo.size(); i++)
 			{
 				//フラグが立っていなければ早期リターン
-				if (!isShowDebugInfo[i]) return;
+				if (!isShowDebugInfo[i]) continue;
 				//指定されたJsonファイルを再読み込み
 				static_cast<JsonManager::FileType>(i);
 				json.ReloadingJsonFile(static_cast<JsonManager::FileType>(this->jsonIndexMap[i]));

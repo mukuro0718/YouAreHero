@@ -43,6 +43,8 @@ Character::~Character()
 /// </summary>
 const void Character::Draw() const
 {
+
+
 	/*キャラクター情報の表示*/
 	DrawCharacterInfo();
 

@@ -24,21 +24,37 @@ Skydome::~Skydome()
 
 }
 
+/// <summary>
+/// 初期化
+/// </summary>
 void Skydome::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*jsonデータを各定数型に代入*/
-	const VECTOR position = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_POSITION"]);
-	const VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_ROTATION"]);
-	const VECTOR scale = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_SCALE"]);
+	const VECTOR POSITION = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_POSITION"]);
+	const VECTOR SCALE = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_SCALE"]);
+		  VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_ROTATION"]);
+	rotation.y = rotation.y * (DX_PI_F / 180.0f);
 
 
 	/*モデルのトランスフォームの設定*/
-	this->position = position;
-	this->rotation = rotation;
-	this->scale = scale;
+	this->position	= POSITION;
+	this->rotation	= rotation;
+	this->scale		= SCALE;
+}
+
+/// <summary>
+/// 更新
+/// </summary>
+void Skydome::Update()
+{
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
+	/*回転*/
+	this->rotation.y += static_cast<float>(json.GetJson(JsonManager::FileType::MAP)["ADD_SKYDOME_ROTATE"]);
 }
 
 /// <summary>

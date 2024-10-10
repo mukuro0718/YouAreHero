@@ -8,6 +8,7 @@
 #include "BossEntryEffect.h"
 #include "BossImpactEffect.h"
 #include "PlayerEntryEffect.h"
+#include "PlayerGuardHitEffect.h"
 #include "EffectManager.h"
 #include "EnemyManager.h"
 #include "BossAttackManager.h"
@@ -22,11 +23,8 @@ EffectManager::EffectManager()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
-	this->effect.emplace_back(new BossSlashEffect		 (asset.GetEffect(LoadingAsset::EffectType::BOSS_SLASH)));
-	this->effect.emplace_back(new BossRotatePunchEffect(asset.GetEffect(LoadingAsset::EffectType::BOSS_ROTATE_PUNCH)));
-	this->effect.emplace_back(new BossEntryEffect		 (asset.GetEffect(LoadingAsset::EffectType::BOSS_ENTRY)));
 	this->effect.emplace_back(new BossImpactEffect		 (asset.GetEffect(LoadingAsset::EffectType::BOSS_IMPACT)));
-	this->effect.emplace_back(new PlayerEntryEffect	 (asset.GetEffect(LoadingAsset::EffectType::PLAYER_ENTRY)));
+	this->effect.emplace_back(new PlayerGuardHitEffect(asset.GetEffect(LoadingAsset::EffectType::PLAYER_GUARD_HIT)));
 }
 
 /// <summary>

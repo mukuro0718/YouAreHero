@@ -27,6 +27,7 @@ protected:
 	bool isPlayEffect;//エフェクトを再生するか
 	int startFrame;
 	int endFrame;
+	int firstFrame;
 	Transform* transform;
 	
 };

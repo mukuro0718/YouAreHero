@@ -42,10 +42,7 @@ void BossChaseAction::Initialize()
 void BossChaseAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
-	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
-
-	/*選択されていたら欲求値を０にする*/
-	this->parameter->desireValue = 0;
+	if (_boss.GetHP() <= 0) { this->isSelect = false; return; }
 
 	/*アニメーションの設定*/
 	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::WALK));
@@ -114,18 +111,24 @@ void BossChaseAction::CalcParameter(const Boss& _boss)
 	const VECTOR POSITION_TO_TARGET		= VSub(POSITION, MOVE_TARGET);	//目標から現在の移動目標へのベクトル
 	const float  DISTANCE				= VSize(POSITION_TO_TARGET);			//距離
 
+	this->parameter->desireValue = 0;
+
 	/*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
 	if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
 	{
-		this->parameter->desireValue = 0;
+		return;
 	}
+
 	/*もしボスとプレイヤーの間が定数以上離れていたら欲求値を倍増させる*/
 	else if (DISTANCE >= json.GetJson(JsonManager::FileType::ENEMY)["MOVE_DISTANCE"])
 	{
-		this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["ADD_CHASE_VALUE"];
-	}
-	else
-	{
-		this->parameter->desireValue = 0;
+		if (_boss.GetAttackComboCount() == 0)
+		{
+			this->parameter->desireValue = 0;
+		}
+		else
+		{
+			this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+		}
 	}
 }

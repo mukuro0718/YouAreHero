@@ -10,8 +10,9 @@ public:
 	Skydome();
 	~Skydome();
 
-	void Initialize();		//‰Šú‰»
-	const void Draw()const;	//•`‰æ
+		  void Initialize();		//‰Šú‰»
+		  void Update	 ();		//XV
+	const void Draw		 ()const;	//•`‰æ
 private:
 	int model;//ƒ‚ƒfƒ‹
 	VECTOR position;

@@ -12,7 +12,7 @@
 /// コンストラクタ
 /// </summary>
 BossIdleAction::BossIdleAction()
-	: isPrevSelect(false)
+	: maxFrameCount(0)
 {
 
 }
@@ -31,10 +31,11 @@ void BossIdleAction::Initialize()
 {
 	this->isSelect				 = false;
 	this->isInitialize			 = false;
+	this->isPriority			 = false;
 	this->frameCount			 = 0;
-	this->isPrevSelect			 = false;
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
+	this->maxFrameCount			 = 0;
 }
 
 /// <summary>
@@ -43,10 +44,7 @@ void BossIdleAction::Initialize()
 void BossIdleAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
-	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
-
-	/*選択されていたら欲求値を０にする*/
-	this->parameter->desireValue = 0;
+	if (_boss.GetHP() <= 0) { this->isSelect = false; return; }
 
 	/*アニメーションの設定*/
 	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::IDLE));
@@ -80,11 +78,12 @@ void BossIdleAction::Update(Boss& _boss)
 	_boss.PlayAnimation();
 
 	//フレーム計測
-	bool isEndCount = FrameCount(json.GetJson(JsonManager::FileType::ENEMY)["IDLE_FRAME_COUNT"]);
+	bool isEndCount = FrameCount(this->maxFrameCount);
 	//フレーム計測が終了していたら
 	if (isEndCount)
 	{
 		OffIsSelect(0);
+		_boss.SetAttackComboCount();
 	}
 }
 
@@ -93,16 +92,27 @@ void BossIdleAction::Update(Boss& _boss)
 /// </summary>
 void BossIdleAction::CalcParameter(const Boss& _boss)
 {
-	///*追加する欲求値*/
-	//int addDesireValue = this->parameter->BASE_ADD_DESIRE_VALUE;
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
 
-	///*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
-	//if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
+	this->parameter->desireValue = 0;
+	this->isPriority = false;
+
+	///*もしHPが０以下だったら欲求値を０にして優先フラグを下す*/
+	//if (_boss.GetHP() <= 0)
 	//{
-	//	addDesireValue = -this->parameter->MAX_PARAMETER;
+	//	this->isPriority = false;
+	//	return;
 	//}
 
-	///*欲求値を増加させる*/
-	//this->parameter->AddDesireValue(addDesireValue);
-	this->parameter->desireValue = 0;
+	///*攻撃コンボが残っていなかったら欲求値を最大にする。*/
+	//else if (_boss.GetAttackComboCount() == 0)
+	//{
+	//	this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+	//	this->isPriority = true;
+	//}
+
+	///*ボスのAngryTypeをもとに最大フレームも決めておく*/
+	//int angryState = _boss.GetAngryState();
+	//this->maxFrameCount = json.GetJson(JsonManager::FileType::ENEMY)["IDLE_ACTION_MAX_FRAME"][angryState];
 }

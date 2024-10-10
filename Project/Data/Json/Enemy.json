@@ -5,15 +5,17 @@
   "CHASE_INTERVAL": 120,
   "IDLE_INTERVAL": 120,
 
-  "ADD_CHASE_VALUE": 5.0,
-  "ADD_HURRICANE_KICK_VALUE": 5.0,
-  "ADD_ROTATE_PUNCH_VALUE": 5.0,
-  "ADD_STAB_VALUE": 5.0,
-  "ADD_FLY_VALUE": 5.0,
-  "ADD_SLASH_VALUE": 5.0,
+  "MAX_DESIRE_VALUE": 100,
+  "NORMAL_DESIRE_VALUE": 10,
 
   "MAX_ANGRY_VALUE": 100,
   "MAX_TIRED_INTERVAL": 600,
+
+  "IDLE_ACTION_MAX_FRAME": [ 60, 30, 80 ],
+  "REST_ACTION_MAX_FRAME": [ 120, 60, 180 ],
+  "REST_ACTION_MAX_DESIRE_VALUE": [ 100, 120, 80 ],
+
+  "ATTACK_COMBO_COUNT": [ 1, 1, 1, 1, 2, 2, 3, 3, 4, 5 ],
 
   "ORIGIN": [ 0.0, 0.0, 0.0 ],
   "INIT_DIRECTION": [ 0.0, 0.0, -1.0 ],
@@ -21,13 +23,12 @@
   "MAX_HIT_POSITION_OFFSET": [ 5.0, 5.0, 5.0 ],
   "MIN_HIT_POSITION_OFFSET": [ -5.0, -5.0, -5.0 ],
   "INIT_POSITION": [ 0.0, 0.0, 0.0 ],
-  "INIT_SCALE": [ 0.09, 0.09, 0.09 ],
+  "INIT_SCALE": [ 0.1, 0.1, 0.1 ],
   "INIT_ROTATION": [ 0.0, 0.0, 0.0 ],
   "COMBO_COUNT": [ 2, 3, 5 ],
   "HIT_RADIUS": 4.0,
   "HIT_HEIGHT": 10.0,
   "HP": 1000,
-  "ATTACK_COMBO_COUNT": [ 1, 2, 3 ],
   "ATTACK_COMBO_INDEX_OFFSET": [ 0, 2, 5 ],
   "SPEED": 0.8,
   "SIDE_WALK_SPEED": 0.1,
@@ -56,9 +57,19 @@
     "Asset/Animation/Boss/Base/WalkRight.mv1",
     "Asset/Animation/Boss/Slash.mv1",
     "Asset/Animation/Boss/Stab.mv1",
-    "Asset/Animation/Boss/RotatePunch.mv1"
+    "Asset/Animation/Boss/RotatePunch.mv1",
+    "Asset/Animation/Boss/Slap.mv1",
+    "Asset/Animation/Boss/Melee.mv1",
+    "Asset/Animation/Boss/Kick.mv1",
+    "Asset/Animation/Boss/MeleeCombo3.mv1",
+    "Asset/Animation/Boss/SlashCombo.mv1"
   ],
   "ANIMATION_INDEX": [
+    0,
+    0,
+    0,
+    0,
+    0,
     0,
     0,
     0,
@@ -76,9 +87,14 @@
     0.8,
     0.5,
     0.5,
-    0.8,
-    0.8,
-    0.8
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
   ],
 
   "ATTACK_OFFSET": [
@@ -86,6 +102,11 @@
     6.0,
     0.0,
     8.0,
+    10.0,
+    10.0,
+    10.0,
+    10.0,
+    10.0,
     10.0
   ],
   "ATTACK_OFFSET_Y": [
@@ -93,6 +114,11 @@
     6.0,
     6.0,
     6.0,
+    8.0,
+    8.0,
+    8.0,
+    8.0,
+    8.0,
     8.0
   ],
   "ATTACK_RADIUS": [
@@ -100,6 +126,11 @@
     5.0,
     5.0,
     5.0,
+    3.0,
+    3.0,
+    3.0,
+    3.0,
+    3.0,
     3.0
   ],
   "ATTACK_DAMAGE": [
@@ -107,31 +138,54 @@
     50,
     10,
     60,
+    40,
+    40,
+    40,
+    40,
+    40,
     40
   ],
   "START_HIT_CHECK_FRAME": [
-    50,
+    40,
     10,
-    80,
-    45,
-    35
+    35,
+    32,
+    35,
+    50,
+
+    32,
+    36
   ],
 
   "END_HIT_CHECK_FRAME": [
-    60,
+    50,
     140,
-    140,
-    60,
-    80
+    38,
+    35,
+    37,
+    52,
+
+    63,
+    103
   ],
   "OFFENSE_HIT_STOP_TIME": [
-    8,
+    9,
     8,
     3,
     8,
+    5,
+    5,
+    5,
+    5,
+    5,
     5
   ],
   "OFFENSE_SLOW_FACTOR": [
+    0.3,
+    0.3,
+    0.3,
+    0.3,
+    0.3,
     0.3,
     0.3,
     0.3,
@@ -143,16 +197,32 @@
     0,
     0,
     0,
+    0,
+    0,
+    0,
+    0,
+    0,
     0
   ],
   "DEFENSE_HIT_STOP_TIME": [
     4,
-    8,
-    3,
-    8,
-    5
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
   ],
   "DEFENSE_SLOW_FACTOR": [
+    0.3,
+    0.3,
+    0.3,
+    0.3,
+    0.3,
     0.3,
     0.3,
     0.3,
@@ -160,18 +230,37 @@
     0.3
   ],
   "DEFENSE_HIT_STOP_DELAY": [
+    5,
     10,
-    5,
-    5,
-    5,
-    5
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10
   ],
   "ACTION_DISTANCE": [
     15.0,
     40.0,
     15.0,
     15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
     15.0
+  ],
+  "BOSS_MELEE_COMBO_3_ATTACK_DO_HIT_BETWEEN_FRAME": [
+    [ 36, 39 ],
+    [ 59, 63 ],
+    [ 98, 103 ]
+  ],
+  "BOSS_SLASH_COMBO_2_ATTACK_DO_HIT_BETWEEN_FRAME": [
+    [ 32, 34 ],
+    [ 60, 63 ]
   ],
   "NEAR_DISTANCE": 15.0,
   "MIDDLE_DISTANCE": 25.0,

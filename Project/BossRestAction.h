@@ -24,6 +24,6 @@ private:
 
 	bool isSetMoveDirection;
 	int directionType;
-	int maxFrame;
+	int maxFrameCount;
 };
 

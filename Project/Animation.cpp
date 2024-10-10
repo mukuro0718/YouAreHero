@@ -15,7 +15,7 @@ Animation::Animation()
 	, animationPlayTime(0.0f)
 	, isChange(false)
 {
-	this->addAnimationRate = 0.06f;
+	this->addAnimationRate = 0.05f;
 }
 
 /// <summary>

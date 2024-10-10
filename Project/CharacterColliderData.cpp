@@ -27,7 +27,7 @@ void CharacterColliderData::OnHit(const AttackData& _data, const VECTOR _attackP
 {
 	auto& hitStop = Singleton<HitStopManager>::GetInstance();
 
-	if (!this->data->isCutDamage)
+	if (!this->data->isInvinvible && !this->data->isGuard)
 	{
 		this->data->hp -= _data.damage;
 		this->data->hitStopTime = _data.hitStopTime;

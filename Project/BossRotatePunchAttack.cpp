@@ -11,14 +11,14 @@
 #include "AttackSphereColliderData.h"
 #include "HitStop.h"
 #include "BossAttack.h"
-#include "BossRotatePunch.h"
+#include "BossRotatePunchAttack.h"
 #include "EnemyManager.h"
 #include "Debug.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-BossRotatePunch::BossRotatePunch(const int _attackIndex)
+BossRotatePunchAttack::BossRotatePunchAttack(const int _attackIndex)
 	: BossAttack()
 {
 	/*シングルトンクラスのインスタンスの取得*/
@@ -36,7 +36,7 @@ BossRotatePunch::BossRotatePunch(const int _attackIndex)
 /// <summary>
 /// デストラクタ
 /// </summary>
-BossRotatePunch::~BossRotatePunch()
+BossRotatePunchAttack::~BossRotatePunchAttack()
 {
 
 }
@@ -44,7 +44,7 @@ BossRotatePunch::~BossRotatePunch()
 /// <summary>
 /// 初期化
 /// </summary>
-void BossRotatePunch::Initialize()
+void BossRotatePunchAttack::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -73,7 +73,7 @@ void BossRotatePunch::Initialize()
 /// <summary>
 /// 更新
 /// </summary>
-void BossRotatePunch::Update()
+void BossRotatePunchAttack::Update()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -118,7 +118,7 @@ void BossRotatePunch::Update()
 /// <summary>
 /// 描画
 /// </summary>
-const void BossRotatePunch::Draw()const
+const void BossRotatePunchAttack::Draw()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
 	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))

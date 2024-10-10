@@ -39,7 +39,7 @@ void BossRestAction::Initialize()
 	this->frameCount			 = 0;
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
-	this->maxFrame				 = GetRand(json.GetJson(JsonManager::FileType::ENEMY)["REST_FRAME_COUNT"]);
+	this->maxFrameCount			 = 0;
 }
 
 /// <summary>
@@ -118,12 +118,11 @@ void BossRestAction::Update(Boss& _boss)
 	_boss.PlayAnimation();
 
 	//フレーム計測
-	bool isEndCount = FrameCount(this->maxFrame);
+	bool isEndCount = FrameCount(this->maxFrameCount);
 	//フレーム計測が終了していたら
 	if (isEndCount)
 	{
 		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["REST_INTERVAL"]);
-		this->maxFrame = GetRand(json.GetJson(JsonManager::FileType::ENEMY)["REST_FRAME_COUNT"]);
 	}
 }
 
@@ -132,22 +131,34 @@ void BossRestAction::Update(Boss& _boss)
 /// </summary>
 void BossRestAction::CalcParameter(const Boss& _boss)
 {
-	/*インターバルが残っていたら欲求値を0にする*/
-	if (this->parameter->interval != 0)
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
+	this->parameter->desireValue = 0;
+	this->isPriority = false;
+
+	/*怒り状態*/
+	int angryState = _boss.GetAngryState();
+
+	/*もしHPが０以下だったら欲求値を０にして優先フラグを下す*/
+	if (_boss.GetHP() <= 0)
 	{
 		this->parameter->desireValue = 0;
-		this->parameter->interval--;
+		this->isPriority = false;
 		return;
 	}
 
-	/*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
-	else if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
+	/*攻撃コンボが残っていなかったら欲求値を最大にする。*/
+	else if (_boss.GetAttackComboCount() == 0)
 	{
-		this->parameter->desireValue = 0;
+		this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["REST_ACTION_MAX_DESIRE_VALUE"][angryState];
 	}
 
 	else
 	{
-		this->parameter->desireValue++;
+		this->parameter->desireValue = 0;
 	}
+
+	/*ボスのAngryTypeをもとに最大フレームも決めておく*/
+	this->maxFrameCount = json.GetJson(JsonManager::FileType::ENEMY)["REST_ACTION_MAX_FRAME"][angryState];
 }

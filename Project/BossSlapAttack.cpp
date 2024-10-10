@@ -10,7 +10,7 @@
 #include "BossAttackData.h"
 #include "AttackCapsuleColliderData.h"
 #include "BossAttack.h"
-#include "BossHurricaneKick.h"
+#include "BossSlapAttack.h"
 #include "EnemyManager.h"
 #include "Debug.h"
 #include "HitStop.h"
@@ -18,7 +18,7 @@
 /// <summary>
 /// コンストラクタ
 /// </summary>
-BossHurricaneKick::BossHurricaneKick(const int _attackIndex)
+BossSlapAttack::BossSlapAttack(const int _attackIndex)
 	: BossAttack()
 {
 	/*シングルトンクラスのインスタンスの取得*/
@@ -35,7 +35,7 @@ BossHurricaneKick::BossHurricaneKick(const int _attackIndex)
 /// <summary>
 /// デストラクタ
 /// </summary>
-BossHurricaneKick::~BossHurricaneKick()
+BossSlapAttack::~BossSlapAttack()
 {
 
 }
@@ -43,7 +43,7 @@ BossHurricaneKick::~BossHurricaneKick()
 /// <summary>
 /// 初期化
 /// </summary>
-void BossHurricaneKick::Initialize()
+void BossSlapAttack::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -51,22 +51,21 @@ void BossHurricaneKick::Initialize()
 	/*コライダーの初期化*/
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
 	auto& data = dynamic_cast<BossAttackData&>(*collider.data);
-	collider.radius		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
-	data.damage			= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
+	collider.radius = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
+	data.damage = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
 	data.playerReaction = static_cast<int>(Gori::PlayerReactionType::NORMAL);
 	//ここでのヒットストップ系の変数は、キャラクター側に与えるものになる
-	data.hitStopTime	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
-	data.hitStopType	= static_cast<int>(HitStop::Type::STOP);
-	data.hitStopDelay	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
-	data.slowFactor		= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
-	data.isHitAttack	= false;
+	data.hitStopTime = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
+	data.hitStopType = static_cast<int>(HitStop::Type::STOP);
+	data.hitStopDelay = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
+	data.slowFactor = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
+	data.isHitAttack = false;
 
 	/*変数の初期化*/
-	this->frameCount	  = 0;
-	this->hitCheckCount	  = 0;
+	this->frameCount = 0;
 	this->isStartHitCheck = false;
 	this->isStartHitCheck = false;
-	this->isNotOnHit	  = false;
+	this->isNotOnHit = false;
 
 	/*物理挙動の初期化*/
 	this->collider->rigidbody.Initialize(false);
@@ -74,10 +73,10 @@ void BossHurricaneKick::Initialize()
 /// <summary>
 /// 更新
 /// </summary>
-void BossHurricaneKick::Update()
+void BossSlapAttack::Update()
 {
 	/*シングルトンクラスのインスタンスの取得*/
-	auto& json   = Singleton<JsonManager>::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
 	auto& data = dynamic_cast<BossAttackData&>(*collider.data);
@@ -87,32 +86,20 @@ void BossHurricaneKick::Update()
 	{
 		//変数の準備
 		const int	START_HIT_CHECK_FRAME = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_FRAME"][this->attackIndex];
-		const int	END_HIT_CHECK_FRAME	  = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"]	[this->attackIndex];
-		const float POSITION_OFFSET		  = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"]		[this->attackIndex];
-		const float Y_OFFSET			  = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"]		[this->attackIndex];
+		const int	END_HIT_CHECK_FRAME = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"][this->attackIndex];
+		const float POSITION_OFFSET = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"][this->attackIndex];
+		const float Y_OFFSET = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"][this->attackIndex];
 
 		//フレームを増やす
 		this->frameCount++;
 		//フレームが定数を超えていなかったら早期リターン
-		//if (this->frameCount < START_HIT_CHECK_FRAME)return;
+		if (this->frameCount < START_HIT_CHECK_FRAME)return;
 
 		//今回の攻撃中に当たり判定フラグが一度もたっていなかったら
 		if (!this->isNotOnHit)
 		{
-			this->hitCheckCount = json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_HIT_COUNT"];
 			data.isDoHitCheck = true;
 			this->isNotOnHit = true;
-		}
-
-		if (!data.isDoHitCheck && this->hitCheckCount != 0)
-		{
-			this->hitCheckInterval++;
-			if (this->hitCheckInterval >= json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_HIT_INTERVAL"])
-			{
-				this->hitCheckInterval = 0;
-				this->hitCheckCount--;
-				data.isDoHitCheck = true;
-			}
 		}
 
 		//当たり判定位置の更新
@@ -132,19 +119,19 @@ void BossHurricaneKick::Update()
 /// <summary>
 /// 描画
 /// </summary>
-const void BossHurricaneKick::Draw()const
+const void BossSlapAttack::Draw()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
 	//if (debug.CheckEnemyFlag())
 	//{
-		if (this->isStartHitCheck)
-		{
-			auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-			auto& data = dynamic_cast<BossAttackData&>(*collider.data);
+	if (this->isStartHitCheck)
+	{
+		auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
+		auto& data = dynamic_cast<BossAttackData&>(*collider.data);
 
-			DrawCapsule3D(collider.rigidbody.GetPosition(), collider.topPositon, collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
-		}
-		VECTOR position = this->collider->rigidbody.GetPosition();
-		printfDx("HURRICANE_KICK X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+		DrawCapsule3D(collider.rigidbody.GetPosition(), collider.topPositon, collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
+	}
+	VECTOR position = this->collider->rigidbody.GetPosition();
+	printfDx("SLAP X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
 	//}
 }

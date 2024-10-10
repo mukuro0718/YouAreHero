@@ -42,13 +42,13 @@ void BossMap::Initialize()
 
 	/*jsonデータを各定数型に代入*/
 	const VECTOR POSITION = Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_POSITION"]);
-	const VECTOR ROTATION = Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_ROTATION"]);
 	const VECTOR SCALE	  = Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_SCALE"]);	
-
+	VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_ROTATION"]);
+	rotation.y = rotation.y * (DX_PI_F / 180.0f);
 	/*物理挙動の初期化*/
 	this->collider->rigidbody.Initialize(false);
 	this->collider->rigidbody.SetPosition(POSITION);
-	this->collider->rigidbody.SetRotation(ROTATION);
+	this->collider->rigidbody.SetRotation(rotation);
 	this->collider->rigidbody.SetScale(SCALE);
 }
 /// <summary>

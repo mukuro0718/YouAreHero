@@ -11,14 +11,14 @@
 #include "AttackCapsuleColliderData.h"
 #include "HitStop.h"
 #include "BossAttack.h"
-#include "BossJumpAttack.h"
+#include "BossStabAttack.h"
 #include "EnemyManager.h"
 #include "Debug.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-BossJumpAttack::BossJumpAttack(const int _attackIndex)
+BossStabAttack::BossStabAttack(const int _attackIndex)
 	: BossAttack()
 {
 	/*シングルトンクラスのインスタンスの取得*/
@@ -35,7 +35,7 @@ BossJumpAttack::BossJumpAttack(const int _attackIndex)
 /// <summary>
 /// デストラクタ
 /// </summary>
-BossJumpAttack::~BossJumpAttack()
+BossStabAttack::~BossStabAttack()
 {
 
 }
@@ -43,7 +43,7 @@ BossJumpAttack::~BossJumpAttack()
 /// <summary>
 /// 初期化
 /// </summary>
-void BossJumpAttack::Initialize()
+void BossStabAttack::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -73,7 +73,7 @@ void BossJumpAttack::Initialize()
 /// <summary>
 /// 更新
 /// </summary>
-void BossJumpAttack::Update()
+void BossStabAttack::Update()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -119,7 +119,7 @@ void BossJumpAttack::Update()
 /// <summary>
 /// 描画
 /// </summary>
-const void BossJumpAttack::Draw()const
+const void BossStabAttack::Draw()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
 	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))

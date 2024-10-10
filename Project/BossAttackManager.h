@@ -13,14 +13,18 @@ public:
 	const void	 Draw		()const;			//描画
 	void		 OnIsStart	(const int _index);	//開始フラグを立てる
 	const VECTOR GetPosition(const int _index);	//座標の取得
+	//攻撃の種類
 	enum class AttackType
 	{
-		NONE		   = -1,
-		SLASH		   = 0,//スラッシュ
-		FLY_ATTACK	   = 1,//飛び攻撃
-		HURRICANE_KICK = 2,//回転蹴り
-		JUMP_ATTACK	   = 3,//ジャンプアタック
-		ROTATE_PUNCH   = 4,//回転パンチ
+		NONE			= -1,
+		SLASH			= 0,//パンチ
+		STAB			= 1,//突き刺し攻撃
+		ROTATE_PUNCH	= 2,//回転パンチ
+		SLAP			= 3,
+		MELEE			= 4,
+		KICK			= 5,
+		MELEE_COMBO_3	= 6,
+		SLASH_COMBO_2	= 7
 	};
 private:
 	std::vector<BossAttack*> attack;

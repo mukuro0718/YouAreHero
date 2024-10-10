@@ -16,6 +16,7 @@ public:
 	void Finalize();
 	void Update(); //XV
 	const void Draw	()const;//•`‰æ
+	const int GetStageModelHandle()const;
 
 private:
 	/*“à•”ˆ—ŠÖ”*/

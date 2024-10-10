@@ -1,4 +1,6 @@
 #include <DxLib.h>
+#include <Effekseer.h>
+#include <EffekseerRendererDX11.h>
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "ActionParameter.h"
@@ -31,6 +33,7 @@ void BossDeathAction::Initialize()
 {
 	this->isSelect				 = false;
 	this->isInitialize			 = false;
+	this->isPriority			 = false;
 	this->frameCount			 = 0;
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
@@ -55,8 +58,6 @@ void BossDeathAction::Update(Boss& _boss)
 	if (_boss.GetIsChangeAnimation())
 	{
 		_boss.OffIsAlive();
-		auto& effect = Singleton<EffectManager>::GetInstance();
-		effect.OnIsEffect(EffectManager::EffectType::BOSS_ENTRY);
 	}
 }
 /// <summary>
@@ -64,15 +65,19 @@ void BossDeathAction::Update(Boss& _boss)
 /// </summary>
 void BossDeathAction::CalcParameter(const Boss& _boss)
 {
-	/*追加する欲求値*/
-	int addDesireValue = 0;
-
-	/*HPが０以下だったら欲求値を最大にする*/
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+	
+	/*HPが０以下だったら欲求値を最大にし、優先フラグを立てる*/
 	if (_boss.GetHP() <= 0)
 	{
-		addDesireValue = this->parameter->MAX_PARAMETER;
+		this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+		this->isPriority = true;
 	}
-
-	/*欲求値を増加させる*/
-	this->parameter->AddDesireValue(addDesireValue);
+	/*それ以外なら欲求値を０にして優先フラグを下す*/
+	else
+	{
+		this->parameter->desireValue = 0;
+		this->isPriority = false;
+	}
 }

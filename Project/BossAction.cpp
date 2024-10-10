@@ -17,10 +17,22 @@ BossAction::BossAction()
 	, hitStop		(nullptr)
 	, isSelect		(false)
 	, isInitialize	(false)
+	, isPriority	(false)
 	, frameCount	(0)
 {
 	this->parameter = new ActionParameter();
 	this->hitStop = new HitStop();
+}
+
+/// <summary>
+/// •`‰æ
+/// </summary>
+const void BossAction::Draw()const
+{
+	if (this->attack != nullptr)
+	{
+		this->attack->Draw();
+	}
 }
 
 /// <summary>
@@ -69,6 +81,5 @@ void BossAction::OffIsSelect(const int _maxInterval)
 		this->isSelect = false;
 		this->frameCount = 0;
 		this->parameter->desireValue = 0;
-		this->parameter->SetInterval(_maxInterval);
 	}
 }

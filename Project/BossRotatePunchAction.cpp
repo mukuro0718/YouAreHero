@@ -1,4 +1,6 @@
 #include <DxLib.h>
+#include <Effekseer.h>
+#include <EffekseerRendererDX11.h>
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "ActionParameter.h"
@@ -8,7 +10,7 @@
 #include "Boss.h"
 #include "HitStop.h"
 #include "BossAttack.h"
-#include "BossRotatePunch.h"
+#include "BossRotatePunchAttack.h"
 #include "BossRotatePunchAction.h"
 #include "PlayerManager.h"
 #include "EffectManager.h"
@@ -20,7 +22,7 @@
 BossRotatePunchAction::BossRotatePunchAction()
 	: isClose(false)
 {
-	this->attack = new BossRotatePunch(static_cast<int>(BossAttack::AttackType::ROTATE_PUNCH));
+	this->attack = new BossRotatePunchAttack(static_cast<int>(BossAttack::AttackType::ROTATE_PUNCH));
 }
 
 /// <summary>
@@ -57,6 +59,9 @@ void BossRotatePunchAction::Update(Boss& _boss)
 	/*アニメーションの設定*/
 	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::ROTATE_PUNCH));
 
+	/*攻撃タイプの設定*/
+	_boss.SetAttackType(Boss::AttackType::ROTATE_PUNCH);
+
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& effect = Singleton<EffectManager>::GetInstance();
@@ -74,8 +79,8 @@ void BossRotatePunchAction::Update(Boss& _boss)
 	/*ヒットストップの更新*/
 	if (this->attack->GetIsHitAttack())
 	{
-		auto& effect = Singleton<EffectManager>::GetInstance();
-		effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
+		//auto& effect = Singleton<EffectManager>::GetInstance();
+		//effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
 
 		this->hitStop->SetHitStop
 		(
@@ -98,7 +103,7 @@ void BossRotatePunchAction::Update(Boss& _boss)
 		//エフェクトを立てる
 		//effect.OnIsBossRotatePunchEffect();
 		//攻撃フラグを立てる
-		attack.OnIsStart(static_cast<int>(BossAttackManager::AttackType::ROTATE_PUNCH));
+		this->attack->OnIsStart();
 		this->isInitialize = true;
 	}
 
@@ -136,6 +141,7 @@ void BossRotatePunchAction::Update(Boss& _boss)
 		this->isInitialize = false;
 		this->isClose = false;
 		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_PUNCH_INTERVAL"]);
+		_boss.DecAttackComboCount();
 	}
 }
 
@@ -154,30 +160,33 @@ void BossRotatePunchAction::CalcParameter(const Boss& _boss)
 	const VECTOR POSITION_TO_TARGET = VSub(POSITION, MOVE_TARGET);	//目標から現在の移動目標へのベクトル
 	const float  DISTANCE = VSize(POSITION_TO_TARGET);			//距離
 
-	/*インターバルが残っていたら欲求値を０にする*/
-	if (this->parameter->interval < 0)
-	{
-		this->parameter->interval--;
-		this->parameter->desireValue = 0;
-	}
+	this->parameter->desireValue = 0;
 
 	/*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
-	else if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
+	if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
 	{
-		this->parameter->desireValue = 0;
+		return;
 	}
 
 	/*Phaseが2以上だったら欲求値を増加する*/
-	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_2))
+	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_3))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
 		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::ROTATE_PUNCH)])
 		{
-			this->parameter->desireValue += json.GetJson(JsonManager::FileType::ENEMY)["ADD_ROTATE_PUNCH_VALUE"];
-		}
-		else
-		{
-			this->parameter->desireValue = 0;
+			Boss::AttackType type = _boss.GetPrevAttackType();
+			if (_boss.GetAttackComboCount() == 0)
+			{
+				this->parameter->desireValue = 1;
+			}
+			else if (type == Boss::AttackType::SLASH_COMBO_2)
+			{
+				this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+			}
+			else
+			{
+				this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DESIRE_VALUE"];
+			}
 		}
 	}
 }

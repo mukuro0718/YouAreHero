@@ -50,6 +50,7 @@ void MapManager::Finalize()
 void MapManager::Update()
 {
 	this->ground->Update();
+	this->skydome->Update();
 }
 
 /// <summary>
@@ -59,4 +60,10 @@ const void MapManager::Draw()const
 {
 	this->ground->Draw();
 	this->skydome->Draw();
+}
+
+
+const int MapManager::GetStageModelHandle()const
+{
+	return this->ground->GetModelHandle();
 }

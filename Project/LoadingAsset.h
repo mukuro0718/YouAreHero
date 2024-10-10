@@ -53,6 +53,8 @@ public:
 		PRESS_X_BUTTON,
 		PRESS_Y_BUTTON,
 		PRESS_LT_BUTTON,
+
+		SHADOW,
 	};
 	//フォントのタイプ
 	enum class FontType
@@ -80,11 +82,8 @@ public:
 	//エフェクト
 	enum class EffectType
 	{
-		BOSS_ROTATE_PUNCH,
-		BOSS_SLASH,
-		BOSS_ENTRY,
 		BOSS_IMPACT,
-		PLAYER_ENTRY,
+		PLAYER_GUARD_HIT,
 	};
 
 	/*getter*/

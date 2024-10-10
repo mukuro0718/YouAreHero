@@ -8,6 +8,7 @@
 #include "AttackData.h"
 #include "BossAttackData.h"
 #include "AttackCapsuleColliderData.h"
+#include "AttackSphereColliderData.h"
 #include "BossAttack.h"
 
 /// <summary>
@@ -62,14 +63,38 @@ const VECTOR BossAttack::GetPosition()const
 
 const bool BossAttack::GetIsHitAttack()
 {
-	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-	return collider.data->isHitAttack;
+	if (this->collider->GetKind() == ColliderData::Kind::ATTACK_SPHERE)
+	{
+		auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
+		return collider.data->isHitAttack;
+	}
+	else if (this->collider->GetKind() == ColliderData::Kind::ATTACK_CAPSULE)
+	{
+		auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
+		return collider.data->isHitAttack;
+	}
+	else
+	{
+		assert(0 && "許可されていないコライダーデータです。");
+	}
 }
 
 void BossAttack::OffIsHitAttack()
 {
-	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-	collider.data->isHitAttack = false;
+	if (this->collider->GetKind() == ColliderData::Kind::ATTACK_SPHERE)
+	{
+		auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
+		collider.data->isHitAttack = false;
+	}
+	else if (this->collider->GetKind() == ColliderData::Kind::ATTACK_CAPSULE)
+	{
+		auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
+		collider.data->isHitAttack = false;
+	}
+	else
+	{
+		assert(0 && "許可されていないコライダーデータです。");
+	}
 }
 
 /// <summary>

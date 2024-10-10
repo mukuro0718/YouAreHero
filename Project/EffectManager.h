@@ -9,11 +9,8 @@ public:
 	/*列挙体*/
 	enum class EffectType
 	{
-		BOSS_SLASH,
-		BOSS_ROTATE_PUNCH,
-		BOSS_ENTRY,
 		BOSS_IMPACT,
-		PLAYER_ENTRY,
+		PLAYER_GUARD_HIT,
 	};
 	/*エフェクトの描画用関数*/
 	void OnIsEffect(const EffectType _type);

@@ -1,13 +1,13 @@
 //===========================================
-// @brief スラッシュ攻撃
+// @brief パンチコンボ２攻撃
 //===========================================
 #pragma once
 class BossAttack;
-class BossFlyAttack : public BossAttack
+class BossKickAttack : public BossAttack
 {
 public:
-	BossFlyAttack(const int _attackIndex);//コンストラクタ
-	~BossFlyAttack();//デストラクタ
+	BossKickAttack(const int _attackIndex);//コンストラクタ
+	~BossKickAttack();//デストラクタ
 		  void Initialize() override;		//初期化
 		  void Update	 () override;		//更新
 	const void Draw		 () const override;	//描画

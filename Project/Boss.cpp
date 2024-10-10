@@ -1,4 +1,6 @@
 #include <DxLib.h>
+#include <Effekseer.h>
+#include <EffekseerRendererDX11.h>
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "VECTORtoUseful.h"
@@ -21,17 +23,20 @@
 #include "EffectManager.h"
 #include "Debug.h"
 #include "HitStopManager.h"
+#include "Shadow.h"
+#include "MapManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 Boss::Boss()
-	: animationPlayTime(0.0f)
-	, moveTarget			{ 0.0f, 0.0f, 0.0f }
+	: animationPlayTime		(0.0f)
+	, moveTarget			(Gori::ORIGIN)
 	, nowAnimation			(0)
 	, nowPhase				(0)
 	, prevPhase				(-1)
-	, actionType(0)
+	, actionType			(0)
+	, attackComboCount		(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json  = Singleton<JsonManager>::GetInstance();
@@ -54,14 +59,19 @@ Boss::Boss()
 	this->animation->Attach(&this->modelHandle);
 
 	/*アクションマップの作成*/
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::DYING),this->DYING);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::IDLE),this->IDLE);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROAR),this->ROAR);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::WALK),this->WALK);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::REST),this->REST);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH),this->SLASH);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::STAB),this->STAB);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROTATE_PUNCH),this->ROTATE_PUNCH);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::DYING)			,this->DYING);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::IDLE)			,this->IDLE);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROAR)			,this->ROAR);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::WALK)			,this->WALK);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::REST)			,this->REST);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH)			,this->SLASH);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::STAB)			,this->STAB);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROTATE_PUNCH)	,this->ROTATE_PUNCH);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLAP)			,this->SLAP);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::MELEE)			,this->MELEE);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::KICK)			,this->KICK);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::MELEE_COMBO_3),this->MELEE_COMBO_3);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_COMBO_2),this->SLASH_COMBO_2);
 
 	/*コライダーデータの作成*/
 	CharacterData* data = new BossData();
@@ -74,10 +84,13 @@ Boss::Boss()
 	this->parameters.emplace_back(new BossChaseAction());
 	this->parameters.emplace_back(new BossRestAction());
 	this->parameters.emplace_back(new BossSlashAction());
-	//this->parameters.emplace_back(new BossFlyAction());
-	//this->parameters.emplace_back(new BossHurricaneKickAction());
 	this->parameters.emplace_back(new BossStabAction());
 	this->parameters.emplace_back(new BossRotatePunchAction());
+	this->parameters.emplace_back(new BossSlapAction());
+	this->parameters.emplace_back(new BossMeleeAction());
+	this->parameters.emplace_back(new BossKickAction());
+	this->parameters.emplace_back(new BossMeleeCombo3Action());
+	this->parameters.emplace_back(new BossSlashCombo2Action());
 }
 
 /// <summary>
@@ -102,9 +115,9 @@ void Boss::Initialize()
 	auto& data = dynamic_cast<BossData&>(*collider.data);
 
 	/*変数の初期化*/
-	this->isAlive				 = false;
+	this->isAlive				 = true;
 	this->isGround				 = true;
-	this->isDraw = false;
+	this->isDraw				 = true;
 	this->speed					 = 0.0f;
 	this->animationPlayTime		 = 0.0f;
 	this->entryInterval			 = 0;
@@ -113,6 +126,8 @@ void Boss::Initialize()
 	this->moveTarget			 = Gori::ORIGIN;
 	this->nowAnimation			 = static_cast<int>(AnimationType::ROAR);
 	this->actionType			 = static_cast<int>(ActionType::ROAR);
+	this->attackComboCount = 0;
+	SetAttackComboCount();
 	for (int i = 0; i < this->parameters.size(); i++)
 	{
 		this->parameters[i]->Initialize();
@@ -163,56 +178,29 @@ void Boss::Update()
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
-	/*HPがあるときに、生存フラグが立っていなかったら*/
-	if (!this->isAlive)
+	/*怒り状態の設定*/
+	SetAngryState();
+
+	/*フェーズの初期化*/
+	SetPhase();
+
+	/*状態の切り替え*/
+	ChangeState();
+
+
+	/*ここですべてのパラメータの計算を行う*/
+	for (auto& item : this->parameters)
 	{
-		if (this->GetHP() >= 0)
-		{
-			if (player.GetIsAlive())
-			{
-				if (this->entryInterval == json.GetJson(JsonManager::FileType::ENEMY)["ON_ENTRY_EFFECT_INTERVAL"])
-				{
-					auto& effect = Singleton<EffectManager>::GetInstance();
-					effect.OnIsEffect(EffectManager::EffectType::BOSS_ENTRY);
-				}
-				this->entryInterval++;
-				if (this->entryInterval >= json.GetJson(JsonManager::FileType::ENEMY)["ENTRY_INTERVAL"])
-				{
-					this->entryInterval = 0;
-					this->isAlive = true;
-					this->isDraw = true;
-				}
-			}
-		}
-		else
-		{
-			this->isDraw = false;
-		}
+		item->CalcParameter(*this);
 	}
-	else
-	{
-		/*怒り状態の設定*/
-		SetAngryState();
 
-		/*フェーズの初期化*/
-		SetPhase();
-
-		/*状態の切り替え*/
-		ChangeState();
-
-
-		/*ここですべてのパラメータの計算を行う*/
-		for (auto& item : this->parameters)
-		{
-			item->CalcParameter(*this);
-		}
-
-		/*ここに各アクションごとの更新処理を入れたい*/
-		this->parameters[this->actionType]->Update(*this);
-
-	}
+	/*ここに各アクションごとの更新処理を入れたい*/
+	this->parameters[this->actionType]->Update(*this);
 }
 
+/// <summary>
+/// アニメーションの再生
+/// </summary>
 void Boss::PlayAnimation()
 {
 	//アニメーションの再生
@@ -225,10 +213,33 @@ void Boss::PlayAnimation()
 }
 
 /// <summary>
+/// 攻撃コンボ回数のセット
+/// </summary>
+void Boss::SetAttackComboCount()
+{
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
+	/*コンボ数の設定*/
+	this->attackComboCount = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_COMBO_COUNT"][this->nowPhase];
+
+	/*怒りの状態によって増減させる*/
+	if (this->angryState == static_cast<int>(AngryStateType::ANGRY))
+	{
+		this->attackComboCount++;
+	}
+	else if (this->angryState == static_cast<int>(AngryStateType::TIRED))
+	{
+		this->attackComboCount--;
+	}
+}
+
+/// <summary>
 /// 状態の変更
 /// </summary>
 void Boss::ChangeState()
 {
+	/*シングルトンクラスのインスタンスを取得*/
 	auto& debug = Singleton<Debug>::GetInstance();
 	auto& json = Singleton<JsonManager>::GetInstance();
 
@@ -271,7 +282,7 @@ void Boss::ChangeState()
 			for (int i = 0; i < actionWeight.size(); i++)
 			{
 				randomWeight -= actionWeight[i];
-				if (randomWeight < 0)
+				if (randomWeight < 0 || this->parameters[i]->GetIsPriority())
 				{
 					this->actionType = i;
 					this->parameters[i]->OnIsSelect();
@@ -294,7 +305,11 @@ void Boss::ChangeState()
 /// </summary>
 const void Boss::DrawCharacterInfo()const
 {
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& shadow = Singleton<Shadow>::GetInstance();
+	auto& map = Singleton<MapManager>::GetInstance();
 	auto& debug = Singleton<Debug>::GetInstance();
+	
 	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
 	{
 		VECTOR position = this->collider->rigidbody.GetPosition();
@@ -309,6 +324,14 @@ const void Boss::DrawCharacterInfo()const
 		printfDx("%d:SLASH					\n", this->state->CheckFlag(this->SLASH));
 		printfDx("%d:STAB				\n", this->state->CheckFlag(this->STAB));
 		printfDx("%d:ROTATE_PUNCH				\n", this->state->CheckFlag(this->ROTATE_PUNCH));
+		/*ここに各アクションごとの更新処理を入れたい*/
+		this->parameters[this->actionType]->Draw();
+	}
+
+	if (this->isDraw)
+	{
+		/*かげの描画*/
+		shadow.Draw(map.GetStageModelHandle(), this->collider->rigidbody.GetPosition(), this->SHADOW_HEIGHT, this->SHADOW_SIZE);
 	}
 }
 
@@ -350,20 +373,16 @@ void Boss::SetPhase()
 	const float MAX_HP = json.GetJson(JsonManager::FileType::ENEMY)["HP"];
 
 	/*HPが最大値の1/3未満だったらフェーズ３*/
-	if (HP < (MAX_HP / 3))
+	int maxPhase = static_cast<int>(Phase::PHASE_10);
+	for (int i = 0; i < maxPhase; i++)
 	{
-		this->nowPhase = static_cast<int>(Phase::PHASE_3);
+		//現在のHP < 最大HP - Phaseごとの許容HP減少量
+		if (HP < (MAX_HP - (MAX_HP / (maxPhase + 1) * (i + 1))))
+		{
+			this->nowPhase = i;
+		}
 	}
-	/*HPが最大値の2/3未満だったらフェーズ2*/
-	else if (HP < (MAX_HP / 3) * 2)
-	{
-		this->nowPhase = static_cast<int>(Phase::PHASE_2);
-	}
-	/*フェーズ１*/
-	else
-	{
-		this->nowPhase = static_cast<int>(Phase::PHASE_1);
-	}
+	UnifyPhases();
 }
 
 /// <summary>
