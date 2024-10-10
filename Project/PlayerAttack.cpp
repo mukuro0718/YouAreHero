@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "EffekseerForDXLib.h"
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "DeleteInstance.h"
@@ -9,6 +10,7 @@
 #include "AttackSphereColliderData.h"
 #include "PlayerAttack.h"
 #include "Debug.h"
+#include "EffectManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -82,10 +84,11 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 		const int	 END_HIT_CHECK_FRAME	= json.GetJson(JsonManager::FileType::PLAYER)["END_HIT_CHECK_FRAME"];	//当たり判定終了フレーム
 		const float  POSITION_OFFSET		= json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET"];		//当たり判定座標オフセット
 		const float  Y_OFFSET				= json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"];		//Y座標用オフセット
-		const VECTOR DIRECTION				= _direction;																//プレイヤーの向き
-		VECTOR		position				= _position;										//プレイヤーの座標
-		position							= VAdd(position, VScale(DIRECTION, POSITION_OFFSET));			//プレイヤーの座標に、オフセット値を足す
-		position.y						   += Y_OFFSET;																	//Y座標オフセット値を足す
+		VECTOR direction					= _direction;																//プレイヤーの向き
+		direction.y							= 0.0f;
+		VECTOR position						= _position;										//プレイヤーの座標
+		position							= VAdd(position, VScale(direction, POSITION_OFFSET));			//プレイヤーの座標に、オフセット値を足す
+		position.y						    += Y_OFFSET;																	//Y座標オフセット値を足す
 
 		//フレームを増やす
 		this->frameCount++;
@@ -97,6 +100,14 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 		{
 			data.isDoHitCheck = true;
 			this->isNotOnHit = true;
+		}
+
+		if (data.isHitAttack)
+		{
+			auto& effect = Singleton<EffectManager>::GetInstance();
+			effect.OnIsEffect(EffectManager::EffectType::PLAYER_IMPACT);
+			effect.SetPosition(EffectManager::EffectType::PLAYER_IMPACT, this->collider->rigidbody.GetPosition());
+			data.isHitAttack = false;
 		}
 
 		//当たり判定の座標のセット

@@ -84,6 +84,8 @@ public:
 	{
 		BOSS_IMPACT,
 		PLAYER_GUARD_HIT,
+		PLAYER_HEAL,
+		PLAYER_IMPACT,
 	};
 
 	/*getter*/

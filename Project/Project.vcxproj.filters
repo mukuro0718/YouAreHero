@@ -310,6 +310,18 @@
     <Filter Include="Shadow">
       <UniqueIdentifier>{55dc8494-8aee-4a61-9654-35d44da7f8d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Effect\Boss\Impact">
+      <UniqueIdentifier>{f497ad7d-91f3-46b1-812c-7d560598c3a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Player\GuardHit">
+      <UniqueIdentifier>{44626b58-9d09-437e-890d-a3c6e80aed28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Player\Heal">
+      <UniqueIdentifier>{51852b70-5cb6-4c07-a1da-ff8360ebde2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Player\Attack">
+      <UniqueIdentifier>{864f1921-cfdf-41f6-a694-09df82e26b0f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -568,9 +580,6 @@
     <ClCompile Include="HitStopData.cpp">
       <Filter>HitStopManager</Filter>
     </ClCompile>
-    <ClCompile Include="BossImpactEffect.cpp">
-      <Filter>Effect\Boss</Filter>
-    </ClCompile>
     <ClCompile Include="BossKickAction.cpp">
       <Filter>Object\Character\Enemy\Action\Parameter\Attack\MeleeCombo2</Filter>
     </ClCompile>
@@ -607,8 +616,17 @@
     <ClCompile Include="Shadow.cpp">
       <Filter>Shadow</Filter>
     </ClCompile>
+    <ClCompile Include="BossImpactEffect.cpp">
+      <Filter>Effect\Boss\Impact</Filter>
+    </ClCompile>
     <ClCompile Include="PlayerGuardHitEffect.cpp">
-      <Filter>Effect\Player</Filter>
+      <Filter>Effect\Player\GuardHit</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHealEffect.cpp">
+      <Filter>Effect\Player\Heal</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerImpactEffect.cpp">
+      <Filter>Effect\Player\Attack</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -894,9 +912,6 @@
     <ClInclude Include="HitStopData.h">
       <Filter>HitStopManager</Filter>
     </ClInclude>
-    <ClInclude Include="BossImpactEffect.h">
-      <Filter>Effect\Boss</Filter>
-    </ClInclude>
     <ClInclude Include="BossKickAction.h">
       <Filter>Object\Character\Enemy\Action\Parameter\Attack\MeleeCombo2</Filter>
     </ClInclude>
@@ -933,8 +948,17 @@
     <ClInclude Include="Shadow.h">
       <Filter>Shadow</Filter>
     </ClInclude>
+    <ClInclude Include="BossImpactEffect.h">
+      <Filter>Effect\Boss\Impact</Filter>
+    </ClInclude>
     <ClInclude Include="PlayerGuardHitEffect.h">
-      <Filter>Effect\Player</Filter>
+      <Filter>Effect\Player\GuardHit</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHealEffect.h">
+      <Filter>Effect\Player\Heal</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerImpactEffect.h">
+      <Filter>Effect\Player\Attack</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

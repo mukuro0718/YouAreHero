@@ -3,12 +3,10 @@
 #include <vector>
 #include "UseJson.h"
 #include "Effect.h"
-#include "BossSlashEffect.h"
-#include "BossRotatePunchEffect.h"
-#include "BossEntryEffect.h"
 #include "BossImpactEffect.h"
-#include "PlayerEntryEffect.h"
 #include "PlayerGuardHitEffect.h"
+#include "PlayerHealEffect.h"
+#include "PlayerImpactEffect.h"
 #include "EffectManager.h"
 #include "EnemyManager.h"
 #include "BossAttackManager.h"
@@ -23,8 +21,10 @@ EffectManager::EffectManager()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
-	this->effect.emplace_back(new BossImpactEffect		 (asset.GetEffect(LoadingAsset::EffectType::BOSS_IMPACT)));
-	this->effect.emplace_back(new PlayerGuardHitEffect(asset.GetEffect(LoadingAsset::EffectType::PLAYER_GUARD_HIT)));
+	this->effect.emplace_back(new BossImpactEffect		(asset.GetEffect(LoadingAsset::EffectType::BOSS_IMPACT)));
+	this->effect.emplace_back(new PlayerGuardHitEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_GUARD_HIT)));
+	this->effect.emplace_back(new PlayerHealEffect		(asset.GetEffect(LoadingAsset::EffectType::PLAYER_HEAL)));
+	this->effect.emplace_back(new PlayerImpactEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_IMPACT)));
 }
 
 /// <summary>

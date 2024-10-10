@@ -34,7 +34,6 @@ Player::Player()
 	, healOrbNum		(0)
 	, nowAnimation		(static_cast<int>(AnimationType::IDLE))
 	, animationPlayTime	(0.0f)
-	, isHeal			(false)
 	, moveVectorRotation(Gori::ORIGIN)
 	, hitStop			(nullptr)
 {
@@ -70,6 +69,7 @@ Player::Player()
 	this->animationMap.emplace(this->BLOCK_REACTION	 , static_cast<int>(AnimationType::BLOCK_REACTION	));
 	this->animationMap.emplace(this->WALK_FRONT		 , static_cast<int>(AnimationType::WALK_FRONT		));
 	this->animationMap.emplace(this->SLASH			 , static_cast<int>(AnimationType::SLASH			));
+	this->animationMap.emplace(this->HEAL			 , static_cast<int>(AnimationType::HEAL));
 
 	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::NORMAL)	 , this->REACTION);
 	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::BLOW_BIG)	 , this->REACTION);
@@ -109,7 +109,6 @@ void Player::Initialize()
 	this->isAlive			 = true;
 	this->isDraw			 = true;
 	this->isGround			 = false;
-	this->isHeal			 = false;
 	this->isInitialize		 = true;
 	this->speed				 = 0.0f;
 	this->entryInterval		 = 0;
@@ -251,7 +250,7 @@ const void Player::DrawCharacterInfo()const
 		printfDx("%d:BLOCK_REACTION				\n", this->state->CheckFlag(this->BLOCK_REACTION));
 		printfDx("%d:WALK_FRONT					\n", this->state->CheckFlag(this->WALK_FRONT));
 		printfDx("%d:SLASH						\n", this->state->CheckFlag(this->SLASH));
-		printfDx("%d:HEAL							\n", this->isHeal);
+		printfDx("%d:HEAL							\n", this->state->CheckFlag(this->HEAL));
 		auto& characterCollider = dynamic_cast<CharacterColliderData&> (*this->collider);
 		printfDx("%d:REACTION_TYPE				\n", characterCollider.data->playerReaction);
 
@@ -517,6 +516,7 @@ void Player::Death()
 		/*もしHPが０未満だったら*/
 		if (collider.data->hp < 0)
 		{
+			this->state->ClearFlag(this->MASK_ALL);
 			this->state->SetFlag(this->DEATH);
 		}
 	}
@@ -562,40 +562,48 @@ void Player::Block()
 void Player::Heal()
 {
 	/*シングルトンクラスのインスタンスの取得*/
-	auto& input = Singleton<InputManager> ::GetInstance();
-	auto& json = Singleton<JsonManager>  ::GetInstance();
+	auto& input = Singleton<InputManager>	::GetInstance();
+	auto& json = Singleton<JsonManager>		::GetInstance();
+	auto& debug = Singleton<Debug>			::GetInstance();
+	auto& effect = Singleton<EffectManager> ::GetInstance();
 	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 	auto& data = dynamic_cast<PlayerData&>(*collider.data);
-	auto& debug = Singleton<Debug>  ::GetInstance();
+
+	/*無敵フラグが立っていたら最大HPから変えない*/
+	if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER) && json.GetJson(JsonManager::FileType::DEBUG)["PLAYER_INVINCIBLE"])
+	{
+		data.hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];
+	}
+
+	/*回復アニメーションが終了していたら*/
+	if (this->state->CheckFlag(this->HEAL) && this->animation->GetIsChangeAnim())
+	{
+		this->state->ClearFlag(this->HEAL);
+	}
 
 	/*pad入力*/
 	int pad = input.GetPadState();
 	bool isInputY = (pad & PAD_INPUT_2);
 
 	/*回復していたら*/
-	if (this->isHeal)
+	if (this->isCount[static_cast<int>(FrameCountType::HEAL)])
 	{
 		/*回復のインターバルを計算*/
 		FrameCount(static_cast<int>(FrameCountType::HEAL), json.GetJson(JsonManager::FileType::PLAYER)["HEAL_INTERVAL_FRAME"]);
-
-		/*インターバルが終了しているかつ、ボタン入力がなければ*/
-		if (!this->isCount[static_cast<int>(FrameCountType::HEAL)] && !isInputY)
-		{
-			this->isHeal = false;
-		}
 	}
 
 	/*回復できるか*/
-	if (this->healOrbNum == 0)return;
+	if (!CanHeal()) return;
 
 	/*前に回復していないかつYボタンが押されたら*/
 	if (isInputY)
 	{
-		if (!this->isHeal)
+		if (!this->state->CheckFlag(this->HEAL))
 		{
+			effect.OnIsEffect(EffectManager::EffectType::PLAYER_HEAL);
+			this->state->SetFlag(this->HEAL);
 			data.hp += json.GetJson(JsonManager::FileType::PLAYER)["HEAL_VALUE"];
 			this->healOrbNum--;
-			this->isHeal = true;
 			this->isCount[static_cast<int>(FrameCountType::HEAL)] = true;
 			//最大HPを超えないようにする
 			if (data.hp >= json.GetJson(JsonManager::FileType::PLAYER)["HP"])
@@ -605,11 +613,6 @@ void Player::Heal()
 		}
 	}
 
-	/*無敵フラグが立っていたら最大HPから変えない*/
-	if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER) && json.GetJson(JsonManager::FileType::DEBUG)["PLAYER_INVINCIBLE"])
-	{
-		data.hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];
-	}
 }
 /// <summary>
 /// 回避
@@ -708,15 +711,18 @@ const bool Player::CanRotation()const
 	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
 	if (this->state->CheckFlag(this->MASK_ATTACK))		return false;//攻撃
 	if (this->state->CheckFlag(this->BLOCK))			return false;//防御
+	if (this->state->CheckFlag(this->HEAL))				return false;//回復
 	return true;
 }
 const bool Player::CanRolling()const
 {
-	if (this->state->CheckFlag(this->MASK_ATTACK))	  return false;//攻撃
-	if (this->state->CheckFlag(this->BLOCK))		  return false;//ブロック
-	if (this->state->CheckFlag(this->MASK_REACTION)) return false;//リアクション
-	if (this->state->CheckFlag(this->DEATH))		  return false;//死亡
-	if (this->state->CheckFlag(this->MASK_AVOID))			  return false;//回避
+	if (this->state->CheckFlag(this->MASK_ATTACK))		return false;//攻撃
+	if (this->state->CheckFlag(this->BLOCK))			return false;//ブロック
+	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
+	if (this->state->CheckFlag(this->DEATH))			return false;//死亡
+	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
+	if (this->state->CheckFlag(this->HEAL))				return false;//回復
+
 	return true;
 }
 const bool Player::CanAttack()const
@@ -725,24 +731,39 @@ const bool Player::CanAttack()const
 	if (this->state->CheckFlag(this->DEATH))			return false;//デス
 	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
 	if (this->state->CheckFlag(this->SLASH))			return false;//回避
+	if (this->state->CheckFlag(this->HEAL))				return false;//回復
 	return true;
 }
 const bool Player::CanBlock()const
 {
 	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
-	if (this->state->CheckFlag(this->DEATH))	return false;//デス
+	if (this->state->CheckFlag(this->DEATH))			return false;//デス
 	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
-	if (this->state->CheckFlag(this->SLASH))	return false;//攻撃
+	if (this->state->CheckFlag(this->SLASH))			return false;//攻撃
+	if (this->state->CheckFlag(this->HEAL))				return false;//回復
+	return true;
+}
+const bool Player::CanHeal()const
+{
+	if (this->state->CheckFlag(this->MASK_REACTION))		return false;//リアクション
+	if (this->state->CheckFlag(this->DEATH))				return false;//デス
+	if (this->state->CheckFlag(this->MASK_AVOID))			return false;//回避
+	if (this->state->CheckFlag(this->MASK_ATTACK))			return false;//攻撃
+	if (this->healOrbNum == 0)									return false;
+	if (this->isCount[static_cast<int>(FrameCountType::HEAL)])	return false;
+
 	return true;
 }
 const bool Player::DontAnyAction()const
 {
-	if (this->state->CheckFlag(this->MASK_ATTACK))	return false;//攻撃
-	if (this->state->CheckFlag(this->MASK_REACTION))return false;//リアクション
-	if (this->state->CheckFlag(this->MASK_AVOID))			return false;//回避
-	if (this->state->CheckFlag(this->DEATH))		return false;//ブロック
-	if (this->state->CheckFlag(this->MASK_MOVE))	return false;//移動
-	if (this->state->CheckFlag(this->BLOCK))		return false;//ジャンプ
+	if (this->state->CheckFlag(this->MASK_ATTACK))		return false;//攻撃
+	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
+	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
+	if (this->state->CheckFlag(this->DEATH))			return false;//ブロック
+	if (this->state->CheckFlag(this->MASK_MOVE))		return false;//移動
+	if (this->state->CheckFlag(this->BLOCK))			return false;//ジャンプ
+	if (this->state->CheckFlag(this->HEAL))				return false;//回復
+
 	return true;
 }
 

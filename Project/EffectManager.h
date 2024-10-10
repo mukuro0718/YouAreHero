@@ -11,6 +11,8 @@ public:
 	{
 		BOSS_IMPACT,
 		PLAYER_GUARD_HIT,
+		PLAYER_HEAL,
+		PLAYER_IMPACT,
 	};
 	/*エフェクトの描画用関数*/
 	void OnIsEffect(const EffectType _type);

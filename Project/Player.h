@@ -36,6 +36,7 @@ private:
 	static constexpr unsigned int BLOCK_REACTION  = (1 << 5);  //ブロックリアクション
 	static constexpr unsigned int WALK_FRONT	  = (1 << 6); //歩き
 	static constexpr unsigned int SLASH			  = (1 << 7); //攻撃
+	static constexpr unsigned int HEAL			  = (1 << 8); //攻撃
 	//マスク
 	static constexpr unsigned int MASK_REACTION				 = BLOCK_REACTION | REACTION;//リアクション
 	static constexpr unsigned int MASK_MOVE					 = WALK_FRONT; //移動マスク
@@ -43,7 +44,7 @@ private:
 	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = MASK_AVOID | BLOCK;
 	static constexpr unsigned int MASK_ATTACK				 = SLASH;
 	static constexpr unsigned int MASK_ALWAYS_TURN_OFF		 = MASK_MOVE | IDLE;
-	static constexpr unsigned int MASK_ALL					 = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION | BLOCK | MASK_AVOID | DEATH;
+	static constexpr unsigned int MASK_ALL					 = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION | BLOCK | MASK_AVOID | HEAL;
 	static constexpr unsigned int MASK_CAN_VELOCITY			 = MASK_MOVE | MASK_AVOID;
 	/*列挙体*/
 	//コライダーの種類
@@ -70,6 +71,7 @@ private:
 		BLOCK_REACTION  = 5,
 		WALK_FRONT		= 6,
 		SLASH			= 7,
+		HEAL			= 8,
 	};
 
 	/*内部処理関数*/
@@ -82,12 +84,13 @@ private:
 	void Attack			 ();//攻撃
 	void Death			 ();//デス
 	void Block			 ();//ブロック
-	void Heal();
+	void Heal			 ();
 	//許可フラグ
 	const bool CanRotation()const;
 	const bool CanRolling()const;
 	const bool CanAttack()const;
 	const bool CanBlock()const;
+	const bool CanHeal()const;
 	const bool DontAnyAction()const;
 
 		  void UpdateAnimation	 ();		//現在のアニメーションの更新
@@ -105,6 +108,5 @@ private:
 	float				animationPlayTime;			//アニメーション再生時間
 	int					attackComboCount;
 	int					healOrbNum;					//回復オーブの数
-	bool				isHeal;						//回復しているか
 };
 
