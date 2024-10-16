@@ -20,10 +20,8 @@ GameUI::GameUI()
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
 	/*画像クラスインスタンスの作成*/
-	const int GAME_CLEAR = asset.GetImage(LoadingAsset::ImageType::GAME_CLEAR);
-	const int GAME_OVER = asset.GetImage(LoadingAsset::ImageType::GAME_OVER);
-	this->image.emplace_back(new Image(GAME_CLEAR));
-	this->image.emplace_back(new Image(GAME_OVER));
+	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
+	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_100_32);
 	Initialize();
 }
 
@@ -42,14 +40,8 @@ void GameUI::Initialize()
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>	 ::GetInstance();
 
-	for (int i = 0; i < this->image.size(); i++)
-	{
-		this->image[i]->alpha = Image::MAX_ALPHA;
-		this->image[i]->isAddAlpha = false;
-		this->image[i]->SetPosition(json.GetJson(JsonManager::FileType::UI)["GAME_LOGO_FIRST_DRAW_RECT"]);
-	}
-	this->isPrevPressAButton = false;
-	this->isEndExtend = false;
+	this->alpha = 0;
+
 	this->isEnd = false;
 	this->type = -1;
 	this->frameCount = 0;
@@ -72,22 +64,18 @@ void GameUI::Update()
 	if (this->type == -1)return;
 
 	/*拡大が終了していなければ拡大して早期リターン*/
-	if (!this->isEndExtend)
+	if (this->alpha < json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"])
 	{
-		this->isEndExtend = this->image[this->type]->ExtendGraph(json.GetJson(JsonManager::FileType::UI)["GAME_LOGO_TARGET_DRAW_RECT"], json.GetJson(JsonManager::FileType::UI)["GAME_LOGO_ADD_VALUE"]);
+		this->alpha += json.GetJson(JsonManager::FileType::UI)["GAME_ADD_ALPHA"];
 		return;
 	}
 
-	/*フレームカウントが定数未満だったらフレームカウントを増加して早期リターン*/
-	if (this->frameCount < json.GetJson(JsonManager::FileType::UI)["GAME_LOGO_DRAW_TIME"])
+	/*フレームカウントが定数以上だったら終了フラグを立てる*/
+	this->frameCount++;
+	if (this->frameCount >= json.GetJson(JsonManager::FileType::UI)["GAME_LOGO_DRAW_TIME"])
 	{
-		this->frameCount++;
-		return;
+		this->isEnd = true;
 	}
-
-	/*ここでは縮小させる*/
-	this->isEnd = this->image[this->type]->ExtendGraph(json.GetJson(JsonManager::FileType::UI)["GAME_LOGO_FIRST_DRAW_RECT"], json.GetJson(JsonManager::FileType::UI)["GAME_LOGO_DECREASE_VALUE"]);
-	if (!isEnd)return;
 }
 
 /// <summary>
@@ -97,13 +85,25 @@ const void GameUI::Draw()const
 {
 	/*まだゲームが終了していなければ早期リターン*/
 	if (this->type == -1)return;
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& json = Singleton<JsonManager>	::GetInstance();
 
-	this->image[this->type]->Draw();
-	
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->alpha);
+	vector<int> table = json.GetJson(JsonManager::FileType::UI)["GAME_TABLE_DRAW_RECT"];
+	DrawExtendGraph(table[0], table[1], table[2], table[3], this->imageHandle, TRUE);
+	vector<int> position1 = json.GetJson(JsonManager::FileType::UI)["GAME_TEXT_POSITION_1"];
+	vector<int> position2 = json.GetJson(JsonManager::FileType::UI)["GAME_TEXT_POSITION_2"];
 	if (this->type == static_cast<int>(Type::LOSE))
 	{
-
+		DrawStringToHandle(position1[0], position1[1], "討\n伐", this->TEXT_COLOR, this->fontHandle);
+		DrawStringToHandle(position2[0], position2[1], "失\n敗", this->TEXT_COLOR, this->fontHandle);
 	}
+	else
+	{
+		DrawStringToHandle(position1[0], position1[1], "討\n伐", this->TEXT_COLOR, this->fontHandle);
+		DrawStringToHandle(position2[0], position2[1], "完\n了", this->TEXT_COLOR, this->fontHandle);
+	}
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"]);
 }
 
 /// <summary>
@@ -126,12 +126,12 @@ void GameUI::SetType()
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 
 	/*プレイヤーのHPが０以下*/
-	if (player.GetHP() <= 0 && !player.GetIsAlive())
+	if (player.GetHP() < 0 && !player.GetIsAlive())
 	{
 		this->type = static_cast<int>(Type::LOSE);
 	}
 	/*ボスのHPが０以下*/
-	else if (enemy.GetHP() <= 0 && !enemy.GetIsAlive())
+	else if (enemy.GetHP() < 0 && !enemy.GetIsAlive())
 	{
 		this->type = static_cast<int>(Type::WIN);
 	}

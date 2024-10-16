@@ -23,14 +23,17 @@ private:
 		LOSE,//「PressA」ロゴ
 	};
 
+	/*静的定数*/
+	static constexpr int TEXT_COLOR = 0xffffff;
+
 	/*内部処理関数*/
 	void SetType();
 
 	/*メンバ変数*/
-	std::vector<Image*> image;
-	bool isPrevPressAButton;
-	bool isEndExtend;
+	int imageHandle;
 	bool isEnd;
+	int alpha;
+	int fontHandle;
 	int frameCount;
 	int type;
 };

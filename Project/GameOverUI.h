@@ -11,15 +11,12 @@ public:
 	GameOverUI();
 	~GameOverUI();
 
-	void Initialize()		 override;
-	void Update()		 override;
-	const void Draw()const override;
-	const bool IsEnd()const override;
+		  void Initialize()		 override;
+		  void Update	 ()		 override;
+	const void Draw		 ()const override;
+	const bool IsEnd	 ()const override;
 	const bool IsContinue()const;
 private:
-	/*静的定数*/
-	static constexpr int TEXT_COLOR = 0xdfffff;
-
 	/*列挙体*/
 	//画像の種類
 	enum class ImageType
@@ -27,22 +24,20 @@ private:
 		CONTINUE,
 		END,
 	};
-	//フォントの種類
-	enum class FontType
-	{
-		MAIN,
-		SUB,
-	};
+
+	static constexpr int TEXT_COLOR = 0xffffff;
+	static constexpr int PRESS_TEXT_COLOR = 0xffff88;
 
 	void SetType();
 	bool IsPressButton();
 
-	std::vector<Image*> image;
-	std::vector<int> fontHandle;
+	int imageHandle;
+	int fontHandle;
+	int alpha;
+
 	bool isPrevPressButton;
 	bool isContinue;
 	bool isEnd;
-	bool isEndExtend;
 	int  type;//ゲームオーバー時のタイプ（Continue/End）
 };
 

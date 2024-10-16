@@ -20,20 +20,18 @@ GameOverUI::GameOverUI()
 	: isPrevPressButton	(false)
 	, isContinue		(false)
 	, isEnd				(false)
-	, isEndExtend		(false)
-	, type				(0)
+	, type				(-1)
+	, imageHandle		(-1)
+	, fontHandle		(-1)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
 	/*画像クラスインスタンスの作成*/
-	this->image.emplace_back(new Image(asset.GetImage(LoadingAsset::ImageType::CONTINUE)));
-	this->image.emplace_back(new Image(asset.GetImage(LoadingAsset::ImageType::END)));
+	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
 
 	/*fontHandleの取得*/
-	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::BAT_200_64));
-	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::BAT_30_64));
-
+	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_80_32);
 }
 
 /// <summary>
@@ -53,13 +51,7 @@ void GameOverUI::Initialize()
 	auto& player = Singleton<PlayerManager>	 ::GetInstance();
 	auto& enemy = Singleton<EnemyManager>	 ::GetInstance();
 
-	for (int i = 0; i < this->image.size(); i++)
-	{
-		this->image[i]->alpha = Image::MAX_ALPHA;
-		this->image[i]->isAddAlpha = true;
-		this->image[i]->SetPosition(json.GetJson(JsonManager::FileType::UI)["GAME_OVER_FIRST_POSITION"][i]);
-	}
-	this->isEndExtend		= false;
+	this->alpha				= 0;
 	this->isContinue		= false;
 	this->isPrevPressButton = false;
 	this->type				= 0;
@@ -78,47 +70,21 @@ void GameOverUI::Update()
 
 	SetType();
 
-	/*基底の大きさまで画像を拡大*/
-	if (!this->isEndExtend)
+	/*拡大が終了していなければ拡大して早期リターン*/
+	if (this->alpha < json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"])
 	{
-		int endCount = 0;
-		int index = this->image.size();
-		for (int i = 0; i < index; i++)
-		{
-			bool isEnd = this->image[i]->ExtendGraph(json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TARGET_POSITION"][i], json.GetJson(JsonManager::FileType::UI)["GAME_OVER_ADD_VALUE"]);
-			if (isEnd)
-			{
-				endCount++;
-			}
-		}
-		if (endCount == index)
-		{
-			this->isEndExtend = true;
-		}
+		this->alpha += json.GetJson(JsonManager::FileType::UI)["GAME_ADD_ALPHA"];
+		return;
 	}
-	else
+
+	/*ボタンが押されていたらリザルト終了*/
+	if (isPressButton)
 	{
-		/*拡大し終わったら、選択中のものを拡大縮小させる*/
-		for (int i = 0; i < this->image.size(); i++)
+		if (this->type == static_cast<int>(ImageType::CONTINUE))
 		{
-			if (this->type == i)
-			{
-				this->image[i]->ScalingGraph(json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TARGET_POSITION"][i], json.GetJson(JsonManager::FileType::UI)["GAME_OVER_REDUCED_POSITION"][i], json.GetJson(JsonManager::FileType::UI)["GAME_OVER_ADD_VALUE_2"]);
-			}
-			else
-			{
-				this->image[i]->SetPosition(json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TARGET_POSITION"][i]);
-			}
+			this->isContinue = true;
 		}
-		/*ボタンが押されていたらリザルト終了*/
-		if (isPressButton)
-		{
-			if (this->type == static_cast<int>(ImageType::CONTINUE))
-			{
-				this->isContinue = true;
-			}
-			this->isEnd = true;
-		}
+		this->isEnd = true;
 	}
 }
 
@@ -129,17 +95,26 @@ const void GameOverUI::Draw()const
 {
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>	::GetInstance();
-	vector<string> text = json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TEXT"];
-	vector<vector<int>> position = json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TEXT_POSITION"];
-	for (int i = 0; i < this->fontHandle.size(); i++)
-	{
-		DrawStringToHandle(position[i][0],position[i][1],text[i].c_str(),this->TEXT_COLOR,this->fontHandle[i]);
-	}
 
-	for (int i = 0; i < this->image.size(); i++)
+	/*背景の描画*/
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->alpha);
+	vector<int> table = json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TABLE_POSITION"];
+	DrawExtendGraph(table[0], table[1], table[2], table[3], this->imageHandle, TRUE);
+
+	/*文字の描画*/
+	vector<int> position1 = json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TEXT_POSITION"][0];
+	vector<int> position2 = json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TEXT_POSITION"][1];
+	if (this->type == static_cast<int>(ImageType::CONTINUE))
 	{
-		this->image[i]->Draw();
+		DrawStringToHandle(position1[0], position1[1], "再戦", this->PRESS_TEXT_COLOR, this->fontHandle, TRUE);
+		DrawStringToHandle(position2[0], position2[1], "終了", this->TEXT_COLOR, this->fontHandle, TRUE);
 	}
+	else
+	{
+		DrawStringToHandle(position1[0], position1[1], "再戦", this->TEXT_COLOR, this->fontHandle, TRUE);
+		DrawStringToHandle(position2[0], position2[1], "終了", this->PRESS_TEXT_COLOR, this->fontHandle, TRUE);
+	}
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"]);
 }
 
 /// <summary>
@@ -160,10 +135,10 @@ void GameOverUI::SetType()
 	auto& json = Singleton<JsonManager>	::GetInstance();
 	auto& input = Singleton<InputManager>::GetInstance();
 
-	const int X_BUF = input.GetLStickState().XBuf;
+	const int Y_BUF = input.GetLStickState().YBuf;
 
-	/*右*/
-	if (X_BUF > 0)
+	/*上*/
+	if (Y_BUF > 0)
 	{
 		this->type++;
 		if (this->type >= static_cast<int>(ImageType::END))
@@ -171,8 +146,8 @@ void GameOverUI::SetType()
 			this->type = static_cast<int>(ImageType::END);
 		}
 	}
-	/*左*/
-	else if (X_BUF < 0)
+	/*下*/
+	else if (Y_BUF < 0)
 	{
 		this->type--;
 		if (this->type <= static_cast<int>(ImageType::CONTINUE))

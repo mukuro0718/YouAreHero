@@ -19,6 +19,7 @@
 #include "CollisionManager.h"
 #include "Debug.h"
 #include "HitStopManager.h"
+#include "Timer.h"
 
 /// <summary>
 /// コンストラクタ
@@ -49,9 +50,11 @@ void GameScene::Initialize()
 	auto& effect = Singleton<EffectManager>		::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 	auto& debug = Singleton<Debug>::GetInstance();
+	auto& timer = Singleton<Timer>::GetInstance();
 	
 	/*初期化*/
-	camera.Initialize();
+	//camera.Initialize();
+	timer.Initialize();
 	map.Initialize();
 	player.Initialize();
 	enemy.Initialize();
@@ -100,8 +103,10 @@ void GameScene::Update()
 	auto& collision = Singleton<CollisionManager>	::GetInstance();
 	auto& sceneChanger = Singleton<SceneChanger>		::GetInstance();
 	auto& hitStop = Singleton<HitStopManager>		::GetInstance();
+	auto& timer = Singleton<Timer>::GetInstance();
 
 	/*更新処理*/
+	timer.Update();
 	debug.Update();
 	input.Update();
 	hitStop.Update();
@@ -143,6 +148,7 @@ const void GameScene::Draw()const
 	//auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 	auto& effect = Singleton<EffectManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
+	auto& timer = Singleton<Timer>::GetInstance();
 
 	/*描画*/
 	camera.Draw();
@@ -153,6 +159,7 @@ const void GameScene::Draw()const
 	playerAttack.Draw();
 	effect.Draw();
 	ui.Draw();
+	timer.Draw();
 }
 
 /// <summary>

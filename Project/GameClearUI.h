@@ -33,20 +33,13 @@ private:
 	};
 
 	bool IsPressButton();
-	void AddStarIndex();
-	vector<int> AddPositionOffset(const vector<int> _position, const vector<int> _offset);
-	void SetStarHandle();
+	void CalcRanking();
 
-	Image* window;
-	vector<Image*> star;
-	vector<Image*> starFrame;
-	vector<int> fontHandle;
-	vector<int> starType;
-	bool isPrevPressButton;
+	int nowRanking;//ç°ÇÃèáà 
+	int fontHandle;
+	int imageHandle;
+	int alpha;
 	bool isEnd;
-	bool isEndExtend;
-	bool isRedused;
-	int starIndex;
-	int frameCount;
+	bool isPrevPressButton;
 };
 

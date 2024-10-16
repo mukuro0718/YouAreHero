@@ -1,4 +1,6 @@
 #include <DxLib.h>
+#include<iostream>
+#include<fstream>
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "SceneBase.h"
@@ -12,31 +14,25 @@
 #include "UIManager.h"
 #include "InputManager.h"
 #include "LoadingAsset.h"
+#include "Timer.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 GameClearUI::GameClearUI()
-	: window			(nullptr)
-	, isPrevPressButton	(false)
-	, isEnd				(false)
-	, isEndExtend		(false)
-	, isRedused			(false)
-	, starIndex			(0)
-	, frameCount		(0)
+	: imageHandle	(-1)
+	, fontHandle	(-1)
+	, alpha			(0)
+	, nowRanking	(-1)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
 	/*画像クラスインスタンスの作成*/
-	this->window = new Image(asset.GetImage(LoadingAsset::ImageType::WINDOW));
-	this->starFrame.emplace_back(new Image(asset.GetImage(LoadingAsset::ImageType::NONE_STAR)));
-	this->starFrame.emplace_back(new Image(asset.GetImage(LoadingAsset::ImageType::NONE_STAR)));
-	this->starFrame.emplace_back(new Image(asset.GetImage(LoadingAsset::ImageType::NONE_STAR)));
+	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
 
 	/*fontHandleの取得*/
-	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::BAT_100_64));
-	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::BAT_30_64));
+	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_80_32);
 
 	//Initialize();
 }
@@ -56,29 +52,14 @@ void GameClearUI::Initialize()
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>	 ::GetInstance();
 
-	SetStarHandle();
 
-	this->window->alpha = Image::MAX_ALPHA;
-	this->window->isAddAlpha = true;
-	this->window->SetPosition(json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_WINDOW_FIRST_POSITION"]);
-
-	vector<int> position = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_STAR_POSITION"];
-	for (int i = 0; i < this->star.size(); i++)
-	{
-		this->star[i]->alpha = Image::MAX_ALPHA;
-		this->star[i]->isAddAlpha = true;
-		this->star[i]->SetPosition(position);
-		this->starFrame[i]->alpha = Image::MAX_ALPHA;
-		this->starFrame[i]->isAddAlpha = true;
-		this->starFrame[i]->SetPosition(position);
-		position = AddPositionOffset(position, json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_STAR_OFFSET"]);
-	}
+	this->isEnd				= false;
 	this->isPrevPressButton = false;
-	this->isEnd = false;
-	this->isEndExtend = false;
-	this->isRedused = false;
-	this->starIndex = false;
-	this->frameCount = 0;
+	this->alpha				= 0;
+	this->nowRanking		= -1;
+
+	/*ランキングの更新*/
+	CalcRanking();
 }
 
 /// <summary>
@@ -89,28 +70,19 @@ void GameClearUI::Update()
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>	::GetInstance();
 
-	/*ボタン入力*/
-	bool isPressButton = IsPressButton();
-
-	/*テキストインデックスの追加*/
-	AddStarIndex();
-
-	/*windowの拡大が終わっているか*/
-	if (!this->isEndExtend)
+	/*拡大が終了していなければ拡大して早期リターン*/
+	if (this->alpha < json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"])
 	{
-		this->isEndExtend = this->window->ExtendGraph(json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_WINDOW_TARGET_POSITION"], json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_WINDOW_ADD_VALUE"]);
+		this->alpha += json.GetJson(JsonManager::FileType::UI)["GAME_ADD_ALPHA"];
 		return;
 	}
 
-
-	if (isPressButton && this->starIndex == this->star.size())
+	/*ボタン入力*/
+	bool isPressButton = IsPressButton();
+	
+	if (isPressButton)
 	{
-		this->isRedused = true;
-	}
-
-	if (this->isRedused)
-	{
-		this->isEnd = this->window->ExtendGraph(json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_WINDOW_FIRST_POSITION"], json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_WINDOW_ADD_VALUE"]);
+		this->isEnd = true;
 	}
 }
 
@@ -119,39 +91,108 @@ void GameClearUI::Update()
 /// </summary>
 const void GameClearUI::Draw()const
 {
-	/*windowの描画*/
-	this->window->Draw();
-
-	/*windowの拡大が終了していなければ早期リターン*/
-	if (!this->isEndExtend)return;
-
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>	::GetInstance();
+	auto& timer = Singleton<Timer>	::GetInstance();
 
-	/*星の描画*/
-	for (int i = 0; i < this->starFrame.size(); i++)
+	
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->alpha);
+	vector<int> table = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_TABLE_POSITION"];
+	DrawExtendGraph(table[0], table[1], table[2], table[3], this->imageHandle, TRUE);
+
+	/*クリアタイムの表示*/
+	vector<int> clearTimePosition = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_TIME_POSITION"];
+	int second = timer.GetNowTime() / 60;
+	int minute = second / 60;
+	second -= minute * 60;
+	DrawFormatStringToHandle(clearTimePosition[0], clearTimePosition[1], this->TEXT_COLOR, this->fontHandle, "討伐時間 %d分%d秒", minute, second);
+
+	/*順位の表示*/
+	vector<int> rankingPosition = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_RANKING_POSITION"];
+	if (this->nowRanking == -1)
 	{
-		this->starFrame[i]->Draw();
+		DrawStringToHandle(rankingPosition[0], rankingPosition[1],"討伐順位 不明" ,this->TEXT_COLOR, this->fontHandle);
 	}
-	for (int i = 0; i < this->starIndex; i++)
+	else
 	{
-		this->star[i]->Draw();
+		DrawFormatStringToHandle(rankingPosition[0], rankingPosition[1], this->TEXT_COLOR, this->fontHandle, "討伐順位 %d", this->nowRanking + 1);
 	}
 
+	vector<int> position = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_BACK_TITLE_POSITION"];
+	DrawStringToHandle(position[0], position[1], "Bでタイトルに戻る", this->TEXT_COLOR, this->fontHandle);
 
-	/*テキストの描画*/
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"]);
+
+}
+
+void GameClearUI::CalcRanking()
+{
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& json = Singleton<JsonManager>	::GetInstance();
+	auto& timer = Singleton<Timer>	::GetInstance();
+
+	int clearTime = timer.GetNowTime();//ここにクリアタイムを入れる
+
+
+	//ファイルを読み込んで内容を画面に表示する
+	string fileName = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_RANKING_FILE_NAME"];
+
+	ifstream ifs(fileName.c_str());
+	if (ifs.good())
 	{
-		vector<int> position = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_TEXT_HEADER_POSITION"];
-		string text = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_TEXT_HEADER"];
-		DrawStringToHandle(position[0], position[1], text.c_str(), this->TEXT_COLOR, this->fontHandle[static_cast<int>(FontType::HEADER)]);
-	}
-	{
-		vector<int> position = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_TEXT_MAIN_POSITION"];
-		string text = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_TEXT_MAIN"];
-		for (int i = 0; i < text.size(); i++)
+		nlohmann::json nowJson;
+		ifs >> nowJson;
+
+		//読み込んだデータをそれぞれの変数に代入する
+		vector<int>	ranking = nowJson["RANKING"];
+
+		int index = ranking.size();
+		//クリアタイムの確認
+		for (int i = 0; i < index; i++)
 		{
-			DrawStringToHandle(position[0], position[1], text.c_str(), this->TEXT_COLOR, this->fontHandle[static_cast<int>(FontType::MAIN)]);
+			//ランクインするなら、順位を保持し、Rankingを更新する
+			if (ranking[i] >= clearTime)
+			{
+				this->nowRanking = i;
+				ranking.insert(ranking.begin() + i, clearTime);
+				break;
+			}
 		}
+		//もしランクインしていないときに、インデックスが最大未満だったら追加する
+		if (this->nowRanking == -1 && index != json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_MAX_RANKING_USER"])
+		{
+			ranking.emplace_back(clearTime);
+			this->nowRanking = index;
+		}
+		//ファイルに書き込む内容
+		nowJson =
+		{
+			{"RANKING",ranking },
+		};
+		//作成したファイルに内容を書き込む
+		ofstream writing_file;
+		writing_file.open(fileName, ios::out);
+		writing_file << nowJson.dump() << endl;
+		writing_file.close();
+
+	}
+	//ファイルがない場合は新しく作る
+	else
+	{
+		string indexName = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_RANKING_INDEX_NAME"];
+		vector<int> value;
+		value.emplace_back(clearTime);
+		value.emplace_back(10000);
+		nlohmann::json newJson = 
+		{ 
+			{indexName.c_str(),value},
+		};
+		//作成したファイルに内容を書き込む
+		ofstream writing_file;
+		writing_file.open(fileName, ios::out);
+		writing_file << newJson.dump() << endl;
+		writing_file.close();
+		this->nowRanking = 1;
 	}
 }
 
@@ -200,77 +241,3 @@ bool GameClearUI::IsPressButton()
 	return isPressButton;
 }
 
-/// <summary>
-/// テキストインデックスの追加
-/// </summary>
-void GameClearUI::AddStarIndex()
-{
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = Singleton<JsonManager>	 ::GetInstance();
-
-	/*拡大が終了していなければ早期リターン*/
-	if (!this->isEndExtend)return;
-	/*インデックスが定数を超えていたら早期リターン*/
-	if (this->starIndex >= json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_STAR_NUM"])return;
-
-	this->frameCount++;
-	/*フレームカウントが定数を超えていたら*/
-	if (this->frameCount >= json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_ADD_STAR_INDEX_INTERVAL"])
-	{
-		this->frameCount = 0;
-		this->starIndex++;
-	}
-}
-
-
-void GameClearUI::SetStarHandle()
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>	 ::GetInstance();
-	auto& asset = Singleton<LoadingAsset>::GetInstance();
-	auto& player = Singleton<PlayerManager>	 ::GetInstance();
-	auto& enemy = Singleton<EnemyManager>	 ::GetInstance();
-
-	int goldStar = asset.GetImage(LoadingAsset::ImageType::GOLD_STAR);
-	int silverStar = asset.GetImage(LoadingAsset::ImageType::SILVER_STAR);
-	int time = 0;//経過時間
-	int orbNum = json.GetJson(JsonManager::FileType::PLAYER)["MAX_HEAL_ORB_NUM"] - player.GetHealOrbNum();//オーブの残り
-	int continueCount = -1;
-	vector<int> judge = { time,orbNum,continueCount };
-	vector<int> goldLine = json.GetJson(JsonManager::FileType::UI)["GOLD_LINE"];
-	vector<int> silverLine = json.GetJson(JsonManager::FileType::UI)["SILVER_LINE"];
-
-
-	this->star.clear();
-	for (int i = 0; i < goldLine.size(); i++)
-	{
-		/*時間がシルバーラインを超えていたら*/
-		if (judge[i] <= silverLine[i])
-		{
-			//ゴールドライン
-			if (judge[i] <= goldLine[i])
-			{
-				this->star.emplace_back(new Image(goldStar));
-			}
-			else
-			{
-				this->star.emplace_back(new Image(silverStar));
-			}
-		}
-		else
-		{
-			this->star.emplace_back(new Image(-1));
-		}
-	}
-}
-
-
-vector<int> GameClearUI::AddPositionOffset(const vector<int> _position,const vector<int> _offset)
-{
-	vector<int> out = _position;
-	for (int i = 0; i < out.size(); i++)
-	{
-		out[i] += _offset[i];
-	}
-	return out;
-}
