@@ -70,4 +70,5 @@ private:
 	int playerStaminaTable;
 	int bossHPBar;
 	int bossHPTable;
+	int bossHPBarFrame;
 };

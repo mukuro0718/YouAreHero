@@ -17,18 +17,19 @@ HPUI::HPUI()
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
 	
-	this->backgroundColor	= ConvertColor(json.GetJson(JsonManager::FileType::UI)["BACKGROUND_COLOR"]		);
-	this->playerHPColor		= ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_COLOR"]		);
-	this->bossHPColor		= ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_COLOR"]			);
-	this->prevPlayerHPColor = ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_PREV_HP_COLOR"]	);
-	this->prevBossHPColor	= ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_PREV_HP_COLOR"]	);
-	this->staminaColor		= ConvertColor(json.GetJson(JsonManager::FileType::UI)["STAMINA_COLOR"]			);
+	this->backgroundColor	 = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BACKGROUND_COLOR"]		);
+	this->playerHPColor		 = ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_COLOR"]		);
+	this->bossHPColor		 = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_COLOR"]			);
+	this->prevPlayerHPColor  = ConvertColor(json.GetJson(JsonManager::FileType::UI)["PLAYER_PREV_HP_COLOR"]	);
+	this->prevBossHPColor	 = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_PREV_HP_COLOR"]	);
+	this->staminaColor		 = ConvertColor(json.GetJson(JsonManager::FileType::UI)["STAMINA_COLOR"]			);
 	this->playerHPBar		 = asset.GetImage(LoadingAsset::ImageType::PLAYER_HP_BAR);
-	this->playerHPTable		 = asset.GetImage(LoadingAsset::ImageType::PLAYER_HP_TABLE);
+	this->playerHPTable		 = asset.GetImage(LoadingAsset::ImageType::BAR_TABLE);
 	this->playerStaminaBar	 = asset.GetImage(LoadingAsset::ImageType::PLAYER_STAMINA_BAR);
-	this->playerStaminaTable = asset.GetImage(LoadingAsset::ImageType::PLAYER_STAMINA_TABLE);
+	this->playerStaminaTable = asset.GetImage(LoadingAsset::ImageType::BAR_TABLE);
 	this->bossHPBar			 = asset.GetImage(LoadingAsset::ImageType::BOSS_HP_BAR);
-	this->bossHPTable		 = asset.GetImage(LoadingAsset::ImageType::BOSS_HP_TABLE);
+	this->bossHPTable		 = asset.GetImage(LoadingAsset::ImageType::BAR_TABLE);
+	this->bossHPBarFrame	 = asset.GetImage(LoadingAsset::ImageType::HP_BAR_FRAME);
 }
 
 /// <summary>
@@ -129,15 +130,14 @@ const void HPUI::Draw()const
 	}
 	//BOSS
 	{
-		Vec2d table;
 		Vec2d position;
 		Box box;
 		int height;
+		vector<int> table = json.GetJson(JsonManager::FileType::UI)["BOSS_HP_TABLE_POSITION"];
 		int indexBase = json.GetJson(JsonManager::FileType::UI)["BOSS_HP_WIDTH"];
 		int nowHP = static_cast<int>(this->bossHP.GetNow() / this->bossHP.GetMax() * indexBase);
 		int prevHP = static_cast<int>(this->bossHP.GetPrev() / this->bossHP.GetMax() * indexBase);
 		position.Set(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_POSITION"]);
-		table.Set(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_TABLE_POSITION"]);
 		height = json.GetJson(JsonManager::FileType::UI)["BOSS_HP_HEIGHT"];
 
 		box.lx = position.x;
@@ -145,9 +145,10 @@ const void HPUI::Draw()const
 		box.rx = box.lx + indexBase;
 		box.ry = box.ly + height;
 
-		DrawGraph(table.x, table.y, this->bossHPTable, TRUE);
+		DrawExtendGraph(table[0], table[1], table[2], table[3], this->bossHPTable, TRUE);
 		DrawBox(box.lx, box.ly, box.lx + prevHP, box.ry, this->prevBossHPColor, TRUE);
 		DrawExtendGraph(box.lx, box.ly, box.lx + nowHP, box.ry, this->bossHPBar, TRUE);
+		DrawExtendGraph(table[0], table[1], table[2], table[3], this->bossHPBarFrame, TRUE);
 	}
 }
 /// <summary>
