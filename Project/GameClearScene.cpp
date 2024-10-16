@@ -40,7 +40,7 @@ void GameClearScene::Initialize()
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 
 	/*‰Šú‰»*/
-	camera.Initialize();
+	//camera.Initialize();
 	map.Initialize();
 	ui.Initialize();
 

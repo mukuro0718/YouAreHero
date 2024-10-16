@@ -12,6 +12,7 @@ CameraManager::CameraManager()
 	:camera(nullptr)
 {
 	this->camera = new Camera();
+	this->camera->Initialize();
 }
 
 /// <summary>
