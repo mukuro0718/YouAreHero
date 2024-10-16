@@ -45,7 +45,14 @@ LoadingAsset::LoadingAsset()
 	}
 	for (int i = 0; i < fontSize.size(); i++)
 	{
-		this->fontHandle.emplace_back(CreateFontToHandle(fontName[fontType[i]].c_str(), fontSize[i], fontThick[i], DX_FONTTYPE_EDGE, DX_CHARSET_DEFAULT, fontEdge[i]));
+		if (fontType[i] == static_cast<int>(FontName::Aihara))
+		{
+			this->fontHandle.emplace_back(CreateFontToHandle("コーポレート明朝 ver3 Medium", fontSize[i], fontThick[i], DX_FONTTYPE_EDGE, DX_CHARSET_DEFAULT, fontEdge[i]));
+		}
+		else
+		{
+			this->fontHandle.emplace_back(CreateFontToHandle(fontName[fontType[i]].c_str(), fontSize[i], fontThick[i], DX_FONTTYPE_EDGE, DX_CHARSET_DEFAULT, fontEdge[i]));
+		}
 	}
 	/*エフェクトのロード*/
 	for (int i = 0; i < effectPath.size(); i++)

@@ -28,11 +28,9 @@ public:
 		PAUSE_ICON,
 		
 		BOSS_HP_BAR,
-		BOSS_HP_TABLE,
 		PLAYER_HP_BAR,
-		PLAYER_HP_TABLE,
 		PLAYER_STAMINA_BAR,
-		PLAYER_STAMINA_TABLE,
+		BAR_TABLE,
 
 		GAME_CLEAR,
 		GAME_OVER,
@@ -53,26 +51,24 @@ public:
 		PRESS_X_BUTTON,
 		PRESS_Y_BUTTON,
 		PRESS_LT_BUTTON,
-
 		SHADOW,
+		AUDIENCE,
+		BACK_GROUND,
+		POTION,
+		POTION_TABLE,
+		HP_BAR_FRAME,
 	};
 	//フォントのタイプ
 	enum class FontType
 	{
-		HONOKA_50_64,
-		HONOKA_30_64,
-		BAT_70_64,
-		BAT_30_32,
-		BAT_100_64,
-		BAT_30_64,
-		BAT_200_64,
-		BAT_150_64,
-		BAT_32_0,
+		MINTYO_80_32,
+		MINTYO_50_32,
+		MINTYO_100_32,
 	};
 	enum class FontName
 	{
-		Honoka,
-		batman
+		batman,
+		Aihara,
 	};
 	//音のタイプ
 	enum class SoundType
