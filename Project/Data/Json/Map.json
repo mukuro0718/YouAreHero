@@ -1,6 +1,6 @@
 {
   "MAP_NORM": [ 0.0, 1.0, 0.0 ],
-  "MAP_SCALE": 80.0,
+  "MAP_SCALE": 120.0,
   "FINALY_BOSS_MAP_SCALE": [ 0.08, 0.08, 0.08 ],
   "FINALY_BOSS_MAP_ROTATION": [ 0.0, 180.0, 0.0 ],
   "FINALY_BOSS_MAP_POSITION": [ 0.0, 0.0, 0.0 ],

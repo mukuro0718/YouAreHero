@@ -1,14 +1,13 @@
 {
   "PATH": [
-    "Asset/Font/Honoka_Shin_Mincho_L.otf",
-    "Asset/Font/batmanforeveralternate.ttf"
+    "Asset/Font/batmanforeveralternate.ttf",
+    "Asset/Font/Corporate-Mincho-ver3.otf"
   ],
   "NAME": [
-    "ほのか新明朝 Light",
     "BatmanForeverAlternate"
   ],
-  "TYPE": [ 0 , 0 , 1 , 1 , 1  , 1 , 1  , 1  , 1],
-  "SIZE": [ 50, 30, 70, 30, 100, 30, 200, 130, 32],
-  "THICK":[ 64, 64, 64, 32, 64 , 64, 64 , 32 , 1],
-  "EDGE": [  4,  4,  4,  4,  4 ,  4,  4 , 4  , 0]
+  "TYPE": [ 1 , 1 ,1 ],
+  "SIZE": [ 80, 50,150 ],
+  "THICK": [ 64, 32 ,32],
+  "EDGE": [ 0 , 0 ,0]
 }

@@ -6,11 +6,9 @@
     "Asset/Image/UI/Icon/PauseIcon.png",
 
     "Asset/Image/UI/Bar/BossHPBar.png",
-    "Asset/Image/UI/Bar/BossHPTable.png",
     "Asset/Image/UI/Bar/PlayerHPBar.png",
-    "Asset/Image/UI/Bar/PlayerHPTable.png",
     "Asset/Image/UI/Bar/PlayerStaminaBar.png",
-    "Asset/Image/UI/Bar/PlayerStaminaTable.png",
+    "Asset/Image/UI/Bar/Hp_bar.png",
 
     "Asset/Image/UI/GameClearLogo.png",
     "Asset/Image/UI/GameOverLogo.png",
@@ -31,6 +29,11 @@
     "Asset/Image/UI/Press_X_Button.png",
     "Asset/Image/UI/Press_Y_Button.png",
     "Asset/Image/UI/Press_LT_Button.png",
-    "Asset/Image/Shadow/Shadow.tga"
+    "Asset/Image/Shadow/Shadow.tga",
+    "Asset/Image/UI/audience.png",
+    "Asset/Image/UI/BackGround.png",
+    "Asset/Image/UI/hp_potion.png",
+    "Asset/Image/UI/Potion_table.png",
+    "Asset/Image/UI/Bar/Hp_bar_Frame.png"
   ]
 }

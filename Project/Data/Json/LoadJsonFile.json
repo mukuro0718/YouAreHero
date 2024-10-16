@@ -15,6 +15,7 @@
     "Data/Json/UI.json",
     "Data/Json/EffectPath.json",
     "Data/Json/Effect.json",
-    "Data/Json/Bot.json"
+    "Data/Json/Bot.json",
+    "Data/Json/Ranking.json"
   ]
 }
