@@ -7,6 +7,7 @@
 #include "PlayerGuardHitEffect.h"
 #include "PlayerHealEffect.h"
 #include "PlayerImpactEffect.h"
+#include "PlayerJustGuardEffect.h"
 #include "EffectManager.h"
 #include "EnemyManager.h"
 #include "BossAttackManager.h"
@@ -25,6 +26,7 @@ EffectManager::EffectManager()
 	this->effect.emplace_back(new PlayerGuardHitEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_GUARD_HIT)));
 	this->effect.emplace_back(new PlayerHealEffect		(asset.GetEffect(LoadingAsset::EffectType::PLAYER_HEAL)));
 	this->effect.emplace_back(new PlayerImpactEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_IMPACT)));
+	this->effect.emplace_back(new PlayerJustGuardEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_JUST_GUARD)));
 }
 
 /// <summary>

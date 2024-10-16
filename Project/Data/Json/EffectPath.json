@@ -3,6 +3,7 @@
     "Asset/Effect/Boss/ImpactEffect.efkefc",
     "Asset/Effect/Player/GuardEffect.efkefc",
     "Asset/Effect/Player/healEffect.efkefc",
-    "Asset/Effect/Player/ImpactEffect.efkefc"
+    "Asset/Effect/Player/ImpactEffect.efkefc",
+    "Asset/Effect/Player/JustGuardEffect.efkefc"
   ]
 }

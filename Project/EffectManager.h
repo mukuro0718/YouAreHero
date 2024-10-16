@@ -13,6 +13,7 @@ public:
 		PLAYER_GUARD_HIT,
 		PLAYER_HEAL,
 		PLAYER_IMPACT,
+		PLAYER_JUST_GUARD,
 	};
 	/*エフェクトの描画用関数*/
 	void OnIsEffect(const EffectType _type);
