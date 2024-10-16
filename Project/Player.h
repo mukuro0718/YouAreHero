@@ -26,7 +26,7 @@ private:
 		/*静的定数*/
 	const float SHADOW_HEIGHT = 10.0f;
 	const float SHADOW_SIZE = 6.0f;
-	static constexpr int COUNT_NUM = 3;//フレームカウントの数
+	static constexpr int COUNT_NUM = 4;//フレームカウントの数
 	//プレイヤーの状態
 	static constexpr unsigned int IDLE			  = (1 << 0);  //待機
 	static constexpr unsigned int AVOID			  = (1 << 1);  //回避
@@ -41,8 +41,8 @@ private:
 	static constexpr unsigned int MASK_REACTION				 = BLOCK_REACTION | REACTION;//リアクション
 	static constexpr unsigned int MASK_MOVE					 = WALK_FRONT; //移動マスク
 	static constexpr unsigned int MASK_AVOID				 = AVOID; //移動マスク
-	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = MASK_AVOID | BLOCK;
 	static constexpr unsigned int MASK_ATTACK				 = SLASH;
+	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = MASK_AVOID | BLOCK | MASK_ATTACK;
 	static constexpr unsigned int MASK_ALWAYS_TURN_OFF		 = MASK_MOVE | IDLE;
 	static constexpr unsigned int MASK_ALL					 = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION | BLOCK | MASK_AVOID | HEAL;
 	static constexpr unsigned int MASK_CAN_VELOCITY			 = MASK_MOVE | MASK_AVOID;
@@ -56,9 +56,10 @@ private:
 	//フレームカウントの種類
 	enum class FrameCountType
 	{
-		INVINCIBLE = 0,//無敵時間
-		HEAL = 1,//回復
-		AVOID = 2,//回避
+		JUST_AVOID	= 0,//ジャスト回避
+		HEAL		= 1,//回復
+		AVOID		= 2,//回避
+		JUST_BLOCK	= 3,//ジャストガード
 	};
 	//アニメーションの種類
 	enum class AnimationType
@@ -84,29 +85,30 @@ private:
 	void Attack			 ();//攻撃
 	void Death			 ();//デス
 	void Block			 ();//ブロック
-	void Heal			 ();
+	void Heal			 ();//回復
 	//許可フラグ
-	const bool CanRotation()const;
-	const bool CanRolling()const;
-	const bool CanAttack()const;
-	const bool CanBlock()const;
-	const bool CanHeal()const;
-	const bool DontAnyAction()const;
+	const bool CanRotation		()const;							//回転できるか
+	const bool CanRolling		()const;							//回避できるか
+	const bool CanAttack		()const;							//攻撃できるか
+	const bool CanBlock			()const;							//ガードできるか
+	const bool CanHeal			()const;							//回復できるか
+	const bool DontAnyAction	()const;							//ほかにアクションを行っているか
+	const bool CanAction		(const float _staminaConsumed)const;//アクションができるか
 
-		  void UpdateAnimation	 ();		//現在のアニメーションの更新
-		  bool FrameCount(const int _index,const int _maxFrame);
-	const bool CanAction(const float _staminaConsumed)const;
-	void CalcStamina(const float _staminaConsumed);//スタミナの回復処理
+		  void UpdateAnimation	();										//現在のアニメーションの更新
+		  void CalcStamina		(const float _staminaConsumed);			//スタミナの回復処理
+		  bool FrameCount		(const int _index,const int _maxFrame);	//フレームカウント
 	/*メンバ変数*/
-	HitStop* hitStop;
-	VECTOR				moveVectorRotation;			//移動ベクトル用回転値
-	std::vector<int>	frameCount;					//フレームカウント
-	std::vector<bool>	isCount;					//カウントをするか
-	std::map<unsigned int, int> animationMap;//アニメーションマップ
-	std::map<int, unsigned int> reactionMap;//リアクションマップ
-	int					nowAnimation;				//アニメーション
-	float				animationPlayTime;			//アニメーション再生時間
-	int					attackComboCount;
-	int					healOrbNum;					//回復オーブの数
+	HitStop*					hitStop;
+	VECTOR						moveVectorRotation;	//移動ベクトル用回転値
+	std::vector<int>			frameCount;			//フレームカウント
+	std::vector<bool>			isCount;			//カウントをするか
+	std::map<unsigned int, int> animationMap;		//アニメーションマップ
+	std::map<int, unsigned int> reactionMap;		//リアクションマップ
+	int							nowAnimation;		//アニメーション
+	float						animationPlayTime;	//アニメーション再生時間
+	int							attackComboCount;	//攻撃コンボカウント
+	int							healOrbNum;			//回復オーブの数
+	float						dot;				//内積
 };
 

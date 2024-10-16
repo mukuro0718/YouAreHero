@@ -147,6 +147,7 @@ void Player::Initialize()
 
 
 	/*状態の初期化*/
+	this->state->ClearFlag(this->DEATH);
 	this->state->ClearFlag(this->MASK_ALL);
 	this->state->SetFlag(this->IDLE);
 
@@ -253,6 +254,7 @@ const void Player::DrawCharacterInfo()const
 		printfDx("%d:HEAL							\n", this->state->CheckFlag(this->HEAL));
 		auto& characterCollider = dynamic_cast<CharacterColliderData&> (*this->collider);
 		printfDx("%d:REACTION_TYPE				\n", characterCollider.data->playerReaction);
+		printfDx("DOT:%f\n"							, this->dot);
 
 	}
 	if (this->isDraw)
@@ -458,17 +460,31 @@ void Player::Reaction()
 	if (collider.data->isHit)
 	{
 		//ガード中
-		if (this->state->CheckFlag(this->BLOCK))
+		//内積が定数以内 & ガード中 & ガードに必要なスタミナが足りている
+		if (this->state->CheckFlag(this->BLOCK) && collider.data->isGuard)
 		{
-			effect.OnIsEffect(EffectManager::EffectType::PLAYER_GUARD_HIT);
-			this->state->ClearFlag(this->MASK_ALL);
-			this->state->SetFlag(this->BLOCK_REACTION);
-			CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]);
+			if (collider.data->isInvinvible)
+			{
+				//effect.OnIsEffect(EffectManager::EffectType::PLAYER_GUARD_HIT);
+				this->state->ClearFlag(this->MASK_ALL);
+				this->state->SetFlag(this->BLOCK_REACTION);
+				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
+				this->isCount[static_cast<int>(FrameCountType::JUST_AVOID)] = false;
+				this->frameCount[static_cast<int>(FrameCountType::JUST_AVOID)] = 0;
+
+			}
+			else
+			{
+				effect.OnIsEffect(EffectManager::EffectType::PLAYER_GUARD_HIT);
+				this->state->ClearFlag(this->MASK_ALL);
+				this->state->SetFlag(this->BLOCK_REACTION);
+				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]);
+			}
 		}
 		else
 		{
 			auto& data = dynamic_cast<PlayerData&>(*collider.data);
-
+			//無敵じゃなければ
 			if (!data.isInvinvible)
 			{
 				auto& effect = Singleton<EffectManager>::GetInstance();
@@ -484,6 +500,10 @@ void Player::Reaction()
 					data.hitStopDelay,
 					data.slowFactor
 				);
+			}
+			else
+			{
+				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["AVOID_RECOVERY_VALUE"]);
 			}
 		}
 		collider.data->isHit = false;
@@ -536,24 +556,58 @@ void Player::Block()
 	/*pad入力*/
 	int pad = input.GetPadState();
 
+	/*フレーム回避用フレームカウントが最大に達していたら無敵フラグを下す*/
+	if (FrameCount(static_cast<int>(FrameCountType::JUST_BLOCK), json.GetJson(JsonManager::FileType::PLAYER)["JUST_BLOCK_MAX_FRAME"]))
+	{
+		auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
+		auto& data = dynamic_cast<PlayerData&>(*collider.data);
+		data.isInvinvible = false;
+	}
+
 	/*ブロックできるか*/
 	if (!CanBlock())return;
-
-	/*消費スタミナは足りるのか*/
-	if (!CanAction(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]))return;
 
 	/*LTが押されたか*/
 	if (pad & PAD_INPUT_7)
 	{
+		auto& enemy = Singleton<EnemyManager>::GetInstance();
+		VECTOR enemyFirstDirection = Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_DIRECTION"]);
+		VECTOR playerFirstDirection = Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);
+		VECTOR enemyDirection = VTransform(enemyFirstDirection, MGetRotY(enemy.GetRigidbody().GetRotation().y));
+		VECTOR playerDirection = VTransform(playerFirstDirection, MGetRotY(collider.rigidbody.GetRotation().y));
+
+		float TOLERANCE_DOT = json.GetJson(JsonManager::FileType::PLAYER)["TOLERANCE_DOT"];
+
+		VECTOR e = VNorm(enemyDirection);
+		VECTOR p = VNorm(playerDirection);
+		this->dot = VDot(e, p);
+		this->dot = this->dot * 180.0f / DX_PI_F;
+
 		this->state->SetFlag(this->BLOCK);
-		data.isGuard = true;
+
+		if (this->dot >= TOLERANCE_DOT &&
+			CanAction(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]))
+		{
+			this->isCount[static_cast<int>(FrameCountType::JUST_AVOID)] = true;
+			data.isGuard = true;
+			data.isInvinvible = true;
+		}
+		else
+		{
+			data.isGuard = false;
+			data.isInvinvible = false;
+			this->isCount[static_cast<int>(FrameCountType::JUST_AVOID)] = false;
+			this->frameCount[static_cast<int>(FrameCountType::JUST_AVOID)] = 0;
+		}
 	}
 	else
 	{
 		this->state->ClearFlag(this->BLOCK);
 		data.isGuard = false;
+		data.isInvinvible = false;
+		this->isCount[static_cast<int>(FrameCountType::JUST_AVOID)] = false;
+		this->frameCount[static_cast<int>(FrameCountType::JUST_AVOID)] = 0;
 	}
-
 }
 
 /// <summary>
@@ -601,6 +655,7 @@ void Player::Heal()
 		if (!this->state->CheckFlag(this->HEAL))
 		{
 			effect.OnIsEffect(EffectManager::EffectType::PLAYER_HEAL);
+			this->state->ClearFlag(this->BLOCK);
 			this->state->SetFlag(this->HEAL);
 			data.hp += json.GetJson(JsonManager::FileType::PLAYER)["HEAL_VALUE"];
 			this->healOrbNum--;
@@ -624,15 +679,18 @@ void Player::Rolling()
 	auto& json = Singleton<JsonManager>  ::GetInstance();
 	int pad = input.GetPadState();
 
+	/*回避していたら*/
 	if (this->state->CheckFlag(this->MASK_AVOID))
 	{
+		//アニメーションが終了していたら
 		if (this->animation->GetIsChangeAnim())
 		{
 			this->state->ClearFlag(this->MASK_AVOID);
 		}
 	}
 
-	if (FrameCount(static_cast<int>(FrameCountType::INVINCIBLE), json.GetJson(JsonManager::FileType::PLAYER)["INVINCIBLE_MAX_FRAME"]))
+	/*フレーム回避用フレームカウントが最大に達していたら無敵フラグを下す*/
+	if (FrameCount(static_cast<int>(FrameCountType::JUST_AVOID), json.GetJson(JsonManager::FileType::PLAYER)["JUST_AVOID_MAX_FRAME"]))
 	{
 		auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 		auto& data = dynamic_cast<PlayerData&>(*collider.data);
@@ -647,8 +705,9 @@ void Player::Rolling()
 
 	if ((pad & PAD_INPUT_4) && !this->isCount[static_cast<int>(FrameCountType::AVOID)])
 	{
+		this->state->ClearFlag(this->MASK_ATTACK);
 		this->state->SetFlag(this->AVOID);
-		this->isCount[static_cast<int>(FrameCountType::INVINCIBLE)] = true;
+		this->isCount[static_cast<int>(FrameCountType::JUST_AVOID)] = true;
 		auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 		auto& data = dynamic_cast<PlayerData&>(*collider.data);
 		data.isInvinvible = true;
@@ -678,10 +737,14 @@ void Player::Attack()
 	/*攻撃できるか*/
 	if (!CanAttack())return;
 
+	/*消費スタミナは足りるのか*/
+	if (!CanAction(json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_STAMINA_CONSUMPTION"]))return;
+
 	/*Xが押されたか*/
 	if (pad & PAD_INPUT_1)
 	{
 		this->state->SetFlag(this->SLASH);
+		CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_STAMINA_CONSUMPTION"]);
 		attack.OnIsStart();
 	}
 }
@@ -716,7 +779,7 @@ const bool Player::CanRotation()const
 }
 const bool Player::CanRolling()const
 {
-	if (this->state->CheckFlag(this->MASK_ATTACK))		return false;//攻撃
+	//if (this->state->CheckFlag(this->MASK_ATTACK))		return false;//攻撃
 	if (this->state->CheckFlag(this->BLOCK))			return false;//ブロック
 	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
 	if (this->state->CheckFlag(this->DEATH))			return false;//死亡
@@ -739,7 +802,7 @@ const bool Player::CanBlock()const
 	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
 	if (this->state->CheckFlag(this->DEATH))			return false;//デス
 	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
-	if (this->state->CheckFlag(this->SLASH))			return false;//攻撃
+	//if (this->state->CheckFlag(this->SLASH))			return false;//攻撃
 	if (this->state->CheckFlag(this->HEAL))				return false;//回復
 	return true;
 }

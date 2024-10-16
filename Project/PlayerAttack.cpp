@@ -11,6 +11,7 @@
 #include "PlayerAttack.h"
 #include "Debug.h"
 #include "EffectManager.h"
+#include "PlayerManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -72,7 +73,7 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	//auto& player = Singleton<PlayerManager>::GetInstance();
+	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
 	auto& data = dynamic_cast<PlayerAttackData&>(*collider.data);
 
@@ -84,8 +85,8 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 		const int	 END_HIT_CHECK_FRAME	= json.GetJson(JsonManager::FileType::PLAYER)["END_HIT_CHECK_FRAME"];	//当たり判定終了フレーム
 		const float  POSITION_OFFSET		= json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET"];		//当たり判定座標オフセット
 		const float  Y_OFFSET				= json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"];		//Y座標用オフセット
-		VECTOR direction					= _direction;																//プレイヤーの向き
-		direction.y							= 0.0f;
+		VECTOR direction = VGet(0.0f, 0.0f, -1.0f);
+		direction = VTransform(direction,MGetRotY(player.GetRigidbody().GetRotation().y));
 		VECTOR position						= _position;										//プレイヤーの座標
 		position							= VAdd(position, VScale(direction, POSITION_OFFSET));			//プレイヤーの座標に、オフセット値を足す
 		position.y						    += Y_OFFSET;																	//Y座標オフセット値を足す

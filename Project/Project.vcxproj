@@ -142,6 +142,7 @@
     <ClCompile Include="ActionParameter.cpp" />
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AttackData.cpp" />
+    <ClCompile Include="Audience.cpp" />
     <ClCompile Include="BitFlag.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BossAction.cpp" />
@@ -234,6 +235,7 @@
     <ClCompile Include="ScreenSetup.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="Skydome.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="TitleUI.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -246,6 +248,7 @@
     <ClInclude Include="ActionParameter.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AttackData.h" />
+    <ClInclude Include="Audience.h" />
     <ClInclude Include="BitFlag.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossAction.h" />
@@ -335,6 +338,7 @@
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="DeleteInstance.h" />
     <ClInclude Include="Skydome.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="TutorialScene.h" />
