@@ -293,7 +293,7 @@ void Boss::ChangeState()
 		}
 		if (!isSelect)
 		{
-			this->actionType = static_cast<int>(ActionType::IDLE);
+			this->actionType = static_cast<int>(ActionType::REST);
 		}
 	}
 	unsigned int setFlag = this->actionTypeMap[this->actionType];
@@ -334,10 +334,6 @@ const void Boss::DrawCharacterInfo()const
 		shadow.Draw(map.GetStageModelHandle(), this->collider->rigidbody.GetPosition(), this->SHADOW_HEIGHT, this->SHADOW_SIZE);
 	}
 }
-
-
-
-
 
 const bool Boss::GetIsAttack()const
 {
@@ -382,7 +378,7 @@ void Boss::SetPhase()
 			this->nowPhase = i;
 		}
 	}
-	UnifyPhases();
+	//UnifyPhases();
 }
 
 /// <summary>

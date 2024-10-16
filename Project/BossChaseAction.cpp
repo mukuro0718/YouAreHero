@@ -87,6 +87,7 @@ void BossChaseAction::Update(Boss& _boss)
 	_boss.SetVelocity(newVelocity);
 
 	/*アニメーションの再生*/
+	_boss.SetAnimationPlayTime(_boss.GetAnimationPlayTime());
 	_boss.PlayAnimation();
 
 	/*移動目標との距離が定数以下だったら選択フラグを下す*/

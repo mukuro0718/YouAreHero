@@ -103,8 +103,8 @@ void BossSlapAttack::Update()
 		}
 
 		//当たり判定位置の更新
-		collider.rigidbody.SetPosition(MV1GetFramePosition(enemy.GetModelHandle(), 30));
-		collider.topPositon = MV1GetFramePosition(enemy.GetModelHandle(), 28);
+		collider.rigidbody.SetPosition(MV1GetFramePosition(enemy.GetModelHandle(), 14));
+		collider.topPositon = MV1GetFramePosition(enemy.GetModelHandle(), 19);
 		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
 		if (this->frameCount > END_HIT_CHECK_FRAME)
 		{

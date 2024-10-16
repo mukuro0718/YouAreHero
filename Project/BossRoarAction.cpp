@@ -100,9 +100,16 @@ void BossRoarAction::CalcParameter(const Boss& _boss)
 	this->parameter->desireValue = 0;
 	this->isPriority = false;
 
-	/*もしHPが０以下だったら欲求値を０にして優先フラグを下す*/
+	/*もしHPが０以下だったら欲求値を０にして早期リターン*/
 	if (_boss.GetHP() <= 0)
 	{
 		return;
+	}
+
+	/*Phaseが異なっていたら欲求値を最大にして優先フラグを立てる*/
+	if (_boss.GetNowPhase() != _boss.GetPrevPhase())
+	{
+		this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+		this->isPriority = true;
 	}
 }

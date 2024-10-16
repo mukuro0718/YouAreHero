@@ -48,7 +48,7 @@ void BossRestAction::Initialize()
 void BossRestAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
-	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
+	if (_boss.GetHP() < 0 || (_boss.GetNowPhase() != _boss.GetPrevPhase())) { this->OffIsSelect(this->maxFrameCount); return; }
 
 	/*選択されていたら欲求値を０にする*/
 	this->parameter->desireValue = 0;
@@ -123,6 +123,7 @@ void BossRestAction::Update(Boss& _boss)
 	if (isEndCount)
 	{
 		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["REST_INTERVAL"]);
+		_boss.SetAttackComboCount();
 	}
 }
 

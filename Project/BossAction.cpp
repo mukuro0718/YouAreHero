@@ -79,6 +79,7 @@ void BossAction::OffIsSelect(const int _maxInterval)
 	if (this->isSelect)
 	{
 		this->isSelect = false;
+		this->isPriority = false;
 		this->frameCount = 0;
 		this->parameter->desireValue = 0;
 	}
