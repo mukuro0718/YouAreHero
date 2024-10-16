@@ -9,6 +9,7 @@ class HPUI;
 class ButtonUI;
 class SceneUI;
 class BossNameUI;
+class Audience;
 class UIManager : public Singleton<UIManager>
 {
 public:
@@ -30,6 +31,6 @@ private:
 	HPUI*					hp;
 	ButtonUI*				button;
 	BossNameUI*				bossName;
-
+	Audience*				audience;
 };
 

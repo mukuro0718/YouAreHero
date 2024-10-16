@@ -9,6 +9,7 @@
 #include "UIManager.h"
 #include "InputManager.h"
 #include "SceneChanger.h"
+#include "CollisionManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -36,7 +37,7 @@ void TitleScene::Initialize()
 	auto& ui = Singleton<UIManager>::GetInstance();
 
 	/*初期化*/
-	camera.Initialize();
+	//camera.Initialize();
 	map.Initialize();
 	ui.Initialize();
 }
@@ -63,8 +64,10 @@ void TitleScene::Update()
 	auto& map			= Singleton<MapManager>		::GetInstance();
 	auto& ui			= Singleton<UIManager>		::GetInstance();
 	auto& sceneChanger	= Singleton<SceneChanger>	::GetInstance();
+	auto& collision = Singleton<CollisionManager>::GetInstance();
 
 	/*更新処理*/
+	collision.Update();
 	input.Update();
 	camera.Update();
 	map.Update();
@@ -73,7 +76,7 @@ void TitleScene::Update()
 	/*シーンの終了処理*/
 	if (this->IsEnd())
 	{
-		sceneChanger.ChangeScene(SceneChanger::SceneType::TUTORIAL);
+		sceneChanger.ChangeScene(SceneChanger::SceneType::GAME);
 	}
 }
 

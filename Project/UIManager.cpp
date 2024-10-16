@@ -12,6 +12,7 @@
 #include "GameUI.h"
 #include "GameOverUI.h"
 #include "GameClearUI.h"
+#include "Audience.h"
 #include "UIManager.h"
 #include "SceneChanger.h"
 
@@ -27,6 +28,7 @@ UIManager::UIManager()
 	this->hp		= new HPUI();
 	this->button	= new ButtonUI();
 	this->bossName	= new BossNameUI();
+	this->audience	= new Audience();
 	this->scene.emplace_back(new TitleUI());
 	this->scene.emplace_back(new TutorialUI());
 	this->scene.emplace_back(new GameUI());
@@ -42,6 +44,7 @@ UIManager::~UIManager()
 	DeleteMemberInstance(this->hp);
 	DeleteMemberInstance(this->button);
 	DeleteMemberInstance(this->bossName);
+	DeleteMemberInstance(this->audience);
 	for (int i = 0; i < this->scene.size(); i++)
 	{
 		DeleteMemberInstance(this->scene[i]);
@@ -67,6 +70,7 @@ void UIManager::Initialize()
 		this->hp->Initialize();
 		this->button->Initialize();
 		this->bossName->Initialize();
+		this->audience->Initialize();
 		this->scene[static_cast<int>(SceneChanger::SceneType::GAME)]->Initialize();
 		break;
 	case SceneChanger::SceneType::GAME_CLEAR:
@@ -124,10 +128,11 @@ const void UIManager::Draw()const
 		this->scene[static_cast<int>(SceneChanger::SceneType::TUTORIAL)]->Draw();
 		break;
 	case SceneChanger::SceneType::GAME:
-		this->scene[static_cast<int>(SceneChanger::SceneType::GAME)]->Draw();
+		this->audience->Draw();
 		this->hp->Draw();
 		this->button->Draw();
 		this->bossName->Draw();
+		this->scene[static_cast<int>(SceneChanger::SceneType::GAME)]->Draw();
 		break;
 	case SceneChanger::SceneType::GAME_CLEAR:
 		this->scene[static_cast<int>(SceneChanger::SceneType::GAME_CLEAR)]->Draw();

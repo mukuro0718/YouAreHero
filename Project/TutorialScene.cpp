@@ -42,7 +42,7 @@ void TutorialScene::Initialize()
 	/*‰Šú‰»*/
 	player.Initialize();
 	enemy.Initialize();
-	camera.Initialize();
+	//camera.Initialize();
 	map.Initialize();
 	ui.Initialize();
 
