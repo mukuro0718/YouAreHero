@@ -12,7 +12,13 @@ public:
 	void Update();
 	void Draw();	//•`‰æ
 private:
-
+	enum class TextType 
+	{
+		AVOID,
+		ATTACK,
+		HEAL,
+		GUARD,
+	};
 	/*\‘¢‘Ì*/
 	struct Vec2d
 	{
@@ -27,7 +33,7 @@ private:
 	};
 
 	/*Ã“I’è”*/
-	static constexpr int TEXT_COLOR = 0xc0ffff;
+	static constexpr int TEXT_COLOR = 0xffffff;
 	static constexpr int PRESS_TEXT_COLOR = 0xffff88;
 	static constexpr int PRESS_OFFSET = 4;
 
@@ -38,7 +44,8 @@ private:
 	void DrawButton();
 
 	/*ƒƒ“ƒo•Ï”*/
-	int healIcon;
+	int table;
+	int potion;
 	int healOrb;
 	int emptyOrb;
 	int iconFont, operationFont;

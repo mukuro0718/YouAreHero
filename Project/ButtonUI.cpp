@@ -15,12 +15,13 @@ ButtonUI::ButtonUI()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
-	this->healIcon = asset.GetImage(LoadingAsset::ImageType::HEAL_ICON);
+	this->table = asset.GetImage(LoadingAsset::ImageType::POTION_TABLE);
+	this->potion = asset.GetImage(LoadingAsset::ImageType::POTION);
 	this->healOrb  = asset.GetImage(LoadingAsset::ImageType::HP_ORB);
 	this->emptyOrb = asset.GetImage(LoadingAsset::ImageType::EMPTY_ORB);
 
-	this->iconFont		= asset.GetFont(LoadingAsset::FontType::HONOKA_50_64);
-	this->operationFont = asset.GetFont(LoadingAsset::FontType::HONOKA_30_64);
+	this->iconFont		= asset.GetFont(LoadingAsset::FontType::MINTYO_80_32);
+	this->operationFont = asset.GetFont(LoadingAsset::FontType::MINTYO_80_32);
 
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::B_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::X_BUTTON));
@@ -30,7 +31,7 @@ ButtonUI::ButtonUI()
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_X_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_Y_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_LT_BUTTON));
-	this->buttonFont = asset.GetFont(LoadingAsset::FontType::BAT_32_0);
+	this->buttonFont = asset.GetFont(LoadingAsset::FontType::MINTYO_50_32);
 }
 
 /// <summary>
@@ -93,36 +94,24 @@ void ButtonUI::DrawIcon()
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	/*変数の準備*/
-	Vec2d healIconPosition;
-	Vec2d orbPosition;
-	int orbXOffset = 0;
+	vector<int> potionPositon = json.GetJson(JsonManager::FileType::UI)["POTION_POSITION"];
+	vector<int> tablePosition = json.GetJson(JsonManager::FileType::UI)["TABLE_POSITION"];
+	vector<int> orbPosition = json.GetJson(JsonManager::FileType::UI)["ORB_POSITION"];
+	//int orbXOffset = 0;
 	int drawGraph = -1;
 
 	/*jsonデータの代入*/
 	const int NOW_ORB_NUM = player.GetHealOrbNum();
-	const int MAX_ORB_NUM = json.GetJson(JsonManager::FileType::PLAYER)["MAX_HEAL_ORB_NUM"];
-	const int ORB_WIDTH   = json.GetJson(JsonManager::FileType::UI)["ORB_WIDTH"];
-	orbPosition.Set(		json.GetJson(JsonManager::FileType::UI)["ORB_POSITION"]);
-	healIconPosition.Set(	json.GetJson(JsonManager::FileType::UI)["HEAL_ICON_POSITION"]);
+	//const int MAX_ORB_NUM = json.GetJson(JsonManager::FileType::PLAYER)["MAX_HEAL_ORB_NUM"];
+	//const int ORB_WIDTH   = json.GetJson(JsonManager::FileType::UI)["ORB_WIDTH"];
 
 
 	/*アイコンテーブルの描画*/
-	DrawGraph(healIconPosition.x, healIconPosition.y, this->healIcon, TRUE);
+	DrawExtendGraph(tablePosition[0], tablePosition[1], tablePosition[2], tablePosition[3], this->table, TRUE);
+	DrawExtendGraph(potionPositon[0], potionPositon[1], potionPositon[2], potionPositon[3], this->potion, TRUE);
 
 	/*オーブの描画*/
-	for (int i = 0; i < MAX_ORB_NUM; i++)
-	{
-		if (i - NOW_ORB_NUM < 0)
-		{
-			drawGraph = this->healOrb;
-		}
-		else
-		{
-			drawGraph = this->emptyOrb;
-		}
-		DrawGraph(orbPosition.x + orbXOffset, orbPosition.y, drawGraph, TRUE);
-		orbXOffset += ORB_WIDTH;
-	}
+	DrawFormatStringToHandle(orbPosition[0], orbPosition[1], this->TEXT_COLOR, this->buttonFont, "×%d", NOW_ORB_NUM);
 }
 
 void ButtonUI::DrawButton()
@@ -164,7 +153,11 @@ void ButtonUI::DrawFont()
 	auto& input = Singleton<InputManager>::GetInstance();
 
 	vector<vector<int>> position = json.GetJson(JsonManager::FileType::UI)["BUTTON_TEXT_POSITION"];
-	vector<string> text = json.GetJson(JsonManager::FileType::UI)["BUTTON_TEXT"];
+	vector<string> text;
+	text.emplace_back(u8"かいひ");
+	text.emplace_back(u8"こうげき");
+	text.emplace_back(u8"かいふく");
+	text.emplace_back(u8"ぼうぎょ");
 	int pad = input.GetPadState();
 	vector<bool> isTrigger;
 	isTrigger.emplace_back(pad & PAD_INPUT_4);
@@ -183,7 +176,21 @@ void ButtonUI::DrawFont()
 		{
 			textColor = this->TEXT_COLOR;
 		}
-		DrawStringToHandle(position[i][0], position[i][1], text[i].c_str(), textColor, this->buttonFont);
+		switch (i)
+		{
+		case static_cast<int>(TextType::AVOID):
+			DrawStringToHandle(position[i][0], position[i][1], "回避", textColor, this->buttonFont);
+			break;
+		case static_cast<int>(TextType::ATTACK):
+			DrawStringToHandle(position[i][0], position[i][1], "攻撃", textColor, this->buttonFont);
+			break;
+		case static_cast<int>(TextType::HEAL):
+			DrawStringToHandle(position[i][0], position[i][1], "回復", textColor, this->buttonFont);
+			break;
+		case static_cast<int>(TextType::GUARD):
+			DrawStringToHandle(position[i][0], position[i][1], "防御", textColor, this->buttonFont);
+			break;
+		}
 	}
 }
 /// <summary>
