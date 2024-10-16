@@ -82,6 +82,7 @@ public:
 		PLAYER_GUARD_HIT,
 		PLAYER_HEAL,
 		PLAYER_IMPACT,
+		PLAYER_JUST_GUARD,
 	};
 
 	/*getter*/

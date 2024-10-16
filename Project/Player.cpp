@@ -465,12 +465,12 @@ void Player::Reaction()
 		{
 			if (collider.data->isInvinvible)
 			{
-				//effect.OnIsEffect(EffectManager::EffectType::PLAYER_GUARD_HIT);
+				effect.OnIsEffect(EffectManager::EffectType::PLAYER_JUST_GUARD);
 				this->state->ClearFlag(this->MASK_ALL);
 				this->state->SetFlag(this->BLOCK_REACTION);
 				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
-				this->isCount[static_cast<int>(FrameCountType::JUST_AVOID)] = false;
-				this->frameCount[static_cast<int>(FrameCountType::JUST_AVOID)] = 0;
+				this->isCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = false;
+				this->frameCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = 0;
 
 			}
 			else
@@ -588,16 +588,19 @@ void Player::Block()
 		if (this->dot >= TOLERANCE_DOT &&
 			CanAction(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]))
 		{
-			this->isCount[static_cast<int>(FrameCountType::JUST_AVOID)] = true;
-			data.isGuard = true;
-			data.isInvinvible = true;
+			if (!data.isGuard)
+			{
+				this->isCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = true;
+				data.isGuard = true;
+				data.isInvinvible = true;
+			}
 		}
 		else
 		{
 			data.isGuard = false;
 			data.isInvinvible = false;
-			this->isCount[static_cast<int>(FrameCountType::JUST_AVOID)] = false;
-			this->frameCount[static_cast<int>(FrameCountType::JUST_AVOID)] = 0;
+			this->isCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = false;
+			this->frameCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = 0;
 		}
 	}
 	else
@@ -605,8 +608,8 @@ void Player::Block()
 		this->state->ClearFlag(this->BLOCK);
 		data.isGuard = false;
 		data.isInvinvible = false;
-		this->isCount[static_cast<int>(FrameCountType::JUST_AVOID)] = false;
-		this->frameCount[static_cast<int>(FrameCountType::JUST_AVOID)] = 0;
+		this->isCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = false;
+		this->frameCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = 0;
 	}
 }
 

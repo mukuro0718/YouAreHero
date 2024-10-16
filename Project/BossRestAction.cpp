@@ -115,6 +115,7 @@ void BossRestAction::Update(Boss& _boss)
 	_boss.SetVelocity(newVelocity);
 
 	/*アニメーションの再生*/
+	_boss.SetAnimationPlayTime(_boss.GetAnimationPlayTime());
 	_boss.PlayAnimation();
 
 	//フレーム計測

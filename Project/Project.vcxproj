@@ -199,6 +199,7 @@
     <ClCompile Include="PlayerEntryEffect.cpp" />
     <ClCompile Include="BossSlashCombo2Attack.cpp" />
     <ClCompile Include="PlayerHealEffect.cpp" />
+    <ClCompile Include="PlayerJustGuardEffect.cpp" />
     <ClCompile Include="Shadow.cpp" />
     <ClCompile Include="SphereColliderData.cpp" />
     <ClCompile Include="CharacterData.cpp" />
@@ -305,6 +306,7 @@
     <ClInclude Include="GameClearUI.h" />
     <ClInclude Include="PlayerEntryEffect.h" />
     <ClInclude Include="PlayerHealEffect.h" />
+    <ClInclude Include="PlayerJustGuardEffect.h" />
     <ClInclude Include="ReactionType.h" />
     <ClInclude Include="BossSlashCombo2Attack.h" />
     <ClInclude Include="Shadow.h" />

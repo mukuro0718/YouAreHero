@@ -328,6 +328,9 @@
     <Filter Include="Timer">
       <UniqueIdentifier>{1463850c-e73c-48b2-9915-8c4246a180d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Effect\Player\JustGuard">
+      <UniqueIdentifier>{91b7a93f-0336-425d-bd41-d3fa0574af14}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -639,6 +642,9 @@
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerJustGuardEffect.cpp">
+      <Filter>Effect\Player\JustGuard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -977,6 +983,9 @@
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerJustGuardEffect.h">
+      <Filter>Effect\Player\JustGuard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
