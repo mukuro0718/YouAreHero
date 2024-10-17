@@ -68,12 +68,24 @@ Player::Player()
 	this->animationMap.emplace(this->REACTION		 , static_cast<int>(AnimationType::REACTION			));
 	this->animationMap.emplace(this->BLOCK_REACTION	 , static_cast<int>(AnimationType::BLOCK_REACTION	));
 	this->animationMap.emplace(this->WALK_FRONT		 , static_cast<int>(AnimationType::WALK_FRONT		));
+	this->animationMap.emplace(this->WALK_BACK		 , static_cast<int>(AnimationType::WALK_BACK		));
+	this->animationMap.emplace(this->WALK_LEFT		 , static_cast<int>(AnimationType::WALK_LEFT		));
+	this->animationMap.emplace(this->WALK_RIGHT		 , static_cast<int>(AnimationType::WALK_RIGHT		));
+	this->animationMap.emplace(this->RUN_FRONT		 , static_cast<int>(AnimationType::RUN_FRONT		));
+	this->animationMap.emplace(this->RUN_BACK		 , static_cast<int>(AnimationType::RUN_BACK			));
+	this->animationMap.emplace(this->RUN_LEFT		 , static_cast<int>(AnimationType::RUN_LEFT			));
+	this->animationMap.emplace(this->RUN_RIGHT		 , static_cast<int>(AnimationType::RUN_RIGHT		));
 	this->animationMap.emplace(this->SLASH			 , static_cast<int>(AnimationType::SLASH			));
 	this->animationMap.emplace(this->HEAL			 , static_cast<int>(AnimationType::HEAL));
 
 	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::NORMAL)	 , this->REACTION);
 	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::BLOW_BIG)	 , this->REACTION);
-	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::BLOW_SMALL), this->REACTION);
+	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::BLOW_SMALL) , this->REACTION);
+
+	this->whenRunMoveState.emplace(this->WALK_FRONT, this->RUN_FRONT);
+	this->whenRunMoveState.emplace(this->WALK_BACK, this->RUN_BACK);
+	this->whenRunMoveState.emplace(this->WALK_LEFT, this->RUN_LEFT);
+	this->whenRunMoveState.emplace(this->WALK_RIGHT, this->RUN_RIGHT);
 
 	/*コライダーデータの作成*/
 	CharacterData* data = new PlayerData;
@@ -179,14 +191,15 @@ void Player::Update()
 	Death();//デス処理
 	if (!this->state->CheckFlag(this->DEATH))
 	{
+		LockOn	();//ロックオン
 		Reaction();//リアクション処理
-		Attack();//攻撃処理
-		Move();//移動処理
-		Rolling();//回避処理
-		Block();//防御処理
-		Heal();//回復処理
+		Attack	();//攻撃処理
+		Move	();//移動処理
+		Rolling	();//回避処理
+		Block	();//防御処理
+		Heal	();//回復処理
 
-	//もし何もアクションをしていなかったらIdleを入れる
+		//もし何もアクションをしていなかったらIdleを入れる
 		if (DontAnyAction())
 		{
 			this->state->SetFlag(this->IDLE);
@@ -250,16 +263,25 @@ const void Player::DrawCharacterInfo()const
 		printfDx("%d:REACTION						\n", this->state->CheckFlag(this->REACTION));
 		printfDx("%d:BLOCK_REACTION				\n", this->state->CheckFlag(this->BLOCK_REACTION));
 		printfDx("%d:WALK_FRONT					\n", this->state->CheckFlag(this->WALK_FRONT));
+		printfDx("%d:WALK_BACK					\n", this->state->CheckFlag(this->WALK_BACK));
+		printfDx("%d:WALK_LEFT					\n", this->state->CheckFlag(this->WALK_LEFT));
+		printfDx("%d:WALK_RIGHT					\n", this->state->CheckFlag(this->WALK_RIGHT));
+		printfDx("%d:RUN_FRONT					\n", this->state->CheckFlag(this->RUN_FRONT));
+		printfDx("%d:RUN_BACK						\n", this->state->CheckFlag(this->RUN_BACK));
+		printfDx("%d:RUN_LEFT						\n", this->state->CheckFlag(this->RUN_LEFT));
+		printfDx("%d:RUN_RIGHT					\n", this->state->CheckFlag(this->RUN_RIGHT));
 		printfDx("%d:SLASH						\n", this->state->CheckFlag(this->SLASH));
 		printfDx("%d:HEAL							\n", this->state->CheckFlag(this->HEAL));
+		printfDx("%d:LOCK_ON							\n", this->isLockOn);
 		auto& characterCollider = dynamic_cast<CharacterColliderData&> (*this->collider);
 		printfDx("%d:REACTION_TYPE				\n", characterCollider.data->playerReaction);
 		printfDx("DOT:%f\n"							, this->dot);
 
 	}
+	
+	/*かげの描画*/
 	if (this->isDraw)
 	{
-		/*かげの描画*/
 		shadow.Draw(map.GetStageModelHandle(), this->collider->rigidbody.GetPosition(), this->SHADOW_HEIGHT, this->SHADOW_SIZE);
 	}
 }
@@ -291,13 +313,13 @@ void Player::UpdateMoveVector()
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*移動ベクトルを初期化する*/
-	VECTOR direction = { 0.0f,0.0f,0.0f };
-
+	VECTOR direction = Gori::ORIGIN;
+	VECTOR rotation = Gori::ORIGIN;
 	/*移動しているときか回避しているときは移動ベクトルを出す*/
 	if (this->state->CheckFlag(this->MASK_CAN_VELOCITY))
 	{
-		/*回転率をもとに移動ベクトルを出す*/
-		direction = VGet(-sinf(this->moveVectorRotation.y), 0.0f, -cosf(this->moveVectorRotation.y));
+		rotation = this->moveVectorRotation;
+		direction = VGet(-sinf(rotation.y), 0.0f, -cosf(rotation.y));
 		//direction = VGet(-sinf(ROTATION.y), 0.0f, -cosf(ROTATION.y));
 		/*移動ベクトルを正規化*/
 		direction = VNorm(direction);
@@ -318,9 +340,13 @@ void Player::UpdateSpeed()
 	float maxSpeed = 0.0f;
 	
 	/*移動していたら*/
-	if (this->state->CheckFlag(this->MASK_MOVE))
+	if (this->state->CheckFlag(this->MASK_WALK))
 	{
 		maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["WALK_SPEED"];
+	}
+	else if (this->state->CheckFlag(this->MASK_RUN))
+	{
+		maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["RUN_SPEED"];
 	}
 
 	/*速度の設定*/
@@ -353,14 +379,21 @@ void Player::UpdateRotation()
 	/*移動できるか*/
 	if (!CanRotation())return;
 
+	/*もし回避中だったら移動用回転率の向きに向ける*/
+	if (this->state->CheckFlag(this->MASK_AVOID))
+	{
+		this->collider->rigidbody.SetRotation(this->moveVectorRotation);
+		return;
+	}
+
 	/*初期化*/
-	const float PI = 180.0f;						//弧度法でのπ
-	VECTOR		rotation = VGet(0.0f, 0.0f, 0.0f);	//回転率
-	bool		isInputLStick = false;						//Lスティック入力
-	VECTOR		cameraDirection = VGet(0.0f, 0.0f, 0.0f);	//カメラの向き
+	const float PI						= 180.0f;						//弧度法でのπ
+	VECTOR		rotation				= VGet(0.0f, 0.0f, 0.0f);	//回転率
+	bool		isInputLStick			= false;						//Lスティック入力
+	VECTOR		cameraDirection			= VGet(0.0f, 0.0f, 0.0f);	//カメラの向き
 	VECTOR		playerToTargetDirection = VGet(0.0f, 0.0f, 0.0f);	//カメラの向き
-	VECTOR		wasd = VGet(0.0f, 0.0f, 0.0f);	//wasd入力
-	VECTOR		lStick = VGet(0.0f, 0.0f, 0.0f);	//lStick入力(上:Z+ 下:Z- 左:x- 右:x+)
+	VECTOR		wasd					= VGet(0.0f, 0.0f, 0.0f);	//wasd入力
+	VECTOR		lStick					= VGet(0.0f, 0.0f, 0.0f);	//lStick入力(上:Z+ 下:Z- 左:x- 右:x+)
 	this->state->ClearFlag(this->MASK_MOVE);
 
 	/*シングルトンクラスのインスタンスの取得*/
@@ -371,16 +404,57 @@ void Player::UpdateRotation()
 
 	/*パッド入力の取得*/
 	int pad = input.GetPadState();
-	//スティック入力
+	
+	/*スティック入力*/
 	lStick = VGet(static_cast<float>(input.GetLStickState().XBuf), 0.0f, static_cast<float>(input.GetLStickState().YBuf));
 
 	/*移動状態の切り替え*/
 	//スティック入力があるか
 	if (lStick.x != 0.0f || lStick.z != 0.0f)
 	{
+		unsigned int moveState = 0;
 		isInputLStick = true;
-		/*xとzの値が大きいほうで判定する*/
-		this->state->SetFlag(this->WALK_FRONT);
+		if (this->isLockOn)
+		{
+			//Xのほうが入力されている値が大きければ
+			if (lStick.x * lStick.x > lStick.z * lStick.z)
+			{
+				//右
+				if (lStick.x > 0.0f)
+				{
+					moveState = this->WALK_RIGHT;
+				}
+				//左
+				else
+				{
+					moveState = this->WALK_LEFT;
+				}
+			}
+			else
+			{
+				//前
+				if (lStick.z < 0.0f)
+				{
+					moveState = this->WALK_FRONT;
+				}
+				//後ろ
+				else
+				{
+					moveState = this->WALK_BACK;
+				}
+			}
+		}
+		else
+		{
+			moveState = this->WALK_FRONT;
+		}
+		//走っていたら
+		if (input.GetPadState() & PAD_INPUT_6)
+		{
+			moveState = this->whenRunMoveState[moveState];
+		}
+		//状態のセット
+		this->state->SetFlag(moveState);
 	}
 
 
@@ -397,18 +471,28 @@ void Player::UpdateRotation()
 	//playerToTargetDirection = VNorm(playerToTargetDirection);
 
 
-	/*もしロックオンしていたら*/
-		/*カメラの向いている方向と、プレイヤーが最初に向いていた方向をもとにモデルの回転率を出す。*/
+	/*カメラの向いている方向と、プレイヤーが最初に向いていた方向をもとにモデルの回転率を出す。*/
 	if (isInputLStick)
 	{
+		//スティック入力を正規化
 		lStick = VNorm(lStick);
-		rotation.y = static_cast<float>(
-			-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))/* - 90.0f * (DX_PI_F / 180.0f);*/
+		
+		if (this->isLockOn)
+		{
+			rotation.y = static_cast<float>(
+				-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x)) - 90.0f * (DX_PI_F / 180.0f));
+		}
+		else
+		{
+			rotation.y = static_cast<float>(
+				-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
+				- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
+		}
+		
+		this->moveVectorRotation.y = static_cast<float>(
+			- atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
 			- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
-		//this->moveVectorRotation.y = static_cast<float>(
-		//	- atan2(static_cast<double>(playerToTargetDirection.z), static_cast<double>(playerToTargetDirection.x))
-		//	- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
-		this->moveVectorRotation = rotation;
+		//this->moveVectorRotation = rotation;
 	}
 
 	if (isInputLStick)
@@ -774,7 +858,7 @@ const bool Player::CanRotation()const
 {
 	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
 	if (this->state->CheckFlag(this->DEATH)	)			return false;//デス
-	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
+	//if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
 	if (this->state->CheckFlag(this->MASK_ATTACK))		return false;//攻撃
 	if (this->state->CheckFlag(this->BLOCK))			return false;//防御
 	if (this->state->CheckFlag(this->HEAL))				return false;//回復
@@ -869,9 +953,43 @@ void Player::CalcStamina(const float _staminaConsumed)
 		data.stamina = 0;
 	}
 }
+
+/// <summary>
+/// スタミナの取得
+/// </summary>
 const int Player::GetStamina()const
 {
 	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 	auto& data = dynamic_cast<PlayerData&>(*collider.data);
 	return data.stamina;
+}
+
+/// <summary>
+/// ロックオン
+/// </summary>
+void Player::LockOn()
+{
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& input = Singleton<InputManager>  ::GetInstance();
+
+	/*右スティック押し込みがあったか*/
+	if ((input.GetPadState() & PAD_INPUT_10))
+	{
+		if (!this->isCount[static_cast<int>(FrameCountType::LOCK_ON)])
+		{
+			if (this->isLockOn)
+			{
+				this->isLockOn = false;
+			}
+			else
+			{
+				this->isLockOn = true;
+			}
+			this->isCount[static_cast<int>(FrameCountType::LOCK_ON)] = true;
+		}
+	}
+	else
+	{
+		this->isCount[static_cast<int>(FrameCountType::LOCK_ON)] = false;
+	}
 }
