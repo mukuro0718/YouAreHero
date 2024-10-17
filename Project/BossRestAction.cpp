@@ -107,9 +107,9 @@ void BossRestAction::Update(Boss& _boss)
 	velocity = VNorm(velocity);
 
 	/*移動ベクトルを出す（重力を加算するため、Yベクトルのみ前のベクトルを使用する）*/
-	VECTOR aimVelocity = VScale(velocity, SPEED);						//算出された移動ベクトル
+	VECTOR aimVelocity  = VScale(velocity, SPEED);						//算出された移動ベクトル
 	VECTOR prevVelocity = _boss.GetRigidbody().GetVelocity();					//前の移動ベクトル
-	VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);	//新しい移動ベクトル
+	VECTOR newVelocity  = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);	//新しい移動ベクトル
 
 	/*移動ベクトルの設定*/
 	_boss.SetVelocity(newVelocity);

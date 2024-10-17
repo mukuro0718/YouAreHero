@@ -16,9 +16,9 @@ AttackCapsuleColliderData::AttackCapsuleColliderData(const ColliderData::Priorit
 }
 void AttackCapsuleColliderData::OnHit(const CharacterData& _data)
 {
-	this->data->isDoHitCheck = false;
 	if (!_data.isInvinvible && !_data.isGuard)
 	{
+		this->data->isDoHitCheck = false;
 		this->data->isHitAttack = true;
 	}
 }

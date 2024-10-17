@@ -29,11 +29,11 @@ void CharacterColliderData::OnHit(const AttackData& _data, const VECTOR _attackP
 
 	if (!this->data->isInvinvible && !this->data->isGuard)
 	{
-		this->data->hp -= _data.damage;
-		this->data->hitStopTime = _data.hitStopTime;
-		this->data->hitStopType = _data.hitStopType;
+		this->data->hp			 -= _data.damage;
+		this->data->hitStopTime  = _data.hitStopTime;
+		this->data->hitStopType  = _data.hitStopType;
 		this->data->hitStopDelay = _data.hitStopDelay;
-		this->data->slowFactor = _data.slowFactor;
+		this->data->slowFactor	 = _data.slowFactor;
 	}
 	this->data->isHit = true;
 }
