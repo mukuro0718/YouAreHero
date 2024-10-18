@@ -57,6 +57,7 @@ void BossSlashCombo2Action::Update(Boss& _boss)
 	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::SLASH_COMBO_2));
 
 	/*攻撃タイプの設定*/
+	const int ATTACK_TYPE = static_cast<int>(Boss::AttackType::STAB);
 	_boss.SetAttackType(Boss::AttackType::SLASH_COMBO_2);
 
 	/*シングルトンクラスのインスタンスの取得*/
@@ -80,10 +81,10 @@ void BossSlashCombo2Action::Update(Boss& _boss)
 
 		this->hitStop->SetHitStop
 		(
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::SLASH_COMBO_2)],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][ATTACK_TYPE],
 			static_cast<int>(HitStop::Type::STOP),
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::SLASH_COMBO_2)],
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::SLASH_COMBO_2)]
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][ATTACK_TYPE],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][ATTACK_TYPE]
 		);
 		this->attack->OffIsHitAttack();
 	}
@@ -181,7 +182,7 @@ void BossSlashCombo2Action::CalcParameter(const Boss& _boss)
 			{
 				this->parameter->desireValue = 1;
 			}
-			else if (type == Boss::AttackType::MELEE_COMBO_3)
+			else if (type == Boss::AttackType::SLASH_COMBO_2)
 			{
 				this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 			}

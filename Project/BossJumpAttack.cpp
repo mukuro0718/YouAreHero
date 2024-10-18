@@ -11,14 +11,14 @@
 #include "BossAttackData.h"
 #include "AttackCapsuleColliderData.h"
 #include "BossAttack.h"
-#include "BossKickAttack.h"
+#include "BossJumpAttack.h"
 #include "EnemyManager.h"
 #include "Debug.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-BossKickAttack::BossKickAttack(const int _attackIndex)
+BossJumpAttack::BossJumpAttack(const int _attackIndex)
 	: BossAttack()
 {
 	/*シングルトンクラスのインスタンスの取得*/
@@ -35,7 +35,7 @@ BossKickAttack::BossKickAttack(const int _attackIndex)
 /// <summary>
 /// デストラクタ
 /// </summary>
-BossKickAttack::~BossKickAttack()
+BossJumpAttack::~BossJumpAttack()
 {
 
 }
@@ -43,7 +43,7 @@ BossKickAttack::~BossKickAttack()
 /// <summary>
 /// 初期化
 /// </summary>
-void BossKickAttack::Initialize()
+void BossJumpAttack::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -72,7 +72,7 @@ void BossKickAttack::Initialize()
 /// <summary>
 /// 更新
 /// </summary>
-void BossKickAttack::Update()
+void BossJumpAttack::Update()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json	  = Singleton<JsonManager>::GetInstance();
@@ -118,7 +118,7 @@ void BossKickAttack::Update()
 /// <summary>
 /// 描画
 /// </summary>
-const void BossKickAttack::Draw()const
+const void BossJumpAttack::Draw()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
 	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
@@ -130,6 +130,6 @@ const void BossKickAttack::Draw()const
 			DrawCapsule3D(collider.rigidbody.GetPosition(), collider.topPositon, collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
 		}
 		VECTOR position = this->collider->rigidbody.GetPosition();
-		printfDx("BossKickAttack X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+		printfDx("BossJumpAttack X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
 	}
 }

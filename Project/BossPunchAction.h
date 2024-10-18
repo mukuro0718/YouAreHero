@@ -1,15 +1,15 @@
 //=============================================
-// @brief　メレーコンボ３アクションパラメーター
+// @brief ボスパンチ攻撃アクション
 //=============================================
 #pragma once
 
 class Boss;
 class BossAction;
-class BossMeleeCombo3Action : public BossAction
+class BossPunchAction : public BossAction
 {
 public:
-	BossMeleeCombo3Action();
-	virtual ~BossMeleeCombo3Action();
+	BossPunchAction();
+	virtual ~BossPunchAction();
 
 	void Initialize()				  override;//初期化
 	void Update(Boss& _boss)	override;//パラメーターの計算

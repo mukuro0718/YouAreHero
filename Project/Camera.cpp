@@ -131,17 +131,16 @@ void Camera::UpdateTarget()
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& sceneChanger = Singleton<SceneChanger>::GetInstance();
 
-	/*シーンの状態で処理を変える*/
+	/*シーンの状態で次の注視点を変える*/
 	switch (sceneChanger.GetNowSceneType())
 	{
 	case SceneChanger::SceneType::TITLE:
-		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);//注視点;
+		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
 		break;
 	case SceneChanger::SceneType::TUTORIAL:
-		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);//注視点;
+		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
 		break;
 	case SceneChanger::SceneType::GAME:
-		//次の注視点を出す
 		if (player.GetHP() < 0)
 		{
 			this->nextTarget = player.GetRigidbody().GetPosition();
@@ -152,13 +151,14 @@ void Camera::UpdateTarget()
 		}
 		break;
 	case SceneChanger::SceneType::GAME_OVER:
-		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);//注視点;
+		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
 		break;
 	case SceneChanger::SceneType::GAME_CLEAR:
-		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);//注視点;
+		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
 		break;
 	}
-	//現在の注視点を出す
+
+	/*現在の注視点を出す*/
 	const VECTOR LERP_PERCENT = Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_TARGET"]);	//線形補完のパーセント
 	this->nowTarget = Lerp(this->nowTarget, this->nextTarget, LERP_PERCENT);
 }

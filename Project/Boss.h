@@ -49,14 +49,15 @@ public:
 		 WALK			= 3, //歩き
 		 WALK_LEFT		= 4, //歩き
 		 WALK_RIGHT		= 5, //歩き
-		 SLASH			= 6, //スラッシュ
-		 STAB			= 7, //突き刺し攻撃
-		 ROTATE_PUNCH	= 8, //回転パンチ
-		 SLAP			= 9,
-		 MELEE			= 10,
-		 KICK			= 11,
-		 MELEE_COMBO_3	= 12,
-		 SLASH_COMBO_2	= 13,
+
+		 SLASH_1		= 6, //スラッシュ
+		 SLASH_2		= 7, //スラッシュ
+		 STAB			= 8, //突き刺し攻撃
+		 ROTATE_SLASH	= 9, //回転スラッシュ
+		 PUNCH			= 10,//パンチ
+		 SLASH_COMBO_1	= 11,//スラッシュコンボ１
+		 SLASH_COMBO_2	= 12,//スラッシュコンボ２
+		 JUMP_ATTACK	= 13,//ジャンプアタック
 	};
 	//フェーズ
 	enum class Phase
@@ -76,17 +77,18 @@ public:
 	enum class AttackType
 	{
 		NONE		  = -1,
-		SLASH		  = 0,//パンチ
-		STAB		  = 1,//突き刺し攻撃
-		ROTATE_PUNCH  = 2,//回転パンチ
-		SLAP		  = 3,
-		MELEE		  = 4,
-		KICK		  = 5,
-		MELEE_COMBO_3 = 6,
-		SLASH_COMBO_2 = 7
+		SLASH_1		  = 0, //スラッシュ
+		SLASH_2		  = 1, //スラッシュ
+		STAB		  = 2, //突き刺し攻撃
+		ROTATE_SLASH  = 3, //回転スラッシュ
+		PUNCH		  = 4,//パンチ
+		SLASH_COMBO_1 = 5,//スラッシュコンボ１
+		SLASH_COMBO_2 = 6,//スラッシュコンボ２
+		JUMP_ATTACK	  = 7,//ジャンプアタック
+
 	};
-	void SetAttackType(const AttackType _type) { this->prevAttackType = _type; }
-	const AttackType GetPrevAttackType()const { return this->prevAttackType; }
+	void SetAttackType(const AttackType _type) { this->prevAttack = _type; }
+	const AttackType GetPrevAttackType()const { return this->prevAttack; }
 	enum class AngryStateType
 	{
 		NORMAL,
@@ -95,10 +97,9 @@ public:
 	};
 private:
 	/*静的定数*/
-		/*静的定数*/
-	const float SHADOW_HEIGHT = 10.0f;
-	const float SHADOW_SIZE = 8.0f;
-	static constexpr int COUNT_NUM = 6;
+	static constexpr float SHADOW_HEIGHT = 10.0f;//影を投影する高さ
+	static constexpr float SHADOW_SIZE	 = 8.0f; //影のサイズ
+	static constexpr int   COUNT_NUM	 = 6;	 //フレームカウントの数
 	//基本状態
 	static constexpr unsigned int DYING	= (1 << 0);//デス
 	static constexpr unsigned int IDLE	= (1 << 1);//待機
@@ -106,16 +107,17 @@ private:
 	static constexpr unsigned int WALK	= (1 << 3);//歩き
 	static constexpr unsigned int REST	= (1 << 4);//休憩
 	//攻撃
-	static constexpr unsigned int SLASH			 = (1 << 5);//パンチ
-	static constexpr unsigned int STAB			 = (1 << 6);//投石
-	static constexpr unsigned int ROTATE_PUNCH	 = (1 << 7);//スラッシュ
-	static constexpr unsigned int SLAP			 = (1 << 7);//スラッシュ
-	static constexpr unsigned int MELEE			 = (1 << 7);//スラッシュ
-	static constexpr unsigned int KICK			 = (1 << 7);//スラッシュ
-	static constexpr unsigned int MELEE_COMBO_3	 = (1 << 7);//スラッシュ
-	static constexpr unsigned int SLASH_COMBO_2	 = (1 << 7);//スラッシュ
+	static constexpr unsigned int SLASH_1		= (1 << 5);//スラッシュ１
+	static constexpr unsigned int SLASH_2		= (1 << 6);//スラッシュ２
+	static constexpr unsigned int STAB			= (1 << 7);//突き刺し
+	static constexpr unsigned int ROTATE_SLASH	= (1 << 8);//回転スラッシュ
+	static constexpr unsigned int PUNCH			= (1 << 9);//パンチ
+	static constexpr unsigned int SLASH_COMBO_1	= (1 << 10);//スラッシュコンボ１
+	static constexpr unsigned int SLASH_COMBO_2	= (1 << 11);//スラッシュコンボ２
+	static constexpr unsigned int JUMP_ATTACK	= (1 << 12);//ジャンプアタック
 
-	static constexpr unsigned int MASK_ATTACK = SLASH | ROTATE_PUNCH | STAB | SLAP | MELEE | KICK | MELEE_COMBO_3 | SLASH_COMBO_2;
+	static constexpr unsigned int MASK_ATTACK = SLASH_1 | SLASH_2 | ROTATE_SLASH |
+												STAB | PUNCH | SLASH_COMBO_1 | SLASH_COMBO_2 | JUMP_ATTACK;
 	static constexpr unsigned int MASK_ALL	  = MASK_ATTACK | WALK | DYING | REST | REST | IDLE | ROAR;
 	
 	/*列挙体*/
@@ -143,15 +145,14 @@ private:
 		WALK_LEFT		= 4,//歩き
 		WALK_RIGHT		= 5,//歩き
 		REST			= 6,//歩き
-		SLASH			= 7,//スラッシュ
-		STAB			= 8,//突き刺し攻撃
-		ROTATE_PUNCH	= 9,//回転パンチ
-		SLAP			= 10,
-		MELEE			= 11,
-		KICK			= 12,
-		MELEE_COMBO_3	= 13,
-		SLASH_COMBO_2	= 14
-
+		SLASH_1			= 7, //スラッシュ
+		SLASH_2			= 8, //スラッシュ
+		STAB			= 9, //突き刺し攻撃
+		ROTATE_SLASH	= 10, //回転スラッシュ
+		PUNCH			= 11,//パンチ
+		SLASH_COMBO_1	= 12,//スラッシュコンボ１
+		SLASH_COMBO_2	= 13,//スラッシュコンボ２
+		JUMP_ATTACK		= 14,//ジャンプアタック
 	};
 
 	/*内部処理関数*/
@@ -167,11 +168,11 @@ private:
 	int							nowAnimation;			//現在のアニメーション
 	int							nowPhase;				//現在のフェーズ
 	int							prevPhase;				//前のフェーズ
-	int							actionType;
-	float angryValue;
-	int angryState;
-	int tiredInterval;
-	int attackComboCount;
-	AttackType prevAttackType;
+	int							nowAction;				//現在のアクション
+	float						angryValue;				//怒りゲージ
+	int							angryState;				//怒り状態
+	int							tiredInterval;			//疲労インターバル
+	int							attackComboCount;		//攻撃コンボ数
+	AttackType					prevAttack;				//前の攻撃
 };
 

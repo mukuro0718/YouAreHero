@@ -402,7 +402,7 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 
 		//ÇªÇÃÇ‹Ç‹ÇæÇ∆ÇøÇÂÇ§Ç«ìñÇΩÇÈà íuÇ…Ç»ÇÈÇÃÇ≈è≠Çµó]ï™Ç…ó£Ç∑
 		float radiusSum = primaryColliderData.radius + secondaryColliderData.radius;
-		float awayDist = radiusSum - secondaryToPrimarySize + 0.001f;
+		float awayDist = radiusSum - secondaryToPrimarySize + 0.005f;
 		VECTOR fixedSize = VScale(secondaryToPrimaryNorm, awayDist);
 		VECTOR fixedPosition = VAdd(_primary.GetNextPosition(), fixedSize);
 		_primary.SetNextPosition(fixedPosition);

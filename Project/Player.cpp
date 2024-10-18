@@ -408,50 +408,58 @@ void Player::UpdateRotation()
 	/*スティック入力*/
 	lStick = VGet(static_cast<float>(input.GetLStickState().XBuf), 0.0f, static_cast<float>(input.GetLStickState().YBuf));
 
+	/*走ったか*/
+	bool isRun = (input.GetPadState() & PAD_INPUT_6);
+
 	/*移動状態の切り替え*/
 	//スティック入力があるか
 	if (lStick.x != 0.0f || lStick.z != 0.0f)
 	{
 		unsigned int moveState = 0;
 		isInputLStick = true;
-		if (this->isLockOn)
+		//走っていたら
+		if (isRun)
 		{
-			//Xのほうが入力されている値が大きければ
-			if (lStick.x * lStick.x > lStick.z * lStick.z)
+			//moveState = this->whenRunMoveState[moveState];
+			moveState = this->RUN_FRONT;
+		}
+		else
+		{
+			//ロックオンしていたら
+			if (this->isLockOn)
 			{
-				//右
-				if (lStick.x > 0.0f)
+				//Xのほうが入力されている値が大きければ
+				if (lStick.x * lStick.x > lStick.z * lStick.z)
 				{
-					moveState = this->WALK_RIGHT;
+					//右
+					if (lStick.x > 0.0f)
+					{
+						moveState = this->WALK_RIGHT;
+					}
+					//左
+					else
+					{
+						moveState = this->WALK_LEFT;
+					}
 				}
-				//左
 				else
 				{
-					moveState = this->WALK_LEFT;
+					//前
+					if (lStick.z < 0.0f)
+					{
+						moveState = this->WALK_FRONT;
+					}
+					//後ろ
+					else
+					{
+						moveState = this->WALK_BACK;
+					}
 				}
 			}
 			else
 			{
-				//前
-				if (lStick.z < 0.0f)
-				{
-					moveState = this->WALK_FRONT;
-				}
-				//後ろ
-				else
-				{
-					moveState = this->WALK_BACK;
-				}
+				moveState = this->WALK_FRONT;
 			}
-		}
-		else
-		{
-			moveState = this->WALK_FRONT;
-		}
-		//走っていたら
-		if (input.GetPadState() & PAD_INPUT_6)
-		{
-			moveState = this->whenRunMoveState[moveState];
 		}
 		//状態のセット
 		this->state->SetFlag(moveState);
@@ -477,7 +485,7 @@ void Player::UpdateRotation()
 		//スティック入力を正規化
 		lStick = VNorm(lStick);
 		
-		if (this->isLockOn)
+		if (this->isLockOn && !isRun)
 		{
 			rotation.y = static_cast<float>(
 				-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x)) - 90.0f * (DX_PI_F / 180.0f));

@@ -1,19 +1,21 @@
 //=============================================
-// @brief ボス飛び攻撃アクション
+// @brief ボススラッシュ攻撃アクションVer.2
 //=============================================
 #pragma once
 
 class Boss;
 class BossAction;
-class BossKickAction : public BossAction
+class BossSlash2Action : public BossAction
 {
 public:
-	BossKickAction();
-	virtual ~BossKickAction();
+	BossSlash2Action();
+	virtual ~BossSlash2Action();
 
 	void Initialize()				  override;//初期化
 	void Update(Boss& _boss)	override;//パラメーターの計算
 	void CalcParameter(const Boss& _boss) override;//パラメーターの計算
+
 private:
+
 };
 

@@ -1,16 +1,17 @@
 //===========================================
-// @brief パンチコンボ２攻撃
+// @brief 回転パンチ攻撃
 //===========================================
 #pragma once
 class BossAttack;
-class BossKickAttack : public BossAttack
+class BossRotateSlashAttack : public BossAttack
 {
 public:
-	BossKickAttack(const int _attackIndex);//コンストラクタ
-	~BossKickAttack();//デストラクタ
+	BossRotateSlashAttack(const int _attackIndex);//コンストラクタ
+	~BossRotateSlashAttack();//デストラクタ
+
 		  void Initialize() override;		//初期化
 		  void Update	 () override;		//更新
-	const void Draw		 () const override;	//描画
+	const void Draw		 () const override; //描画
 protected:
 };
 

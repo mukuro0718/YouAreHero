@@ -5,12 +5,12 @@
 #include "DeleteInstance.h"
 #include "BossAttack.h"
 #include "BossSlashAttack.h"
+#include "BossSlash2Attack.h"
 #include "BossStabAttack.h"
-#include "BossRotatePunchAttack.h"
-#include "BossSlapAttack.h"
-#include "BossMeleeAttack.h"
-#include "BossKickAttack.h"
-#include "BossMeleeCombo3Attack.h"
+#include "BossRotateSlashAttack.h"
+#include "BossPunchAttack.h"
+#include "BossJumpAttack.h"
+#include "BossSlashComboAttack.h"
 #include "BossSlashCombo2Attack.h"
 #include "BossAttackManager.h"
 #include "EnemyManager.h"
@@ -21,14 +21,14 @@
 /// </summary>
 BossAttackManager::BossAttackManager()
 {
-	this->attack.emplace_back(new BossSlashAttack		(static_cast<int>(AttackType::SLASH)));
-	this->attack.emplace_back(new BossStabAttack		(static_cast<int>(AttackType::STAB)));
-	this->attack.emplace_back(new BossRotatePunchAttack	(static_cast<int>(AttackType::ROTATE_PUNCH)));
-	this->attack.emplace_back(new BossSlapAttack		(static_cast<int>(AttackType::SLAP)));
-	this->attack.emplace_back(new BossMeleeAttack		(static_cast<int>(AttackType::MELEE)));
-	this->attack.emplace_back(new BossKickAttack		(static_cast<int>(AttackType::KICK)));
-	this->attack.emplace_back(new BossMeleeCombo3Attack	(static_cast<int>(AttackType::MELEE_COMBO_3)));
-	this->attack.emplace_back(new BossSlashCombo2Attack	(static_cast<int>(AttackType::SLASH_COMBO_2)));
+	this->attack.emplace_back(new BossSlashAttack		(static_cast<int>(BossAttack::AttackType::SLASH_1)));
+	this->attack.emplace_back(new BossSlash2Attack		(static_cast<int>(BossAttack::AttackType::SLASH_2)));
+	this->attack.emplace_back(new BossStabAttack		(static_cast<int>(BossAttack::AttackType::STAB)));
+	this->attack.emplace_back(new BossRotateSlashAttack	(static_cast<int>(BossAttack::AttackType::ROTATE_SLASH)));
+	this->attack.emplace_back(new BossPunchAttack		(static_cast<int>(BossAttack::AttackType::PUNCH)));
+	this->attack.emplace_back(new BossSlashComboAttack	(static_cast<int>(BossAttack::AttackType::SLASH_COMBO_1)));
+	this->attack.emplace_back(new BossSlashCombo2Attack	(static_cast<int>(BossAttack::AttackType::SLASH_COMBO_2)));
+	this->attack.emplace_back(new BossJumpAttack		(static_cast<int>(BossAttack::AttackType::JUMP_ATTACK)));
 }
 
 /// <summary>

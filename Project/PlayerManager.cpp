@@ -116,5 +116,22 @@ const int PlayerManager::GetHealOrbNum()const
 /// </summary>
 const bool PlayerManager::GetIsAlive()const
 {
-	return player->GetIsAlive();
+	return this->player->GetIsAlive();
+}
+
+/// <summary>
+/// ロックオンフラグの取得
+/// </summary>
+const bool PlayerManager::GetIsLockOn()const
+{
+	auto& player = dynamic_cast<Player&>(*this->player);
+	return player.GetIsLockOn();
+}
+
+/// <summary>
+/// モデルハンドルの取得
+/// </summary>
+const int PlayerManager::GetModelHandle() const
+{
+	return this->player->GetModelHandle();
 }

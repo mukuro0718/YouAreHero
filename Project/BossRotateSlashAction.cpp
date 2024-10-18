@@ -10,8 +10,8 @@
 #include "Boss.h"
 #include "HitStop.h"
 #include "BossAttack.h"
-#include "BossRotatePunchAttack.h"
-#include "BossRotatePunchAction.h"
+#include "BossRotateSlashAttack.h"
+#include "BossRotateSlashAction.h"
 #include "PlayerManager.h"
 #include "EffectManager.h"
 #include "BossAttackManager.h"
@@ -19,16 +19,16 @@
 /// <summary>
 /// コンストラクタ
 /// </summary>
-BossRotatePunchAction::BossRotatePunchAction()
+BossRotateSlashAction::BossRotateSlashAction()
 	: isClose(false)
 {
-	this->attack = new BossRotatePunchAttack(static_cast<int>(BossAttack::AttackType::ROTATE_PUNCH));
+	this->attack = new BossRotateSlashAttack(static_cast<int>(BossAttack::AttackType::ROTATE_SLASH));
 }
 
 /// <summary>
 /// デストラクタ
 /// </summary>
-BossRotatePunchAction::~BossRotatePunchAction()
+BossRotateSlashAction::~BossRotateSlashAction()
 {
 
 }
@@ -36,7 +36,7 @@ BossRotatePunchAction::~BossRotatePunchAction()
 /// <summary>
 /// 初期化
 /// </summary>
-void BossRotatePunchAction::Initialize()
+void BossRotateSlashAction::Initialize()
 {
 	this->isSelect				 = false;
 	this->isInitialize			 = false;
@@ -51,16 +51,17 @@ void BossRotatePunchAction::Initialize()
 /// <summary>
 /// パラメーターの計算
 /// </summary>
-void BossRotatePunchAction::Update(Boss& _boss)
+void BossRotateSlashAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
 	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
 
 	/*アニメーションの設定*/
-	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::ROTATE_PUNCH));
+	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::ROTATE_SLASH));
 
 	/*攻撃タイプの設定*/
-	_boss.SetAttackType(Boss::AttackType::ROTATE_PUNCH);
+	const int ATTACK_TYPE = static_cast<int>(Boss::AttackType::ROTATE_SLASH);
+	_boss.SetAttackType(Boss::AttackType::ROTATE_SLASH);
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
@@ -84,10 +85,10 @@ void BossRotatePunchAction::Update(Boss& _boss)
 
 		this->hitStop->SetHitStop
 		(
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::ROTATE_PUNCH)],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][ATTACK_TYPE],
 			static_cast<int>(HitStop::Type::STOP),
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::ROTATE_PUNCH)],
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::ROTATE_PUNCH)]
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][ATTACK_TYPE],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][ATTACK_TYPE]
 		);
 		this->attack->OffIsHitAttack();
 	}
@@ -101,7 +102,7 @@ void BossRotatePunchAction::Update(Boss& _boss)
 	if (!this->isInitialize)
 	{
 		//エフェクトを立てる
-		//effect.OnIsBossRotatePunchEffect();
+		//effect.OnIsBossRotateSlashEffect();
 		//攻撃フラグを立てる
 		this->attack->OnIsStart();
 		this->isInitialize = true;
@@ -148,7 +149,7 @@ void BossRotatePunchAction::Update(Boss& _boss)
 /// <summary>
 /// パラメーターの計算
 /// </summary>
-void BossRotatePunchAction::CalcParameter(const Boss& _boss)
+void BossRotateSlashAction::CalcParameter(const Boss& _boss)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -172,7 +173,7 @@ void BossRotatePunchAction::CalcParameter(const Boss& _boss)
 	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_3))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
-		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::ROTATE_PUNCH)])
+		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::ROTATE_SLASH)])
 		{
 			Boss::AttackType type = _boss.GetPrevAttackType();
 			if (_boss.GetAttackComboCount() == 0)

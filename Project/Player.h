@@ -17,16 +17,16 @@ public:
 	const void	DrawCharacterInfo()const override;	//描画
 
 	/*getter*/
-	const bool	IsMove		 ()const;//移動フラグの取得
-	const bool	GetIsAttack	 ()const override;//ショットフラグの取得
-	const int	GetStamina	 ()const;
-	const int	GetHealOrbNum()const { return this->healOrbNum; }
+	const bool	IsMove		 ()const;								//移動フラグの取得
+	const bool	GetIsAttack	 ()const override;						//ショットフラグの取得
+	const bool  GetIsLockOn  ()const { return this->isLockOn; }		//ロックオンフラグの取得
+	const int	GetStamina	 ()const;								//スタミナの取得
+	const int	GetHealOrbNum()const { return this->healOrbNum; }	//回復オーブの数(今は回復回数になっている)
 private:
 	/*静的定数*/
-		/*静的定数*/
-	const float SHADOW_HEIGHT = 10.0f;
-	const float SHADOW_SIZE = 6.0f;
-	static constexpr int COUNT_NUM = 5;//フレームカウントの数
+	static constexpr float	SHADOW_HEIGHT	= 10.0f;//影を投影する高さ
+	static constexpr float	SHADOW_SIZE		= 6.0f;	//かげのサイズ
+	static constexpr int	COUNT_NUM		= 5;	//フレームカウントの数
 	//プレイヤーの状態
 	static constexpr unsigned int IDLE			  = (1 << 0);  //待機
 	static constexpr unsigned int AVOID			  = (1 << 1);  //回避
@@ -46,22 +46,23 @@ private:
 	static constexpr unsigned int SLASH			  = (1 << 15); //攻撃
 	static constexpr unsigned int HEAL			  = (1 << 16); //回復
 	//マスク
-	static constexpr unsigned int MASK_REACTION				 = BLOCK_REACTION | REACTION;//リアクション
-	static constexpr unsigned int MASK_WALK					 = WALK_FRONT | WALK_BACK | WALK_LEFT | WALK_RIGHT; //移動マスク
-	static constexpr unsigned int MASK_RUN					 = RUN_FRONT | RUN_BACK | RUN_LEFT | RUN_RIGHT; //移動マスク
-	static constexpr unsigned int MASK_MOVE					 = MASK_WALK | MASK_RUN; //移動マスク
-	static constexpr unsigned int MASK_AVOID				 = AVOID; //移動マスク
-	static constexpr unsigned int MASK_ATTACK				 = SLASH;
-	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = MASK_AVOID | BLOCK | MASK_ATTACK;
-	static constexpr unsigned int MASK_ALWAYS_TURN_OFF		 = MASK_MOVE | IDLE;
-	static constexpr unsigned int MASK_ALL					 = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION | BLOCK | MASK_AVOID | HEAL;
-	static constexpr unsigned int MASK_CAN_VELOCITY			 = MASK_MOVE | MASK_AVOID;
+	static constexpr unsigned int MASK_REACTION				 = BLOCK_REACTION | REACTION;						//リアクション
+	static constexpr unsigned int MASK_WALK					 = WALK_FRONT | WALK_BACK | WALK_LEFT | WALK_RIGHT; //歩きマスク
+	static constexpr unsigned int MASK_RUN					 = RUN_FRONT | RUN_BACK | RUN_LEFT | RUN_RIGHT;		//ダッシュマスク
+	static constexpr unsigned int MASK_MOVE					 = MASK_WALK | MASK_RUN;							//移動マスク
+	static constexpr unsigned int MASK_AVOID				 = AVOID;											//回避マスク
+	static constexpr unsigned int MASK_ATTACK				 = SLASH;											//攻撃マスク
+	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = MASK_AVOID | BLOCK | MASK_ATTACK;				//スタミナが回復できない状態
+	static constexpr unsigned int MASK_ALWAYS_TURN_OFF		 = MASK_MOVE | IDLE;								//毎フレーム状態を下すマスク
+	static constexpr unsigned int MASK_ALL					 = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION |
+															   BLOCK | MASK_AVOID | HEAL;						//すべての状態マスク
+	static constexpr unsigned int MASK_CAN_VELOCITY			 = MASK_MOVE | MASK_AVOID;							//VELOCITYを出せるマスク
 	/*列挙体*/
 	//コライダーの種類
 	enum class ColliderType
 	{
-		CHARACTER = 0,
-		ATTACK = 1,
+		CHARACTER	= 0,//キャラクター
+		ATTACK		= 1,//攻撃
 	};
 	//フレームカウントの種類
 	enum class FrameCountType

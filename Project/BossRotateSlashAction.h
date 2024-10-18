@@ -1,15 +1,15 @@
 //=============================================
-// @brief ボス回転パンチ攻撃アクション
+// @brief ボス回転スラッシュ攻撃アクション
 //=============================================
 #pragma once
 
 class Boss;
 class BossAction;
-class BossRotatePunchAction : public BossAction
+class BossRotateSlashAction : public BossAction
 {
 public:
-	BossRotatePunchAction();
-	virtual ~BossRotatePunchAction();
+	BossRotateSlashAction();
+	virtual ~BossRotateSlashAction();
 
 	void Initialize		()					override;//初期化
 	void Update			(Boss& _boss)		override;//パラメーターの計算

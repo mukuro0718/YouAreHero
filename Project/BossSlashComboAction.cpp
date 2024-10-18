@@ -10,23 +10,23 @@
 #include "Boss.h"
 #include "HitStop.h"
 #include "BossAttack.h"
-#include "BossMeleeAttack.h"
-#include "BossMeleeAction.h"
+#include "BossSlashComboAttack.h"
+#include "BossSlashComboAction.h"
 #include "PlayerManager.h"
 #include "EffectManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-BossMeleeAction::BossMeleeAction()
+BossSlashComboAction::BossSlashComboAction()
 {
-	this->attack = new BossMeleeAttack(static_cast<int>(BossAttack::AttackType::MELEE));
+	this->attack = new BossSlashComboAttack(static_cast<int>(BossAttack::AttackType::SLASH_COMBO_1));
 }
 
 /// <summary>
 /// デストラクタ
 /// </summary>
-BossMeleeAction::~BossMeleeAction()
+BossSlashComboAction::~BossSlashComboAction()
 {
 
 }
@@ -34,13 +34,13 @@ BossMeleeAction::~BossMeleeAction()
 /// <summary>
 /// 初期化
 /// </summary>
-void BossMeleeAction::Initialize()
+void BossSlashComboAction::Initialize()
 {
-	this->isSelect				 = false;
-	this->isInitialize			 = false;
-	this->frameCount			 = 0;
+	this->isSelect = false;
+	this->isInitialize = false;
+	this->frameCount = 0;
 	this->parameter->desireValue = 0;
-	this->parameter->interval	 = 0;
+	this->parameter->interval = 0;
 	this->attack->Initialize();
 	this->hitStop->Initialize();
 }
@@ -48,16 +48,17 @@ void BossMeleeAction::Initialize()
 /// <summary>
 /// パラメーターの計算
 /// </summary>
-void BossMeleeAction::Update(Boss& _boss)
+void BossSlashComboAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
 	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
 
 	/*アニメーションの設定*/
-	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::MELEE));
+	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::SLASH_COMBO_1));
 
 	/*攻撃タイプの設定*/
-	_boss.SetAttackType(Boss::AttackType::MELEE);
+	const int ATTACK_TYPE = static_cast<int>(Boss::AttackType::SLASH_COMBO_1);
+	_boss.SetAttackType(Boss::AttackType::SLASH_COMBO_1);
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
@@ -80,10 +81,10 @@ void BossMeleeAction::Update(Boss& _boss)
 
 		this->hitStop->SetHitStop
 		(
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::MELEE)],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][ATTACK_TYPE],
 			static_cast<int>(HitStop::Type::STOP),
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::MELEE)],
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::MELEE)]
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][ATTACK_TYPE],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][ATTACK_TYPE]
 		);
 		this->attack->OffIsHitAttack();
 	}
@@ -150,7 +151,7 @@ void BossMeleeAction::Update(Boss& _boss)
 /// <summary>
 /// パラメーターの計算
 /// </summary>
-void BossMeleeAction::CalcParameter(const Boss& _boss)
+void BossSlashComboAction::CalcParameter(const Boss& _boss)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -170,20 +171,16 @@ void BossMeleeAction::CalcParameter(const Boss& _boss)
 		return;
 	}
 
-	/*Phaseが1以上だったら欲求値を増加する*/
-	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_2))
+	/*Phaseが9以上だったら欲求値を増加する*/
+	else if (_boss.GetNowPhase() >= static_cast<int>(Boss::Phase::PHASE_9))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
-		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::MELEE)])
+		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::SLASH_COMBO_1)])
 		{
 			Boss::AttackType type = _boss.GetPrevAttackType();
 			if (_boss.GetAttackComboCount() == 0)
 			{
 				this->parameter->desireValue = 1;
-			}
-			else if (type == Boss::AttackType::SLASH_COMBO_2)
-			{
-				this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 			}
 			else
 			{

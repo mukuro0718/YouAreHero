@@ -31,7 +31,7 @@
   "HP": 1000,
   "ATTACK_COMBO_INDEX_OFFSET": [ 0, 2, 5 ],
   "SPEED": 0.8,
-  "SIDE_WALK_SPEED": 0.1,
+  "SIDE_WALK_SPEED": 0.2,
   "ATTACK_SPEED": [ 5.0, 5.0, 0.6, 5.0, 5.0 ],
   "REST_COUNT": 120,
   "GRAVITY": -5.0,
@@ -55,14 +55,14 @@
     "Asset/Animation/Boss/Base/Walk.mv1",
     "Asset/Animation/Boss/Base/WalkLeft.mv1",
     "Asset/Animation/Boss/Base/WalkRight.mv1",
-    "Asset/Animation/Boss/Slash.mv1",
+    "Asset/Animation/Boss/SlashVer1.mv1",
+    "Asset/Animation/Boss/SlashVer2.mv1",
     "Asset/Animation/Boss/Stab.mv1",
-    "Asset/Animation/Boss/RotatePunch.mv1",
-    "Asset/Animation/Boss/Slap.mv1",
-    "Asset/Animation/Boss/Melee.mv1",
-    "Asset/Animation/Boss/Kick.mv1",
-    "Asset/Animation/Boss/MeleeCombo3.mv1",
-    "Asset/Animation/Boss/SlashCombo.mv1"
+    "Asset/Animation/Boss/RotateSlash.mv1",
+    "Asset/Animation/Boss/Punch.mv1",
+    "Asset/Animation/Boss/SlashComboVer1.mv1",
+    "Asset/Animation/Boss/SlashComboVer2.mv1",
+    "Asset/Animation/Boss/JumpAttack.mv1"
   ],
   "ANIMATION_INDEX": [
     0,
@@ -78,7 +78,7 @@
     0,
     0,
     0,
-    0
+    1
   ],
   "ANIMATION_PLAY_TIME": [
     0.8,

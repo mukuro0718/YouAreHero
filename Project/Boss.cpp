@@ -35,7 +35,7 @@ Boss::Boss()
 	, nowAnimation			(0)
 	, nowPhase				(0)
 	, prevPhase				(-1)
-	, actionType			(0)
+	, nowAction				(0)
 	, attackComboCount		(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
@@ -64,14 +64,14 @@ Boss::Boss()
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROAR)			,this->ROAR);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::WALK)			,this->WALK);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::REST)			,this->REST);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH)			,this->SLASH);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_1)		,this->SLASH_1);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_2)		,this->SLASH_2);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::STAB)			,this->STAB);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROTATE_PUNCH)	,this->ROTATE_PUNCH);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLAP)			,this->SLAP);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::MELEE)			,this->MELEE);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::KICK)			,this->KICK);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::MELEE_COMBO_3),this->MELEE_COMBO_3);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROTATE_SLASH)	,this->ROTATE_SLASH);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::PUNCH)			,this->PUNCH);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_COMBO_1)	,this->SLASH_COMBO_1);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_COMBO_2),this->SLASH_COMBO_2);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::JUMP_ATTACK)	,this->JUMP_ATTACK);
 
 	/*コライダーデータの作成*/
 	CharacterData* data = new BossData();
@@ -84,13 +84,13 @@ Boss::Boss()
 	this->parameters.emplace_back(new BossChaseAction());
 	this->parameters.emplace_back(new BossRestAction());
 	this->parameters.emplace_back(new BossSlashAction());
+	this->parameters.emplace_back(new BossSlash2Action());
 	this->parameters.emplace_back(new BossStabAction());
-	this->parameters.emplace_back(new BossRotatePunchAction());
-	this->parameters.emplace_back(new BossSlapAction());
-	this->parameters.emplace_back(new BossMeleeAction());
-	this->parameters.emplace_back(new BossKickAction());
-	this->parameters.emplace_back(new BossMeleeCombo3Action());
+	this->parameters.emplace_back(new BossRotateSlashAction());
+	this->parameters.emplace_back(new BossPunchAction());
+	this->parameters.emplace_back(new BossSlashComboAction());
 	this->parameters.emplace_back(new BossSlashCombo2Action());
+	this->parameters.emplace_back(new BossJumpAttackAction());
 }
 
 /// <summary>
@@ -125,7 +125,7 @@ void Boss::Initialize()
 	this->prevPhase				 = -1;
 	this->moveTarget			 = Gori::ORIGIN;
 	this->nowAnimation			 = static_cast<int>(AnimationType::ROAR);
-	this->actionType			 = static_cast<int>(ActionType::ROAR);
+	this->nowAction				 = static_cast<int>(ActionType::ROAR);
 	this->attackComboCount = 0;
 	SetAttackComboCount();
 	for (int i = 0; i < this->parameters.size(); i++)
@@ -195,7 +195,7 @@ void Boss::Update()
 	}
 
 	/*ここに各アクションごとの更新処理を入れたい*/
-	this->parameters[this->actionType]->Update(*this);
+	this->parameters[this->nowAction]->Update(*this);
 }
 
 /// <summary>
@@ -247,9 +247,9 @@ void Boss::ChangeState()
 	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY) && debugActionType != static_cast<int>(Boss::ActionType::NONE))
 	{
 		/*今立っているフラグを下す*/
-		unsigned int clearFlag = this->actionTypeMap[this->actionType];
+		unsigned int clearFlag = this->actionTypeMap[this->nowAction];
 		this->state->ClearFlag(clearFlag);
-		this->actionType = debugActionType;
+		this->nowAction = debugActionType;
 	}
 	else
 	{
@@ -264,7 +264,7 @@ void Boss::ChangeState()
 		}
 
 		/*今立っているフラグを下す*/
-		unsigned int clearFlag = this->actionTypeMap[this->actionType];
+		unsigned int clearFlag = this->actionTypeMap[this->nowAction];
 		this->state->ClearFlag(clearFlag);
 
 		/*選択されていなかったら*/
@@ -284,7 +284,7 @@ void Boss::ChangeState()
 				randomWeight -= actionWeight[i];
 				if (randomWeight < 0 || this->parameters[i]->GetIsPriority())
 				{
-					this->actionType = i;
+					this->nowAction = i;
 					this->parameters[i]->OnIsSelect();
 					isSelect = true;
 					break;
@@ -293,10 +293,10 @@ void Boss::ChangeState()
 		}
 		if (!isSelect)
 		{
-			this->actionType = static_cast<int>(ActionType::REST);
+			this->nowAction = static_cast<int>(ActionType::REST);
 		}
 	}
-	unsigned int setFlag = this->actionTypeMap[this->actionType];
+	unsigned int setFlag = this->actionTypeMap[this->nowAction];
 	this->state->SetFlag(setFlag);
 }
 
@@ -321,11 +321,16 @@ const void Boss::DrawCharacterInfo()const
 		printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
 		printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
 		printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
-		printfDx("%d:SLASH					\n", this->state->CheckFlag(this->SLASH));
-		printfDx("%d:STAB				\n", this->state->CheckFlag(this->STAB));
-		printfDx("%d:ROTATE_PUNCH				\n", this->state->CheckFlag(this->ROTATE_PUNCH));
-		/*ここに各アクションごとの更新処理を入れたい*/
-		this->parameters[this->actionType]->Draw();
+		printfDx("%d:SLASH_1					\n", this->state->CheckFlag(this->SLASH_1));
+		printfDx("%d:SLASH_2					\n", this->state->CheckFlag(this->SLASH_2));
+		printfDx("%d:STAB						\n", this->state->CheckFlag(this->STAB));
+		printfDx("%d:ROTATE_SLASH				\n", this->state->CheckFlag(this->ROTATE_SLASH));
+		printfDx("%d:PUNCH					\n", this->state->CheckFlag(this->PUNCH));
+		printfDx("%d:SLASH_COMBO_1			\n", this->state->CheckFlag(this->SLASH_COMBO_1));
+		printfDx("%d:SLASH_COMBO_2			\n", this->state->CheckFlag(this->SLASH_COMBO_2));
+		printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
+		/*各アクションの当たり判定図形の描画*/
+		this->parameters[this->nowAction]->Draw();
 	}
 
 	if (this->isDraw)

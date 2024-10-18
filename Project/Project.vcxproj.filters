@@ -181,9 +181,6 @@
     <Filter Include="Object\Character\Enemy\Action\Parameter">
       <UniqueIdentifier>{228e8d31-1860-4ea2-ad39-9e943544e666}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Attack\RotatePunch">
-      <UniqueIdentifier>{321d2b4d-7104-4481-a2a5-aacc63e8d10b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\Attack\StabAttack">
       <UniqueIdentifier>{0faff77c-c466-4dca-ae17-86cb7e5de5fd}</UniqueIdentifier>
     </Filter>
@@ -268,9 +265,6 @@
     <Filter Include="UI\BossNameUI">
       <UniqueIdentifier>{04218eaf-3fe8-48ba-8997-1beca44a20dd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\RotatePunch">
-      <UniqueIdentifier>{2962414d-cdaa-4a11-96d9-9d5fc8c33ba3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\Slash">
       <UniqueIdentifier>{8bfcefed-742f-446a-b11c-c0fb44f158a9}</UniqueIdentifier>
     </Filter>
@@ -280,32 +274,8 @@
     <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\SlashCombo">
       <UniqueIdentifier>{53cc1b3c-4a0d-4796-9b86-382d8384b1a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\Melee">
-      <UniqueIdentifier>{3518019b-1e76-4a69-a73d-af72fc6bb9e3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\MeleeCombo2">
-      <UniqueIdentifier>{fd5aab33-2677-44a6-b75e-d7dd8dc7a6be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\MeleeCombo3">
-      <UniqueIdentifier>{35d46ff5-cd11-4367-82fd-b174df7ee1fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\Slap">
-      <UniqueIdentifier>{e940d90e-a97f-4414-9d88-074050cc6f16}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Attack\MeleeCombo2">
-      <UniqueIdentifier>{bfd04c36-d4c8-4bcc-8af2-34746ec8b36a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\Attack\Melee">
       <UniqueIdentifier>{6a5db568-ae42-4078-860d-4dfc02aca0ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Attack\MeleeCombo3">
-      <UniqueIdentifier>{f33ef835-9a3a-41b1-9ab3-6be5e0f30745}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Attack\Slap">
-      <UniqueIdentifier>{22a8e7a4-4cbf-4e37-a197-14d3952b7172}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Attack\SlashCombo">
-      <UniqueIdentifier>{590f51a2-021c-42da-be27-2b75ef7a6493}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shadow">
       <UniqueIdentifier>{55dc8494-8aee-4a61-9654-35d44da7f8d2}</UniqueIdentifier>
@@ -330,6 +300,36 @@
     </Filter>
     <Filter Include="Effect\Player\JustGuard">
       <UniqueIdentifier>{91b7a93f-0336-425d-bd41-d3fa0574af14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\Punch">
+      <UniqueIdentifier>{22a8e7a4-4cbf-4e37-a197-14d3952b7172}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\Punch">
+      <UniqueIdentifier>{e940d90e-a97f-4414-9d88-074050cc6f16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\RotateSlash">
+      <UniqueIdentifier>{321d2b4d-7104-4481-a2a5-aacc63e8d10b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\RotateSlash">
+      <UniqueIdentifier>{2962414d-cdaa-4a11-96d9-9d5fc8c33ba3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\JumpAttack">
+      <UniqueIdentifier>{bfd04c36-d4c8-4bcc-8af2-34746ec8b36a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\SlashComboVer1">
+      <UniqueIdentifier>{35d46ff5-cd11-4367-82fd-b174df7ee1fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\SlashCombo2">
+      <UniqueIdentifier>{590f51a2-021c-42da-be27-2b75ef7a6493}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\SlashCombo">
+      <UniqueIdentifier>{f33ef835-9a3a-41b1-9ab3-6be5e0f30745}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\JumpAttack">
+      <UniqueIdentifier>{fd5aab33-2677-44a6-b75e-d7dd8dc7a6be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\Slash2">
+      <UniqueIdentifier>{3518019b-1e76-4a69-a73d-af72fc6bb9e3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -502,17 +502,17 @@
     <ClCompile Include="BossRestAction.cpp">
       <Filter>Object\Character\Enemy\Action\Parameter\Rest</Filter>
     </ClCompile>
-    <ClCompile Include="BossKickAttack.cpp">
-      <Filter>Object\Character\Enemy\Action\Attack\MeleeCombo2</Filter>
+    <ClCompile Include="BossJumpAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\Attack\JumpAttack</Filter>
     </ClCompile>
-    <ClCompile Include="BossMeleeAttack.cpp">
+    <ClCompile Include="BossSlash2Attack.cpp">
       <Filter>Object\Character\Enemy\Action\Attack\Melee</Filter>
     </ClCompile>
     <ClCompile Include="BossStabAttack.cpp">
       <Filter>Object\Character\Enemy\Action\Attack\StabAttack</Filter>
     </ClCompile>
-    <ClCompile Include="BossRotatePunchAttack.cpp">
-      <Filter>Object\Character\Enemy\Action\Attack\RotatePunch</Filter>
+    <ClCompile Include="BossRotateSlashAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\Attack\RotateSlash</Filter>
     </ClCompile>
     <ClCompile Include="BossSlashAttack.cpp">
       <Filter>Object\Character\Enemy\Action\Attack\SlashAttack</Filter>
@@ -589,14 +589,14 @@
     <ClCompile Include="HitStopData.cpp">
       <Filter>HitStopManager</Filter>
     </ClCompile>
-    <ClCompile Include="BossKickAction.cpp">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\MeleeCombo2</Filter>
+    <ClCompile Include="BossJumpAttackAction.cpp">
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\JumpAttack</Filter>
     </ClCompile>
-    <ClCompile Include="BossMeleeAction.cpp">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\Melee</Filter>
+    <ClCompile Include="BossSlash2Action.cpp">
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\Slash2</Filter>
     </ClCompile>
-    <ClCompile Include="BossRotatePunchAction.cpp">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\RotatePunch</Filter>
+    <ClCompile Include="BossRotateSlashAction.cpp">
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\RotateSlash</Filter>
     </ClCompile>
     <ClCompile Include="BossSlashAction.cpp">
       <Filter>Object\Character\Enemy\Action\Parameter\Attack\Slash</Filter>
@@ -604,23 +604,23 @@
     <ClCompile Include="BossStabAction.cpp">
       <Filter>Object\Character\Enemy\Action\Parameter\Attack\Stab</Filter>
     </ClCompile>
-    <ClCompile Include="BossMeleeCombo3Attack.cpp">
-      <Filter>Object\Character\Enemy\Action\Attack\MeleeCombo3</Filter>
+    <ClCompile Include="BossSlashComboAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\Attack\SlashCombo</Filter>
     </ClCompile>
-    <ClCompile Include="BossSlapAttack.cpp">
-      <Filter>Object\Character\Enemy\Action\Attack\Slap</Filter>
+    <ClCompile Include="BossPunchAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\Attack\Punch</Filter>
     </ClCompile>
     <ClCompile Include="BossSlashCombo2Attack.cpp">
-      <Filter>Object\Character\Enemy\Action\Attack\SlashCombo</Filter>
+      <Filter>Object\Character\Enemy\Action\Attack\SlashCombo2</Filter>
     </ClCompile>
     <ClCompile Include="BossSlashCombo2Action.cpp">
       <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashCombo</Filter>
     </ClCompile>
-    <ClCompile Include="BossSlapAction.cpp">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\Slap</Filter>
+    <ClCompile Include="BossPunchAction.cpp">
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\Punch</Filter>
     </ClCompile>
-    <ClCompile Include="BossMeleeCombo3Action.cpp">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\MeleeCombo3</Filter>
+    <ClCompile Include="BossSlashComboAction.cpp">
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashComboVer1</Filter>
     </ClCompile>
     <ClCompile Include="Shadow.cpp">
       <Filter>Shadow</Filter>
@@ -837,17 +837,17 @@
     <ClInclude Include="BossRestAction.h">
       <Filter>Object\Character\Enemy\Action\Parameter\Rest</Filter>
     </ClInclude>
-    <ClInclude Include="BossKickAttack.h">
-      <Filter>Object\Character\Enemy\Action\Attack\MeleeCombo2</Filter>
+    <ClInclude Include="BossJumpAttack.h">
+      <Filter>Object\Character\Enemy\Action\Attack\JumpAttack</Filter>
     </ClInclude>
-    <ClInclude Include="BossMeleeAttack.h">
+    <ClInclude Include="BossSlash2Attack.h">
       <Filter>Object\Character\Enemy\Action\Attack\Melee</Filter>
     </ClInclude>
     <ClInclude Include="BossStabAttack.h">
       <Filter>Object\Character\Enemy\Action\Attack\StabAttack</Filter>
     </ClInclude>
-    <ClInclude Include="BossRotatePunchAttack.h">
-      <Filter>Object\Character\Enemy\Action\Attack\RotatePunch</Filter>
+    <ClInclude Include="BossRotateSlashAttack.h">
+      <Filter>Object\Character\Enemy\Action\Attack\RotateSlash</Filter>
     </ClInclude>
     <ClInclude Include="BossSlashAttack.h">
       <Filter>Object\Character\Enemy\Action\Attack\SlashAttack</Filter>
@@ -930,14 +930,14 @@
     <ClInclude Include="HitStopData.h">
       <Filter>HitStopManager</Filter>
     </ClInclude>
-    <ClInclude Include="BossKickAction.h">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\MeleeCombo2</Filter>
+    <ClInclude Include="BossJumpAttackAction.h">
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\JumpAttack</Filter>
     </ClInclude>
-    <ClInclude Include="BossMeleeAction.h">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\Melee</Filter>
+    <ClInclude Include="BossSlash2Action.h">
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\Slash2</Filter>
     </ClInclude>
-    <ClInclude Include="BossRotatePunchAction.h">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\RotatePunch</Filter>
+    <ClInclude Include="BossRotateSlashAction.h">
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\RotateSlash</Filter>
     </ClInclude>
     <ClInclude Include="BossSlashAction.h">
       <Filter>Object\Character\Enemy\Action\Parameter\Attack\Slash</Filter>
@@ -945,23 +945,23 @@
     <ClInclude Include="BossStabAction.h">
       <Filter>Object\Character\Enemy\Action\Parameter\Attack\Stab</Filter>
     </ClInclude>
-    <ClInclude Include="BossMeleeCombo3Attack.h">
-      <Filter>Object\Character\Enemy\Action\Attack\MeleeCombo3</Filter>
+    <ClInclude Include="BossSlashComboAttack.h">
+      <Filter>Object\Character\Enemy\Action\Attack\SlashCombo</Filter>
     </ClInclude>
-    <ClInclude Include="BossSlapAttack.h">
-      <Filter>Object\Character\Enemy\Action\Attack\Slap</Filter>
+    <ClInclude Include="BossPunchAttack.h">
+      <Filter>Object\Character\Enemy\Action\Attack\Punch</Filter>
     </ClInclude>
     <ClInclude Include="BossSlashCombo2Attack.h">
-      <Filter>Object\Character\Enemy\Action\Attack\SlashCombo</Filter>
+      <Filter>Object\Character\Enemy\Action\Attack\SlashCombo2</Filter>
     </ClInclude>
     <ClInclude Include="BossSlashCombo2Action.h">
       <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashCombo</Filter>
     </ClInclude>
-    <ClInclude Include="BossSlapAction.h">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\Slap</Filter>
+    <ClInclude Include="BossPunchAction.h">
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\Punch</Filter>
     </ClInclude>
-    <ClInclude Include="BossMeleeCombo3Action.h">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\MeleeCombo3</Filter>
+    <ClInclude Include="BossSlashComboAction.h">
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashComboVer1</Filter>
     </ClInclude>
     <ClInclude Include="Shadow.h">
       <Filter>Shadow</Filter>

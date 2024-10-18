@@ -20,7 +20,7 @@
 /// </summary>
 BossSlashAction::BossSlashAction()
 {
-	this->attack = new BossSlashAttack(static_cast<int>(BossAttack::AttackType::SLASH));
+	this->attack = new BossSlashAttack(static_cast<int>(BossAttack::AttackType::SLASH_1));
 }
 
 /// <summary>
@@ -53,10 +53,11 @@ void BossSlashAction::Update(Boss& _boss)
 	if (_boss.GetHP() < 0) { this->isSelect = false; return; }
 
 	/*アニメーションの設定*/
-	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::SLASH));
+	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::SLASH_1));
 
 	/*攻撃タイプの設定*/
-	_boss.SetAttackType(Boss::AttackType::SLASH);
+	const int ATTACK_TYPE = static_cast<int>(Boss::AttackType::SLASH_1);
+	_boss.SetAttackType(Boss::AttackType::SLASH_1);
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
@@ -78,10 +79,10 @@ void BossSlashAction::Update(Boss& _boss)
 
 		this->hitStop->SetHitStop
 		(
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::SLASH)],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][ATTACK_TYPE],
 			static_cast<int>(HitStop::Type::STOP),
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::SLASH)],
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::SLASH)]
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][ATTACK_TYPE],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][ATTACK_TYPE]
 		);
 		this->attack->OffIsHitAttack();
 	}
@@ -174,14 +175,14 @@ void BossSlashAction::CalcParameter(const Boss& _boss)
 	}
 
 	/*距離が定数以内だったら欲求値を通常にする*/
-	if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::SLASH)])
+	if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::SLASH_1)])
 	{
 		Boss::AttackType type = _boss.GetPrevAttackType();
 		if (_boss.GetAttackComboCount() == 0)
 		{
 			this->parameter->desireValue = 1;
 		}
-		else if (type == Boss::AttackType::ROTATE_PUNCH || type == Boss::AttackType::KICK)
+		else if (type == Boss::AttackType::ROTATE_SLASH || type == Boss::AttackType::PUNCH)
 		{
 			this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 		}

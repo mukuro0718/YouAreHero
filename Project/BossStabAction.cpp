@@ -58,6 +58,7 @@ void BossStabAction::Update(Boss& _boss)
 	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::STAB));
 
 	/*攻撃タイプの設定*/
+	const int ATTACK_TYPE = static_cast<int>(Boss::AttackType::STAB);
 	_boss.SetAttackType(Boss::AttackType::STAB);
 
 	/*シングルトンクラスのインスタンスの取得*/
@@ -83,10 +84,10 @@ void BossStabAction::Update(Boss& _boss)
 
 		this->hitStop->SetHitStop
 		(
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][static_cast<int>(BossAttack::AttackType::STAB)],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][ATTACK_TYPE],
 			static_cast<int>(HitStop::Type::STOP),
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][static_cast<int>(BossAttack::AttackType::STAB)],
-			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][static_cast<int>(BossAttack::AttackType::STAB)]
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][ATTACK_TYPE],
+			json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][ATTACK_TYPE]
 		);
 		this->attack->OffIsHitAttack();
 	}

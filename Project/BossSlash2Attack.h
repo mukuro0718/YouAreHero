@@ -1,14 +1,14 @@
 //===========================================
-// @brief 回転蹴り攻撃
+// @brief スラッシュ攻撃Ver.2
 //===========================================
 #pragma once
 
 class BossAttack;
-class BossMeleeAttack : public BossAttack
+class BossSlash2Attack : public BossAttack
 {
 public:
-	BossMeleeAttack(const int _attackIndex);//コンストラクタ
-	~BossMeleeAttack();//デストラクタ
+	BossSlash2Attack(const int _attackIndex);//コンストラクタ
+	~BossSlash2Attack();//デストラクタ
 
 		  void Initialize() override;		//初期化
 		  void Update	 () override;		//更新

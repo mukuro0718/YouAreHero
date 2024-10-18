@@ -18,15 +18,16 @@ public:
 	const void Draw		 ()const;					   //描画
 
 	/*getter*/
-	const CharacterData& GetCharacterData()const;
-	const Rigidbody&	 GetRigidbody	 ()const;
+	const CharacterData& GetCharacterData()const;//キャラクターデータの取得
+	const Rigidbody&	 GetRigidbody	 ()const;//リジッドボディの取得
 	const bool			 IsMove			 ()const;//移動したか
-	const bool			 GetIsAttack	 ()const;//攻撃したか
-	const int			 GetHP			 ()const;
-	const float			 GetStamina		 ()const;
-	const int			 GetHealOrbNum	 ()const;
-	const int			 GetModelHandle	 ()const;
-	const bool			 GetIsAlive()const;
+	const bool			 GetIsAttack	 ()const;//攻撃フラグの取得
+	const int			 GetHP			 ()const;//HPの取得
+	const float			 GetStamina		 ()const;//スタミナの取得
+	const int			 GetHealOrbNum	 ()const;//回復回数の取得
+	const int			 GetModelHandle	 ()const;//モデルハンドルの取得
+	const bool			 GetIsAlive		 ()const;//生存フラグの取得
+	const bool			 GetIsLockOn	 ()const;//ロックオンフラグの取得
 private:
 	/*内部処理関数*/
 	PlayerManager();//コンストラクタ

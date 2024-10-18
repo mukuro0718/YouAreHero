@@ -1,14 +1,14 @@
 //===========================================
-// @brief スラップ攻撃
+// @brief パンチ攻撃
 //===========================================
 #pragma once
 
 class BossAttack;
-class BossSlapAttack : public BossAttack
+class BossPunchAttack : public BossAttack
 {
 public:
-	BossSlapAttack(const int _attackIndex);//コンストラクタ
-	~BossSlapAttack();//デストラクタ
+	BossPunchAttack(const int _attackIndex);//コンストラクタ
+	~BossPunchAttack();//デストラクタ
 
 	void Initialize() override;		//初期化
 	void Update() override;		//更新

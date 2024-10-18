@@ -10,7 +10,7 @@
 #include "BossAttackData.h"
 #include "AttackCapsuleColliderData.h"
 #include "BossAttack.h"
-#include "BossMeleeCombo3Attack.h"
+#include "BossPunchAttack.h"
 #include "EnemyManager.h"
 #include "Debug.h"
 #include "HitStop.h"
@@ -18,7 +18,7 @@
 /// <summary>
 /// コンストラクタ
 /// </summary>
-BossMeleeCombo3Attack::BossMeleeCombo3Attack(const int _attackIndex)
+BossPunchAttack::BossPunchAttack(const int _attackIndex)
 	: BossAttack()
 {
 	/*シングルトンクラスのインスタンスの取得*/
@@ -35,7 +35,7 @@ BossMeleeCombo3Attack::BossMeleeCombo3Attack(const int _attackIndex)
 /// <summary>
 /// デストラクタ
 /// </summary>
-BossMeleeCombo3Attack::~BossMeleeCombo3Attack()
+BossPunchAttack::~BossPunchAttack()
 {
 
 }
@@ -43,7 +43,7 @@ BossMeleeCombo3Attack::~BossMeleeCombo3Attack()
 /// <summary>
 /// 初期化
 /// </summary>
-void BossMeleeCombo3Attack::Initialize()
+void BossPunchAttack::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -62,11 +62,10 @@ void BossMeleeCombo3Attack::Initialize()
 	data.isHitAttack = false;
 
 	/*変数の初期化*/
-	this->frameCount			= 0;
-	this->doHitCheckFrameIndex	= 0;
-	this->isStartHitCheck		= false;
-	this->isStartHitCheck		= false;
-	this->isNotOnHit			= false;
+	this->frameCount = 0;
+	this->isStartHitCheck = false;
+	this->isStartHitCheck = false;
+	this->isNotOnHit = false;
 
 	/*物理挙動の初期化*/
 	this->collider->rigidbody.Initialize(false);
@@ -74,7 +73,7 @@ void BossMeleeCombo3Attack::Initialize()
 /// <summary>
 /// 更新
 /// </summary>
-void BossMeleeCombo3Attack::Update()
+void BossPunchAttack::Update()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -86,47 +85,33 @@ void BossMeleeCombo3Attack::Update()
 	if (this->isStartHitCheck)
 	{
 		//変数の準備
-		const int	START_HIT_CHECK_FRAME	= json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_FRAME"][this->attackIndex];
-		const int	END_HIT_CHECK_FRAME		= json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"][this->attackIndex];
-		const float POSITION_OFFSET			= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"][this->attackIndex];
-		const float Y_OFFSET				= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"][this->attackIndex];
+		const int	START_HIT_CHECK_FRAME = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_FRAME"][this->attackIndex];
+		const int	END_HIT_CHECK_FRAME = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"][this->attackIndex];
+		const float POSITION_OFFSET = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"][this->attackIndex];
+		const float Y_OFFSET = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"][this->attackIndex];
 
 		//フレームを増やす
 		this->frameCount++;
 		//フレームが定数を超えていなかったら早期リターン
 		if (this->frameCount < START_HIT_CHECK_FRAME)return;
 
-		//36:39 59:63 98:103
-		//フレームカウントが定数以内の時に当たり判定フラグが下りていたら立てる
-		vector<int> frame = json.GetJson(JsonManager::FileType::ENEMY)["BOSS_MELEE_COMBO_3_ATTACK_DO_HIT_BETWEEN_FRAME"][this->doHitCheckFrameIndex];
-		if (frame[0] <= this->frameCount && this->frameCount <= frame[1])
+		//今回の攻撃中に当たり判定フラグが一度もたっていなかったら
+		if (!this->isNotOnHit)
 		{
-			if (!this->isNotOnHit)
-			{
-				data.isDoHitCheck = true;
-				this->isNotOnHit = true;
-			}
+			data.isDoHitCheck = true;
+			this->isNotOnHit = true;
 		}
-		else
-		{
-			data.isDoHitCheck = false;
-			this->isNotOnHit = false;
-		}
-		if (this->frameCount > frame[1])
-		{
-			this->doHitCheckFrameIndex++;
-		}
+
 		//当たり判定位置の更新
 		collider.rigidbody.SetPosition(MV1GetFramePosition(enemy.GetModelHandle(), 14));
 		collider.topPositon = MV1GetFramePosition(enemy.GetModelHandle(), 19);
 		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
 		if (this->frameCount > END_HIT_CHECK_FRAME)
 		{
-			this->isStartHitCheck		= false;
-			data.isDoHitCheck			= false;
-			this->frameCount			= 0;
-			data.isHitAttack			= false;
-			this->doHitCheckFrameIndex	= 0;
+			this->isStartHitCheck = false;
+			data.isDoHitCheck = false;
+			this->frameCount = 0;
+			data.isHitAttack = false;
 		}
 	}
 }
@@ -134,7 +119,7 @@ void BossMeleeCombo3Attack::Update()
 /// <summary>
 /// 描画
 /// </summary>
-const void BossMeleeCombo3Attack::Draw()const
+const void BossPunchAttack::Draw()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
 	//if (debug.CheckEnemyFlag())
@@ -147,6 +132,6 @@ const void BossMeleeCombo3Attack::Draw()const
 		DrawCapsule3D(collider.rigidbody.GetPosition(), collider.topPositon, collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
 	}
 	VECTOR position = this->collider->rigidbody.GetPosition();
-	printfDx("HURRICANE_KICK X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+	printfDx("SLAP X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
 	//}
 }
