@@ -16,6 +16,6 @@ public:
 	void CalcParameter(const Boss& _boss) override;//パラメーターの計算
 
 private:
-
+	bool isClose;//一度でも近づいたか
 };
 

@@ -88,8 +88,8 @@ void BossSlashAttack::Update()
 		//変数の準備
 		const int	START_HIT_CHECK_FRAME = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_FRAME"][this->attackIndex];
 		const int	END_HIT_CHECK_FRAME	  = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"]  [this->attackIndex];
-		const float POSITION_OFFSET		  = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"]		   [this->attackIndex];
-		const float Y_OFFSET			  = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"]	   [this->attackIndex];
+		const float POSITION_OFFSET		  = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"]		 [this->attackIndex];
+		const float Y_OFFSET			  = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"]	     [this->attackIndex];
 
 		//フレームを増やす
 		this->frameCount++;
@@ -103,9 +103,19 @@ void BossSlashAttack::Update()
 			this->isNotOnHit = true;
 		}
 
-		//当たり判定位置の更新
-		collider.rigidbody.SetPosition(MV1GetFramePosition(enemy.GetModelHandle(), 9));
-		collider.topPositon = MV1GetFramePosition(enemy.GetModelHandle(), 11);
+		//ひじの座標
+		VECTOR elbowPosition = MV1GetFramePosition(enemy.GetModelHandle(), 9);
+		//手の一番外の座標
+		VECTOR topPositionBase = MV1GetFramePosition(enemy.GetModelHandle(), 11);
+		//ひじから手へ伸びるベクトル
+		VECTOR underToTopBaseVector = VNorm(VSub(topPositionBase, elbowPosition));
+		//ひじから手へ伸びるベクトルを定数でスケーリングしたものをひじの座標に足したものを爪の先端座標とする
+		VECTOR crowTopPosition = VScale(underToTopBaseVector, json.GetJson(JsonManager::FileType::ENEMY)["CROW_SIZE"]);
+		crowTopPosition = VAdd(crowTopPosition, elbowPosition);
+		//ひじの座標をカプセル下座標とする
+		collider.rigidbody.SetPosition(elbowPosition);
+		//爪先の座標をカプセル上座標とする
+		collider.topPositon = crowTopPosition;
 		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
 		if (this->frameCount > END_HIT_CHECK_FRAME || (this->isNotOnHit && !data.isDoHitCheck))
 		{

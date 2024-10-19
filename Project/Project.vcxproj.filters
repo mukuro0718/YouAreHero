@@ -271,12 +271,6 @@
     <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\Stab">
       <UniqueIdentifier>{f13408b7-7fea-4ea4-872d-7c21ec2525b8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\SlashCombo">
-      <UniqueIdentifier>{53cc1b3c-4a0d-4796-9b86-382d8384b1a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Attack\Melee">
-      <UniqueIdentifier>{6a5db568-ae42-4078-860d-4dfc02aca0ab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shadow">
       <UniqueIdentifier>{55dc8494-8aee-4a61-9654-35d44da7f8d2}</UniqueIdentifier>
     </Filter>
@@ -316,9 +310,6 @@
     <Filter Include="Object\Character\Enemy\Action\Attack\JumpAttack">
       <UniqueIdentifier>{bfd04c36-d4c8-4bcc-8af2-34746ec8b36a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\SlashComboVer1">
-      <UniqueIdentifier>{35d46ff5-cd11-4367-82fd-b174df7ee1fe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\Attack\SlashCombo2">
       <UniqueIdentifier>{590f51a2-021c-42da-be27-2b75ef7a6493}</UniqueIdentifier>
     </Filter>
@@ -330,6 +321,15 @@
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\Slash2">
       <UniqueIdentifier>{3518019b-1e76-4a69-a73d-af72fc6bb9e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Attack\Slash2">
+      <UniqueIdentifier>{6a5db568-ae42-4078-860d-4dfc02aca0ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\SlashCombo2">
+      <UniqueIdentifier>{53cc1b3c-4a0d-4796-9b86-382d8384b1a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\SlashCombo">
+      <UniqueIdentifier>{35d46ff5-cd11-4367-82fd-b174df7ee1fe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -506,7 +506,7 @@
       <Filter>Object\Character\Enemy\Action\Attack\JumpAttack</Filter>
     </ClCompile>
     <ClCompile Include="BossSlash2Attack.cpp">
-      <Filter>Object\Character\Enemy\Action\Attack\Melee</Filter>
+      <Filter>Object\Character\Enemy\Action\Attack\Slash2</Filter>
     </ClCompile>
     <ClCompile Include="BossStabAttack.cpp">
       <Filter>Object\Character\Enemy\Action\Attack\StabAttack</Filter>
@@ -614,13 +614,13 @@
       <Filter>Object\Character\Enemy\Action\Attack\SlashCombo2</Filter>
     </ClCompile>
     <ClCompile Include="BossSlashCombo2Action.cpp">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashCombo</Filter>
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashCombo2</Filter>
     </ClCompile>
     <ClCompile Include="BossPunchAction.cpp">
       <Filter>Object\Character\Enemy\Action\Parameter\Attack\Punch</Filter>
     </ClCompile>
     <ClCompile Include="BossSlashComboAction.cpp">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashComboVer1</Filter>
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashCombo</Filter>
     </ClCompile>
     <ClCompile Include="Shadow.cpp">
       <Filter>Shadow</Filter>
@@ -841,7 +841,7 @@
       <Filter>Object\Character\Enemy\Action\Attack\JumpAttack</Filter>
     </ClInclude>
     <ClInclude Include="BossSlash2Attack.h">
-      <Filter>Object\Character\Enemy\Action\Attack\Melee</Filter>
+      <Filter>Object\Character\Enemy\Action\Attack\Slash2</Filter>
     </ClInclude>
     <ClInclude Include="BossStabAttack.h">
       <Filter>Object\Character\Enemy\Action\Attack\StabAttack</Filter>
@@ -955,13 +955,13 @@
       <Filter>Object\Character\Enemy\Action\Attack\SlashCombo2</Filter>
     </ClInclude>
     <ClInclude Include="BossSlashCombo2Action.h">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashCombo</Filter>
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashCombo2</Filter>
     </ClInclude>
     <ClInclude Include="BossPunchAction.h">
       <Filter>Object\Character\Enemy\Action\Parameter\Attack\Punch</Filter>
     </ClInclude>
     <ClInclude Include="BossSlashComboAction.h">
-      <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashComboVer1</Filter>
+      <Filter>Object\Character\Enemy\Action\Parameter\Attack\SlashCombo</Filter>
     </ClInclude>
     <ClInclude Include="Shadow.h">
       <Filter>Shadow</Filter>

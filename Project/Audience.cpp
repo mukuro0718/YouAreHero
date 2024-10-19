@@ -36,7 +36,7 @@ Audience::Audience()
 	{
 		this->index[i] = json.GetJson(JsonManager::FileType::UI)["AUDIENCE_VERTEX_INDEX"][i];
 	}
-	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::AUDIENCE);
+	//this->imageHandle = asset.GetImage(LoadingAsset::ImageType::AUDIENCE);
 }
 
 /// <summary>

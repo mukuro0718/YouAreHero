@@ -101,16 +101,27 @@ void BossJumpAttack::Update()
 			this->isNotOnHit = true;
 		}
 
-		//当たり判定位置の更新
-		collider.rigidbody.SetPosition(MV1GetFramePosition(enemy.GetModelHandle(), 33));
-		collider.topPositon = MV1GetFramePosition(enemy.GetModelHandle(), 35);
+		//頭の座標
+		VECTOR headPosition = MV1GetFramePosition(enemy.GetModelHandle(), 6);
+		//尻の座標
+		VECTOR hipPosition = MV1GetFramePosition(enemy.GetModelHandle(), 1);
+		//頭から尻へ伸びるベクトル
+		VECTOR headToHipVector = VNorm(VSub(hipPosition, headPosition));
+		//頭から尻へ伸びるベクトルを定数でスケーリングしたものを頭の座標に足したものをカプセル下座標とする
+		VECTOR underPosition = VScale(headToHipVector, json.GetJson(JsonManager::FileType::ENEMY)["BACK_BORN_SIZE"]);
+		underPosition = VAdd(underPosition, headPosition);
+		//ひじの座標をカプセル下座標とする
+		collider.rigidbody.SetPosition(underPosition);
+		//爪先の座標をカプセル上座標とする
+		collider.topPositon = headPosition;
+
 		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
 		if (this->frameCount > END_HIT_CHECK_FRAME || (this->isNotOnHit && !data.isDoHitCheck))
 		{
 			this->isStartHitCheck = false;
-			data.isDoHitCheck = false;
-			this->frameCount = 0;
-			data.isHitAttack = false;
+			data.isDoHitCheck	  = false;
+			this->frameCount	  = 0;
+			data.isHitAttack	  = false;
 		}
 	}
 }

@@ -46,14 +46,14 @@ Boss::Boss()
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::ENEMY));
 
 	/*アニメーションの設定*/
-	vector<string>	animationHandle	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_HANDLE"];
+	vector<int>	animationHandle	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_HANDLE"];
 	vector<int>		animationIndex	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_INDEX"];
 			  this->nowAnimation	  = static_cast<int>(AnimationType::IDLE);
 			  this->animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 	//アニメーションの追加
 	for (int i = 0; i < animationHandle.size(); i++)
 	{
-		this->animation->Add(MV1LoadModel(animationHandle[i].c_str()), animationIndex[i]);
+		this->animation->Add(animationHandle[i], animationIndex[i]);
 	}
 	//アニメーションのアタッチ
 	this->animation->Attach(&this->modelHandle);
@@ -250,6 +250,7 @@ void Boss::ChangeState()
 		unsigned int clearFlag = this->actionTypeMap[this->nowAction];
 		this->state->ClearFlag(clearFlag);
 		this->nowAction = debugActionType;
+		this->parameters[this->nowAction]->OnIsSelect();
 	}
 	else
 	{

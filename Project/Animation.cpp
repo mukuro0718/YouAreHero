@@ -46,8 +46,8 @@ void Animation::Attach(int* modelHandle)
 	MV1DetachAnim(*modelHandle, this->animationAttachIndex);
 
 	/*アニメーションのアタッチ*/
-	this->prevAnimationAttachIndex = MV1AttachAnim(*modelHandle, this->animationIndex[this->prevAnimation], this->animationHandle[this->prevAnimation], FALSE);
-	this->animationAttachIndex = MV1AttachAnim(*modelHandle, this->animationIndex[this->nowAnimation], this->animationHandle[this->nowAnimation], FALSE);
+	this->prevAnimationAttachIndex = MV1AttachAnim(*modelHandle, this->animationIndex[this->prevAnimation], this->animationHandle[this->prevAnimation], TRUE);
+	this->animationAttachIndex = MV1AttachAnim(*modelHandle, this->animationIndex[this->nowAnimation], this->animationHandle[this->nowAnimation], TRUE);
 	
 	/*アニメーションの総再生時間を設定*/
 	this->animationTotalTime = MV1GetAttachAnimTotalTime(*modelHandle, this->animationAttachIndex);

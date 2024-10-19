@@ -1,6 +1,5 @@
 #include <DxLib.h>
-#include <Effekseer.h>
-#include <EffekseerRendererDX11.h>
+#include "EffekseerForDXLib.h"
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "ActionParameter.h"
@@ -67,11 +66,11 @@ void BossStabAction::Update(Boss& _boss)
 	auto& json	 = Singleton<JsonManager>::GetInstance();
 
 	/*使用する値の準備*/
-	const VECTOR POSITION		 = _boss.GetRigidbody().GetPosition(); //座標
-	const VECTOR MOVE_TARGET	 = player.GetRigidbody().GetPosition();//移動目標
-	VECTOR nowRotation			 = _boss.GetRigidbody().GetRotation(); //回転率
-	VECTOR positonToTargetVector = VSub(POSITION, MOVE_TARGET); //座標と移動目標間のベクトル
-	VECTOR direction			 = VGet(0.0f, 0.0f, 0.0f);
+	const VECTOR POSITION				= _boss.GetRigidbody().GetPosition();	//座標
+	const VECTOR MOVE_TARGET			= player.GetRigidbody().GetPosition();	//移動目標
+		  VECTOR nowRotation			= _boss.GetRigidbody().GetRotation();	//回転率
+		  VECTOR positonToTargetVector	= VSub(POSITION, MOVE_TARGET);			//座標と移動目標間のベクトル
+		  VECTOR direction				= VGet(0.0f, 0.0f, 0.0f);				//向き
 
 	/*移動ベクトルの設定*/
 	_boss.SetNowMoveTarget(MOVE_TARGET);
@@ -116,10 +115,11 @@ void BossStabAction::Update(Boss& _boss)
 	/*カウントの計測*/
 	bool isEndCount = FrameCount(json.GetJson(JsonManager::FileType::ENEMY)["STAB_SLOW_FRAME_COUNT"]);
 
-	/*アニメーション再生時間の設定*/
+	/*アニメーション処理*/
 	{
+		//アニメーション再生時間
 		float animationPlayTime = _boss.GetAnimationPlayTime();
-		//カウントが終了していなければ
+		//カウントが終了していなければアニメーション再生速度を遅くする
 		if (!isEndCount)
 		{
 			animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["STAB_SLOW_PLAY_TIME"];
@@ -131,6 +131,7 @@ void BossStabAction::Update(Boss& _boss)
 
 	/*移動スピードの設定*/
 	float speed = 0.0f;
+	//一度でも近づいていなかったら
 	if (!this->isClose)
 	{
 		//カウントが終了していたら

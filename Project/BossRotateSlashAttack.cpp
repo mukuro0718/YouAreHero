@@ -8,7 +8,7 @@
 #include "ColliderData.h"
 #include "AttackData.h"
 #include "BossAttackData.h"
-#include "AttackSphereColliderData.h"
+#include "AttackCapsuleColliderData.h"
 #include "HitStop.h"
 #include "BossAttack.h"
 #include "BossRotateSlashAttack.h"
@@ -29,7 +29,7 @@ BossRotateSlashAttack::BossRotateSlashAttack(const int _attackIndex)
 
 	/*コライダーデータの作成*/
 	AttackData* data = new BossAttackData();
-	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, data);
+	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, data);
 
 }
 
@@ -50,7 +50,7 @@ void BossRotateSlashAttack::Initialize()
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*コライダーの初期化*/
-	auto& collider	= dynamic_cast<AttackSphereColliderData&>(*this->collider);
+	auto& collider	= dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
 	auto& data		= dynamic_cast<BossAttackData&>(*collider.data);
 	collider.radius		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
 	data.damage			= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
@@ -78,7 +78,7 @@ void BossRotateSlashAttack::Update()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
-	auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
+	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
 	auto& data = dynamic_cast<BossAttackData&>(*collider.data);
 
 	/*当たり判定の確認が開始している*/
@@ -102,8 +102,20 @@ void BossRotateSlashAttack::Update()
 			this->isNotOnHit = true;
 		}
 
-		//当たり判定位置の更新
-		collider.rigidbody.SetPosition(MV1GetFramePosition(enemy.GetModelHandle(), 15));
+		//ひじの座標
+		VECTOR elbowPosition = MV1GetFramePosition(enemy.GetModelHandle(), 9);
+		//手の一番外の座標
+		VECTOR topPositionBase = MV1GetFramePosition(enemy.GetModelHandle(), 11);
+		//ひじから手へ伸びるベクトル
+		VECTOR underToTopBaseVector = VNorm(VSub(topPositionBase, elbowPosition));
+		//ひじから手へ伸びるベクトルを定数でスケーリングしたものをひじの座標に足したものを爪の先端座標とする
+		VECTOR crowTopPosition = VScale(underToTopBaseVector, json.GetJson(JsonManager::FileType::ENEMY)["CROW_SIZE"]);
+		crowTopPosition = VAdd(crowTopPosition, elbowPosition);
+		//ひじの座標をカプセル下座標とする
+		collider.rigidbody.SetPosition(elbowPosition);
+		//爪先の座標をカプセル上座標とする
+		collider.topPositon = crowTopPosition;
+
 		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
 		if (this->frameCount > END_HIT_CHECK_FRAME || (this->isNotOnHit && !data.isDoHitCheck))
 		{
@@ -125,8 +137,8 @@ const void BossRotateSlashAttack::Draw()const
 	{
 		if (this->isStartHitCheck)
 		{
-			auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
-			DrawSphere3D(collider.rigidbody.GetPosition(), collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
+			auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
+			DrawCapsule3D(collider.rigidbody.GetPosition(), collider.topPositon, collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
 		}
 		VECTOR position = this->collider->rigidbody.GetPosition();
 		printfDx("ROTATE_PUNCH X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);

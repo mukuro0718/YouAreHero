@@ -70,11 +70,11 @@ void BossRotateSlashAction::Update(Boss& _boss)
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*使用する値の準備*/
-	const VECTOR POSITION		 = _boss.GetRigidbody().GetPosition(); //座標
-	const VECTOR MOVE_TARGET	 = player.GetRigidbody().GetPosition();//移動目標
-	VECTOR nowRotation			 = _boss.GetRigidbody().GetRotation(); //回転率
-	VECTOR positonToTargetVector = VSub(POSITION, MOVE_TARGET); //座標と移動目標間のベクトル
-	VECTOR direction			 = VGet(0.0f, 0.0f, 0.0f);
+	const VECTOR POSITION				= _boss.GetRigidbody().GetPosition();	//座標
+	const VECTOR MOVE_TARGET			= player.GetRigidbody().GetPosition();	//移動目標
+		  VECTOR nowRotation			= _boss.GetRigidbody().GetRotation();	//回転率
+		  VECTOR positonToTargetVector	= VSub(POSITION, MOVE_TARGET);	//座標と移動目標間のベクトル
+		  VECTOR direction				= VGet(0.0f, 0.0f, 0.0f);			//向き
 
 
 	/*ヒットストップの更新*/
@@ -94,6 +94,14 @@ void BossRotateSlashAction::Update(Boss& _boss)
 	}
 	if (this->hitStop->IsHitStop()) return;
 
+	/*回転処理*/
+	{
+		//プレイヤーから自分の座標までのベクトルを出す
+		//アークタンジェントを使って角度を求める
+		nowRotation.y = static_cast<float>(atan2(static_cast<double>(positonToTargetVector.x), static_cast<double>(positonToTargetVector.z)));
+		//回転率を代入
+		_boss.SetRotation(nowRotation);
+	}
 
 	/*移動ベクトルの設定*/
 	_boss.SetNowMoveTarget(MOVE_TARGET);
@@ -108,6 +116,9 @@ void BossRotateSlashAction::Update(Boss& _boss)
 		this->isInitialize = true;
 	}
 
+	/*カウントの計測*/
+	bool isEndCount = FrameCount(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_SLASH_SLOW_FRAME_COUNT"]);
+
 	/*アニメーション再生時間の設定*/
 	{
 		float animationPlayTime = _boss.GetAnimationPlayTime();
@@ -118,6 +129,25 @@ void BossRotateSlashAction::Update(Boss& _boss)
 
 	/*移動スピードの設定*/
 	float speed = 0.0f;
+	//一度でも近づいていなかったら
+	if (!this->isClose)
+	{
+		//カウントが終了していたら
+		if (!isEndCount)
+		{
+			//座標と移動目標との距離を求める
+			const float DISTANCE = VSize(positonToTargetVector);
+			//距離が定数以上か
+			if (DISTANCE >= json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_SLASH_STOP_MOVE_DISTANCE"])
+			{
+				speed = json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_SLASH_MOVE_SPEED"];
+			}
+			else
+			{
+				this->isClose = true;
+			}
+		}
+	}
 
 	/*移動ベクトルを出す*/
 	{
@@ -141,7 +171,7 @@ void BossRotateSlashAction::Update(Boss& _boss)
 	{
 		this->isInitialize = false;
 		this->isClose = false;
-		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_PUNCH_INTERVAL"]);
+		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_SLASH_INTERVAL"]);
 		_boss.DecAttackComboCount();
 	}
 }

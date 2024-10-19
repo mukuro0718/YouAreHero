@@ -63,7 +63,6 @@ void BossSlashCombo2Attack::Initialize()
 
 	/*変数の初期化*/
 	this->frameCount			= 0;
-	this->doHitCheckFrameIndex	= 0;
 	this->isStartHitCheck		= false;
 	this->isStartHitCheck		= false;
 	this->isNotOnHit			= false;
@@ -96,30 +95,44 @@ void BossSlashCombo2Attack::Update()
 		//フレームが定数を超えていなかったら早期リターン
 		if (this->frameCount < START_HIT_CHECK_FRAME)return;
 
-		//32:34 60:63
-		//フレームカウントが定数以内の時に当たり判定フラグが下りていたら立てる
-		vector<int> frame = json.GetJson(JsonManager::FileType::ENEMY)["BOSS_SLASH_COMBO_2_ATTACK_DO_HIT_BETWEEN_FRAME"][this->doHitCheckFrameIndex];
-		if (frame[0] <= this->frameCount && this->frameCount <= frame[1])
+		if (!this->isNotOnHit)
 		{
-			if (!this->isNotOnHit)
-			{
-				data.isDoHitCheck = true;
-				this->isNotOnHit = true;
-			}
-		}
-		else
-		{
-			data.isDoHitCheck = false;
-			this->isNotOnHit = false;
-		}
-		if (this->frameCount > frame[1])
-		{
-			this->doHitCheckFrameIndex++;
+			data.isDoHitCheck = true;
+			this->isNotOnHit = true;
 		}
 
-		//当たり判定位置の更新
-		collider.rigidbody.SetPosition(MV1GetFramePosition(enemy.GetModelHandle(), 10));
-		collider.topPositon = MV1GetFramePosition(enemy.GetModelHandle(), 11);
+		//35-40 57-62 97-102
+		vector<int> onDoHitFrame = json.GetJson(JsonManager::FileType::ENEMY)["SLASH_COMBO_2_ON_DO_HIT_FRAME"];
+		vector<int> offDoHitFrame = json.GetJson(JsonManager::FileType::ENEMY)["SLASH_COMBO_2_OFF_DO_HIT_FRAME"];
+		for (int i = 0; i < onDoHitFrame.size(); i++)
+		{
+			//指定フレームの時に、当たり判定フラグをもう一度立てる
+			if (this->frameCount == onDoHitFrame[i])
+			{
+				data.isDoHitCheck = true;
+			}
+			//指定フレームの時に当たり判定フラグを下す
+			else if (this->frameCount == onDoHitFrame[i])
+			{
+				data.isDoHitCheck = false;
+			}
+		}
+
+
+		//ひじの座標
+		VECTOR elbowPosition = MV1GetFramePosition(enemy.GetModelHandle(), 9);
+		//手の一番外の座標
+		VECTOR topPositionBase = MV1GetFramePosition(enemy.GetModelHandle(), 11);
+		//ひじから手へ伸びるベクトル
+		VECTOR underToTopBaseVector = VNorm(VSub(topPositionBase, elbowPosition));
+		//ひじから手へ伸びるベクトルを定数でスケーリングしたものをひじの座標に足したものを爪の先端座標とする
+		VECTOR crowTopPosition = VScale(underToTopBaseVector, json.GetJson(JsonManager::FileType::ENEMY)["CROW_SIZE"]);
+		crowTopPosition = VAdd(crowTopPosition, elbowPosition);
+		//ひじの座標をカプセル下座標とする
+		collider.rigidbody.SetPosition(elbowPosition);
+		//爪先の座標をカプセル上座標とする
+		collider.topPositon = crowTopPosition;
+
 		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
 		if (this->frameCount > END_HIT_CHECK_FRAME)
 		{
@@ -127,7 +140,6 @@ void BossSlashCombo2Attack::Update()
 			data.isDoHitCheck = false;
 			this->frameCount = 0;
 			data.isHitAttack = false;
-			this->doHitCheckFrameIndex = 0;
 		}
 	}
 }

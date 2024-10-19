@@ -49,36 +49,36 @@
     [ 0, 0, 0, 2 ]
   ],
   "ANIMATION_HANDLE": [
-    "Asset/Animation/Boss/Base/Dying.mv1",
-    "Asset/Animation/Boss/Base/Idle.mv1",
-    "Asset/Animation/Boss/Base/Roar.mv1",
-    "Asset/Animation/Boss/Base/Walk.mv1",
-    "Asset/Animation/Boss/Base/WalkLeft.mv1",
-    "Asset/Animation/Boss/Base/WalkRight.mv1",
-    "Asset/Animation/Boss/SlashVer1.mv1",
-    "Asset/Animation/Boss/SlashVer2.mv1",
-    "Asset/Animation/Boss/Stab.mv1",
-    "Asset/Animation/Boss/RotateSlash.mv1",
-    "Asset/Animation/Boss/Punch.mv1",
-    "Asset/Animation/Boss/SlashComboVer1.mv1",
-    "Asset/Animation/Boss/SlashComboVer2.mv1",
-    "Asset/Animation/Boss/JumpAttack.mv1"
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
   ],
   "ANIMATION_INDEX": [
+    1,
     0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1
+    14,
+    4,
+    5,
+    6,
+    12,
+    7,
+    13,
+    9,
+    8,
+    10,
+    11,
+    15
   ],
   "ANIMATION_PLAY_TIME": [
     0.8,
@@ -87,19 +87,21 @@
     0.8,
     0.5,
     0.5,
+
+    0.9,
+    0.9,
+    0.9,
     0.9,
     0.7,
-    0.9,
-    0.9,
-    0.9,
     0.8,
     0.8,
-    0.8
+    1.0
   ],
 
   "ATTACK_OFFSET": [
     10.0,
-    6.0,
+    10.0,
+
     0.0,
     8.0,
     10.0,
@@ -112,6 +114,7 @@
   "ATTACK_OFFSET_Y": [
     6.0,
     6.0,
+
     6.0,
     6.0,
     8.0,
@@ -122,20 +125,22 @@
     8.0
   ],
   "ATTACK_RADIUS": [
-    3.0,
-    5.0,
-    5.0,
-    5.0,
-    3.0,
-    3.0,
-    3.0,
-    3.0,
-    3.0,
-    3.0
+    2.0,
+    2.0,
+
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    5.0
   ],
   "ATTACK_DAMAGE": [
     20,
     20,
+
     40,
     50,
     30,
@@ -147,30 +152,31 @@
   ],
   "START_HIT_CHECK_FRAME": [
     40,
-    10,
+    30,
     35,
     32,
-    25,
-    50,
+    10,
 
-    32,
-    36
+    35,
+    35,
+    48
   ],
 
   "END_HIT_CHECK_FRAME": [
     50,
-    140,
+    33,
     38,
     35,
-    37,
-    52,
+    15,
 
-    63,
-    103
+    62,
+    102,
+    50
   ],
   "OFFENSE_HIT_STOP_TIME": [
     9,
-    8,
+    9,
+
     3,
     8,
     5,
@@ -231,7 +237,7 @@
   ],
   "DEFENSE_HIT_STOP_DELAY": [
     5,
-    10,
+    5,
     10,
     10,
     10,
@@ -243,7 +249,6 @@
   ],
   "ACTION_DISTANCE": [
     15.0,
-    40.0,
     15.0,
     15.0,
     15.0,
@@ -251,51 +256,80 @@
     15.0,
     15.0,
     15.0,
-    15.0
+    15.0,
+    30.0
   ],
   "BOSS_MELEE_COMBO_3_ATTACK_DO_HIT_BETWEEN_FRAME": [
     [ 36, 39 ],
     [ 59, 63 ],
     [ 98, 103 ]
   ],
-  "BOSS_SLASH_COMBO_2_ATTACK_DO_HIT_BETWEEN_FRAME": [
-    [ 32, 34 ],
-    [ 60, 63 ]
-  ],
   "NEAR_DISTANCE": 15.0,
   "MIDDLE_DISTANCE": 25.0,
   "LONG_DISTANCE": 55.0,
   "MOVE_DISTANCE": 10.0,
 
+  "CROW_SIZE": 8.0,
+  "BACK_BORN_SIZE": 10.0,
+
   "SLASH_SLOW_FRAME_COUNT": 45,
-  "ROTATE_PUNCH_SLOW_FRAME_COUNT": 45,
+  "SLASH_INTERVAL": 180,
+  "SLASH_SLOW_PLAY_TIME": 0.5,
+  "SLASH_STOP_MOVE_DISTANCE": 10.0,
+  "SLASH_MOVE_SPEED": 5.0,
+
+  "SLASH_2_SLOW_FRAME_COUNT": 45,
+  "SLASH_2_INTERVAL": 180,
+  "SLASH_2_SLOW_PLAY_TIME": 0.5,
+  "SLASH_2_STOP_MOVE_DISTANCE": 10.0,
+  "SLASH_2_MOVE_SPEED": 2.5,
+
+  "ROTATE_SLASH_SLOW_FRAME_COUNT": 45,
+  "ROTATE_SLASH_INTERVAL": 180,
+  "ROTATE_SLASH_SLOW_PLAY_TIME": 0.08,
+  "ROTATE_SLASH_STOP_MOVE_DISTANCE": 10.0,
+  "ROTATE_SLASH_MOVE_SPEED": 5.0,
+
+  "SLASH_COMBO_1_ON_DO_HIT_FRAME": 57,
+  "SLASH_COMBO_1_OFF_DO_HIT_FRAME": 40,
+  "SLASH_COMBO_1_SLOW_FRAME_COUNT": 35,
+  "SLASH_COMBO_1_STOP_MOVE_DISTANCE": 10.0,
+  "SLASH_COMBO_1_MOVE_SPEED": 2.0,
+  "SLASH_COMBO_1_INTERVAL": 120,
+
+  "SLASH_COMBO_2_ON_DO_HIT_FRAME": [ 57, 97 ],
+  "SLASH_COMBO_2_OFF_DO_HIT_FRAME": [ 40, 62 ],
+  "SLASH_COMBO_2_SLOW_FRAME_COUNT": 32,
+  "SLASH_COMBO_2_STOP_MOVE_DISTANCE": 10.0,
+  "SLASH_COMBO_2_MOVE_SPEED": 2.0,
+  "SLASH_COMBO_2_INTERVAL": 120,
+
+  "JUMP_ATTACK_HOMING_FRAME": 30,
+  "JUMP_ATTACK_START_MOVE_FRAME": 17,
+  "JUMP_ATTACK_STOP_MOVE_FRAME": 50,
+  "JUMP_ATTACK_STOP_MOVE_DISTANCE": 10.0,
+  "JUMP_ATTACK_MOVE_SPEED": 1.3,
+  "JUMP_ATTACK_INTERVAL": 120,
+
   "STAB_SLOW_FRAME_COUNT": 45,
   "HURRICANE_KICK_SLOW_FRAME_COUNT": 5,
   "HURRICANE_KICK_ADD_FRAME_COUNT": 45,
   "FLY_ATTACK_SLOW_FRAME_COUNT": 45,
 
-  "ROTATE_PUNCH_INTERVAL": 180,
   "STAB_INTERVAL": 180,
-  "SLASH_INTERVAL": 180,
   "HURRICANE_KICK_INTERVAL": 180,
   "FLY_INTERVAL": 180,
 
-  "SLASH_SLOW_PLAY_TIME": 0.08,
   "STAB_SLOW_PLAY_TIME": 0.08,
-  "ROTATE_PUNCH_SLOW_PLAY_TIME": 0.08,
   "FLY_SLOW_PLAY_TIME": 0.08,
   "HURRICANE_KICK_ADD_PLAY_TIME": 0.005,
   "HURRICANE_KICK_MAX_PLAY_TIME": 0.6,
 
-  "SLASH_STOP_MOVE_DISTANCE": 10.0,
   "STAB_STOP_MOVE_DISTANCE": 10.0,
-  "ROTATE_PUNCH_STOP_MOVE_DISTANCE": 10.0,
   "FLY_STOP_MOVE_DISTANCE": 8.0,
   "HURRICANE_KICK_STOP_MOVE_DISTANCE": 7.0,
 
-  "SLASH_MOVE_SPEED": 5.0,
   "STAB_MOVE_SPEED": 5.0,
-  "ROTATE_PUNCH_MOVE_SPEED": 5.0,
   "FLY_ADD_MOVE_SPEED": 0.05,
   "HURRICANE_KICK_MOVE_SPEED": 0.2,
 

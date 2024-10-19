@@ -63,7 +63,6 @@ void BossSlash2Attack::Initialize()
 
 	/*変数の初期化*/
 	this->frameCount	  = 0;
-	this->hitCheckCount	  = 0;
 	this->isStartHitCheck = false;
 	this->isStartHitCheck = false;
 	this->isNotOnHit	  = false;
@@ -99,14 +98,24 @@ void BossSlash2Attack::Update()
 		//今回の攻撃中に当たり判定フラグが一度もたっていなかったら
 		if (!this->isNotOnHit)
 		{
-			this->hitCheckCount = json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_HIT_COUNT"];
 			data.isDoHitCheck = true;
 			this->isNotOnHit = true;
 		}
 
-		//当たり判定位置の更新
-		collider.rigidbody.SetPosition(MV1GetFramePosition(enemy.GetModelHandle(), 14));
-		collider.topPositon = MV1GetFramePosition(enemy.GetModelHandle(), 19);
+		//ひじの座標
+		VECTOR elbowPosition = MV1GetFramePosition(enemy.GetModelHandle(), 9);
+		//手の一番外の座標
+		VECTOR topPositionBase = MV1GetFramePosition(enemy.GetModelHandle(), 11);
+		//ひじから手へ伸びるベクトル
+		VECTOR underToTopBaseVector = VNorm(VSub(topPositionBase, elbowPosition));
+		//ひじから手へ伸びるベクトルを定数でスケーリングしたものをひじの座標に足したものを爪の先端座標とする
+		VECTOR crowTopPosition = VScale(underToTopBaseVector, json.GetJson(JsonManager::FileType::ENEMY)["CROW_SIZE"]);
+		crowTopPosition = VAdd(crowTopPosition, elbowPosition);
+		//ひじの座標をカプセル下座標とする
+		collider.rigidbody.SetPosition(elbowPosition);
+		//爪先の座標をカプセル上座標とする
+		collider.topPositon = crowTopPosition;
+
 		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
 		if (this->frameCount > END_HIT_CHECK_FRAME)
 		{
@@ -124,8 +133,8 @@ void BossSlash2Attack::Update()
 const void BossSlash2Attack::Draw()const
 {
 	auto& debug = Singleton<Debug>::GetInstance();
-	//if (debug.CheckEnemyFlag())
-	//{
+	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
+	{
 		if (this->isStartHitCheck)
 		{
 			auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
@@ -134,6 +143,6 @@ const void BossSlash2Attack::Draw()const
 			DrawCapsule3D(collider.rigidbody.GetPosition(), collider.topPositon, collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
 		}
 		VECTOR position = this->collider->rigidbody.GetPosition();
-		printfDx("HURRICANE_KICK X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-	//}
+		printfDx("SLASH_2 X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+	}
 }

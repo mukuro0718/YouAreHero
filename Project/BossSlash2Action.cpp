@@ -1,6 +1,5 @@
 #include <DxLib.h>
-#include <Effekseer.h>
-#include <EffekseerRendererDX11.h>
+#include "EffekseerForDXLib.h"
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "ActionParameter.h"
@@ -19,6 +18,7 @@
 /// コンストラクタ
 /// </summary>
 BossSlash2Action::BossSlash2Action()
+	: isClose(false)
 {
 	this->attack = new BossSlash2Attack(static_cast<int>(BossAttack::AttackType::SLASH_2));
 }
@@ -38,6 +38,7 @@ void BossSlash2Action::Initialize()
 {
 	this->isSelect				 = false;
 	this->isInitialize			 = false;
+	this->isClose				 = false;
 	this->frameCount			 = 0;
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
@@ -66,12 +67,13 @@ void BossSlash2Action::Update(Boss& _boss)
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*使用する値の準備*/
-	const VECTOR POSITION = _boss.GetRigidbody().GetPosition(); //座標
-	const VECTOR NEXT_MOVE_TARGET = player.GetRigidbody().GetPosition();
-	VECTOR nowMoveTarget = _boss.GetNowMoveTarget();//移動目標
-	VECTOR nowRotation = _boss.GetRigidbody().GetRotation(); //回転率
-	VECTOR positonToTargetVector = VGet(0.0f, 0.0f, 0.0f); //プレイヤーから自分の座標までのベクトル
-	VECTOR direction = VGet(0.0f, 0.0f, 0.0f);
+	const VECTOR POSITION				= _boss.GetRigidbody().GetPosition();	//座標
+	const VECTOR MOVE_TARGET			= player.GetRigidbody().GetPosition();	//移動目標
+		  VECTOR nowRotation			= _boss.GetRigidbody().GetRotation();	//回転率
+		  VECTOR positonToTargetVector	= VSub(POSITION, MOVE_TARGET);	//座標と移動目標間のベクトル
+		  VECTOR direction				= VGet(0.0f, 0.0f, 0.0f);			//向き
+	/*移動ベクトルの設定*/
+	_boss.SetNowMoveTarget(MOVE_TARGET);
 
 	/*ヒットストップの更新*/
 	if (this->attack->GetIsHitAttack())
@@ -88,7 +90,18 @@ void BossSlash2Action::Update(Boss& _boss)
 		);
 		this->attack->OffIsHitAttack();
 	}
+
+	/*ヒットストップをしていたら早期リターン*/
 	if (this->hitStop->IsHitStop()) return;
+
+	/*回転処理*/
+	{
+		//プレイヤーから自分の座標までのベクトルを出す
+		//アークタンジェントを使って角度を求める
+		nowRotation.y = static_cast<float>(atan2(static_cast<double>(positonToTargetVector.x), static_cast<double>(positonToTargetVector.z)));
+		//回転率を代入
+		_boss.SetRotation(nowRotation);
+	}
 
 	/*初期化されていなかったら*/
 	if (!this->isInitialize)
@@ -98,29 +111,42 @@ void BossSlash2Action::Update(Boss& _boss)
 		//攻撃フラグを立てる
 		this->attack->OnIsStart();
 		this->isInitialize = true;
-		_boss.SetAnimationPlayTime(0.0f);
-		//移動ベクトルの設定
-		_boss.SetNowMoveTarget(NEXT_MOVE_TARGET);
-		//プレイヤーから自分の座標までのベクトルを出す
-		positonToTargetVector = VSub(POSITION, NEXT_MOVE_TARGET);
-
-		/*回転処理*/
-		//アークタンジェントを使って角度を求める
-		nowRotation.y = static_cast<float>(atan2(static_cast<double>(positonToTargetVector.x), static_cast<double>(positonToTargetVector.z)));
-		//回転率を代入
-		_boss.SetRotation(nowRotation);
-
 	}
 
-	/*アニメーション再生時間の設定*/
-	float animationPlayTime = _boss.GetAnimationPlayTime();
-	_boss.SetAnimationPlayTime(animationPlayTime);
+	/*アニメーション処理*/
+	{
+		//アニメーション再生時間
+		float animationPlayTime = _boss.GetAnimationPlayTime();
+		_boss.SetAnimationPlayTime(animationPlayTime);
+		//アニメーションの再生
+		_boss.PlayAnimation();
+	}
 
-	/*アニメーションの再生*/
-	_boss.PlayAnimation();
+	/*カウントの計測*/
+	bool isEndCount = FrameCount(json.GetJson(JsonManager::FileType::ENEMY)["SLASH_2_SLOW_FRAME_COUNT"]);
 
 	/*移動スピードの設定*/
 	float speed = 0.0f;
+	//一度でも近づいていなかったら
+	if (!this->isClose)
+	{
+		//カウントが終了していなかったら
+		if (!isEndCount)
+		{
+			//座標と移動目標との距離を求める
+			const float DISTANCE = VSize(positonToTargetVector);
+			//距離が定数以上だったら移動速度を代入する
+			if (DISTANCE >= json.GetJson(JsonManager::FileType::ENEMY)["SLASH_2_STOP_MOVE_DISTANCE"])
+			{
+				speed = json.GetJson(JsonManager::FileType::ENEMY)["SLASH_2_MOVE_SPEED"];
+			}
+			//距離が未満だったらフラグを立てる
+			else
+			{
+				this->isClose = true;
+			}
+		}
+	}
 
 	/*移動ベクトルを出す*/
 	{
@@ -143,7 +169,8 @@ void BossSlash2Action::Update(Boss& _boss)
 	if (_boss.GetIsChangeAnimation())
 	{
 		this->isInitialize = false;
-		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["HURRICANE_KICK_INTERVAL"]);
+		this->isClose = false;
+		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["SLASH_2_INTERVAL"]);
 		_boss.DecAttackComboCount();
 	}
 }

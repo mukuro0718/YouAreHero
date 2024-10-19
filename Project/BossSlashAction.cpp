@@ -1,6 +1,5 @@
 #include <DxLib.h>
-#include <Effekseer.h>
-#include <EffekseerRendererDX11.h>
+#include "EffekseerForDXLib.h"
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "ActionParameter.h"
@@ -19,6 +18,7 @@
 /// コンストラクタ
 /// </summary>
 BossSlashAction::BossSlashAction()
+	: isClose(false)
 {
 	this->attack = new BossSlashAttack(static_cast<int>(BossAttack::AttackType::SLASH_1));
 }
@@ -37,6 +37,7 @@ void BossSlashAction::Initialize()
 {
 	this->isSelect				 = false;
 	this->isInitialize			 = false;
+	this->isClose				 = false;
 	this->frameCount			 = 0;
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
@@ -116,16 +117,33 @@ void BossSlashAction::Update(Boss& _boss)
 		}
 	}
 
-	/*アニメーション再生時間の設定*/
+	/*アニメーション処理*/
 	{
+		//再生時間の設定
 		float animationPlayTime = _boss.GetAnimationPlayTime();
 		_boss.SetAnimationPlayTime(animationPlayTime);
-		/*アニメーションの再生*/
+		//アニメーションの再生
 		_boss.PlayAnimation();
 	}
 
 	/*移動スピードの設定*/
 	float speed = 0.0f;
+	//一度も一定距離に近づいていない && カウントが終了していなければ
+	if (!this->isClose && !isEndCount)
+	{
+		//座標と移動目標との距離を求める
+		const float DISTANCE = VSize(positonToTargetVector);
+		//距離が定数以上なら速度を設定する
+		if (DISTANCE >= json.GetJson(JsonManager::FileType::ENEMY)["SLASH_STOP_MOVE_DISTANCE"])
+		{
+			speed = json.GetJson(JsonManager::FileType::ENEMY)["SLASH_MOVE_SPEED"];
+		}
+		//一定未満ならフラグを立てる
+		else
+		{
+			this->isClose = true;
+		}
+	}
 
 	/*移動ベクトルを出す*/
 	{
@@ -148,6 +166,7 @@ void BossSlashAction::Update(Boss& _boss)
 	if (_boss.GetIsChangeAnimation())
 	{
 		this->isInitialize = false;
+		this->isClose = false;
 		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["SLASH_INTERVAL"]);
 		_boss.DecAttackComboCount();
 	}

@@ -13,6 +13,5 @@ public:
 		  void Initialize() override;		//‰Šú‰»
 		  void Update	 () override;		//XV
 	const void Draw		 () const override;	//•`‰æ
-protected:
 };
 
