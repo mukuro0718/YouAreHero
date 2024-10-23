@@ -1,13 +1,13 @@
 {
   "IS_USE_DEBUG_MODE": true,
   "FLAG_TYPE_GGGGG": [ "CAM", "PLY", "FPS", "EMY" ],
-  "SHOW_DEBUG_INFO": [ false, true, false, true ],
+  "SHOW_DEBUG_INFO": [ true, true, false, true ],
   "BOSS_ACTION_NAME": [
     "NONE:-1 DYING:0 IDLE:1 ROAR:2 CHASE:3 REST:4",
     "SLASH_1:5 SLASH_2:6 STAB:7 ROTATE_SLASH:8 PUNCH:9 ",
     "SLASH_COMBO_1:10 SLASH_COMBO_2:11 JUMP_ATTACK:12"
   ],
-  "BOSS_ACTION": 12,
+  "BOSS_ACTION": 0,
   "PLAYER_INVINCIBLE": true,
   "CAMERA_FREE_LOOK": false,
   "CAMERA_FREE_MOVE": false

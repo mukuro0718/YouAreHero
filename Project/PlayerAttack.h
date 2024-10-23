@@ -16,6 +16,7 @@ public:
 	const void	Draw		()const;												//•`‰æ
 	void		OnIsStart	() { this->isStartHitCheck = true; this->isNotOnHit = false;}
 	const bool	GetIsStart	()const { return this->isStartHitCheck; }
+	void SetDamage(const float _damage);
 private:
 	ColliderData* collider;
 	bool isStartHitCheck;

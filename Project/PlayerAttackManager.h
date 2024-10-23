@@ -7,11 +7,12 @@ public:
 	PlayerAttackManager ();//コンストラクタ
 	~PlayerAttackManager();//デストラクタ
 
-	void		Initialize();				 //初期化
-	void		Finalize  ();				 //後処理
-	void		Update	  ();				 //更新
-	const void	Draw	  ()const;			 //描画
-	void		OnIsStart ();//開始フラグを立てる
+	void		Initialize();					//初期化
+	void		Finalize  ();					//後処理
+	void		Update	  ();					//更新
+	const void	Draw	  ()const;				//描画
+	void		OnIsStart ();					//開始フラグを立てる
+	void		SetDamage (const float _damage);//ダメージのセット
 private:
 	enum class AttackType
 	{

@@ -26,10 +26,12 @@ ButtonUI::ButtonUI()
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::B_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::X_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::Y_BUTTON));
+	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::A_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::LT_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_B_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_X_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_Y_BUTTON));
+	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_A_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_LT_BUTTON));
 	this->buttonFont = asset.GetFont(LoadingAsset::FontType::MINTYO_50_32);
 }
@@ -97,14 +99,10 @@ void ButtonUI::DrawIcon()
 	vector<int> potionPositon = json.GetJson(JsonManager::FileType::UI)["POTION_POSITION"];
 	vector<int> tablePosition = json.GetJson(JsonManager::FileType::UI)["TABLE_POSITION"];
 	vector<int> orbPosition = json.GetJson(JsonManager::FileType::UI)["ORB_POSITION"];
-	//int orbXOffset = 0;
 	int drawGraph = -1;
 
 	/*jsonデータの代入*/
 	const int NOW_ORB_NUM = player.GetHealOrbNum();
-	//const int MAX_ORB_NUM = json.GetJson(JsonManager::FileType::PLAYER)["MAX_HEAL_ORB_NUM"];
-	//const int ORB_WIDTH   = json.GetJson(JsonManager::FileType::UI)["ORB_WIDTH"];
-
 
 	/*アイコンテーブルの描画*/
 	DrawExtendGraph(tablePosition[0], tablePosition[1], tablePosition[2], tablePosition[3], this->table, TRUE);
@@ -126,7 +124,8 @@ void ButtonUI::DrawButton()
 	isTrigger.emplace_back(pad & PAD_INPUT_4);
 	isTrigger.emplace_back(pad & PAD_INPUT_1);
 	isTrigger.emplace_back(pad & PAD_INPUT_2);
-	isTrigger.emplace_back(pad & PAD_INPUT_7);
+	isTrigger.emplace_back(pad & PAD_INPUT_3);
+	isTrigger.emplace_back(pad & PAD_INPUT_8);
 
 	int drawGraph = -1;
 	for (int i = 0; i < position.size(); i++)
@@ -153,20 +152,17 @@ void ButtonUI::DrawFont()
 	auto& input = Singleton<InputManager>::GetInstance();
 
 	vector<vector<int>> position = json.GetJson(JsonManager::FileType::UI)["BUTTON_TEXT_POSITION"];
-	vector<string> text;
-	text.emplace_back(u8"かいひ");
-	text.emplace_back(u8"こうげき");
-	text.emplace_back(u8"かいふく");
-	text.emplace_back(u8"ぼうぎょ");
+	const int TEXT_NUM = 5;
 	int pad = input.GetPadState();
 	vector<bool> isTrigger;
 	isTrigger.emplace_back(pad & PAD_INPUT_4);
 	isTrigger.emplace_back(pad & PAD_INPUT_1);
 	isTrigger.emplace_back(pad & PAD_INPUT_2);
-	isTrigger.emplace_back(pad & PAD_INPUT_7);
+	isTrigger.emplace_back(pad & PAD_INPUT_3);
+	isTrigger.emplace_back(pad & PAD_INPUT_8);
 
 	int textColor = 0;
-	for (int i = 0; i < text.size(); i++)
+	for (int i = 0; i < TEXT_NUM; i++)
 	{
 		if (isTrigger[i])
 		{
@@ -181,8 +177,11 @@ void ButtonUI::DrawFont()
 		case static_cast<int>(TextType::AVOID):
 			DrawStringToHandle(position[i][0], position[i][1], "回避", textColor, this->buttonFont);
 			break;
-		case static_cast<int>(TextType::ATTACK):
-			DrawStringToHandle(position[i][0], position[i][1], "攻撃", textColor, this->buttonFont);
+		case static_cast<int>(TextType::W_ATTACK):
+			DrawStringToHandle(position[i][0], position[i][1], "弱攻撃", textColor, this->buttonFont);
+			break;
+		case static_cast<int>(TextType::S_ATTACK):
+			DrawStringToHandle(position[i][0], position[i][1], "強攻撃", textColor, this->buttonFont);
 			break;
 		case static_cast<int>(TextType::HEAL):
 			DrawStringToHandle(position[i][0], position[i][1], "回復", textColor, this->buttonFont);

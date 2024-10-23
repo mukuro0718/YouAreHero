@@ -14,9 +14,10 @@ public:
 private:
 	enum class TextType 
 	{
-		AVOID,
-		ATTACK,
+		S_ATTACK,
 		HEAL,
+		W_ATTACK,
+		AVOID,
 		GUARD,
 	};
 	/*\‘¢‘Ì*/
@@ -35,7 +36,7 @@ private:
 	/*Ã“I’è”*/
 	static constexpr int TEXT_COLOR = 0xffffff;
 	static constexpr int PRESS_TEXT_COLOR = 0xffff88;
-	static constexpr int PRESS_OFFSET = 4;
+	static constexpr int PRESS_OFFSET = 5;
 
 	/*“à•”ˆ—ŠÖ”*/
 	int ConvertColor(const std::vector<int> _color);

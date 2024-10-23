@@ -52,6 +52,7 @@ void BossDeathAction::Update(Boss& _boss)
 	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::DYING));
 
 	/*アニメーションの再生*/
+	_boss.SetAnimationPlayTime(_boss.GetAnimationPlayTime());
 	_boss.PlayAnimation();
 
 	/*もしアニメーションが終了していたら*/

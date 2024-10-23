@@ -49,34 +49,37 @@ Player::Player()
 	}
 
 	/*アニメーションの設定*/
-	vector<string> animationHandle = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_HANDLE"];
+	vector<int> animationHandle = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_HANDLE"];
 	vector<int> animationIndex = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_INDEX"];
 	this->nowAnimation = static_cast<int>(AnimationType::IDLE);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 	//アニメーションの追加
 	for (int i = 0; i < animationHandle.size(); i++)
 	{
-		this->animation->Add(MV1LoadModel(animationHandle[i].c_str()), animationIndex[i]);
+		this->animation->Add(animationHandle[i], animationIndex[i]);
 	}
 	//アニメーションのアタッチ
 	this->animation->Attach(&this->modelHandle);
 	//アニメーションマップの設定
-	this->animationMap.emplace(this->IDLE			 , static_cast<int>(AnimationType::IDLE				));
-	this->animationMap.emplace(this->AVOID			 , static_cast<int>(AnimationType::AVOID));
-	this->animationMap.emplace(this->DEATH			 , static_cast<int>(AnimationType::DEATH			));
-	this->animationMap.emplace(this->BLOCK			 , static_cast<int>(AnimationType::BLOCK			));
-	this->animationMap.emplace(this->REACTION		 , static_cast<int>(AnimationType::REACTION			));
-	this->animationMap.emplace(this->BLOCK_REACTION	 , static_cast<int>(AnimationType::BLOCK_REACTION	));
-	this->animationMap.emplace(this->WALK_FRONT		 , static_cast<int>(AnimationType::WALK_FRONT		));
-	this->animationMap.emplace(this->WALK_BACK		 , static_cast<int>(AnimationType::WALK_BACK		));
-	this->animationMap.emplace(this->WALK_LEFT		 , static_cast<int>(AnimationType::WALK_LEFT		));
-	this->animationMap.emplace(this->WALK_RIGHT		 , static_cast<int>(AnimationType::WALK_RIGHT		));
-	this->animationMap.emplace(this->RUN_FRONT		 , static_cast<int>(AnimationType::RUN_FRONT		));
-	this->animationMap.emplace(this->RUN_BACK		 , static_cast<int>(AnimationType::RUN_BACK			));
-	this->animationMap.emplace(this->RUN_LEFT		 , static_cast<int>(AnimationType::RUN_LEFT			));
-	this->animationMap.emplace(this->RUN_RIGHT		 , static_cast<int>(AnimationType::RUN_RIGHT		));
-	this->animationMap.emplace(this->SLASH			 , static_cast<int>(AnimationType::SLASH			));
-	this->animationMap.emplace(this->HEAL			 , static_cast<int>(AnimationType::HEAL));
+	this->animationMap.emplace(this->IDLE			, static_cast<int>(AnimationType::IDLE				));
+	this->animationMap.emplace(this->AVOID			, static_cast<int>(AnimationType::AVOID				));
+	this->animationMap.emplace(this->DEATH			, static_cast<int>(AnimationType::DEATH				));
+	this->animationMap.emplace(this->BLOCK			, static_cast<int>(AnimationType::BLOCK				));
+	this->animationMap.emplace(this->REACTION		, static_cast<int>(AnimationType::REACTION			));
+	this->animationMap.emplace(this->BLOCK_REACTION	, static_cast<int>(AnimationType::BLOCK_REACTION	));
+	this->animationMap.emplace(this->WALK_FRONT		, static_cast<int>(AnimationType::WALK_FRONT		));
+	this->animationMap.emplace(this->WALK_BACK		, static_cast<int>(AnimationType::WALK_BACK			));
+	this->animationMap.emplace(this->WALK_LEFT		, static_cast<int>(AnimationType::WALK_LEFT			));
+	this->animationMap.emplace(this->WALK_RIGHT		, static_cast<int>(AnimationType::WALK_RIGHT		));
+	this->animationMap.emplace(this->RUN_FRONT		, static_cast<int>(AnimationType::RUN_FRONT			));
+	this->animationMap.emplace(this->RUN_BACK		, static_cast<int>(AnimationType::RUN_BACK			));
+	this->animationMap.emplace(this->RUN_LEFT		, static_cast<int>(AnimationType::RUN_LEFT			));
+	this->animationMap.emplace(this->RUN_RIGHT		, static_cast<int>(AnimationType::RUN_RIGHT			));
+	this->animationMap.emplace(this->COMBO_1		, static_cast<int>(AnimationType::COMBO_1			));
+	this->animationMap.emplace(this->COMBO_2		, static_cast<int>(AnimationType::COMBO_2			));
+	this->animationMap.emplace(this->COMBO_3		, static_cast<int>(AnimationType::COMBO_3			));
+	this->animationMap.emplace(this->SKILL			, static_cast<int>(AnimationType::SKILL				));
+	this->animationMap.emplace(this->HEAL			, static_cast<int>(AnimationType::HEAL				));
 
 	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::NORMAL)	 , this->REACTION);
 	this->reactionMap.emplace(static_cast<int>(Gori::PlayerReactionType::BLOW_BIG)	 , this->REACTION);
@@ -122,6 +125,7 @@ void Player::Initialize()
 	this->isDraw			 = true;
 	this->isGround			 = false;
 	this->isInitialize		 = true;
+	this->isCounter			 = true;
 	this->speed				 = 0.0f;
 	this->entryInterval		 = 0;
 	this->moveVectorRotation = Gori::ORIGIN;
@@ -231,6 +235,10 @@ void Player::Update()
 		/*アニメーションの更新*/
 		UpdateAnimation();
 		float animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
+		if (this->state->CheckFlag(this->MASK_RUN) && !CanAction(json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"]))
+		{
+			animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["NONE_STAMINA_RUN_ANIMATION_SPEED"];
+		}
 		VECTOR position = this->collider->rigidbody.GetPosition();
 		this->animation->Play(&this->modelHandle, position, this->nowAnimation, animationPlayTime);
 	}
@@ -270,7 +278,7 @@ const void Player::DrawCharacterInfo()const
 		printfDx("%d:RUN_BACK						\n", this->state->CheckFlag(this->RUN_BACK));
 		printfDx("%d:RUN_LEFT						\n", this->state->CheckFlag(this->RUN_LEFT));
 		printfDx("%d:RUN_RIGHT					\n", this->state->CheckFlag(this->RUN_RIGHT));
-		printfDx("%d:SLASH						\n", this->state->CheckFlag(this->SLASH));
+		printfDx("%d:SLASH						\n", this->state->CheckFlag(this->COMBO_1));
 		printfDx("%d:HEAL							\n", this->state->CheckFlag(this->HEAL));
 		printfDx("%d:LOCK_ON							\n", this->isLockOn);
 		auto& characterCollider = dynamic_cast<CharacterColliderData&> (*this->collider);
@@ -324,9 +332,18 @@ void Player::UpdateMoveVector()
 		/*移動ベクトルを正規化*/
 		direction = VNorm(direction);
 	}
+
+	/*新しいvelocityを出す*/
 	VECTOR aimVelocity = VScale(direction, this->speed);
 	VECTOR prevVelocity = this->collider->rigidbody.GetVelocity();
 	VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);
+	//走っていたらラープで補完する
+	if (this->state->CheckFlag(this->MASK_RUN))
+	{
+		//補正値
+		const VECTOR LERP_VALUE = Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_VELOCITY"]);
+		VECTOR larpVelocity = Lerp(prevVelocity, aimVelocity, LERP_VALUE);
+	}
 
 	this->collider->rigidbody.SetVelocity(newVelocity);
 }
@@ -346,7 +363,16 @@ void Player::UpdateSpeed()
 	}
 	else if (this->state->CheckFlag(this->MASK_RUN))
 	{
-		maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["RUN_SPEED"];
+		if (CanAction(json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"]))
+		{
+			maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["RUN_SPEED"];
+		}
+		else
+		{
+			maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["NONE_STAMINA_RUN_SPEED"];
+			this->animationPlayTime = 0.3f;
+		}
+		CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"]);
 	}
 
 	/*速度の設定*/
@@ -522,7 +548,7 @@ const bool Player::IsMove()const
 /// </summary>
 const bool Player::GetIsAttack()const
 {
-	return this->state->CheckFlag(this->SLASH);
+	return this->state->CheckFlag(this->MASK_ATTACK);
 }
 
 /// <summary>
@@ -563,7 +589,8 @@ void Player::Reaction()
 				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
 				this->isCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = false;
 				this->frameCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = 0;
-
+				this->animation->SetAddRate(0.5f);
+				this->isCounter = true;
 			}
 			else
 			{
@@ -571,6 +598,7 @@ void Player::Reaction()
 				this->state->ClearFlag(this->MASK_ALL);
 				this->state->SetFlag(this->BLOCK_REACTION);
 				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]);
+				this->animation->SetAddRate(0.05f);
 			}
 		}
 		else
@@ -596,6 +624,7 @@ void Player::Reaction()
 			else
 			{
 				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["AVOID_RECOVERY_VALUE"]);
+				this->isCounter = true;
 			}
 		}
 		collider.data->isHit = false;
@@ -659,9 +688,10 @@ void Player::Block()
 	/*ブロックできるか*/
 	if (!CanBlock())return;
 
-	/*LTが押されたか*/
-	if (pad & PAD_INPUT_7)
+	/*RTが押されたか*/
+	if (pad & PAD_INPUT_8)
 	{
+		this->state->ClearFlag(this->MASK_ATTACK);
 		auto& enemy = Singleton<EnemyManager>::GetInstance();
 		VECTOR enemyFirstDirection = Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_DIRECTION"]);
 		VECTOR playerFirstDirection = Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);
@@ -694,6 +724,7 @@ void Player::Block()
 			this->isCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = false;
 			this->frameCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = 0;
 		}
+		this->animation->SetAddRate(0.5f);
 	}
 	else
 	{
@@ -702,6 +733,7 @@ void Player::Block()
 		data.isInvinvible = false;
 		this->isCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = false;
 		this->frameCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = 0;
+		this->animation->SetAddRate(0.05f);
 	}
 }
 
@@ -732,7 +764,7 @@ void Player::Heal()
 
 	/*pad入力*/
 	int pad = input.GetPadState();
-	bool isInputY = (pad & PAD_INPUT_2);
+	bool isInputY = (pad & PAD_INPUT_1);
 
 	/*回復していたら*/
 	if (this->isCount[static_cast<int>(FrameCountType::HEAL)])
@@ -744,7 +776,7 @@ void Player::Heal()
 	/*回復できるか*/
 	if (!CanHeal()) return;
 
-	/*前に回復していないかつYボタンが押されたら*/
+	/*前に回復していないかつXボタンが押されたら*/
 	if (isInputY)
 	{
 		if (!this->state->CheckFlag(this->HEAL))
@@ -798,7 +830,8 @@ void Player::Rolling()
 	/*消費スタミナは足りるのか*/
 	if (!CanAction(json.GetJson(JsonManager::FileType::PLAYER)["AVOID_STAMINA_CONSUMPTION"]))return;
 
-	if ((pad & PAD_INPUT_4) && !this->isCount[static_cast<int>(FrameCountType::AVOID)])
+	/*Aボタンが押された && 回避の無敵時間が終了している*/
+	if ((pad & PAD_INPUT_3) && !this->isCount[static_cast<int>(FrameCountType::AVOID)])
 	{
 		this->state->ClearFlag(this->MASK_ATTACK);
 		this->state->SetFlag(this->AVOID);
@@ -832,14 +865,43 @@ void Player::Attack()
 	/*攻撃できるか*/
 	if (!CanAttack())return;
 
-	/*消費スタミナは足りるのか*/
-	if (!CanAction(json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_STAMINA_CONSUMPTION"]))return;
-
-	/*Xが押されたか*/
-	if (pad & PAD_INPUT_1)
+	/*Yが押されたか*/
+	if (pad & PAD_INPUT_2)
 	{
-		this->state->SetFlag(this->SLASH);
-		CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_STAMINA_CONSUMPTION"]);
+		//消費スタミナが足りなければ早期リターン
+		if (!CanAction(json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_STAMINA_CONSUMPTION"]))return;
+		//攻撃準備
+		this->state->ClearFlag(this->MASK_AVOID | this->MASK_REACTION);
+		this->state->SetFlag(this->COMBO_1);
+		//カウンター状態じゃなければ
+		if (!this->isCounter)
+		{
+			CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_STAMINA_CONSUMPTION"]);
+		}
+		else
+		{
+			this->isCounter = false;
+		}
+		attack.SetDamage(json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"]);
+		attack.OnIsStart();
+	}
+	else if (pad & PAD_INPUT_4)
+	{
+		//消費スタミナが足りなければ早期リターン
+		if (!CanAction(json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_STAMINA_CONSUMPTION"]))return;
+		//攻撃準備
+		this->state->ClearFlag(this->MASK_AVOID | this->MASK_REACTION);
+		this->state->SetFlag(this->SKILL);
+		//カウンター状態じゃなければ
+		if (!this->isCounter)
+		{
+			CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_STAMINA_CONSUMPTION"]);
+		}
+		else
+		{
+			this->isCounter = false;
+		}
+		attack.SetDamage(json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_DAMAGE"]);
 		attack.OnIsStart();
 	}
 }
@@ -885,11 +947,11 @@ const bool Player::CanRolling()const
 }
 const bool Player::CanAttack()const
 {
-	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
-	if (this->state->CheckFlag(this->DEATH))			return false;//デス
-	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
-	if (this->state->CheckFlag(this->SLASH))			return false;//回避
-	if (this->state->CheckFlag(this->HEAL))				return false;//回復
+	if (this->state->CheckFlag(this->MASK_REACTION) && !this->isCounter)return false;//リアクション
+	if (this->state->CheckFlag(this->DEATH))							return false;//デス
+	if (this->state->CheckFlag(this->MASK_ATTACK))						return false;//攻撃
+	if (this->state->CheckFlag(this->HEAL))								return false;//回復
+	if (this->state->CheckFlag(this->MASK_AVOID) && !this->isCounter)	return false;//回避
 	return true;
 }
 const bool Player::CanBlock()const
@@ -1000,4 +1062,20 @@ void Player::LockOn()
 	{
 		this->isCount[static_cast<int>(FrameCountType::LOCK_ON)] = false;
 	}
+}
+
+/// <summary>
+/// ラープ
+/// </summary>
+float Player::Lerp(const float _start, const float _end, const float _percent)
+{
+	return _start + _percent * (_end - _start);
+}
+VECTOR Player::Lerp(const VECTOR _start, const VECTOR _end, const VECTOR _percent)
+{
+	VECTOR out = (Gori::ORIGIN);
+	out.x = Lerp(_start.x, _end.x, _percent.x);
+	out.y = Lerp(_start.y, _end.y, _percent.y);
+	out.z = Lerp(_start.z, _end.z, _percent.z);
+	return out;
 }

@@ -64,3 +64,11 @@ void PlayerAttackManager::OnIsStart()
 {
 	this->attack->OnIsStart();
 }
+
+/// <summary>
+/// ダメージのセット
+/// </summary>
+void PlayerAttackManager::SetDamage(const float _damage)
+{
+	this->attack->SetDamage(_damage);
+}

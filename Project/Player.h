@@ -43,15 +43,19 @@ private:
 	static constexpr unsigned int RUN_LEFT		  = (1 << 12); //左ダッシュ
 	static constexpr unsigned int RUN_RIGHT		  = (1 << 13); //右ダッシュ
 	static constexpr unsigned int RUN_180_TURN	  = (1 << 14); //180向き変更
-	static constexpr unsigned int SLASH			  = (1 << 15); //攻撃
+	static constexpr unsigned int COMBO_1		  = (1 << 15); //攻撃
 	static constexpr unsigned int HEAL			  = (1 << 16); //回復
+	static constexpr unsigned int COMBO_2		  = (1 << 17); //回復
+	static constexpr unsigned int COMBO_3		  = (1 << 18); //回復
+	static constexpr unsigned int SKILL			  = (1 << 19); //回復
+	
 	//マスク
 	static constexpr unsigned int MASK_REACTION				 = BLOCK_REACTION | REACTION;						//リアクション
 	static constexpr unsigned int MASK_WALK					 = WALK_FRONT | WALK_BACK | WALK_LEFT | WALK_RIGHT; //歩きマスク
 	static constexpr unsigned int MASK_RUN					 = RUN_FRONT | RUN_BACK | RUN_LEFT | RUN_RIGHT;		//ダッシュマスク
 	static constexpr unsigned int MASK_MOVE					 = MASK_WALK | MASK_RUN;							//移動マスク
 	static constexpr unsigned int MASK_AVOID				 = AVOID;											//回避マスク
-	static constexpr unsigned int MASK_ATTACK				 = SLASH;											//攻撃マスク
+	static constexpr unsigned int MASK_ATTACK				 = COMBO_1 | COMBO_2 | COMBO_3 | SKILL;				//攻撃マスク
 	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = MASK_AVOID | BLOCK | MASK_ATTACK;				//スタミナが回復できない状態
 	static constexpr unsigned int MASK_ALWAYS_TURN_OFF		 = MASK_MOVE | IDLE;								//毎フレーム状態を下すマスク
 	static constexpr unsigned int MASK_ALL					 = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION |
@@ -72,6 +76,7 @@ private:
 		AVOID		= 2,//回避
 		JUST_BLOCK	= 3,//ジャストガード
 		LOCK_ON		= 4,//ロックオン
+		ATTACK		= 5,//攻撃
 	};
 	//アニメーションの種類
 	enum class AnimationType
@@ -91,8 +96,11 @@ private:
 		RUN_LEFT		= 12,
 		RUN_RIGHT		= 13,
 		RUN_180_TURN	= 14,
-		SLASH			= 15,
+		COMBO_1			= 15,
 		HEAL			= 16,
+		COMBO_2			= 17,
+		COMBO_3			= 18,
+		SKILL			= 19,
 	};
 
 	/*内部処理関数*/
@@ -107,6 +115,9 @@ private:
 	void Block			 ();//ブロック
 	void Heal			 ();//回復
 	void LockOn			 ();//ロックオン
+	float  Lerp(const float _start, const float _end, const float _percent);	//らーぷ関数
+	VECTOR Lerp(const VECTOR _start, const VECTOR _end, const VECTOR _percent);//らーぷ関数
+							
 	//許可フラグ
 	const bool CanRotation		()const;							//回転できるか
 	const bool CanRolling		()const;							//回避できるか
@@ -133,5 +144,7 @@ private:
 	int									 healOrbNum;		//回復オーブの数
 	float								 dot;				//内積
 	bool								 isLockOn;			//ロックオン
+	bool								 isCounter;			//カウンターフラグ
+	int									 attackMaxFrame;	//攻撃最大フレーム
 };
 

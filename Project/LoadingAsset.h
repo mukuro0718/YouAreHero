@@ -56,6 +56,8 @@ public:
 		POTION,
 		POTION_TABLE,
 		HP_BAR_FRAME,
+		A_BUTTON,
+		PRESS_A_BUTTON,
 	};
 	//フォントのタイプ
 	enum class FontType

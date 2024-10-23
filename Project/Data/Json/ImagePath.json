@@ -24,15 +24,17 @@
     "Asset/Image/UI/B_Button.png",
     "Asset/Image/UI/X_Button.png",
     "Asset/Image/UI/Y_Button.png",
-    "Asset/Image/UI/LT_Button.png",
+    "Asset/Image/UI/RT_Button.png",
     "Asset/Image/UI/Press_B_Button.png",
     "Asset/Image/UI/Press_X_Button.png",
     "Asset/Image/UI/Press_Y_Button.png",
-    "Asset/Image/UI/Press_LT_Button.png",
+    "Asset/Image/UI/Press_RT_Button.png",
     "Asset/Image/Shadow/Shadow.tga",
     "Asset/Image/UI/BackGround.png",
     "Asset/Image/UI/hp_potion.png",
     "Asset/Image/UI/Potion_table.png",
-    "Asset/Image/UI/Bar/Hp_bar_Frame.png"
+    "Asset/Image/UI/Bar/Hp_bar_Frame.png",
+    "Asset/Image/UI/A_Button.png",
+    "Asset/Image/UI/Press_A_Button.png"
   ]
 }

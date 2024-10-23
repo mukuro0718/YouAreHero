@@ -60,15 +60,14 @@ void Camera::Initialize()
 
 
 	/*メンバ変数の初期化*/
-	this->nowTarget			 = enemy.GetRigidbody().GetPosition() + Convert(TARGET_OFFSET);		//注視点
-	this->nextTarget		 = this->nowTarget;										//注視点
-	this->entryInterval		 = 0;
-	
-	this->direction			 = Convert(FIRST_DIRECTION);							//カメラの向き
-	this->length			 = FIRST_LENGTH;											//注視点からの距離
-	this->collider->rigidbody.SetPosition(this->nowTarget + (this->direction * this->length));//カメラ座標
-	this->collider->rigidbody.SetPosition(Convert(FIRST_POSITION));
-	this->fov				 = FOV;													//field of view
+	this->nowTarget			 = enemy.GetRigidbody().GetPosition() + Convert(TARGET_OFFSET);	//注視点
+	this->nextTarget		 = this->nowTarget;														//注視点
+	this->entryInterval		 = 0;																	//登場インターバル
+	this->direction			 = Convert(FIRST_DIRECTION);										//カメラの向き
+	this->length			 = FIRST_LENGTH;														//注視点からの距離
+	this->collider->rigidbody.SetPosition(this->nowTarget + (this->direction * this->length));	//カメラ座標
+	this->collider->rigidbody.SetPosition(Convert(FIRST_POSITION));						
+	this->fov				 = FOV;																	//field of view
 	/*カメラの手前クリップ距離と奥クリップ距離を設定する*/
 	SetCameraNearFar(NEAR_CLIP, FAR_CLIP);
 
@@ -141,9 +140,11 @@ void Camera::UpdateTarget()
 		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
 		break;
 	case SceneChanger::SceneType::GAME:
-		if (player.GetHP() < 0)
+		if (player.GetHP() < 0 || !player.GetIsLockOn())
 		{
-			this->nextTarget = player.GetRigidbody().GetPosition();
+			//注視点オフセット
+			const VECTOR POSITION_OFFSET = Convert(json.GetJson(JsonManager::FileType::CAMERA)["FREE_TARGET_OFFSET"]);
+			this->nextTarget = VAdd(player.GetRigidbody().GetPosition(),POSITION_OFFSET);
 		}
 		else
 		{
@@ -166,22 +167,19 @@ void Camera::UpdateTarget()
 /// <summary>
 /// カメラ座標の更新
 /// </summary>
-void Camera::UpdateAngle()
+VECTOR Camera::UpdateNextPosition()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& input  = Singleton<InputManager>	::GetInstance();//インプットマネージャー
 	auto& json   = Singleton<JsonManager>	::GetInstance();//json
+	auto& player = Singleton<PlayerManager>::GetInstance();//json
 
 	/*変数の準備*/
 	const int	 X_BUF				= input.GetRStickState().XBuf;										//右スティック入力
 	const int	 Y_BUF				= input.GetRStickState().YBuf;										//右スティック入力
 	const float	 KEY_BUF			= json.GetJson(JsonManager::FileType::CAMERA)["KEY_INPUT_BUF"];		//キー入力
-	const float	 ANGLE_MULT			= json.GetJson(JsonManager::FileType::CAMERA)["ANGLE_MULTIPLY"];	//
-	const float	 MAX_VERTICAL_ANGLE	= json.GetJson(JsonManager::FileType::CAMERA)["MAX_VERTICAL_ANGLE"];//キー入力
-	const float	 MIN_VERTICAL_ANGLE	= json.GetJson(JsonManager::FileType::CAMERA)["MIX_VERTICAL_ANGLE"];//キー入力
-	const float	 MAX_HORIZON_ANGLE	= json.GetJson(JsonManager::FileType::CAMERA)["MAX_HORIZON_ANGLE"];	//キー入力
-	const float	 MIN_HORIZON_ANGLE	= json.GetJson(JsonManager::FileType::CAMERA)["MIX_HORIZON_ANGLE"];	//キー入力
-	VECTOR inputVector				= VGet(0.0f, 0.0f, 0.0f);
+	VECTOR		 inputVector		= VGet(0.0f, 0.0f, 0.0f);
+	const VECTOR direction			= VNorm(VSub(this->nowTarget, this->collider->rigidbody.GetPosition()));
 	/*アングルの更新 Y+:down Y-:up X+:right X-:left*/
 	//スティック入力もキー入力もなければ
 	if (Y_BUF == 0 && X_BUF == 0 && CheckHitKeyAll(DX_CHECKINPUT_KEY) == 0)
@@ -192,22 +190,29 @@ void Camera::UpdateAngle()
 		//左右のスティック入力があれば
 		if (X_BUF != 0)
 		{
-			inputVector = inputVector + VCross(this->direction, Gori::UP_VEC);
+			inputVector = inputVector + VCross(direction, Gori::UP_VEC);
 			if (X_BUF < 0)
 			{
 				inputVector = inputVector * -1.0f;
 			}
 		}
-		//上下の入力があれば
-		if (Y_BUF != 0)
-		{
-			inputVector = Gori::UP_VEC;
-			if (Y_BUF > 0)
-			{
-				inputVector = inputVector * -1.0f;
-			}
-		}
 	}
+	/*次の座標を出す*/
+	//ポジションオフセット
+	const VECTOR POSITION_OFFSET = Convert(json.GetJson(JsonManager::FileType::CAMERA)["FREE_POSITION_OFFSET"]);
+	//現在の座標
+	VECTOR nowPosition = this->collider->rigidbody.GetPosition();
+	//次の座標へのベクトル
+	inputVector = VScale(inputVector, 5.0f);
+	VECTOR nextPositionBase = VAdd(nowPosition, inputVector);
+	VECTOR nextPositionVector = VNorm(VSub(nextPositionBase, player.GetRigidbody().GetPosition()));
+		   nextPositionVector = VScale(nextPositionVector, this->length);
+	//次の座標
+	VECTOR nextPosition = VAdd(player.GetRigidbody().GetPosition(), nextPositionVector);
+		   nextPosition.y = 0.0f;
+		   nextPosition = VAdd(nextPosition, POSITION_OFFSET);
+
+	return nextPosition;
 }
 
 /// <summary>
@@ -286,6 +291,20 @@ void Camera::UpdateVelocity()
 		nextPosition = VScale(nextPosition, this->length);
 		nextPosition.y = json.GetJson(JsonManager::FileType::CAMERA)["TITLE_POSITION_OFFSET"];
 
+		break;
+	case SceneChanger::SceneType::GAME:
+		if (player.GetIsLockOn())
+		{
+			const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));
+			const VECTOR POSITION_OFFSET = Convert(json.GetJson(JsonManager::FileType::CAMERA)["POSITION_OFFSET"]);
+			nextPosition = VScale(ENEMY_TO_PLAYER, this->length);
+			nextPosition = VAdd(player.GetRigidbody().GetPosition(), nextPosition);
+			nextPosition = VAdd(nextPosition, POSITION_OFFSET);
+		}
+		else
+		{
+			nextPosition = UpdateNextPosition();
+		}
 		break;
 	default:
 		const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));

@@ -50,7 +50,7 @@ void PlayerAttack::Initialize()
 	auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
 	auto& data = dynamic_cast<PlayerAttackData&>(*collider.data);
 	collider.radius = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_RADIUS"];
-	data.damage = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_DAMAGE"];
+	data.damage = json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"];
 	data.hitStopTime = json.GetJson(JsonManager::FileType::PLAYER)["HIT_STOP_TIME"];
 
 	/*•¨—‹““®‚Ì‰Šú‰»*/
@@ -128,6 +128,13 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 	//}
 }
 
+void PlayerAttack::SetDamage(const float _damage)
+{
+	auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
+	auto& data = dynamic_cast<PlayerAttackData&>(*collider.data);
+
+	data.damage = _damage;
+}
 /// <summary>
 /// •`‰æ
 /// </summary>
