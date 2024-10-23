@@ -58,6 +58,9 @@ public:
 		HP_BAR_FRAME,
 		A_BUTTON,
 		PRESS_A_BUTTON,
+
+		MUTANT_NEW_TEXTURE,
+		MUTANT_PREV_TEXTURE,
 	};
 	//フォントのタイプ
 	enum class FontType
@@ -80,6 +83,7 @@ public:
 	enum class EffectType
 	{
 		BOSS_IMPACT,
+		BOSS_FLAME,
 		PLAYER_GUARD_HIT,
 		PLAYER_HEAL,
 		PLAYER_IMPACT,

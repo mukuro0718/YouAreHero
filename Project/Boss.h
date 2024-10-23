@@ -85,7 +85,6 @@ public:
 		SLASH_COMBO_1 = 5,//スラッシュコンボ１
 		SLASH_COMBO_2 = 6,//スラッシュコンボ２
 		JUMP_ATTACK	  = 7,//ジャンプアタック
-
 	};
 	void SetAttackType(const AttackType _type) { this->prevAttack = _type; }
 	const AttackType GetPrevAttackType()const { return this->prevAttack; }
@@ -142,17 +141,15 @@ private:
 		IDLE			= 1,//待機
 		ROAR			= 2,//咆哮
 		WALK			= 3,//歩き
-		WALK_LEFT		= 4,//歩き
-		WALK_RIGHT		= 5,//歩き
-		REST			= 6,//歩き
-		SLASH_1			= 7, //スラッシュ
-		SLASH_2			= 8, //スラッシュ
-		STAB			= 9, //突き刺し攻撃
-		ROTATE_SLASH	= 10, //回転スラッシュ
-		PUNCH			= 11,//パンチ
-		SLASH_COMBO_1	= 12,//スラッシュコンボ１
-		SLASH_COMBO_2	= 13,//スラッシュコンボ２
-		JUMP_ATTACK		= 14,//ジャンプアタック
+		REST			= 4,//歩き
+		SLASH_1			= 5, //スラッシュ
+		SLASH_2			= 6, //スラッシュ
+		STAB			= 7, //突き刺し攻撃
+		ROTATE_SLASH	= 8, //回転スラッシュ
+		PUNCH			= 9,//パンチ
+		SLASH_COMBO_1	= 10,//スラッシュコンボ１
+		SLASH_COMBO_2	= 11,//スラッシュコンボ２
+		JUMP_ATTACK		= 12,//ジャンプアタック
 	};
 
 	/*内部処理関数*/
@@ -174,5 +171,7 @@ private:
 	int							tiredInterval;			//疲労インターバル
 	int							attackComboCount;		//攻撃コンボ数
 	AttackType					prevAttack;				//前の攻撃
+	int newTextureHandle;
+	int prevTextureHandle;
 };
 

@@ -8,7 +8,7 @@ class Effect abstract
 {
 public:
 	Effect(const int _effectResourceHandle);//コンストラクタ
-	virtual ~Effect(){}//デストラクタ
+	virtual ~Effect();//デストラクタ
 
 	void Initialize(); 
 	void Update();//
@@ -22,7 +22,7 @@ protected:
 	const VECTOR Convert(std::vector<float> _in)const;
 
 	int effectResourceHandle;
-	int playingEffectHandle;
+	vector<int> playingEffectHandle;
 	int frameCount;
 	bool isPlayEffect;//エフェクトを再生するか
 	int startFrame;

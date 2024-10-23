@@ -161,7 +161,7 @@
     <ClCompile Include="BossStabAttack.cpp" />
     <ClCompile Include="BossSlashComboAttack.cpp" />
     <ClCompile Include="BossNameUI.cpp" />
-    <ClCompile Include="BossRotatePunchEffect.cpp" />
+    <ClCompile Include="BossFlameEffect.cpp" />
     <ClCompile Include="BossRestAction.cpp" />
     <ClCompile Include="BossRoarAction.cpp" />
     <ClCompile Include="BossPunchAttack.cpp" />
@@ -268,7 +268,7 @@
     <ClInclude Include="BossStabAttack.h" />
     <ClInclude Include="BossSlashComboAttack.h" />
     <ClInclude Include="BossNameUI.h" />
-    <ClInclude Include="BossRotatePunchEffect.h" />
+    <ClInclude Include="BossFlameEffect.h" />
     <ClInclude Include="BossRestAction.h" />
     <ClInclude Include="BossRoarAction.h" />
     <ClInclude Include="BossPunchAttack.h" />

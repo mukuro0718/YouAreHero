@@ -1,7 +1,9 @@
 #pragma once
 #include "Singleton.h"
 
+
 class Effect;
+class BossFlameEffect;
 class EffectManager : public Singleton<EffectManager>
 {
 public:
@@ -14,6 +16,7 @@ public:
 		PLAYER_HEAL,
 		PLAYER_IMPACT,
 		PLAYER_JUST_GUARD,
+		BOSS_FLAME,
 	};
 	/*エフェクトの描画用関数*/
 	void OnIsEffect(const EffectType _type);
@@ -32,5 +35,6 @@ private:
 
 	/*メンバ変数*/
 	std::vector<Effect*> effect;
+	BossFlameEffect* bossFlame;
 };
 

@@ -259,9 +259,6 @@
     <Filter Include="Effect\Boss\Entry">
       <UniqueIdentifier>{21ad70bc-9e04-4e04-8e49-e208c7b716a7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Effect\Boss\Punch">
-      <UniqueIdentifier>{15d0a1d3-c704-4379-9fb2-3a1c4a7f380c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI\BossNameUI">
       <UniqueIdentifier>{04218eaf-3fe8-48ba-8997-1beca44a20dd}</UniqueIdentifier>
     </Filter>
@@ -330,6 +327,9 @@
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\SlashCombo">
       <UniqueIdentifier>{35d46ff5-cd11-4367-82fd-b174df7ee1fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Boss\Flame">
+      <UniqueIdentifier>{15d0a1d3-c704-4379-9fb2-3a1c4a7f380c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -574,8 +574,8 @@
     <ClCompile Include="BossEntryEffect.cpp">
       <Filter>Effect\Boss\Entry</Filter>
     </ClCompile>
-    <ClCompile Include="BossRotatePunchEffect.cpp">
-      <Filter>Effect\Boss\Punch</Filter>
+    <ClCompile Include="BossFlameEffect.cpp">
+      <Filter>Effect\Boss\Flame</Filter>
     </ClCompile>
     <ClCompile Include="BossSlashEffect.cpp">
       <Filter>Effect\Boss\Slash</Filter>
@@ -912,8 +912,8 @@
     <ClInclude Include="BossEntryEffect.h">
       <Filter>Effect\Boss\Entry</Filter>
     </ClInclude>
-    <ClInclude Include="BossRotatePunchEffect.h">
-      <Filter>Effect\Boss\Punch</Filter>
+    <ClInclude Include="BossFlameEffect.h">
+      <Filter>Effect\Boss\Flame</Filter>
     </ClInclude>
     <ClInclude Include="BossSlashEffect.h">
       <Filter>Effect\Boss\Slash</Filter>

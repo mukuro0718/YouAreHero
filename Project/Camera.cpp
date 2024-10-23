@@ -203,7 +203,7 @@ VECTOR Camera::UpdateNextPosition()
 	//現在の座標
 	VECTOR nowPosition = this->collider->rigidbody.GetPosition();
 	//次の座標へのベクトル
-	inputVector = VScale(inputVector, 5.0f);
+	inputVector = VScale(inputVector, 20.0f);
 	VECTOR nextPositionBase = VAdd(nowPosition, inputVector);
 	VECTOR nextPositionVector = VNorm(VSub(nextPositionBase, player.GetRigidbody().GetPosition()));
 		   nextPositionVector = VScale(nextPositionVector, this->length);

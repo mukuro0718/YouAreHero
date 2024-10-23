@@ -106,8 +106,10 @@ void BossRoarAction::CalcParameter(const Boss& _boss)
 		return;
 	}
 
-	/*Phaseが異なっていたら欲求値を最大にして優先フラグを立てる*/
-	if (_boss.GetNowPhase() != _boss.GetPrevPhase())
+	/*Phaseが異なっている時に、nowPhaseが８だったら*/
+	int nowPhase = _boss.GetNowPhase();
+	int prevPhase = _boss.GetPrevPhase();
+	if (nowPhase != prevPhase && nowPhase == static_cast<int>(Boss::Phase::PHASE_8))
 	{
 		this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 		this->isPriority = true;

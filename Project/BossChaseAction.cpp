@@ -109,7 +109,7 @@ void BossChaseAction::CalcParameter(const Boss& _boss)
 	/*距離を求める*/
 	const VECTOR POSITION				= _boss.GetRigidbody().GetPosition();	//座標
 	const VECTOR MOVE_TARGET			= player.GetRigidbody().GetPosition();	//移動目標
-	const VECTOR POSITION_TO_TARGET		= VSub(POSITION, MOVE_TARGET);	//目標から現在の移動目標へのベクトル
+	const VECTOR POSITION_TO_TARGET		= VSub(POSITION, MOVE_TARGET);			//目標から現在の移動目標へのベクトル
 	const float  DISTANCE				= VSize(POSITION_TO_TARGET);			//距離
 
 	this->parameter->desireValue = 0;

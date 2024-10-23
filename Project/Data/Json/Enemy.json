@@ -153,7 +153,7 @@
   "START_HIT_CHECK_FRAME": [
     40,
     30,
-    35,
+    50,
     32,
     10,
 
@@ -165,7 +165,7 @@
   "END_HIT_CHECK_FRAME": [
     50,
     33,
-    38,
+    55,
     35,
     15,
 
@@ -248,16 +248,16 @@
     10
   ],
   "ACTION_DISTANCE": [
-    15.0,
-    15.0,
-    15.0,
-    15.0,
-    15.0,
-    15.0,
-    15.0,
-    15.0,
-    15.0,
-    30.0
+    35.0,
+    35.0,
+    50.0,
+    35.0,
+    10.0,
+    35.0,
+    35.0,
+    35.0,
+    35.0,
+    50.0
   ],
   "BOSS_MELEE_COMBO_3_ATTACK_DO_HIT_BETWEEN_FRAME": [
     [ 36, 39 ],
@@ -267,7 +267,7 @@
   "NEAR_DISTANCE": 15.0,
   "MIDDLE_DISTANCE": 25.0,
   "LONG_DISTANCE": 55.0,
-  "MOVE_DISTANCE": 10.0,
+  "MOVE_DISTANCE": 15.0,
 
   "CROW_SIZE": 8.0,
   "BACK_BORN_SIZE": 10.0,

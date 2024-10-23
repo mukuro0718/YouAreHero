@@ -44,6 +44,8 @@ Boss::Boss()
 
 	/*メンバクラスのインスタンスの作成*/
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::ENEMY));
+	this->newTextureHandle = asset.GetImage(LoadingAsset::ImageType::MUTANT_NEW_TEXTURE);
+	this->prevTextureHandle = asset.GetImage(LoadingAsset::ImageType::MUTANT_PREV_TEXTURE);
 
 	/*アニメーションの設定*/
 	vector<int>	animationHandle	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_HANDLE"];
@@ -160,6 +162,9 @@ void Boss::Initialize()
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
+
+	/*テクスチャの設定*/
+	MV1SetTextureGraphHandle(this->modelHandle, 0, this->prevTextureHandle, FALSE);
 }
 
 /// <summary>
@@ -368,6 +373,7 @@ void Boss::SetPhase()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& effect = Singleton<EffectManager>::GetInstance();
 
 	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 	auto& data = dynamic_cast<BossData&>(*collider.data);
@@ -383,6 +389,13 @@ void Boss::SetPhase()
 		{
 			this->nowPhase = i;
 		}
+	}
+
+	if (this->nowPhase >= static_cast<int>(Phase::PHASE_8))
+	{
+		/*テクスチャの設定*/
+		effect.OnIsEffect(EffectManager::EffectType::BOSS_FLAME);
+		MV1SetTextureGraphHandle(this->modelHandle, 0, this->newTextureHandle, FALSE);
 	}
 	//UnifyPhases();
 }

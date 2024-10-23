@@ -35,6 +35,9 @@
     "Asset/Image/UI/Potion_table.png",
     "Asset/Image/UI/Bar/Hp_bar_Frame.png",
     "Asset/Image/UI/A_Button.png",
-    "Asset/Image/UI/Press_A_Button.png"
+    "Asset/Image/UI/Press_A_Button.png",
+
+    "Asset/Texture/Character/Boss.fbm/Mutant_diffuse_3.png",
+    "Asset/Texture/Character/Boss.fbm/Mutant_diffuse.png"
   ]
 }

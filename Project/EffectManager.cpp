@@ -1,9 +1,10 @@
 #include <DxLib.h>
 #include "EffekseerForDXLib.h"
-#include <vector>
+#include "UseSTL.h"
 #include "UseJson.h"
 #include "Effect.h"
 #include "BossImpactEffect.h"
+#include "BossFlameEffect.h"
 #include "PlayerGuardHitEffect.h"
 #include "PlayerHealEffect.h"
 #include "PlayerImpactEffect.h"
@@ -21,12 +22,16 @@ EffectManager::EffectManager()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
 
 	this->effect.emplace_back(new BossImpactEffect		(asset.GetEffect(LoadingAsset::EffectType::BOSS_IMPACT)));
 	this->effect.emplace_back(new PlayerGuardHitEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_GUARD_HIT)));
 	this->effect.emplace_back(new PlayerHealEffect		(asset.GetEffect(LoadingAsset::EffectType::PLAYER_HEAL)));
 	this->effect.emplace_back(new PlayerImpactEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_IMPACT)));
 	this->effect.emplace_back(new PlayerJustGuardEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_JUST_GUARD)));
+
+	int bossFlameEffectNum = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_FLAME_EFFECT_NUM"];
+	this->bossFlame = new BossFlameEffect(asset.GetEffect(LoadingAsset::EffectType::BOSS_FLAME));
 }
 
 /// <summary>
@@ -46,6 +51,7 @@ void EffectManager::Initialize()
 	{
 		this->effect[i]->Initialize();
 	}
+	this->bossFlame->Initialize();
 }
 
 /// <summary>
@@ -59,6 +65,7 @@ void EffectManager::Update()
 	{
 		this->effect[i]->Update();
 	}
+	//this->bossFlame->Update();
 }
 /// <summary>
 /// 描画
@@ -69,10 +76,18 @@ const void EffectManager::Draw()const
 	{
 		this->effect[i]->Draw();
 	}
+	//this->bossFlame->Draw();
 }
 void EffectManager::OnIsEffect(const EffectType _type)
 {
-	this->effect[static_cast<int>(_type)]->OnIsPlayEffect();
+	if (_type == EffectType::BOSS_FLAME)
+	{
+		//this->bossFlame->OnIsPlayEffect();
+	}
+	else
+	{
+		this->effect[static_cast<int>(_type)]->OnIsPlayEffect();
+	}
 }
 void EffectManager::SetPosition(const EffectType _type, const VECTOR _position)
 {

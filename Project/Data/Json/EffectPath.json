@@ -1,6 +1,7 @@
 {
   "PATH": [
     "Asset/Effect/Boss/ImpactEffect.efkefc",
+    "Asset/Effect/Boss/flame.efkefc",
     "Asset/Effect/Player/GuardEffect.efkefc",
     "Asset/Effect/Player/healEffect.efkefc",
     "Asset/Effect/Player/ImpactEffect.efkefc",

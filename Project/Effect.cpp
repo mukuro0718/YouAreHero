@@ -1,13 +1,17 @@
 #include <DxLib.h>
 #include "EffekseerForDXLib.h"
+#include "UseSTL.h"
+#include "DeleteInstance.h"
 #include "Transform.h"
 #include "Effect.h"
 
+/// <summary>
+/// コンストラクタ
+/// </summary>
 Effect::Effect(const int _effectResourceHandle)
 	: effectResourceHandle	(_effectResourceHandle)
 	, isPlayEffect			(false)
 	, transform				(nullptr)
-	, playingEffectHandle	(-1)
 	, frameCount			(0)
 	, startFrame			(0)
 	, endFrame				(0)
@@ -17,11 +21,20 @@ Effect::Effect(const int _effectResourceHandle)
 }
 
 /// <summary>
+/// コンストラクタ
+/// </summary>
+Effect::~Effect()
+{
+	DeleteMemberInstance(this->transform);
+	this->playingEffectHandle.clear();
+}
+
+/// <summary>
 /// 初期化
 /// </summary>
 void Effect::Initialize()
 {
-	this->playingEffectHandle = -1;
+	this->playingEffectHandle.emplace_back(-1);
 	this->frameCount		  = 0;
 	this->isPlayEffect		  = false;
 	this->startFrame		  = 0;
@@ -49,12 +62,12 @@ void Effect::Update()
 	//再生エフェクトのハンドル
 	if (this->frameCount == this->startFrame)
 	{
-		this->playingEffectHandle = PlayEffekseer3DEffect(this->effectResourceHandle);
-		SetRotationPlayingEffekseer3DEffect(this->playingEffectHandle, this->transform->GetRotation().x, this->transform->GetRotation().y, this->transform->GetRotation().z);
-		SetScalePlayingEffekseer3DEffect(this->playingEffectHandle, this->transform->GetScale().x, this->transform->GetScale().y, this->transform->GetScale().z);
+		this->playingEffectHandle[0] = PlayEffekseer3DEffect(this->effectResourceHandle);
+		SetRotationPlayingEffekseer3DEffect(this->playingEffectHandle[0], this->transform->GetRotation().x, this->transform->GetRotation().y, this->transform->GetRotation().z);
+		SetScalePlayingEffekseer3DEffect(this->playingEffectHandle[0], this->transform->GetScale().x, this->transform->GetScale().y, this->transform->GetScale().z);
 	}
 	// 再生中のエフェクトを移動する
-	SetPosPlayingEffekseer3DEffect(this->playingEffectHandle, this->transform->GetPosition().x, this->transform->GetPosition().y, this->transform->GetPosition().z);
+	SetPosPlayingEffekseer3DEffect(this->playingEffectHandle[0], this->transform->GetPosition().x, this->transform->GetPosition().y, this->transform->GetPosition().z);
 	//Effekseerにより再生中のエフェクトを更新する。
 	UpdateEffekseer3D();
 
@@ -63,8 +76,8 @@ void Effect::Update()
 	{
 		this->isPlayEffect = false;
 		this->frameCount = this->firstFrame;
-		StopEffekseer3DEffect(this->playingEffectHandle);
-		this->playingEffectHandle = -1;
+		StopEffekseer3DEffect(this->playingEffectHandle[0]);
+		this->playingEffectHandle[0] = -1;
 	}
 }
 
@@ -74,7 +87,7 @@ void Effect::Update()
 const void Effect::Draw()const
 {
 	/*再生フラグが立っていなければ早期リターン*/
-	if (this->playingEffectHandle == -1)return;
+	if (!this->isPlayEffect)return;
 	// Effekseerにより再生中のエフェクトを描画する。
 	DrawEffekseer3D();
 }
