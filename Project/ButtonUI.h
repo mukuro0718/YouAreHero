@@ -14,9 +14,9 @@ public:
 private:
 	enum class TextType 
 	{
-		S_ATTACK,
-		HEAL,
 		W_ATTACK,
+		HEAL,
+		S_ATTACK,
 		AVOID,
 		GUARD,
 	};

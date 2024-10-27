@@ -25,9 +25,14 @@ Camera::Camera()
 	, length		 (0.0f)
 	, frameCount	 (0)
 {
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
 	/*コライダーデータの作成*/
 	this->collider = new SphereColliderData(ColliderData::Priority::LOW, GameObjectTag::CAMERA);
 	this->collider->rigidbody.SetUseGravity(false);
+	auto& collider = dynamic_cast<SphereColliderData&>(*this->collider);
+	collider.radius = json.GetJson(JsonManager::FileType::CAMERA)["RADIUS"];
 }
 
 /// <summary>
@@ -68,6 +73,8 @@ void Camera::Initialize()
 	this->collider->rigidbody.SetPosition(this->nowTarget + (this->direction * this->length));	//カメラ座標
 	this->collider->rigidbody.SetPosition(Convert(FIRST_POSITION));						
 	this->fov				 = FOV;																	//field of view
+	this->yow				 = 0.0f;
+	this->pitch				 = 0.0f;
 	/*カメラの手前クリップ距離と奥クリップ距離を設定する*/
 	SetCameraNearFar(NEAR_CLIP, FAR_CLIP);
 
@@ -167,7 +174,7 @@ void Camera::UpdateTarget()
 /// <summary>
 /// カメラ座標の更新
 /// </summary>
-VECTOR Camera::UpdateNextPosition()
+void Camera::UpdateAngle()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& input  = Singleton<InputManager>	::GetInstance();//インプットマネージャー
@@ -175,44 +182,61 @@ VECTOR Camera::UpdateNextPosition()
 	auto& player = Singleton<PlayerManager>::GetInstance();//json
 
 	/*変数の準備*/
-	const int	 X_BUF				= input.GetRStickState().XBuf;										//右スティック入力
-	const int	 Y_BUF				= input.GetRStickState().YBuf;										//右スティック入力
-	const float	 KEY_BUF			= json.GetJson(JsonManager::FileType::CAMERA)["KEY_INPUT_BUF"];		//キー入力
-	VECTOR		 inputVector		= VGet(0.0f, 0.0f, 0.0f);
-	const VECTOR direction			= VNorm(VSub(this->nowTarget, this->collider->rigidbody.GetPosition()));
+	const int	 X_BUF		= input.GetRStickState().XBuf;										//右スティック入力
+	const int	 Y_BUF		= input.GetRStickState().YBuf;										//右スティック入力
+	const float ADD_ANGLE	= json.GetJson(JsonManager::FileType::CAMERA)["ADD_ANGLE"];	//アングル増加量
+	const float MAX_YOW		= json.GetJson(JsonManager::FileType::CAMERA)["MAX_YOW"];	//アングル増加量
+	const float MIN_YOW = json.GetJson(JsonManager::FileType::CAMERA)["MIN_YOW"];	//アングル増加量
+	const float MAX_PITCH	= json.GetJson(JsonManager::FileType::CAMERA)["MAX_PITCH"];	//アングル増加量
+	const float MIN_PITCH	= json.GetJson(JsonManager::FileType::CAMERA)["MIN_PITCH"];	//アングル増加量
 	/*アングルの更新 Y+:down Y-:up X+:right X-:left*/
 	//スティック入力もキー入力もなければ
-	if (Y_BUF == 0 && X_BUF == 0 && CheckHitKeyAll(DX_CHECKINPUT_KEY) == 0)
-	{
-	}
-	else
+	if (Y_BUF != 0 || X_BUF != 0 || CheckHitKeyAll(DX_CHECKINPUT_KEY) != 0)
 	{
 		//左右のスティック入力があれば
 		if (X_BUF != 0)
 		{
-			inputVector = inputVector + VCross(direction, Gori::UP_VEC);
 			if (X_BUF < 0)
 			{
-				inputVector = inputVector * -1.0f;
+				this->yow += ADD_ANGLE;
+			}
+			else if (X_BUF > 0)
+			{
+				this->yow -= ADD_ANGLE;
+			}
+		}
+		//上下のスティック入力があれば
+		if (Y_BUF != 0)
+		{
+			if (Y_BUF < 0)
+			{
+				this->pitch -= ADD_ANGLE;
+			}
+			else if (Y_BUF > 0)
+			{
+				this->pitch += ADD_ANGLE;
 			}
 		}
 	}
-	/*次の座標を出す*/
-	//ポジションオフセット
-	const VECTOR POSITION_OFFSET = Convert(json.GetJson(JsonManager::FileType::CAMERA)["FREE_POSITION_OFFSET"]);
-	//現在の座標
-	VECTOR nowPosition = this->collider->rigidbody.GetPosition();
-	//次の座標へのベクトル
-	inputVector = VScale(inputVector, 20.0f);
-	VECTOR nextPositionBase = VAdd(nowPosition, inputVector);
-	VECTOR nextPositionVector = VNorm(VSub(nextPositionBase, player.GetRigidbody().GetPosition()));
-		   nextPositionVector = VScale(nextPositionVector, this->length);
-	//次の座標
-	VECTOR nextPosition = VAdd(player.GetRigidbody().GetPosition(), nextPositionVector);
-		   nextPosition.y = 0.0f;
-		   nextPosition = VAdd(nextPosition, POSITION_OFFSET);
+	
+	/*アングルが範囲を出ないようにする*/
+	if (this->pitch < MIN_PITCH)
+	{
+		this->pitch = MIN_PITCH;
+	}
+	else if (this->pitch > MAX_PITCH)
+	{
+		this->pitch = MAX_PITCH;
+	}
 
-	return nextPosition;
+	if (this->yow < MIN_YOW)
+	{
+		this->yow += MAX_YOW;
+	}
+	else if (this->yow > MAX_YOW)
+	{
+		this->yow -= MIN_YOW;
+	}
 }
 
 /// <summary>
@@ -303,7 +327,13 @@ void Camera::UpdateVelocity()
 		}
 		else
 		{
-			nextPosition = UpdateNextPosition();
+			/*アングルの更新*/
+			UpdateAngle();
+			const VECTOR FIRST_DIRECTION = Convert(json.GetJson(JsonManager::FileType::CAMERA)["FIRST_DIRECTION"]);
+			VECTOR direction = VTransform(FIRST_DIRECTION, MGetRotY(this->yow));
+			VECTOR axis = VCross(direction, Gori::UP_VEC);
+			direction = VTransform(direction, MGetRotAxis(axis, this->pitch));
+			nextPosition = VAdd(player.GetRigidbody().GetPosition(), VScale(direction, this->length));
 		}
 		break;
 	default:

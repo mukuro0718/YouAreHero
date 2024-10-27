@@ -335,6 +335,7 @@ const void Boss::DrawCharacterInfo()const
 		printfDx("%d:SLASH_COMBO_1			\n", this->state->CheckFlag(this->SLASH_COMBO_1));
 		printfDx("%d:SLASH_COMBO_2			\n", this->state->CheckFlag(this->SLASH_COMBO_2));
 		printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
+		printfDx("%d:STATE					\n", this->angryState);
 		/*各アクションの当たり判定図形の描画*/
 		this->parameters[this->nowAction]->Draw();
 	}
@@ -397,7 +398,7 @@ void Boss::SetPhase()
 		effect.OnIsEffect(EffectManager::EffectType::BOSS_FLAME);
 		MV1SetTextureGraphHandle(this->modelHandle, 0, this->newTextureHandle, FALSE);
 	}
-	//UnifyPhases();
+	UnifyPhases();
 }
 
 /// <summary>

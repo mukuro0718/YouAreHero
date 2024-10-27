@@ -32,6 +32,7 @@ public:
 	/*らーぷ関数*/
 	float  Lerp(const float _start, const float _end, const float _percent);	//らーぷ関数
 	VECTOR Lerp(const VECTOR _start, const VECTOR _end, const VECTOR _percent);//らーぷ関数
+	VECTOR Lerp360Angle(const VECTOR _start, const VECTOR _end, const VECTOR _percent);
 protected:
 
 	/*メンバ変数*/

@@ -36,6 +36,7 @@ Player::Player()
 	, animationPlayTime	(0.0f)
 	, moveVectorRotation(Gori::ORIGIN)
 	, hitStop			(nullptr)
+	, isDecSpeed (false)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -102,6 +103,10 @@ Player::~Player()
 {
 	this->frameCount.clear();
 	this->isCount.clear();
+	this->animationMap.clear();
+	this->reactionMap.clear();
+	this->whenRunMoveState.clear();
+	DeleteMemberInstance(this->hitStop);
 }
 
 /// <summary>
@@ -119,16 +124,16 @@ void Player::Initialize()
 	const VECTOR POSITION = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_POSITION"]);//座標
 	const VECTOR SCALE	  = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	 //拡大率
 		  VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_ROTATION"]);//回転率
-		  rotation.y	  = rotation.y * 180.0f / DX_PI_F;
+		  rotation.y	  = rotation.y * (DX_PI_F / 180.0f);
 	/*変数の初期化*/
 	this->isAlive			 = true;
 	this->isDraw			 = true;
 	this->isGround			 = false;
 	this->isInitialize		 = true;
-	this->isCounter			 = true;
 	this->speed				 = 0.0f;
 	this->entryInterval		 = 0;
 	this->moveVectorRotation = Gori::ORIGIN;
+	this->nextRotation = Gori::ORIGIN;
 	this->nowAnimation		 = static_cast<int>(AnimationType::IDLE);
 	this->animationPlayTime	 = 0.0f;
 	this->attackComboCount	 = 0;
@@ -284,6 +289,8 @@ const void Player::DrawCharacterInfo()const
 		auto& characterCollider = dynamic_cast<CharacterColliderData&> (*this->collider);
 		printfDx("%d:REACTION_TYPE				\n", characterCollider.data->playerReaction);
 		printfDx("DOT:%f\n"							, this->dot);
+		printfDx("DEG:%f\n"							, this->deg);
+
 
 	}
 	
@@ -375,6 +382,28 @@ void Player::UpdateSpeed()
 		CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"]);
 	}
 
+
+	VECTOR		nowRotation = this->collider->rigidbody.GetRotation();
+	float		nowDeg		= (nowRotation.y * 180.0f / DX_PI_F);
+	float		nextDeg		= (this->nextRotation.y * 180.0f / DX_PI_F);
+	const float PI_2		= 360.0f;
+	if (nextDeg < 0.0f) { nextDeg += PI_2; }
+	float diff = nowDeg - nextDeg;
+	if (diff < 0.0f) { diff *= -1.0f; }
+	/*差が定数以上なら減速させる*/
+	if (diff >= 180.0f)
+	{
+		if (!this->isDecSpeed)
+		{
+			maxSpeed = 0.0f;
+			this->isDecSpeed = true;
+		}
+	}
+	else
+	{
+		this->isDecSpeed = false;
+	}
+
 	/*速度の設定*/
 	//最大速度が０じゃなければ最大速度まで加速する
 	if (maxSpeed != 0)
@@ -405,21 +434,21 @@ void Player::UpdateRotation()
 	/*移動できるか*/
 	if (!CanRotation())return;
 
-	/*もし回避中だったら移動用回転率の向きに向ける*/
-	if (this->state->CheckFlag(this->MASK_AVOID))
-	{
-		this->collider->rigidbody.SetRotation(this->moveVectorRotation);
-		return;
-	}
+	///*もし回避中だったら移動用回転率の向きに向ける*/
+	//if (this->state->CheckFlag(this->MASK_AVOID))
+	//{
+	//	this->collider->rigidbody.SetRotation(this->moveVectorRotation);
+	//	return;
+	//}
 
 	/*初期化*/
-	const float PI						= 180.0f;						//弧度法でのπ
-	VECTOR		rotation				= VGet(0.0f, 0.0f, 0.0f);	//回転率
-	bool		isInputLStick			= false;						//Lスティック入力
-	VECTOR		cameraDirection			= VGet(0.0f, 0.0f, 0.0f);	//カメラの向き
-	VECTOR		playerToTargetDirection = VGet(0.0f, 0.0f, 0.0f);	//カメラの向き
-	VECTOR		wasd					= VGet(0.0f, 0.0f, 0.0f);	//wasd入力
-	VECTOR		lStick					= VGet(0.0f, 0.0f, 0.0f);	//lStick入力(上:Z+ 下:Z- 左:x- 右:x+)
+	const float PI = 180.0f;						//弧度法でのπ
+	VECTOR		nowRotation = this->collider->rigidbody.GetRotation();	//回転率
+	bool		isInputLStick = false;						//Lスティック入力
+	VECTOR		cameraDirection = Gori::ORIGIN;	//カメラの向き
+	VECTOR		playerToTargetDirection = Gori::ORIGIN;	//カメラの向き
+	VECTOR		wasd = Gori::ORIGIN;	//wasd入力
+	VECTOR		lStick = Gori::ORIGIN;	//lStick入力(上:Z+ 下:Z- 左:x- 右:x+)
 	this->state->ClearFlag(this->MASK_MOVE);
 
 	/*シングルトンクラスのインスタンスの取得*/
@@ -430,7 +459,7 @@ void Player::UpdateRotation()
 
 	/*パッド入力の取得*/
 	int pad = input.GetPadState();
-	
+
 	/*スティック入力*/
 	lStick = VGet(static_cast<float>(input.GetLStickState().XBuf), 0.0f, static_cast<float>(input.GetLStickState().YBuf));
 
@@ -451,41 +480,41 @@ void Player::UpdateRotation()
 		}
 		else
 		{
-			//ロックオンしていたら
-			if (this->isLockOn)
-			{
-				//Xのほうが入力されている値が大きければ
-				if (lStick.x * lStick.x > lStick.z * lStick.z)
-				{
-					//右
-					if (lStick.x > 0.0f)
-					{
-						moveState = this->WALK_RIGHT;
-					}
-					//左
-					else
-					{
-						moveState = this->WALK_LEFT;
-					}
-				}
-				else
-				{
-					//前
-					if (lStick.z < 0.0f)
-					{
+			////ロックオンしていたら
+			//if (this->isLockOn)
+			//{
+			//	//Xのほうが入力されている値が大きければ
+			//	if (lStick.x * lStick.x > lStick.z * lStick.z)
+			//	{
+			//		//右
+			//		if (lStick.x > 0.0f)
+			//		{
+			//			moveState = this->WALK_RIGHT;
+			//		}
+			//		//左
+			//		else
+			//		{
+			//			moveState = this->WALK_LEFT;
+			//		}
+			//	}
+			//	else
+			//	{
+			//		//前
+			//		if (lStick.z < 0.0f)
+			//		{
 						moveState = this->WALK_FRONT;
-					}
-					//後ろ
-					else
-					{
-						moveState = this->WALK_BACK;
-					}
-				}
-			}
-			else
-			{
-				moveState = this->WALK_FRONT;
-			}
+			//		}
+			//		//後ろ
+			//		else
+			//		{
+			//			moveState = this->WALK_BACK;
+			//		}
+			//	}
+			//}
+			//else
+			//{
+			//	moveState = this->WALK_FRONT;
+			//}
 		}
 		//状態のセット
 		this->state->SetFlag(moveState);
@@ -510,29 +539,35 @@ void Player::UpdateRotation()
 	{
 		//スティック入力を正規化
 		lStick = VNorm(lStick);
-		
-		if (this->isLockOn && !isRun)
-		{
-			rotation.y = static_cast<float>(
-				-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x)) - 90.0f * (DX_PI_F / 180.0f));
-		}
-		else
-		{
-			rotation.y = static_cast<float>(
+
+		//if (this->isLockOn && !isRun)
+		//{
+		//	nextRotation.y = static_cast<float>(
+		//		-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x)) - 90.0f * (DX_PI_F / 180.0f));
+		//}
+		//else
+		//{
+			this->nextRotation.y = static_cast<float>(
 				-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
 				- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
-		}
-		
-		this->moveVectorRotation.y = static_cast<float>(
-			- atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
-			- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
-		//this->moveVectorRotation = rotation;
+		//}
+
+		//this->moveVectorRotation.y = static_cast<float>(
+		//	-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
+		//	- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
+		//this->moveVectorRotation = nextRotation;
 	}
 
-	if (isInputLStick)
-	{
-		this->collider->rigidbody.SetRotation(rotation);
-	}
+	/*スティック入力なければ早期リターン*/
+	if (!isInputLStick) return;
+
+	VECTOR lerpValue = Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATE_LERP_VALUE"]);
+	nowRotation = Lerp360Angle(nowRotation, this->nextRotation, lerpValue);
+	
+	/*回転率のセット*/
+	this->moveVectorRotation = nowRotation;
+	this->collider->rigidbody.SetRotation(nowRotation);
+
 }
 
 /// <summary>
@@ -581,25 +616,11 @@ void Player::Reaction()
 		//内積が定数以内 & ガード中 & ガードに必要なスタミナが足りている
 		if (this->state->CheckFlag(this->BLOCK) && collider.data->isGuard)
 		{
-			if (collider.data->isInvinvible)
-			{
-				effect.OnIsEffect(EffectManager::EffectType::PLAYER_JUST_GUARD);
-				this->state->ClearFlag(this->MASK_ALL);
-				this->state->SetFlag(this->BLOCK_REACTION);
-				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
-				this->isCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = false;
-				this->frameCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = 0;
-				this->animation->SetAddRate(0.5f);
-				this->isCounter = true;
-			}
-			else
-			{
-				effect.OnIsEffect(EffectManager::EffectType::PLAYER_GUARD_HIT);
-				this->state->ClearFlag(this->MASK_ALL);
-				this->state->SetFlag(this->BLOCK_REACTION);
-				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]);
-				this->animation->SetAddRate(0.05f);
-			}
+			effect.OnIsEffect(EffectManager::EffectType::PLAYER_GUARD_HIT);
+			this->state->ClearFlag(this->MASK_ALL);
+			this->state->SetFlag(this->BLOCK_REACTION);
+			CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]);
+			this->animation->SetAddRate(0.05f);
 		}
 		else
 		{
@@ -620,11 +641,6 @@ void Player::Reaction()
 					data.hitStopDelay,
 					data.slowFactor
 				);
-			}
-			else
-			{
-				CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["AVOID_RECOVERY_VALUE"]);
-				this->isCounter = true;
 			}
 		}
 		collider.data->isHit = false;
@@ -677,34 +693,27 @@ void Player::Block()
 	/*pad入力*/
 	int pad = input.GetPadState();
 
-	/*フレーム回避用フレームカウントが最大に達していたら無敵フラグを下す*/
-	if (FrameCount(static_cast<int>(FrameCountType::JUST_BLOCK), json.GetJson(JsonManager::FileType::PLAYER)["JUST_BLOCK_MAX_FRAME"]))
-	{
-		auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
-		auto& data = dynamic_cast<PlayerData&>(*collider.data);
-		data.isInvinvible = false;
-	}
-
 	/*ブロックできるか*/
 	if (!CanBlock())return;
 
 	/*RTが押されたか*/
 	if (pad & PAD_INPUT_8)
 	{
-		this->state->ClearFlag(this->MASK_ATTACK);
+		//敵のインスタンスを取得
 		auto& enemy = Singleton<EnemyManager>::GetInstance();
-		VECTOR enemyFirstDirection = Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_DIRECTION"]);
+		//敵とプレイヤーの向きの内積を計算し、定数以内ならガードが成功する
+		VECTOR enemyFirstDirection	= Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_DIRECTION"]);
 		VECTOR playerFirstDirection = Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);
-		VECTOR enemyDirection = VTransform(enemyFirstDirection, MGetRotY(enemy.GetRigidbody().GetRotation().y));
-		VECTOR playerDirection = VTransform(playerFirstDirection, MGetRotY(collider.rigidbody.GetRotation().y));
-
-		float TOLERANCE_DOT = json.GetJson(JsonManager::FileType::PLAYER)["TOLERANCE_DOT"];
-
-		VECTOR e = VNorm(enemyDirection);
-		VECTOR p = VNorm(playerDirection);
-		this->dot = VDot(e, p);
+		VECTOR enemyDirection		= VTransform(enemyFirstDirection, MGetRotY(enemy.GetRigidbody().GetRotation().y));
+		VECTOR playerDirection		= VTransform(playerFirstDirection, MGetRotY(collider.rigidbody.GetRotation().y));
+		float  TOLERANCE_DOT		= json.GetJson(JsonManager::FileType::PLAYER)["TOLERANCE_DOT"];
+			   enemyDirection		= VNorm(enemyDirection);
+			   playerDirection		= VNorm(playerDirection);
+		this->dot = VDot(enemyDirection, playerDirection);
 		this->dot = this->dot * 180.0f / DX_PI_F;
 
+		//攻撃フラグを下す
+		this->state->ClearFlag(this->MASK_ATTACK);
 		this->state->SetFlag(this->BLOCK);
 
 		if (this->dot >= TOLERANCE_DOT &&
@@ -712,17 +721,12 @@ void Player::Block()
 		{
 			if (!data.isGuard)
 			{
-				this->isCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = true;
 				data.isGuard = true;
-				data.isInvinvible = true;
 			}
 		}
 		else
 		{
 			data.isGuard = false;
-			data.isInvinvible = false;
-			this->isCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = false;
-			this->frameCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = 0;
 		}
 		this->animation->SetAddRate(0.5f);
 	}
@@ -730,9 +734,6 @@ void Player::Block()
 	{
 		this->state->ClearFlag(this->BLOCK);
 		data.isGuard = false;
-		data.isInvinvible = false;
-		this->isCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = false;
-		this->frameCount[static_cast<int>(FrameCountType::JUST_BLOCK)] = 0;
 		this->animation->SetAddRate(0.05f);
 	}
 }
@@ -833,13 +834,19 @@ void Player::Rolling()
 	/*Aボタンが押された && 回避の無敵時間が終了している*/
 	if ((pad & PAD_INPUT_3) && !this->isCount[static_cast<int>(FrameCountType::AVOID)])
 	{
-		this->state->ClearFlag(this->MASK_ATTACK);
+		//攻撃フラグと移動フラグを下す
+		this->state->ClearFlag(this->MASK_ATTACK | this->MASK_MOVE);
+		//回避フラグを立てる
 		this->state->SetFlag(this->AVOID);
+		//フレーム回避フラグを立てる
 		this->isCount[static_cast<int>(FrameCountType::JUST_AVOID)] = true;
+		//無敵フラグを立てる
 		auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 		auto& data = dynamic_cast<PlayerData&>(*collider.data);
 		data.isInvinvible = true;
+		//スタミナの計算
 		CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["AVOID_STAMINA_CONSUMPTION"]);
+		//スピードに回避の初速を入れる
 		this->speed = json.GetJson(JsonManager::FileType::PLAYER)["ROLLING_SPEED"];
 	}
 
@@ -861,47 +868,38 @@ void Player::Attack()
 
 	/*pad入力*/
 	int pad = input.GetPadState();
+	bool isPushY = (pad & PAD_INPUT_2);
+	bool isPushB = (pad & PAD_INPUT_4);
 
 	/*攻撃できるか*/
 	if (!CanAttack())return;
 
-	/*Yが押されたか*/
-	if (pad & PAD_INPUT_2)
+	/*攻撃ボタンが押されていたら、特定のフラグを下す*/
+	if (isPushB || isPushY)
 	{
-		//消費スタミナが足りなければ早期リターン
-		if (!CanAction(json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_STAMINA_CONSUMPTION"]))return;
-		//攻撃準備
+		//回避とリアクションフラグを下す
 		this->state->ClearFlag(this->MASK_AVOID | this->MASK_REACTION);
+
+	}
+
+	/*Bが押されたか*/
+	if (isPushB)
+	{
+		//攻撃フラグをセット
 		this->state->SetFlag(this->COMBO_1);
-		//カウンター状態じゃなければ
-		if (!this->isCounter)
-		{
-			CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_STAMINA_CONSUMPTION"]);
-		}
-		else
-		{
-			this->isCounter = false;
-		}
+		//ダメージのセット
 		attack.SetDamage(json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"]);
+		//攻撃フラグを立てる
 		attack.OnIsStart();
 	}
-	else if (pad & PAD_INPUT_4)
+	/*Yが押されたか*/
+	else if (isPushY)
 	{
-		//消費スタミナが足りなければ早期リターン
-		if (!CanAction(json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_STAMINA_CONSUMPTION"]))return;
-		//攻撃準備
-		this->state->ClearFlag(this->MASK_AVOID | this->MASK_REACTION);
+		//攻撃フラグをセット
 		this->state->SetFlag(this->SKILL);
-		//カウンター状態じゃなければ
-		if (!this->isCounter)
-		{
-			CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_STAMINA_CONSUMPTION"]);
-		}
-		else
-		{
-			this->isCounter = false;
-		}
+		//ダメージのセット
 		attack.SetDamage(json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_DAMAGE"]);
+		//攻撃フラグを立てる
 		attack.OnIsStart();
 	}
 }
@@ -928,7 +926,7 @@ const bool Player::CanRotation()const
 {
 	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
 	if (this->state->CheckFlag(this->DEATH)	)			return false;//デス
-	//if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
+	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
 	if (this->state->CheckFlag(this->MASK_ATTACK))		return false;//攻撃
 	if (this->state->CheckFlag(this->BLOCK))			return false;//防御
 	if (this->state->CheckFlag(this->HEAL))				return false;//回復
@@ -947,11 +945,11 @@ const bool Player::CanRolling()const
 }
 const bool Player::CanAttack()const
 {
-	if (this->state->CheckFlag(this->MASK_REACTION) && !this->isCounter)return false;//リアクション
+	if (this->state->CheckFlag(this->MASK_REACTION))return false;//リアクション
 	if (this->state->CheckFlag(this->DEATH))							return false;//デス
 	if (this->state->CheckFlag(this->MASK_ATTACK))						return false;//攻撃
 	if (this->state->CheckFlag(this->HEAL))								return false;//回復
-	if (this->state->CheckFlag(this->MASK_AVOID) && !this->isCounter)	return false;//回避
+	if (this->state->CheckFlag(this->MASK_AVOID))	return false;//回避
 	return true;
 }
 const bool Player::CanBlock()const
@@ -1064,18 +1062,3 @@ void Player::LockOn()
 	}
 }
 
-/// <summary>
-/// ラープ
-/// </summary>
-float Player::Lerp(const float _start, const float _end, const float _percent)
-{
-	return _start + _percent * (_end - _start);
-}
-VECTOR Player::Lerp(const VECTOR _start, const VECTOR _end, const VECTOR _percent)
-{
-	VECTOR out = (Gori::ORIGIN);
-	out.x = Lerp(_start.x, _end.x, _percent.x);
-	out.y = Lerp(_start.y, _end.y, _percent.y);
-	out.z = Lerp(_start.z, _end.z, _percent.z);
-	return out;
-}

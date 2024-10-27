@@ -26,16 +26,20 @@ public:
 	const bool GetIsPriority ()const { return this->isPriority; }
 protected:
 	/*内部処理関数*/
-	bool FrameCount(const int _maxFrame);
-	void OffIsSelect(const int _maxInterval);
+	bool	FrameCount		(const int _maxFrame);																		//フレームカウント
+	void	OffIsSelect		(const int _maxInterval);																	//選択フラグの初期化
+	VECTOR	GetLerpRotation (Boss& _boss, const VECTOR _positionToTargetVector, const VECTOR _nowRotation, const VECTOR _lerpValue);	//補完した回転率の取得
+	VECTOR  CalcVelocity	(const VECTOR _prevVelocity, const VECTOR _nowRotation, const float _speed);//移動ベクトルの計算
 
 	/*メンバ変数*/
 	BossAttack*				 attack;		//ボス攻撃クラス
 	HitStop*				 hitStop;		//ヒットストップ
 	ActionParameter*		 parameter;		//パラメータ
+	VECTOR					 moveTarget;	//移動目標
 	bool					 isSelect;		//アクションが選択されたか
 	int						 frameCount;	//フレームカウント
 	bool					 isInitialize;	//初期化されたか
-	bool					 isPriority;
+	bool					 isPriority;	//優先フラグ
+	bool					 isAllowAction;	//アクションを許可する
 };
 

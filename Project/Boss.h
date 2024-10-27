@@ -90,8 +90,8 @@ public:
 	const AttackType GetPrevAttackType()const { return this->prevAttack; }
 	enum class AngryStateType
 	{
-		NORMAL,
 		TIRED,
+		NORMAL,
 		ANGRY,
 	};
 private:

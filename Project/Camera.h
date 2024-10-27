@@ -22,7 +22,7 @@ public:
 private:
 	/*内部処理関数*/
 	void   UpdateDirection	 ();																//向きの更新
-	VECTOR UpdateNextPosition();																//座標の更新
+	void   UpdateAngle();																//座標の更新
 	void   UpdateVelocity	 ();																//移動ベクトル
 	void   UpdateTarget		 ();																//注視点の更新
 	void   UpdateLength		 ();																//座標の修正
@@ -32,17 +32,18 @@ private:
 	float  DegToRad			 (const float _deg) { return _deg * (DX_PI_F / 180.0f); }		//度数をラジアンに変換
 
 	/*メンバ変数*/
-	ColliderData*	collider;//コライダー
+	ColliderData*	collider;		//コライダー
 
 	VECTOR			nextTarget;		//次の注視点
 	VECTOR			nowTarget;		//今の注視点
 	
-	VECTOR			direction;				//カメラから注視点の方向
+	VECTOR			direction;		//カメラから注視点の方向
 
 	float			fov;			//field of view
 	float			length;			//長さ
-
-	int				frameCount;//フレームカウント
-	int				entryInterval;//登場待機時間
+	int				frameCount;		//フレームカウント
+	int				entryInterval;	//登場待機時間
+	float			yow;			//ヨー
+	float			pitch;			//ピッチ
 	//HACK:注視点からlength分だけ離した位置にカメラの座標を設定するため、初期directionを反転させた値を保持する
 };

@@ -20,6 +20,7 @@
 #include "Debug.h"
 #include "HitStopManager.h"
 #include "Timer.h"
+#include "FPSController.h"
 
 /// <summary>
 /// コンストラクタ

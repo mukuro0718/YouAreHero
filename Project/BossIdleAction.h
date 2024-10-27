@@ -15,6 +15,16 @@ public:
 	void Update(Boss& _boss)				override;//パラメータの計算
 	void CalcParameter(const Boss& _boss)	override;//パラメーターの計算
 private:
-	int maxFrameCount;
+	/*列挙体*/
+	enum class DirectionType//向き
+	{
+		LEFT = 0,
+		RIGHT = 1,
+	};
+
+	/*メンバ変数*/
+	bool isSetMoveDirection;//向きをセットしたか
+	int  directionType;		//向きの種類
+	int  maxFrameCount;		//フレームカウント
 };
 

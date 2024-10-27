@@ -1,7 +1,6 @@
 //===========================================================================
 //@brief FPSコントローラークラス
 // FPSの設定、計算と描画を行う
-// https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q10175479905より引用
 //===========================================================================
 #pragma once
 #include "Singleton.h"
@@ -14,8 +13,7 @@ public:
 	void Initialize();		//初期化
 	void CalcStartTime();
 
-	void Average();			//FPSの平均を算出
-	void Wait();			//目標FPSになるよう待機
+	void Update();			//FPSの更新
 	void UpdateTargetFPS(); //目標FPSの更新
 	const void Draw()const;
 
@@ -26,11 +24,10 @@ private:
 	~FPSController();
 
 	/*メンバ変数*/
-	int type;
-	int		targetFPS;
+	int		targetFPS;	//目標FPS
 	double	fps;		//fps
-	int		startTime;//計測開始時間
-	int		count;	//処理回数
-	bool	isDebug;
-	int timeScale;
+	int		startTime;	//計測開始時間
+	int		timeScale;	//時間のスケール(1000 = 1秒)
+	int		frameCount;	//フレームカウント
+	int		lastTime;	//最後の時間
 };

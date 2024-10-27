@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
 #include "ReactionType.h"
 #include "Rigidbody.h"
@@ -57,7 +58,7 @@ const void Character::Draw() const
 }
 
 /// <summary>
-/// 線形補完
+/// ラープ
 /// </summary>
 float Character::Lerp(const float _start, const float _end, const float _percent)
 {
@@ -65,11 +66,70 @@ float Character::Lerp(const float _start, const float _end, const float _percent
 }
 VECTOR Character::Lerp(const VECTOR _start, const VECTOR _end, const VECTOR _percent)
 {
-	VECTOR out = { 0.0f,0.0f,0.0f };
+	VECTOR out = (Gori::ORIGIN);
 	out.x = Lerp(_start.x, _end.x, _percent.x);
 	out.y = Lerp(_start.y, _end.y, _percent.y);
 	out.z = Lerp(_start.z, _end.z, _percent.z);
 	return out;
+}
+
+/// <summary>
+/// atan2で出した値を360度に直し補完しながら回転させる
+/// </summary>
+VECTOR Character::Lerp360Angle(const VECTOR _start, const VECTOR _end, const VECTOR _percent)
+{
+	vector<float> startBase = { _start.x,_start.y,_start.z };
+	vector<float> endBase = { _end.x,_end.y,_end.z };
+	vector<float> t = { _percent.x,_percent.y,_percent.z };
+	vector<float> out;
+	const float PI_2 = (2.0f * DX_PI_F);
+
+	for (int i = 0; i < startBase.size(); i++)
+	{
+		/*開始地点と終了地点を求める*/
+		float start = startBase[i];
+		float end = endBase[i];
+		//終了地点がマイナスだったら2πを足す
+		if (end < 0.0f) end += PI_2;
+
+		/*開始地点と終了地点の差を求める*/
+		float diff = start - end;
+		//もし差がマイナスだったら-1をかける
+		if (diff < 0.0f) diff *= -1.0f;
+
+		/*余りを求める*/
+		float excess = PI_2 - diff;
+
+		/*差と余りを求めて、差のほうが大きければBaseのほうで計算*/
+		if (diff > excess)
+		{
+			//スタートベースは360度に変換されているので、π ~ -πの範囲に戻す
+			if (startBase[i] >= DX_PI_F)
+			{
+				startBase[i] -= PI_2;
+			}
+			out.emplace_back(Lerp(startBase[i], endBase[i], t[i]));
+		}
+
+		/*余りのほうが大きければそのまま計算*/
+		else
+		{
+			out.emplace_back(Lerp(start, end, t[i]));
+		}
+
+		/*360度の範囲を超えないようにする*/
+		if (out[i] <= 0.0f)
+		{
+			out[i] += PI_2;
+		}
+		else if (out[i] >= PI_2)
+		{
+			out[i] -= PI_2;
+		}
+	}
+
+	VECTOR rotation = VGet(0.0f, out[1], 0.0f);
+	return rotation;
 }
 
 /// <summary>

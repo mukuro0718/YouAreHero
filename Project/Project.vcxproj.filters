@@ -331,6 +331,9 @@
     <Filter Include="Effect\Boss\Flame">
       <UniqueIdentifier>{15d0a1d3-c704-4379-9fb2-3a1c4a7f380c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Character\Enemy\Action\Parameter\Rotation">
+      <UniqueIdentifier>{61f07d06-f709-4fd8-b71e-0104586a5ce4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">

@@ -393,18 +393,17 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 	//カプセル同士の位置補正
 	else if (primaryKind == ColliderData::Kind::CHARACTER_CAPSULE && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
-		VECTOR secondaryToPrimary = VSub(_primary.GetNextPosition(), _secondary.GetNextPosition());
-		VECTOR secondaryToPrimaryNorm = VNorm(secondaryToPrimary);
+		VECTOR secondaryToPrimary = VSub( _primary.GetNextPosition(), _secondary.GetNextPosition());
 		float  secondaryToPrimarySize = VSize(secondaryToPrimary);
+		VECTOR secondaryToPrimaryNorm = VNorm(secondaryToPrimary);
 
 		auto& primaryColliderData = dynamic_cast<CharacterColliderData&> (_primary);
 		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
 
 		//そのままだとちょうど当たる位置になるので少し余分に離す
-		float radiusSum = primaryColliderData.radius + secondaryColliderData.radius;
-		float awayDist = radiusSum - secondaryToPrimarySize + 0.005f;
-		VECTOR fixedSize = VScale(secondaryToPrimaryNorm, awayDist);
-		VECTOR fixedPosition = VAdd(_primary.GetNextPosition(), fixedSize);
+		float awayDist = primaryColliderData.radius + secondaryColliderData.radius + 0.005f;
+		VECTOR newPrimaryPosition = VScale(secondaryToPrimaryNorm, awayDist);
+		VECTOR fixedPosition = VAdd(_secondary.GetNextPosition(), newPrimaryPosition);
 		_primary.SetNextPosition(fixedPosition);
 	}
 	//平面とカプセル(平面はSTATICなので、必ずprimaryがPLANEになる)

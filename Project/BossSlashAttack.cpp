@@ -135,11 +135,11 @@ const void BossSlashAttack::Draw()const
 	auto& debug = Singleton<Debug>::GetInstance();
 	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
 	{
-		if (this->isStartHitCheck)
-		{
+		//if (this->isStartHitCheck)
+		//{
 			auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
 			DrawCapsule3D(collider.rigidbody.GetPosition(), collider.topPositon, collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
-		}
+		//}
 		VECTOR position = this->collider->rigidbody.GetPosition();
 		printfDx("SLASH_ATTACK X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
 	}

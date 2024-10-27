@@ -35,7 +35,6 @@ void BossRestAction::Initialize()
 
 	this->isSelect				 = false;
 	this->isInitialize			 = false;
-	this->isSetMoveDirection	 = false;
 	this->frameCount			 = 0;
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
@@ -48,74 +47,37 @@ void BossRestAction::Initialize()
 void BossRestAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
-	if (_boss.GetHP() < 0 || (_boss.GetNowPhase() != _boss.GetPrevPhase())) { this->OffIsSelect(this->maxFrameCount); return; }
+	if (_boss.GetHP() <= 0) { this->isSelect = false; return; }
 
-	/*選択されていたら欲求値を０にする*/
-	this->parameter->desireValue = 0;
-
-	/*移動する方向が設定されていなければ*/
-	if (!this->isSetMoveDirection)
-	{
-		//移動方向の設定（RIGHT=1）
-		this->directionType = GetRand(static_cast<int>(DirectionType::RIGHT));
-		//フラグを立てる
-		this->isSetMoveDirection = true;
-	}
+	/*アニメーションの設定*/
+	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::IDLE));
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	/*使用する値の準備*/
-	const float  SPEED		= json.GetJson(JsonManager::FileType::ENEMY)["SIDE_WALK_SPEED"];
-	const VECTOR MOVE_TARGET = player.GetRigidbody().GetPosition();
-	const VECTOR POSITION = _boss.GetRigidbody().GetPosition();
-		  VECTOR velocity	= VGet(0.0f, 0.0f, 0.0f);			 //向き
-		  VECTOR nowRotation = _boss.GetRigidbody().GetRotation();
-
-	/*移動ベクトルの設定*/
-	_boss.SetNowMoveTarget(MOVE_TARGET);
-
-	/*プレイヤーから自分の座標までのベクトルを出す*/
-	VECTOR positionToTargetVector = VSub(POSITION, MOVE_TARGET);
-
-	/*アークタンジェントを使って角度を求める*/
-	nowRotation.y = static_cast<float>(atan2(static_cast<double>(positionToTargetVector.x), static_cast<double>(positionToTargetVector.z)));
-
-	/*回転率を代入*/
-	_boss.SetRotation(nowRotation);
-
+	const float  SPEED = 0.0f;
+	const VECTOR ROTATION = _boss.GetRigidbody().GetRotation();
+	VECTOR direction = VGet(0.0f, 0.0f, 0.0f);			 //向き
 
 	/*スピードを０にする*/
 	_boss.SetSpeed(SPEED);
 
 	/*回転率をもとに、移動する向きを出す*/
-	if (this->directionType == static_cast<int>(DirectionType::RIGHT))
-	{
-		velocity = VCross(positionToTargetVector, Gori::UP_VEC);
-		_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::WALK_RIGHT));
-	}
-	else
-	{
-		velocity = VCross(positionToTargetVector, Gori::UP_VEC);
-		velocity = VScale(velocity, -1.0f);
-		_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::WALK_LEFT));
-	}
-
+	direction = VGet(-sinf(ROTATION.y), 0.0f, -cosf(ROTATION.y));
 
 	/*向きベクトルを正規化*/
-	velocity = VNorm(velocity);
+	direction = VNorm(direction);
 
 	/*移動ベクトルを出す（重力を加算するため、Yベクトルのみ前のベクトルを使用する）*/
-	VECTOR aimVelocity  = VScale(velocity, SPEED);						//算出された移動ベクトル
+	VECTOR aimVelocity = VScale(direction, SPEED);								//算出された移動ベクトル
 	VECTOR prevVelocity = _boss.GetRigidbody().GetVelocity();					//前の移動ベクトル
-	VECTOR newVelocity  = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);	//新しい移動ベクトル
+	VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);	//新しい移動ベクトル
 
 	/*移動ベクトルの設定*/
 	_boss.SetVelocity(newVelocity);
 
 	/*アニメーションの再生*/
-	_boss.SetAnimationPlayTime(_boss.GetAnimationPlayTime());
 	_boss.PlayAnimation();
 
 	//フレーム計測
@@ -123,7 +85,7 @@ void BossRestAction::Update(Boss& _boss)
 	//フレーム計測が終了していたら
 	if (isEndCount)
 	{
-		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["REST_INTERVAL"]);
+		OffIsSelect(0);
 		_boss.SetAttackComboCount();
 	}
 }
@@ -150,12 +112,14 @@ void BossRestAction::CalcParameter(const Boss& _boss)
 		return;
 	}
 
-	/*攻撃コンボが残っていなかったら欲求値を最大にする。*/
+	/*攻撃コンボが残っていなかったら優先フラグを立てる*/
 	else if (_boss.GetAttackComboCount() == 0)
 	{
 		this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["REST_ACTION_MAX_DESIRE_VALUE"][angryState];
+		this->isPriority = true;
 	}
 
+	/*コンボが残っていたら欲求値を０にする*/
 	else
 	{
 		this->parameter->desireValue = 0;

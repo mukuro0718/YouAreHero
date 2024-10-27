@@ -56,7 +56,7 @@ private:
 	static constexpr unsigned int MASK_MOVE					 = MASK_WALK | MASK_RUN;							//移動マスク
 	static constexpr unsigned int MASK_AVOID				 = AVOID;											//回避マスク
 	static constexpr unsigned int MASK_ATTACK				 = COMBO_1 | COMBO_2 | COMBO_3 | SKILL;				//攻撃マスク
-	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = MASK_AVOID | BLOCK | MASK_ATTACK;				//スタミナが回復できない状態
+	static constexpr unsigned int MASK_CANT_RECOVERY_STAMINA = MASK_AVOID | BLOCK;				//スタミナが回復できない状態
 	static constexpr unsigned int MASK_ALWAYS_TURN_OFF		 = MASK_MOVE | IDLE;								//毎フレーム状態を下すマスク
 	static constexpr unsigned int MASK_ALL					 = MASK_MOVE | IDLE | MASK_ATTACK | MASK_REACTION |
 															   BLOCK | MASK_AVOID | HEAL;						//すべての状態マスク
@@ -74,9 +74,8 @@ private:
 		JUST_AVOID	= 0,//ジャスト回避
 		HEAL		= 1,//回復
 		AVOID		= 2,//回避
-		JUST_BLOCK	= 3,//ジャストガード
-		LOCK_ON		= 4,//ロックオン
-		ATTACK		= 5,//攻撃
+		LOCK_ON		= 3,//ロックオン
+		ATTACK		= 4,//攻撃
 	};
 	//アニメーションの種類
 	enum class AnimationType
@@ -115,9 +114,7 @@ private:
 	void Block			 ();//ブロック
 	void Heal			 ();//回復
 	void LockOn			 ();//ロックオン
-	float  Lerp(const float _start, const float _end, const float _percent);	//らーぷ関数
-	VECTOR Lerp(const VECTOR _start, const VECTOR _end, const VECTOR _percent);//らーぷ関数
-							
+
 	//許可フラグ
 	const bool CanRotation		()const;							//回転できるか
 	const bool CanRolling		()const;							//回避できるか
@@ -138,13 +135,15 @@ private:
 	std::map<unsigned int, int>			 animationMap;		//アニメーションマップ
 	std::map<int, unsigned int>			 reactionMap;		//リアクションマップ
 	std::map<unsigned int, unsigned int> whenRunMoveState;	//ダッシュ時の状態
+	VECTOR								 nextRotation;		//次の回転率
 	int									 nowAnimation;		//アニメーション
 	float								 animationPlayTime;	//アニメーション再生時間
 	int									 attackComboCount;	//攻撃コンボカウント
 	int									 healOrbNum;		//回復オーブの数
 	float								 dot;				//内積
 	bool								 isLockOn;			//ロックオン
-	bool								 isCounter;			//カウンターフラグ
 	int									 attackMaxFrame;	//攻撃最大フレーム
+	float								 deg;				//度数
+	bool								 isDecSpeed;		//減速フラグ
 };
 

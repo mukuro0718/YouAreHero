@@ -48,21 +48,20 @@ void SceneManager::Update()
 		/*シーンの更新*/
 		this->mainScene->Update();
 
-		/*シーンの描画*/
+		/*FPSの描画*/
 		fps.Draw();
+
+		/*シーンの描画*/
 		this->mainScene->Draw();
 		
 		/*シーンの変更*/
 		SceneChange();
 
-		/*ＦＰＳの平均を算出*/
-		fps.Average();
-		
 		/*裏画面の内容を表に反映させる*/
 		ScreenFlip();
 		
-		/*ＦＰＳの処理*/
-		fps.Wait();
+		/*ＦＰＳの平均を算出*/
+		fps.Update();
 	}
 	else
 	{
