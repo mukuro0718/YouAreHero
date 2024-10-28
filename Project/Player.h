@@ -26,7 +26,7 @@ private:
 	/*静的定数*/
 	static constexpr float	SHADOW_HEIGHT	= 10.0f;//影を投影する高さ
 	static constexpr float	SHADOW_SIZE		= 6.0f;	//かげのサイズ
-	static constexpr int	COUNT_NUM		= 5;	//フレームカウントの数
+	static constexpr int	COUNT_NUM		= 9;	//フレームカウントの数
 	//プレイヤーの状態
 	static constexpr unsigned int IDLE			  = (1 << 0);  //待機
 	static constexpr unsigned int AVOID			  = (1 << 1);  //回避
@@ -45,12 +45,14 @@ private:
 	static constexpr unsigned int RUN_180_TURN	  = (1 << 14); //180向き変更
 	static constexpr unsigned int COMBO_1		  = (1 << 15); //攻撃
 	static constexpr unsigned int HEAL			  = (1 << 16); //回復
-	static constexpr unsigned int COMBO_2		  = (1 << 17); //回復
-	static constexpr unsigned int COMBO_3		  = (1 << 18); //回復
-	static constexpr unsigned int SKILL			  = (1 << 19); //回復
+	static constexpr unsigned int COMBO_2		  = (1 << 17); //攻撃２
+	static constexpr unsigned int COMBO_3		  = (1 << 18); //攻撃３
+	static constexpr unsigned int SKILL			  = (1 << 19); //強攻撃
+	static constexpr unsigned int DOWN			  = (1 << 20); //ダウン
+	static constexpr unsigned int DOWN_UP		  = (1 << 21); //ダウンから起き上がる
 	
 	//マスク
-	static constexpr unsigned int MASK_REACTION				 = BLOCK_REACTION | REACTION;						//リアクション
+	static constexpr unsigned int MASK_REACTION				 = BLOCK_REACTION | REACTION | DOWN | DOWN_UP;		//リアクション
 	static constexpr unsigned int MASK_WALK					 = WALK_FRONT | WALK_BACK | WALK_LEFT | WALK_RIGHT; //歩きマスク
 	static constexpr unsigned int MASK_RUN					 = RUN_FRONT | RUN_BACK | RUN_LEFT | RUN_RIGHT;		//ダッシュマスク
 	static constexpr unsigned int MASK_MOVE					 = MASK_WALK | MASK_RUN;							//移動マスク
@@ -71,11 +73,15 @@ private:
 	//フレームカウントの種類
 	enum class FrameCountType
 	{
-		JUST_AVOID	= 0,//ジャスト回避
-		HEAL		= 1,//回復
-		AVOID		= 2,//回避
-		LOCK_ON		= 3,//ロックオン
-		ATTACK		= 4,//攻撃
+		JUST_AVOID	  = 0,//ジャスト回避
+		HEAL		  = 1,//回復
+		AVOID		  = 2,//回避
+		LOCK_ON		  = 3,//ロックオン
+		ATTACK_CANCEL = 4,//攻撃
+		COMBO_RESET	  = 5,//コンボリセット
+		ATTACK_CAN_ROTATE = 6,
+		AVOID_CAN_ROTATE = 7,
+		REACTION_CANSEL = 8,
 	};
 	//アニメーションの種類
 	enum class AnimationType
@@ -100,6 +106,17 @@ private:
 		COMBO_2			= 17,
 		COMBO_3			= 18,
 		SKILL			= 19,
+		DOWN_REACTION	= 20,
+		DOWN_UP			= 21,
+	};
+	//攻撃の種類
+	enum class AttackType
+	{
+		NONE	= -1,
+		COMBO_1 = 0,
+		COMBO_2 = 1,
+		COMBO_3 = 2,
+		SKILL   = 3,
 	};
 
 	/*内部処理関数*/
@@ -127,6 +144,7 @@ private:
 		  void UpdateAnimation	();										//現在のアニメーションの更新
 		  void CalcStamina		(const float _staminaConsumed);			//スタミナの回復処理
 		  bool FrameCount		(const int _index,const int _maxFrame);	//フレームカウント
+		  void ResetFrameCount	(const int _index);//フレームカウントの初期化
 	/*メンバ変数*/
 	HitStop*							 hitStop;			//ヒットストップ
 	VECTOR								 moveVectorRotation;//移動ベクトル用回転値
@@ -135,6 +153,7 @@ private:
 	std::map<unsigned int, int>			 animationMap;		//アニメーションマップ
 	std::map<int, unsigned int>			 reactionMap;		//リアクションマップ
 	std::map<unsigned int, unsigned int> whenRunMoveState;	//ダッシュ時の状態
+	std::map<int, unsigned int>			 attackMap;			//攻撃マップ
 	VECTOR								 nextRotation;		//次の回転率
 	int									 nowAnimation;		//アニメーション
 	float								 animationPlayTime;	//アニメーション再生時間
@@ -145,5 +164,7 @@ private:
 	int									 attackMaxFrame;	//攻撃最大フレーム
 	float								 deg;				//度数
 	bool								 isDecSpeed;		//減速フラグ
+	bool								 isCancelAttack;	//攻撃cancelフラグ
+	bool isCancelReaction;
 };
 
