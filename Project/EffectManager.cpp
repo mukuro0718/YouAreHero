@@ -4,16 +4,15 @@
 #include "UseJson.h"
 #include "Effect.h"
 #include "BossImpactEffect.h"
-#include "BossFlameEffect.h"
 #include "PlayerGuardHitEffect.h"
 #include "PlayerHealEffect.h"
 #include "PlayerImpactEffect.h"
-#include "PlayerJustGuardEffect.h"
+#include "PlayerChargeAttackEffect.h"
 #include "EffectManager.h"
 #include "EnemyManager.h"
-#include "BossAttackManager.h"
 #include "PlayerManager.h"
 #include "LoadingAsset.h"
+#include "DeleteInstance.h"
 
 /// <summary>
 /// コンストラクタ
@@ -28,10 +27,7 @@ EffectManager::EffectManager()
 	this->effect.emplace_back(new PlayerGuardHitEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_GUARD_HIT)));
 	this->effect.emplace_back(new PlayerHealEffect		(asset.GetEffect(LoadingAsset::EffectType::PLAYER_HEAL)));
 	this->effect.emplace_back(new PlayerImpactEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_IMPACT)));
-	this->effect.emplace_back(new PlayerJustGuardEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_JUST_GUARD)));
-
-	int bossFlameEffectNum = json.GetJson(JsonManager::FileType::EFFECT)["BOSS_FLAME_EFFECT_NUM"];
-	this->bossFlame = new BossFlameEffect(asset.GetEffect(LoadingAsset::EffectType::BOSS_FLAME));
+	this->effect.emplace_back(new PlayerChargeAttackEffect(asset.GetEffect(LoadingAsset::EffectType::PLAYER_CHARGE_ATTACK)));
 }
 
 /// <summary>
@@ -39,7 +35,11 @@ EffectManager::EffectManager()
 /// </summary>
 EffectManager::~EffectManager()
 {
-
+	for (int i = 0; i < this->effect.size(); i++)
+	{
+		DeleteMemberInstance(this->effect[i]);
+	}
+	this->effect.clear();
 }
 
 /// <summary>
@@ -51,7 +51,6 @@ void EffectManager::Initialize()
 	{
 		this->effect[i]->Initialize();
 	}
-	this->bossFlame->Initialize();
 }
 
 /// <summary>
@@ -67,6 +66,7 @@ void EffectManager::Update()
 	}
 	//this->bossFlame->Update();
 }
+
 /// <summary>
 /// 描画
 /// </summary>
@@ -76,31 +76,12 @@ const void EffectManager::Draw()const
 	{
 		this->effect[i]->Draw();
 	}
-	//this->bossFlame->Draw();
 }
 void EffectManager::OnIsEffect(const EffectType _type)
 {
-	if (_type == EffectType::BOSS_FLAME)
-	{
-		//this->bossFlame->OnIsPlayEffect();
-	}
-	else
-	{
-		this->effect[static_cast<int>(_type)]->OnIsPlayEffect();
-	}
+	this->effect[static_cast<int>(_type)]->OnIsPlayEffect();
 }
 void EffectManager::SetPosition(const EffectType _type, const VECTOR _position)
 {
 	this->effect[static_cast<int>(_type)]->SetPosition(_position);
-}
-/// <summary>
-/// vector<float>をVECTORに変換
-/// </summary>
-const VECTOR EffectManager::Convert(std::vector<float> _in)const
-{
-	VECTOR out = VGet(0.0f, 0.0f, 0.0f);
-	out.x = _in[0];
-	out.y = _in[1];
-	out.z = _in[2];
-	return out;
 }

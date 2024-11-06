@@ -14,7 +14,6 @@
 #include "BossRotateSlashAction.h"
 #include "PlayerManager.h"
 #include "EffectManager.h"
-#include "BossAttackManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -60,7 +59,6 @@ void BossRotateSlashAction::Update(Boss& _boss)
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& effect = Singleton<EffectManager>::GetInstance();
-	auto& attack = Singleton<BossAttackManager>::GetInstance();
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*攻撃準備*/
@@ -190,13 +188,13 @@ void BossRotateSlashAction::CalcParameter(const Boss& _boss)
 	this->parameter->desireValue = 0;
 
 	/*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
-	if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
+	if (_boss.GetHP() <= 0)
 	{
 		return;
 	}
 
 	/*状態がNORMAL,ANGRYだったら欲求値を増加する*/
-	else if (_boss.GetAngryState() >= static_cast<int>(Boss::AngryStateType::NORMAL))
+	else if (_boss.GetAngryState() >= static_cast<int>(Boss::AngryStateType::ANGRY))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
 		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::ROTATE_SLASH)])

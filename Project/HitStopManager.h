@@ -1,5 +1,5 @@
 //==================================================
-// @brief ヒットストップクラス
+// @brief ヒットストップマネージャークラス
 //==================================================
 #pragma once
 #include "Singleton.h"
@@ -8,23 +8,19 @@ class HitStop;
 class HitStopManager : public Singleton<HitStopManager>
 {
 public:
+	/*HitStopManagerを友達にする*/
 	friend class Singleton<HitStopManager>;
 
-	void Entry(HitStop& _item);
-	void Exit(HitStop& _item);
-	void Update();//更新
+	virtual ~HitStopManager();//デストラクタ
+
+	void Entry	(HitStop& _item);//登録
+	void Exit	(HitStop& _item);//解除
+	void Update	();				 //更新
 private:
 	/*内部処理関数*/
-	HitStopManager();//コンストラクタ
-	~HitStopManager();//デストラクタ
+	 HitStopManager();//コンストラクタ
 
-	/*静的定数*/
-	static constexpr float SLOW_MOTION_FACTOR = 0.3f;
-
-	/*メンバ変数*/
-	int type;
-	int time;//ヒットストップ時間
-	float slowFactor;
-	std::list<HitStop*> items;
+	 /*メンバ変数*/
+	std::list<HitStop*> items;//ヒットストップクラスのリスト
 };
 

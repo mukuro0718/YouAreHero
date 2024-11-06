@@ -19,7 +19,6 @@
 #include "LoadingAsset.h"
 #include "PlayerManager.h"
 #include "CameraManager.h"
-#include "BossAttackManager.h"
 #include "EffectManager.h"
 #include "Debug.h"
 #include "HitStopManager.h"
@@ -30,12 +29,14 @@
 /// コンストラクタ
 /// </summary>
 Boss::Boss()
-	: animationPlayTime		(0.0f)
+	: prevAttack(AttackType::NONE)
 	, moveTarget			(Gori::ORIGIN)
+	, animationPlayTime		(0.0f)
+	, angryValue			(0.0f)
 	, nowAnimation			(0)
-	, nowPhase				(0)
-	, prevPhase				(-1)
 	, nowAction				(0)
+	, angryState			(0)
+	, tiredInterval			(0)
 	, attackComboCount		(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
@@ -44,8 +45,6 @@ Boss::Boss()
 
 	/*メンバクラスのインスタンスの作成*/
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::ENEMY));
-	this->newTextureHandle = asset.GetImage(LoadingAsset::ImageType::MUTANT_NEW_TEXTURE);
-	this->prevTextureHandle = asset.GetImage(LoadingAsset::ImageType::MUTANT_PREV_TEXTURE);
 
 	/*アニメーションの設定*/
 	vector<int>	animationHandle	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_HANDLE"];
@@ -100,12 +99,7 @@ Boss::Boss()
 /// </summary>
 Boss::~Boss()
 {
-	this->actionTypeMap.clear();
-	for (int i = 0; i < this->parameters.size(); i++)
-	{
-		DeleteMemberInstance(this->parameters[i]);
-	}
-	this->parameters.clear();
+	Finalize();
 }
 
 void Boss::Initialize()
@@ -117,31 +111,31 @@ void Boss::Initialize()
 	auto& data = dynamic_cast<BossData&>(*collider.data);
 
 	/*変数の初期化*/
-	this->isAlive				 = true;
-	this->isGround				 = true;
-	this->isDraw				 = true;
-	this->speed					 = 0.0f;
-	this->animationPlayTime		 = 0.0f;
-	this->entryInterval			 = 0;
-	this->nowPhase				 = 0;
-	this->prevPhase				 = -1;
-	this->moveTarget			 = Gori::ORIGIN;
-	this->nowAnimation			 = static_cast<int>(AnimationType::ROAR);
-	this->nowAction				 = static_cast<int>(ActionType::ROAR);
-	this->attackComboCount = 0;
+	this->isAlive			= true;
+	this->isGround			= true;
+	this->isDraw			= true;
+	this->speed				= 0.0f;
+	this->animationPlayTime	= 0.0f;
+	this->entryInterval		= 0;
+	this->moveTarget		= Gori::ORIGIN;
+	this->nowAnimation		= static_cast<int>(AnimationType::ROAR);
+	this->nowAction			= static_cast<int>(ActionType::ROAR);
+	this->attackComboCount	= 0;
+	this->angryState		= static_cast<int>(AngryStateType::NORMAL);
+	float height			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_HEIGHT"];
+	collider.topPositon		= VGet(0.0f, height, 0.0f);
+	collider.radius			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
+	data.hp					= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
+	data.isHit				= false;
+	
+	/*コンボの設定*/
 	SetAttackComboCount();
+
+	/*パラメータの初期化*/
 	for (int i = 0; i < this->parameters.size(); i++)
 	{
 		this->parameters[i]->Initialize();
 	}
-	float height		= json.GetJson(JsonManager::FileType::ENEMY)["HIT_HEIGHT"];
-	collider.topPositon = /*VAdd(collider.rigidbody.GetPosition(),*/ VGet(0.0f, height, 0.0f)/*)*/;
-	collider.radius		= json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
-	data.hp				= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
-	data.isHit			= false;
-
-	/*フェーズの設定*/
-	SetPhase();
 
 	/*物理挙動の初期化*/
 	//jsonデータを定数に代入
@@ -162,9 +156,6 @@ void Boss::Initialize()
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
-
-	/*テクスチャの設定*/
-	MV1SetTextureGraphHandle(this->modelHandle, 0, this->prevTextureHandle, FALSE);
 }
 
 /// <summary>
@@ -172,6 +163,12 @@ void Boss::Initialize()
 /// </summary>
 void Boss::Finalize()
 {
+	this->actionTypeMap.clear();
+	for (int i = 0; i < this->parameters.size(); i++)
+	{
+		DeleteMemberInstance(this->parameters[i]);
+	}
+	this->parameters.clear();
 }
 
 /// <summary>
@@ -186,18 +183,14 @@ void Boss::Update()
 	/*怒り状態の設定*/
 	SetAngryState();
 
-	/*フェーズの初期化*/
-	SetPhase();
-
-	/*状態の切り替え*/
-	ChangeState();
-
-
 	/*ここですべてのパラメータの計算を行う*/
 	for (auto& item : this->parameters)
 	{
 		item->CalcParameter(*this);
 	}
+
+	/*状態の切り替え*/
+	ChangeState();
 
 	/*ここに各アクションごとの更新処理を入れたい*/
 	this->parameters[this->nowAction]->Update(*this);
@@ -212,7 +205,7 @@ void Boss::PlayAnimation()
 	if (this->isAlive)
 	{
 		VECTOR position = this->collider->rigidbody.GetPosition();
-		this->animation->Play(&this->modelHandle, position, this->nowAnimation, this->animationPlayTime);
+		this->animation->Play(&this->modelHandle, this->nowAnimation, this->animationPlayTime);
 		this->collider->rigidbody.SetPosition(position);
 	}
 }
@@ -226,17 +219,7 @@ void Boss::SetAttackComboCount()
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*コンボ数の設定*/
-	this->attackComboCount = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_COMBO_COUNT"][this->nowPhase];
-
-	/*怒りの状態によって増減させる*/
-	if (this->angryState == static_cast<int>(AngryStateType::ANGRY))
-	{
-		this->attackComboCount++;
-	}
-	else if (this->angryState == static_cast<int>(AngryStateType::TIRED))
-	{
-		this->attackComboCount--;
-	}
+	this->attackComboCount = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_COMBO_COUNT"][this->angryState];
 }
 
 /// <summary>
@@ -268,6 +251,14 @@ void Boss::ChangeState()
 			sumDesireValue += item->GetDesireValue();
 			if (isSelect)return;
 		}
+		
+		/*優先フラグが立っているか調べる*/
+		bool isPriority = false;//選択されているか
+		for (auto& item : this->parameters)
+		{
+			isPriority = item->GetIsPriority();
+			if (isPriority)break;
+		}
 
 		/*今立っているフラグを下す*/
 		unsigned int clearFlag = this->actionTypeMap[this->nowAction];
@@ -278,9 +269,20 @@ void Boss::ChangeState()
 		{
 			//各行動の期待値を求める
 			std::vector<int> actionWeight;//重み
+			int count = 0;
 			for (auto& item : this->parameters)
 			{
 				actionWeight.emplace_back(item->GetWeight(sumDesireValue));
+				//もしリストの中で選択フラグが一つでも立っていたら
+				if (isPriority)
+				{
+					//現在のitemが選択フラグが立っていなかったら重みを0にする
+					if (!item->GetIsPriority())
+					{
+						actionWeight[count] = 0;
+					}
+				}
+				count++;
 			}
 			//重みをランダムで出す
 			int randomWeight = GetRand(this->parameters[0]->GetBaseWeight() - 1);
@@ -299,7 +301,7 @@ void Boss::ChangeState()
 		}
 		if (!isSelect)
 		{
-			this->nowAction = static_cast<int>(ActionType::REST);
+			this->nowAction = static_cast<int>(ActionType::IDLE);
 		}
 	}
 	unsigned int setFlag = this->actionTypeMap[this->nowAction];
@@ -352,10 +354,6 @@ const bool Boss::GetIsAttack()const
 	if (this->state->CheckFlag(this->MASK_ATTACK))return true;
 	return false;
 }
-const VECTOR Boss::GetHeadPosition()const
-{
-	return MV1GetFramePosition(this->modelHandle, 7);
-}
 
 /// <summary>
 /// アニメーション再生時間の取得
@@ -365,40 +363,6 @@ const float Boss::GetAnimationPlayTime()const
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	return json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nowAnimation];
-}
-
-/// <summary>
-/// フェーズの設定
-/// </summary>
-void Boss::SetPhase()
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& effect = Singleton<EffectManager>::GetInstance();
-
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
-	auto& data = dynamic_cast<BossData&>(*collider.data);
-	const float HP = data.hp;
-	const float MAX_HP = json.GetJson(JsonManager::FileType::ENEMY)["HP"];
-
-	/*HPが最大値の1/3未満だったらフェーズ３*/
-	int maxPhase = static_cast<int>(Phase::PHASE_10);
-	for (int i = 0; i < maxPhase; i++)
-	{
-		//現在のHP < 最大HP - Phaseごとの許容HP減少量
-		if (HP < (MAX_HP - (MAX_HP / (maxPhase + 1) * (i + 1))))
-		{
-			this->nowPhase = i;
-		}
-	}
-
-	if (this->nowPhase >= static_cast<int>(Phase::PHASE_8))
-	{
-		/*テクスチャの設定*/
-		effect.OnIsEffect(EffectManager::EffectType::BOSS_FLAME);
-		MV1SetTextureGraphHandle(this->modelHandle, 0, this->newTextureHandle, FALSE);
-	}
-	UnifyPhases();
 }
 
 /// <summary>
@@ -414,28 +378,28 @@ void Boss::SetAngryState()
 	/*怒り状態*/
 	switch (this->angryState)
 	{
-	//怒り
+		//怒り
 	case static_cast<int>(AngryStateType::ANGRY):
-		this->angryValue -= 0.01f;
+		this->angryValue--;
 		if (this->angryValue < 0)
 		{
 			this->angryState = static_cast<int>(AngryStateType::TIRED);
-			this->tiredInterval = 0;
+			this->angryValue = 0;
 		}
 		break;
-	//通常
+		//通常
 	case static_cast<int>(AngryStateType::NORMAL):
-		//攻撃が当たっていたら
+		//怒り値を増加
+		this->angryValue++;
+		//攻撃が当たっていたら怒り値をさらに増加
 		if (collider.data->isHit)
 		{
-			//怒り値を増加
 			this->angryValue++;
-			//最大値から出したランダムな値が、現在の怒り値以内だったら状態を怒りにする
-			int randomAngryValue = GetRand(json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"]);
-			if (randomAngryValue < this->angryValue)
-			{
-				this->angryState = static_cast<int>(AngryStateType::ANGRY);
-			}
+		}
+		//怒り値が最大以上だったら状態をANGRYにする
+		if (this->angryValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"])
+		{
+			this->angryState = static_cast<int>(AngryStateType::ANGRY);
 		}
 		break;
 	//疲れ
@@ -446,6 +410,7 @@ void Boss::SetAngryState()
 		if (this->tiredInterval >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_INTERVAL"])
 		{
 			this->angryState = static_cast<int>(AngryStateType::NORMAL);
+			this->tiredInterval = 0;
 		}
 		break;
 	}

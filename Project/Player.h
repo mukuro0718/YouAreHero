@@ -26,7 +26,7 @@ private:
 	/*静的定数*/
 	static constexpr float	SHADOW_HEIGHT	= 10.0f;//影を投影する高さ
 	static constexpr float	SHADOW_SIZE		= 6.0f;	//かげのサイズ
-	static constexpr int	COUNT_NUM		= 9;	//フレームカウントの数
+	static constexpr int	COUNT_NUM		= 10;	//フレームカウントの数
 	//プレイヤーの状態
 	static constexpr unsigned int IDLE			  = (1 << 0);  //待機
 	static constexpr unsigned int AVOID			  = (1 << 1);  //回避
@@ -73,15 +73,16 @@ private:
 	//フレームカウントの種類
 	enum class FrameCountType
 	{
-		JUST_AVOID	  = 0,//ジャスト回避
-		HEAL		  = 1,//回復
-		AVOID		  = 2,//回避
-		LOCK_ON		  = 3,//ロックオン
-		ATTACK_CANCEL = 4,//攻撃
-		COMBO_RESET	  = 5,//コンボリセット
+		JUST_AVOID		  = 0,//ジャスト回避
+		HEAL			  = 1,//回復
+		AVOID			  = 2,//回避
+		LOCK_ON			  = 3,//ロックオン
+		ATTACK_CANCEL	  = 4,//攻撃
+		COMBO_RESET		  = 5,//コンボリセット
 		ATTACK_CAN_ROTATE = 6,
-		AVOID_CAN_ROTATE = 7,
-		REACTION_CANSEL = 8,
+		AVOID_CAN_ROTATE  = 7,
+		REACTION_CANSEL   = 8,
+		CHARGE_ATTACK	  = 9,
 	};
 	//アニメーションの種類
 	enum class AnimationType
@@ -165,6 +166,9 @@ private:
 	float								 deg;				//度数
 	bool								 isDecSpeed;		//減速フラグ
 	bool								 isCancelAttack;	//攻撃cancelフラグ
-	bool isCancelReaction;
+	bool								 isCancelReaction;	//リアクションのキャンセル
+	bool								 isBlockingMove;	//ガード移動
+	bool								 isChargeAttack;	//溜め攻撃フラグ
+	bool								 isStopAnimation;
 };
 

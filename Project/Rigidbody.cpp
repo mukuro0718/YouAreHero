@@ -18,7 +18,6 @@ Rigidbody::Rigidbody()
 /// <summary>
 /// ‰Šú‰»
 /// </summary>
-/// <param name="_useGravity"></param>
 void Rigidbody::Initialize(bool _useGravity)
 {
 	this->position	 = VGet(0.0f, 0.0f, 0.0f);
@@ -30,7 +29,6 @@ void Rigidbody::Initialize(bool _useGravity)
 /// <summary>
 /// velocity‚Ìset‚Ædirection‚Ì©“®ŒvZ
 /// </summary>
-/// <param name="_set"></param>
 void Rigidbody::SetVelocity(const VECTOR& _set)
 {
 	this->velocity = _set;

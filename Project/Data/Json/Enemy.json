@@ -1,21 +1,25 @@
 {
-  "ENTRY_INTERVAL": 95,
-  "ON_ENTRY_EFFECT_INTERVAL": 60,
-  "REST_INTERVAL": 120,
+  "REST_INTERVAL": 300,
   "CHASE_INTERVAL": 120,
   "IDLE_INTERVAL": 120,
 
   "MAX_DESIRE_VALUE": 100,
   "NORMAL_DESIRE_VALUE": 10,
 
-  "MAX_ANGRY_VALUE": 100,
-  "MAX_TIRED_INTERVAL": 600,
+  "MAX_ANGRY_VALUE": 1500,
+  "MAX_TIRED_INTERVAL": 300,
 
-  "IDLE_ACTION_MAX_FRAME": [ 60, 30, 80 ],
-  "REST_ACTION_MAX_FRAME": [ 120, 60, 180 ],
+  "IDLE_ACTION_MAX_FRAME": 120,
+  "REST_ACTION_MAX_FRAME": 300,
   "REST_ACTION_MAX_DESIRE_VALUE": [ 300, 400, 250 ],
 
-  "ATTACK_COMBO_COUNT": [ 1, 1, 1, 1, 2, 2, 3, 3, 4, 5 ],
+  "ATTACK_COMBO_COUNT": [ 2, 3, 5 ],
+
+  "COLOR_SCALE_NUM": 4,
+  "ROAR_TARGET_COLOR_SCALE": [ 1.0, 0.5, 0.5, 1.0 ],
+  "IDLE_TARGET_COLOR_SCALE": [ 1.0, 1.0, 1.0, 1.0 ],
+  "REST_TARGET_COLOR_SCALE": [ 0.5, 0.5, 1.0, 1.0 ],
+  "LERP_COLOR_SCALE": [ 0.1, 0.1, 0.1, 0.1 ],
 
   "ORIGIN": [ 0.0, 0.0, 0.0 ],
   "INIT_DIRECTION": [ 0.0, 0.0, -1.0 ],
@@ -62,6 +66,8 @@
     -1,
     -1,
     -1,
+    -1,
+    -1,
     -1
   ],
   "ANIMATION_INDEX": [
@@ -78,7 +84,9 @@
     6,
     8,
     9,
-    15
+    15,
+    16,
+    17
   ],
   "ANIMATION_PLAY_TIME": [
     0.8,
@@ -95,6 +103,8 @@
     0.7,
     0.8,
     0.8,
+    1.0,
+    1.0,
     1.0
   ],
 

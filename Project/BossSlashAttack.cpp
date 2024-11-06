@@ -55,7 +55,7 @@ void BossSlashAttack::Initialize()
 	auto& data		= dynamic_cast<BossAttackData&>(*collider.data);
 	collider.radius		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
 	data.damage			= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
-	data.playerReaction = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
+	data.playerReaction = static_cast<int>(Gori::PlayerReactionType::NORMAL);
 	//ここでのヒットストップ系の変数は、キャラクター側に与えるものになる
 	data.hitStopTime	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
 	data.hitStopType	= static_cast<int>(HitStop::Type::STOP);

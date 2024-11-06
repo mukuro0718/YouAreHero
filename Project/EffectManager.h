@@ -7,34 +7,33 @@ class BossFlameEffect;
 class EffectManager : public Singleton<EffectManager>
 {
 public:
+	/*EffectManagerとSingletonをフレンドか*/
 	friend class Singleton<EffectManager>;
+
+	virtual ~EffectManager();//デストラクタ
+
 	/*列挙体*/
+	//エフェクトの種類
 	enum class EffectType
 	{
-		BOSS_IMPACT,
-		PLAYER_GUARD_HIT,
-		PLAYER_HEAL,
-		PLAYER_IMPACT,
-		PLAYER_JUST_GUARD,
-		BOSS_FLAME,
+		BOSS_IMPACT		 = 0,//ボスの攻撃が当たった時のエフェクト
+		PLAYER_GUARD_HIT = 1,//プレイヤーのガードが成功したときのエフェクト
+		PLAYER_HEAL		 = 2,//プレイヤーが回復したときのエフェクト
+		PLAYER_IMPACT	 = 3,//プレイヤーの攻撃が当たった時のエフェクト
+		PLAYER_CHARGE	 = 4,//プレイヤーの溜め攻撃エフェクト
 	};
-	/*エフェクトの描画用関数*/
-	void OnIsEffect(const EffectType _type);
-	void SetPosition(const EffectType _type, const VECTOR _position);
-	void Initialize();
-	void Update();
-	const void Draw()const;
+
+		  void Initialize();	 //初期化
+		  void Update	 ();	 //更新
+	const void Draw		 ()const;//描画
+	
+	void OnIsEffect (const EffectType _type);							//エフェクト再生フラグを立てる
+	void SetPosition(const EffectType _type, const VECTOR _position);	//座標の設定
 private:
-	/*静的定数*/
-	static constexpr int PLAYER_EFFECT = 1;
 	/*内部処理関数*/
 	EffectManager();//コンストラクタ
-	~EffectManager();//デストラクタ
-	const VECTOR Convert(std::vector<float> _in)const;
-	
-
+		
 	/*メンバ変数*/
 	std::vector<Effect*> effect;
-	BossFlameEffect* bossFlame;
 };
 

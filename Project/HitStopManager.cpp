@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "USEJson.h"
 #include "UseSTL.h"
+#include "DeleteInstance.h"
 #include "HitStop.h"
 #include "HitStopManager.h"
 #include "InputManager.h"
@@ -11,7 +12,6 @@
 /// コンストラクタ
 /// </summary>
 HitStopManager::HitStopManager()
-	: time(0)
 {
 }
 
@@ -20,7 +20,11 @@ HitStopManager::HitStopManager()
 /// </summary>
 HitStopManager::~HitStopManager()
 {
-
+	for (auto item : this->items)
+	{
+		DeleteMemberInstance(item);
+	}
+	this->items.clear();
 }
 
 /// <summary>

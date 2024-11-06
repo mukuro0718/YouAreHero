@@ -6,12 +6,16 @@
 /// コンストラクタ
 /// </summary>
 CharacterData::CharacterData()
-	: hp(0)
-	, isHit(false)
-	, hitPosition(VGet(0.0f, 0.0f, 0.0f))
+	: hitPosition	(VGet(0.0f, 0.0f, 0.0f))
+	, isHit			(false)
+	, isGuard		(false)
 	, isInvinvible	(false)
-	, isGuard	(false)
+	, hp			(0)
 	, playerReaction(0)
+	, hitStopTime	(0)
+	, hitStopType	(0)
+	, hitStopDelay	(0)
+	, slowFactor	(0.0f)
 {
 
 }

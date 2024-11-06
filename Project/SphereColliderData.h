@@ -8,6 +8,9 @@ class ColliderData;
 class SphereColliderData : public ColliderData
 {
 public:
+	/*コンストラクタ*/
 	SphereColliderData(const ColliderData::Priority _priority, const GameObjectTag _tag);
-	float radius;
+
+	/*メンバ変数*/
+	float radius;//半径
 };

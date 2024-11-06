@@ -88,6 +88,7 @@ public:
 		PLAYER_HEAL,
 		PLAYER_IMPACT,
 		PLAYER_JUST_GUARD,
+		PLAYER_CHARGE_ATTACK,
 	};
 
 	/*getter*/

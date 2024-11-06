@@ -235,7 +235,7 @@ void BossSlashAction::CalcParameter(const Boss& _boss)
 	}
 
 	/*ó‘Ô‚ªTIRED,NORMAL,ANGRY‚¾‚Á‚½‚ç—~‹’l‚ğ‘‰Á‚·‚é*/
-	if (_boss.GetAngryState() >= static_cast<int>(Boss::AngryStateType::TIRED))
+	if (_boss.GetAngryState() >= static_cast<int>(Boss::AngryStateType::NORMAL))
 	{
 
 		/*‹——£‚ª’è”ˆÈ“à‚¾‚Á‚½‚ç—~‹’l‚ğ’Êí‚É‚·‚é*/

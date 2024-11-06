@@ -2,6 +2,7 @@
 #include "EffekseerForDXLib.h"
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
 #include "Rigidbody.h"
 #include "ColliderData.h"
@@ -46,19 +47,16 @@ void PlayerAttack::Initialize()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
-	/*コライダーの初期化*/
-	auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
-	auto& data = dynamic_cast<PlayerAttackData&>(*collider.data);
-	collider.radius = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_RADIUS"];
-	data.damage = json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"];
-	data.hitStopTime = json.GetJson(JsonManager::FileType::PLAYER)["HIT_STOP_TIME"];
-
-	/*物理挙動の初期化*/
+	auto& collider	= dynamic_cast<AttackSphereColliderData&>(*this->collider);
+	auto& data			= dynamic_cast<PlayerAttackData&>(*collider.data);
+	
+	collider.radius		  = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_RADIUS"];
+	data.hitStopTime	  = json.GetJson(JsonManager::FileType::PLAYER)["HIT_STOP_TIME"];
+	this->isStartHitCheck = false;
+	this->frameCount	  = 0;
+	this->isNotOnHit	  = false;
 	this->collider->rigidbody.Initialize(false);
 	this->collider->rigidbody.SetPosition(VGet(0.0f, 500.0f, 0.0f));
-	this->isStartHitCheck = false;
-	this->frameCount = 0;
-	this->isNotOnHit = false;
 }
 /// <summary>
 /// 後処理
@@ -85,24 +83,26 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 		const int	 END_HIT_CHECK_FRAME	= json.GetJson(JsonManager::FileType::PLAYER)["END_HIT_CHECK_FRAME"];	//当たり判定終了フレーム
 		const float  POSITION_OFFSET		= json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET"];		//当たり判定座標オフセット
 		const float  Y_OFFSET				= json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"];		//Y座標用オフセット
-		VECTOR direction = VGet(0.0f, 0.0f, -1.0f);
-		direction = VTransform(direction,MGetRotY(player.GetRigidbody().GetRotation().y));
-		VECTOR position						= _position;										//プレイヤーの座標
-		position							= VAdd(position, VScale(direction, POSITION_OFFSET));			//プレイヤーの座標に、オフセット値を足す
-		position.y						    += Y_OFFSET;																	//Y座標オフセット値を足す
+		//向きの設定
+		VECTOR firstDirection = Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);
+		VECTOR direction	  = VTransform(firstDirection,MGetRotY(player.GetRigidbody().GetRotation().y));
+		//座標の設定
+		VECTOR position	=  _position;											//プレイヤーの座標
+		position		=  VAdd(position, VScale(direction, POSITION_OFFSET));	//プレイヤーの座標に、オフセット値を足す
+		position.y		+= Y_OFFSET;											//Y座標オフセット値を足す
 
 		//フレームを増やす
 		this->frameCount++;
 		//フレームが定数を超えていなかったら早期リターン
 		if (this->frameCount < START_HIT_CHECK_FRAME)return;
 
-		//今回の攻撃中に当たり判定フラグが一度もたっていなかったら
+		//今回の攻撃中に当たり判定フラグが一度もたっていなかったらフラグを立てる
 		if (!this->isNotOnHit)
 		{
 			data.isDoHitCheck = true;
 			this->isNotOnHit = true;
 		}
-
+		//攻撃が当たっていたらエフェクトを再生
 		if (data.isHitAttack)
 		{
 			auto& effect = Singleton<EffectManager>::GetInstance();
@@ -113,6 +113,7 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 
 		//当たり判定の座標のセット
 		this->collider->rigidbody.SetPosition(position);
+
 		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
 		if (this->frameCount > END_HIT_CHECK_FRAME || (this->isNotOnHit && !data.isDoHitCheck))
 		{
@@ -121,13 +122,11 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 			this->frameCount = 0;
 		}
 	}
-	//else
-	//{
-	//	//当たり判定の座標のセット
-	//	this->collider->rigidbody.SetPosition(VGet(0.0f, 500.0f, 0.0f));
-	//}
 }
 
+/// <summary>
+/// ダメージの設定
+/// </summary>
 void PlayerAttack::SetDamage(const float _damage)
 {
 	auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
@@ -135,6 +134,7 @@ void PlayerAttack::SetDamage(const float _damage)
 
 	data.damage = _damage;
 }
+
 /// <summary>
 /// 描画
 /// </summary>

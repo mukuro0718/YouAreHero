@@ -8,13 +8,16 @@
 /// コンストラクタ
 /// </summary>
 ColliderData::ColliderData(const Kind _kind, const Priority _priority, const GameObjectTag _tag)
-	: isHit(false)
-	, tag(_tag)
-	, priority(_priority)
-	, kind(_kind)
-	, nextPositon(VGet(0.0f,0.0f,0.0f))
+	: kind			(_kind)
+	, isHit			(false)
+	, nextPositon	(VGet(0.0f, 0.0f, 0.0f))
+	, tag			(_tag)
+	, priority		(_priority)
 {
+	/*シングルトンクラスのインスタンスを取得*/
 	auto& manager = Singleton<CollisionManager>::GetInstance();
+	
+	/*マネージャーに登録*/
 	manager.Entry(*this);
 }
 
@@ -23,6 +26,9 @@ ColliderData::ColliderData(const Kind _kind, const Priority _priority, const Gam
 /// </summary>
 ColliderData::~ColliderData()
 {
+	/*シングルトンクラスのインスタンスを取得*/
 	auto& manager = Singleton<CollisionManager>::GetInstance();
+
+	/*マネージャーから削除*/
 	manager.Exit(*this);
 }

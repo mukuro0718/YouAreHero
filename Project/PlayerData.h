@@ -1,11 +1,16 @@
+//==========================================
+// @brief プレイヤーキャラクターデータクラス
+//==========================================
 #pragma once
 
 class CharacterData;
 class PlayerData : public CharacterData
 {
 public:
-	PlayerData();
-	~PlayerData(){}
-	float stamina;
+	 PlayerData(); //コンストラクタ
+	~PlayerData(){}//デストラクタ
+	
+	/*メンバ変数*/
+	float stamina;//スタミナ
 };
 

@@ -2,6 +2,7 @@
 #include "EffekseerForDXLib.h"
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "VECTORtoUseful.h"
 #include "Transform.h"
 #include "Rigidbody.h"
 #include "Effect.h"

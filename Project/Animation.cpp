@@ -6,16 +6,17 @@
 /// コンストラクタ
 /// </summary>
 Animation::Animation()
-	: animationAttachIndex(0)
-	, prevAnimation(0)
-	, nowAnimation(0)
-	, animationRate(0.0f)
-	, prevAnimationAttachIndex(0)
-	, animationTotalTime(0.0f)
-	, animationPlayTime(0.0f)
-	, isChange(false)
+	: animationTotalTime		(0.0f)
+	, animationPlayTime			(0.0f)
+	, animationRate				(0.0f)
+	, addAnimationRate			(0.0f)
+	, isChange					(false)
+	, animationAttachIndex		(0)
+	, prevAnimationAttachIndex	(0)
+	, prevAnimation				(0)
+	, nowAnimation				(0)
 {
-	this->addAnimationRate = 0.05f;
+	this->addAnimationRate = this->ADD_ANIMATION_RATE;
 }
 
 /// <summary>
@@ -61,16 +62,11 @@ void Animation::Attach(int* modelHandle)
 /// <summary>
 /// アニメーションの再生
 /// </summary>
-void Animation::Play(int* _modelHandle, VECTOR& _position, const int _nextAnimation, const float _animationPlayTime)
+void Animation::Play(int* _modelHandle, const int _nextAnimation, const float _animationPlayTime)
 {
 	/*もし今までアタッチしていたアニメーションと次のアニメーションが違うなら*/
 	if (this->nowAnimation != _nextAnimation)
 	{
-		VECTOR MovePosition = MV1GetFramePosition(*_modelHandle, 1);
-		float yOffset = MovePosition.y - _position.y;
-		_position = MovePosition;
-		_position.y -= yOffset;
-
 		this->prevAnimation = this->nowAnimation;
 		this->nowAnimation = _nextAnimation;
 		this->isChange = false;
@@ -83,10 +79,6 @@ void Animation::Play(int* _modelHandle, VECTOR& _position, const int _nextAnimat
 	/*再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す*/
 	if (this->animationPlayTime >= this->animationTotalTime)
 	{
-		VECTOR MovePosition = MV1GetFramePosition(*_modelHandle, 1);
-		float yOffset = MovePosition.y - _position.y;
-		_position = MovePosition;
-		_position.y -= yOffset;
 		this->animationPlayTime = 0.0f;
 		MV1SetAttachAnimTime(*_modelHandle, this->animationAttachIndex, this->animationPlayTime);
 	}

@@ -5,6 +5,7 @@
     "Asset/Effect/Player/GuardEffect.efkefc",
     "Asset/Effect/Player/healEffect.efkefc",
     "Asset/Effect/Player/ImpactEffect.efkefc",
-    "Asset/Effect/Player/JustGuardEffect.efkefc"
+    "Asset/Effect/Player/JustGuardEffect.efkefc",
+    "Asset/Effect/Player/ChargeAttackEffect.efkefc"
   ]
 }

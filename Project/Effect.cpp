@@ -93,18 +93,8 @@ const void Effect::Draw()const
 }
 
 /// <summary>
-/// vector<float>‚ğVECTOR‚É•ÏŠ·
+/// À•W‚Ìİ’è
 /// </summary>
-const VECTOR Effect::Convert(std::vector<float> _in)const
-{
-	VECTOR out = VGet(0.0f, 0.0f, 0.0f);
-	out.x = _in[0];
-	out.y = _in[1];
-	out.z = _in[2];
-	return out;
-}
-
-
 void Effect::SetPosition(const VECTOR _position)
 {
 	this->transform->SetPosition(_position);

@@ -21,7 +21,8 @@ public:
 	const bool GetIsHitAttack();
 	void OffIsHitAttack();
 
-	/*UŒ‚‚Ìí—Ş*/
+	/*—ñ‹“‘Ì*/
+	//UŒ‚‚Ìí—Ş
 	enum class AttackType
 	{
 		NONE			= -1,

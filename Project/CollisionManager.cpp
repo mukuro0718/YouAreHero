@@ -33,6 +33,7 @@ void CollisionManager::Entry(ColliderData& _data)
 	{
 		this->collidables.emplace_back(&_data);
 	}
+
 	/*登録されていたらエラーを吐く*/
 	else
 	{
@@ -53,6 +54,7 @@ void CollisionManager::Exit(ColliderData& _data)
 	{
 		this->collidables.remove(&_data);
 	}
+
 	/*登録されていなかったらエラーを吐く*/
 	else
 	{
@@ -66,7 +68,7 @@ void CollisionManager::Exit(ColliderData& _data)
 /// </summary>
 void CollisionManager::Update()
 {
-	//移動
+	/*移動*/
 	for (auto& item : this->collidables)
 	{
 		//ポジションに移動力を足す
@@ -76,17 +78,15 @@ void CollisionManager::Update()
 		if (item->rigidbody.UseGravity())
 		{
 			velocity = VAdd(velocity, VGet(0.0f, this->GRAVITY, 0));
-
 			//最大重力加速度より大きかったらクランプ
 			if (velocity.y < this->MAX_GRAVITY_ACCEL)
 			{
 				velocity = VGet(velocity.x, this->MAX_GRAVITY_ACCEL, velocity.z);
 			}
 		}
-
+		//次の座標とVelocityを出す
 		auto nextPosition = VAdd(position, velocity);
 		item->rigidbody.SetVelocity(velocity);
-
 		//もともとの情報、予定情報をデバッグ表示
 #if _DEBUG
 		auto kind = item->GetKind();
@@ -119,10 +119,11 @@ void CollisionManager::Update()
 		//予定ポジション設定
 		item->SetNextPosition(nextPosition);
 	}
-	//当たり判定チェック
-	std::vector<OnCollideInfo> onCollideInfo = CheckColide();
 
-	//位置確定
+	/*当たり判定チェック*/
+	CheckColide();
+
+	/*位置確定*/
 	FixPosition();
 
 }
@@ -130,24 +131,25 @@ void CollisionManager::Update()
 /// <summary>
 /// 当たり判定チェック
 /// </summary>
-std::vector<CollisionManager::OnCollideInfo> CollisionManager::CheckColide()
+void CollisionManager::CheckColide()
 {
-	std::vector<OnCollideInfo> onCollideInfo;
-	//衝突通知、ポジション補正
-	bool doCheck = true;
-	int checkCount = 0;//チェック回数
+	bool doCheck	= true;	//当たったか
+	int  checkCount = 0;	//チェック回数
 
+	/*当たっていたら*/
 	while (doCheck)
 	{
+		//フラグを下す
 		doCheck = false;
+		//チェック回数を増やす
 		checkCount++;
-
 		//２重ループで全オブジェクト当たり判定
 		//(重いのでオブジェクト同士のみ当たり判定するなど工夫がいる)
 		for (auto& objectA : this->collidables)
 		{
 			for (auto& objectB : this->collidables)
 			{
+				//AとBが異なっていたら
 				if (objectA != objectB)
 				{
 					//ぶつかっていれば
@@ -158,15 +160,16 @@ std::vector<CollisionManager::OnCollideInfo> CollisionManager::CheckColide()
 
 						ColliderData* primary = objectA;
 						ColliderData* secondary = objectB;
-
 						//プライオリティの低いほうを移動
 						if (priorityA < priorityB)
 						{
 							primary = objectB;
 							secondary = objectA;
 						}
+						//次の座標を出す
 						FixNextPosition(*primary, *secondary);
 
+						doCheck = true;
 						break;
 					}
 				}
@@ -185,35 +188,7 @@ std::vector<CollisionManager::OnCollideInfo> CollisionManager::CheckColide()
 			break;
 		}
 	}
-	return onCollideInfo;
 }
-
-/// <summary>
-/// 指定ラインがオブジェクトとぶつかっているかどうか判定し、ぶつかっているオブジェクトを返す
-/// </summary>
-//std::list<Collidable*> CollisionManager::IsCollideLine(const VECTOR& _start, const VECTOR& _end)const
-//{
-//	std::list<Collidable*> ret;
-//
-//	for (auto& object : collidables)
-//	{
-//		//collidableの種類によって、当たり判定を分ける
-//		auto kind = object->GetKind();
-//		//ラインと平面
-//		if (kind == ColliderData::Kind::PLANE)
-//		{
-//			auto planeColliderData = dynamic_cast<ColliderDataPlane*>(object);
-//			//ラインと点の最短距離を求める
-//			float minLength = Segment_Point_MinLength(_start, _end, object->rigidbody.GetPosition());
-//			//floatの誤差を考慮して判定
-//			if (minLength < 0.001f)
-//			{
-//				ret.emplace_back(object);
-//			}
-//		}
-//	}
-//	return ret;
-//}
 
 /// <summary>
 /// 当たっているかどうかだけ判定
@@ -237,6 +212,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 		//auto objectBColliderData = dynamic_cast<ColliderDataSphere*>(_objectB);
 		//isHit = (aTobLength < objectAColliderData->radius + objectBColliderData->radius);
 	}
+
 	/*カプセルとカプセル*/
 	else if (aKind == ColliderData::Kind::CHARACTER_CAPSULE && bKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
@@ -276,7 +252,16 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			if (sphereColliderData.data->isDoHitCheck)
 			{
 				VECTOR characterCapsuleTop = VAdd(characterCapsuleUnder,capsuleColliderData.topPositon);
-				isHit = HitCheck_Sphere_Capsule(attackSphereCenter, sphereColliderData.radius, characterCapsuleUnder, characterCapsuleTop, capsuleColliderData.radius);
+				if (HitCheck_Sphere_Capsule(attackSphereCenter, sphereColliderData.radius, characterCapsuleUnder, characterCapsuleTop, capsuleColliderData.radius))
+				{
+					sphereColliderData.OnHit(*capsuleColliderData.data);
+					capsuleColliderData.OnHit(*sphereColliderData.data, sphereColliderData.GetNextPosition());
+					if (sphereColliderData.GetTag() == GameObjectTag::BOSS_ATTACK && capsuleColliderData.GetTag() == GameObjectTag::PLAYER)
+					{
+						auto& primaryAttackData = dynamic_cast<BossAttackData&> (*sphereColliderData.data);
+						capsuleColliderData.SetPlayerReaction(primaryAttackData.playerReaction);
+					}
+				}
 			}
 		}
 	}
@@ -309,7 +294,16 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			{
 				VECTOR attackCapsuleTop = attackColliderData.topPositon;
 				VECTOR characterCapsuleTop = VAdd(characterCapsuleUnder, characterColliderData.topPositon);
-				isHit = HitCheck_Capsule_Capsule(attackCapsuleUnder, attackCapsuleTop, attackColliderData.radius, characterCapsuleUnder, characterCapsuleTop, characterColliderData.radius);
+				if (HitCheck_Capsule_Capsule(attackCapsuleUnder, attackCapsuleTop, attackColliderData.radius, characterCapsuleUnder, characterCapsuleTop, characterColliderData.radius))
+				{
+					attackColliderData.OnHit(*characterColliderData.data);
+					characterColliderData.OnHit(*attackColliderData.data, attackColliderData.GetNextPosition());
+					if (attackColliderData.GetTag() == GameObjectTag::BOSS_ATTACK && characterColliderData.GetTag() == GameObjectTag::PLAYER)
+					{
+						auto& primaryAttackData = dynamic_cast<BossAttackData&> (*attackColliderData.data);
+						characterColliderData.SetPlayerReaction(primaryAttackData.playerReaction);
+					}
+				}
 			}
 		}
 	}
@@ -344,27 +338,27 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 	else if ((aKind == ColliderData::Kind::SPHERE && bKind == ColliderData::Kind::PLANE) ||
 		(aKind == ColliderData::Kind::PLANE && bKind == ColliderData::Kind::SPHERE))
 	{
-		ColliderData* planeDataBase = &_objectA;
-		VECTOR planeCenter = _objectA.GetNextPosition();
-		VECTOR sphereCenter = _objectB.GetNextPosition();
-		if (bKind == ColliderData::Kind::PLANE)
-		{
-			planeDataBase = &_objectB;
-			planeCenter = _objectB.GetNextPosition();
-			sphereCenter = _objectA.GetNextPosition();
-		}
-		auto& planeColliderData = dynamic_cast<PlaneColliderData&>(*planeDataBase);
+		//ColliderData* planeDataBase = &_objectA;
+		//VECTOR planeCenter = _objectA.GetNextPosition();
+		//VECTOR sphereCenter = _objectB.GetNextPosition();
+		//if (bKind == ColliderData::Kind::PLANE)
+		//{
+		//	planeDataBase = &_objectB;
+		//	planeCenter = _objectB.GetNextPosition();
+		//	sphereCenter = _objectA.GetNextPosition();
+		//}
+		//auto& planeColliderData = dynamic_cast<PlaneColliderData&>(*planeDataBase);
 
-		if (bKind == ColliderData::Kind::SPHERE)
-		{
-			sphereCenter = _objectB.GetNextPosition();
-		}
-		/*今は地面が円形の平面を持っているので、当たり判定はY座標(０以下かどうか)と平面の中心座標が平面の半径居ないかを判定する*/
-		float distance = VSize(VSub(sphereCenter, planeCenter));
-		if ((sphereCenter.y < 0.0f) || (distance > planeColliderData.radius))
-		{
-			isHit = true;
-		}
+		//if (bKind == ColliderData::Kind::SPHERE)
+		//{
+		//	sphereCenter = _objectB.GetNextPosition();
+		//}
+		///*今は地面が円形の平面を持っているので、当たり判定はY座標(０以下かどうか)と平面の中心座標が平面の半径居ないかを判定する*/
+		//float distance = VSize(VSub(sphereCenter, planeCenter));
+		//if ((sphereCenter.y < 0.0f) || (distance > planeColliderData.radius))
+		//{
+		//	isHit = true;
+		//}
 	}
 
 	return isHit;
@@ -401,9 +395,9 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
 
 		//そのままだとちょうど当たる位置になるので少し余分に離す
-		float awayDist = primaryColliderData.radius + secondaryColliderData.radius + 0.005f;
-		VECTOR newPrimaryPosition = VScale(secondaryToPrimaryNorm, awayDist);
-		VECTOR fixedPosition = VAdd(_secondary.GetNextPosition(), newPrimaryPosition);
+		float awayDist = primaryColliderData.radius + secondaryColliderData.radius - secondaryToPrimarySize + 0.05f;
+		VECTOR fixVector = VScale(secondaryToPrimaryNorm, awayDist);
+		VECTOR fixedPosition = VAdd(_primary.GetNextPosition(), fixVector);
 		_primary.SetNextPosition(fixedPosition);
 	}
 	//平面とカプセル(平面はSTATICなので、必ずprimaryがPLANEになる)
@@ -413,12 +407,12 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 
 		VECTOR fixedPosition = _secondary.GetNextPosition();
 		VECTOR secondaryToPrimary = VSub(_secondary.GetNextPosition(), _primary.rigidbody.GetPosition());
-		float distance = VSize(secondaryToPrimary);
+		float secondaryToPrimarySize = VSize(secondaryToPrimary);
 		float fixValue = 0.0f;
-
-		if (distance > primaryColliderData.radius)
+		//中心点からキャラクターの座標までのベクトルのサイズが、平面の半径よりも大きければ
+		if (secondaryToPrimarySize > primaryColliderData.radius)
 		{
-			fixValue = primaryColliderData.radius - distance;
+			fixValue = primaryColliderData.radius - secondaryToPrimarySize;
 			fixedPosition = VAdd(fixedPosition, VScale(VNorm(secondaryToPrimary), fixValue));
 		}
 		fixedPosition.y = 0.0f;
@@ -427,53 +421,46 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 	//平面とスフィア(平面はSTATICなので、必ずprimaryがPLANEになる)
 	else if (primaryKind == ColliderData::Kind::PLANE && secondaryKind == ColliderData::Kind::SPHERE)
 	{
-		auto& primaryColliderData = dynamic_cast<PlaneColliderData&> (_primary);
+		//auto& primaryColliderData = dynamic_cast<PlaneColliderData&> (_primary);
 
-		VECTOR fixedPosition = _secondary.GetNextPosition();
-		if (fixedPosition.y < 0.0f)
-		{
-			fixedPosition.y = 0.0f;
-		}
-		_secondary.SetNextPosition(fixedPosition);
+		//VECTOR fixedPosition = _secondary.GetNextPosition();
+		//if (fixedPosition.y < 0.0f)
+		//{
+		//	fixedPosition.y = 0.0f;
+		//}
+		//_secondary.SetNextPosition(fixedPosition);
 	}
 	//球とカプセル(球はSTATICなので、必ずprimaryがSPHEREになる)
 	else if (primaryKind == ColliderData::Kind::ATTACK_SPHERE && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
-		
-		auto& primaryColliderData = dynamic_cast<AttackSphereColliderData&> (_primary);
-		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
-		if (primaryColliderData.data->isDoHitCheck)
-		{
-			primaryColliderData.OnHit(*secondaryColliderData.data);
-			secondaryColliderData.OnHit(*primaryColliderData.data, primaryColliderData.GetNextPosition());
-			if (_primary.GetTag() == GameObjectTag::BOSS_ATTACK && _secondary.GetTag() == GameObjectTag::PLAYER)
-			{
-				auto& primaryAttackData = dynamic_cast<BossAttackData&> (*primaryColliderData.data);
-				secondaryColliderData.SetPlayerReaction(primaryAttackData.playerReaction);
-			}
-		}
+		//
+		//auto& primaryColliderData = dynamic_cast<AttackSphereColliderData&> (_primary);
+		//auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
+		//if (primaryColliderData.data->isDoHitCheck)
+		//{
+		//	primaryColliderData.OnHit(*secondaryColliderData.data);
+		//	secondaryColliderData.OnHit(*primaryColliderData.data, primaryColliderData.GetNextPosition());
+		//	if (_primary.GetTag() == GameObjectTag::BOSS_ATTACK && _secondary.GetTag() == GameObjectTag::PLAYER)
+		//	{
+		//		auto& primaryAttackData = dynamic_cast<BossAttackData&> (*primaryColliderData.data);
+		//		secondaryColliderData.SetPlayerReaction(primaryAttackData.playerReaction);
+		//	}
+		//}
 	}
 
 	//球とカプセル(球はSTATICなので、必ずprimaryがSPHEREになる)
 	else if (primaryKind == ColliderData::Kind::ATTACK_CAPSULE && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
-		auto& primaryColliderData = dynamic_cast<AttackCapsuleColliderData&> (_primary);
-		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
-		if (primaryColliderData.data->isDoHitCheck)
-		{
-			primaryColliderData.OnHit(*secondaryColliderData.data);
-			secondaryColliderData.OnHit(*primaryColliderData.data,primaryColliderData.GetNextPosition());
-			if (_primary.GetTag() == GameObjectTag::BOSS_ATTACK && _secondary.GetTag() == GameObjectTag::PLAYER)
-			{
-				auto& primaryAttackData = dynamic_cast<BossAttackData&> (*primaryColliderData.data);
-				secondaryColliderData.SetPlayerReaction(primaryAttackData.playerReaction);
-			}
-		}
+		//auto& primaryColliderData = dynamic_cast<AttackCapsuleColliderData&> (_primary);
+		//auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
+		//if (primaryColliderData.data->isDoHitCheck)
+		//{
+		//}
 	}
-	else
-	{
-		assert(0 && "許可されていない当たり判定の位置補正です");
-	}
+	//else
+	//{
+	//	assert(0 && "許可されていない当たり判定の位置補正です");
+	//}
 }
 
 /// <summary>

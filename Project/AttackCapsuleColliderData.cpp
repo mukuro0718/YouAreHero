@@ -10,10 +10,10 @@
 /// コンストラクタ
 /// </summary>
 AttackCapsuleColliderData::AttackCapsuleColliderData(const ColliderData::Priority _priority, const GameObjectTag _tag, AttackData* _data)
-	: ColliderData(ColliderData::Kind::ATTACK_CAPSULE, _priority, _tag)
-	, radius(0.0f)
-	, topPositon(VGet(0.0f, 0.0f, 0.0f))
-	, data(_data)
+	: ColliderData	(ColliderData::Kind::ATTACK_CAPSULE, _priority, _tag)
+	, radius		(0.0f)
+	, topPositon	(VGet(0.0f, 0.0f, 0.0f))
+	, data			(_data)
 {
 	//処理なし
 }
@@ -23,9 +23,13 @@ AttackCapsuleColliderData::AttackCapsuleColliderData(const ColliderData::Priorit
 /// </summary>
 void AttackCapsuleColliderData::OnHit(const CharacterData& _data)
 {
+	/*ヒットチェックフラグを下す*/
 	this->data->isDoHitCheck = false;
+
+	/*無敵フラグもガードもしていなかったら*/
 	if (!_data.isInvinvible && !_data.isGuard)
 	{
+		//攻撃ヒットフラグを立てる
 		this->data->isHitAttack = true;
 	}
 }

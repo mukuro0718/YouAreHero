@@ -138,6 +138,8 @@ void Player::Initialize()
 	this->isDraw			 = true;
 	this->isGround			 = false;
 	this->isInitialize		 = true;
+	this->isBlockingMove	 = false;
+	this->isStopAnimation	 = false;
 	this->speed				 = 0.0f;
 	this->entryInterval		 = 0;
 	this->moveVectorRotation = Gori::ORIGIN;
@@ -257,8 +259,9 @@ void Player::Update()
 		VECTOR position = this->collider->rigidbody.GetPosition();
 		//もしダウン中にアニメーション再生が終了していたら
 		if (this->state->CheckFlag(this->DOWN) && this->animation->GetIsChangeAnim())return;
+		if (this->isStopAnimation) return;
 		//アニメーションの再生
-		this->animation->Play(&this->modelHandle, position, this->nowAnimation, animationPlayTime);
+		this->animation->Play(&this->modelHandle, this->nowAnimation, animationPlayTime);
 	}
 }
 
@@ -349,7 +352,7 @@ void Player::UpdateMoveVector()
 	VECTOR direction = Gori::ORIGIN;
 	VECTOR rotation = Gori::ORIGIN;
 	/*移動しているときか回避しているときは移動ベクトルを出す*/
-	if (this->state->CheckFlag(this->MASK_CAN_VELOCITY))
+	if (this->state->CheckFlag(this->MASK_CAN_VELOCITY) || this->isBlockingMove)
 	{
 		rotation = this->moveVectorRotation;
 		direction = VGet(-sinf(rotation.y), 0.0f, -cosf(rotation.y));
@@ -391,7 +394,11 @@ void Player::UpdateSpeed()
 	float maxSpeed = 0.0f;
 	
 	/*移動していたら*/
-	if (this->state->CheckFlag(this->MASK_WALK))
+	if (this->isBlockingMove)
+	{
+		maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["NONE_STAMINA_RUN_SPEED"];
+	}
+	else if (this->state->CheckFlag(this->MASK_WALK))
 	{
 		maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["WALK_SPEED"];
 	}
@@ -493,13 +500,18 @@ void Player::UpdateRotation()
 
 		/*走ったか*/
 		bool isRun = (input.GetPadState() & PAD_INPUT_6);
+		this->isBlockingMove = false;
 
 			//スティック入力があるか
 			if (lStick.x != 0.0f || lStick.z != 0.0f)
 			{
 				isInputLStick = true;
+				if (this->state->CheckFlag(this->BLOCK))
+				{
+					this->isBlockingMove = true;
+				}
 				/*回避や攻撃をしていなければ移動状態を切り替える*/
-				if (!this->state->CheckFlag(this->MASK_ATTACK | this->MASK_AVOID))
+				else if (!this->state->CheckFlag(this->MASK_ATTACK | this->MASK_AVOID))
 				{
 					unsigned int moveState = 0;
 					//走っていたら
@@ -783,6 +795,7 @@ void Player::Block()
 			   playerDirection		= VNorm(playerDirection);
 		this->dot = VDot(enemyDirection, playerDirection);
 		this->dot = this->dot * 180.0f / DX_PI_F;
+		if (this->dot < 0) { this->dot *= -1.0f; }
 
 		//攻撃フラグを下す
 		this->state->ClearFlag(this->MASK_ATTACK);
@@ -800,7 +813,7 @@ void Player::Block()
 		{
 			data.isGuard = false;
 		}
-		this->animation->SetAddRate(0.5f);
+		this->animation->SetAddRate(0.3f);
 	}
 	else
 	{
@@ -943,28 +956,76 @@ void Player::Attack()
 	auto& input = Singleton<InputManager> ::GetInstance();
 	auto& json = Singleton<JsonManager>  ::GetInstance();
 	auto& attack = Singleton<PlayerAttackManager>  ::GetInstance();
+	auto& effect = Singleton<EffectManager>  ::GetInstance();
+
+	const int COMBO_RESET = static_cast<int>(FrameCountType::COMBO_RESET);
+	const int ATTACK_CANCEL = static_cast<int>(FrameCountType::ATTACK_CANCEL);
+	const int ATTACK_CAN_ROTATE = static_cast<int>(FrameCountType::ATTACK_CAN_ROTATE);
+	const int CHARGE_ATTACK = static_cast<int>(FrameCountType::CHARGE_ATTACK);
 
 	/*コンボリセットフラグの判定*/
-	if (FrameCount(static_cast<int>(FrameCountType::COMBO_RESET), json.GetJson(JsonManager::FileType::PLAYER)["CONBO_RESET_MAX_FRAME"]))
+	if (FrameCount(COMBO_RESET, json.GetJson(JsonManager::FileType::PLAYER)["CONBO_RESET_MAX_FRAME"]))
 	{
 		this->attackComboCount = -1;
 	}
 
 	/*攻撃リセットフラグ*/
-	if (this->attackComboCount != -1 && FrameCount(static_cast<int>(FrameCountType::ATTACK_CANCEL), json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_CANCEL_MAX_FRAME"][this->attackComboCount]))
+	if (this->attackComboCount != -1 && FrameCount(ATTACK_CANCEL, json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_CANCEL_MAX_FRAME"][this->attackComboCount]))
 	{
 		this->isCancelAttack = true;
 	}
 
 	/*回転可能フラグの判定*/
-	if (FrameCount(static_cast<int>(FrameCountType::ATTACK_CAN_ROTATE), json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_CAN_ROTATE_FRAME"]))
+	if (FrameCount(ATTACK_CAN_ROTATE, json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_CAN_ROTATE_FRAME"]))
 	{
 	}
+
 
 	/*pad入力*/
 	int pad = input.GetPadState();
 	bool isPushY = (pad & PAD_INPUT_2);
 	bool isPushB = (pad & PAD_INPUT_4);
+	this->isStopAnimation = false;
+
+	/*攻撃をためている最中だったら*/
+	if (this->isChargeAttack)
+	{
+		bool isStartAttack = false;
+		//フレームを増加
+		this->frameCount[CHARGE_ATTACK]++;
+		//フレームが定数を超えていたらアニメーションを停止させる
+		if (this->frameCount[CHARGE_ATTACK] >= json.GetJson(JsonManager::FileType::PLAYER)["CHARGE_ATTACK_STOP_FRAME"])
+		{
+			this->isStopAnimation = true;
+			ResetFrameCount(ATTACK_CAN_ROTATE);
+		}
+		//フレームが定数を超えていたらチャージを終了させる
+		if (this->frameCount[CHARGE_ATTACK] >= json.GetJson(JsonManager::FileType::PLAYER)["CHARGE_ATTACK_STOP_MAX_FRAME"])
+		{
+			isStartAttack = true;
+		}
+		//もし攻撃開始フラグが立っていたら攻撃を開始する
+		if (isStartAttack)
+		{
+			//ダメージの計算
+			int damageFactor = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_DAMAGE_FACTOR"];
+			int baseDamage = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_DAMAGE"];
+			int damage = baseDamage * (this->frameCount[CHARGE_ATTACK] / damageFactor);
+			//ベースよりも小さくならないようにする
+			if (damage < baseDamage)
+			{
+				damage = baseDamage;
+			}
+			//ダメージのセット
+			attack.SetDamage(damage);
+			//攻撃の開始
+			attack.OnIsStart();
+			//関係変数の初期化
+			this->isStopAnimation = false;
+			this->isChargeAttack = false;
+			ResetFrameCount(CHARGE_ATTACK);
+		}
+	}
 
 	/*攻撃できるか*/
 	if (!CanAttack())return;
@@ -979,10 +1040,10 @@ void Player::Attack()
 	this->isCancelAttack = false;
 
 	//コンボリセットフラグを下す
-	ResetFrameCount(static_cast<int>(FrameCountType::COMBO_RESET));
+	ResetFrameCount(COMBO_RESET);
 	//回転可能フレームを初期化
-	ResetFrameCount(static_cast<int>(FrameCountType::ATTACK_CAN_ROTATE));
-	this->isCount[static_cast<int>(FrameCountType::ATTACK_CAN_ROTATE)] = true;
+	ResetFrameCount(ATTACK_CAN_ROTATE);
+	this->isCount[ATTACK_CAN_ROTATE] = true;
 
 	int attackType;
 	/*Bが押されたか*/
@@ -999,14 +1060,14 @@ void Player::Attack()
 		if (this->attackComboCount <= static_cast<int>(AttackType::COMBO_2))
 		{
 			//攻撃キャンセルフラグを立てる
-			this->isCount[static_cast<int>(FrameCountType::ATTACK_CANCEL)] = true;
+			this->isCount[ATTACK_CANCEL] = true;
 		}
 		//コンボリセットフラグを立てる
-		this->isCount[static_cast<int>(FrameCountType::COMBO_RESET)] = true;
+		this->isCount[COMBO_RESET] = true;
 		//コンボ数をもとに、攻撃の種類を設定
 		attackType = this->attackComboCount;
 		//ダメージのセット
-		attack.SetDamage(json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"]);
+		attack.SetDamage(json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"][this->attackComboCount]);
 		//攻撃フラグを立てる
 		attack.OnIsStart();
 	}
@@ -1017,17 +1078,17 @@ void Player::Attack()
 		//攻撃の種類を設定
 		attackType = static_cast<int>(AttackType::SKILL);
 		//攻撃キャンセルフラグを下す
-		ResetFrameCount(static_cast<int>(FrameCountType::ATTACK_CANCEL));
-		//ダメージのセット
-		attack.SetDamage(json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_DAMAGE"]);
-		//攻撃フラグを立てる
-		attack.OnIsStart();
+		ResetFrameCount(ATTACK_CANCEL);
 		//コンボをリセットする
 		this->attackComboCount = -1;
+		this->isCount[CHARGE_ATTACK] = true;
+		this->isChargeAttack = true;
+		effect.OnIsEffect(EffectManager::EffectType::PLAYER_CHARGE);
 	}
 
 	/*攻撃フラグをセット*/
 	this->state->SetFlag(this->attackMap[attackType]);
+
 }
 
 /// <summary>
@@ -1067,7 +1128,7 @@ const bool Player::CanRotation()const
 	if (this->state->CheckFlag(this->DEATH)	)			return false;//デス
 	if (this->state->CheckFlag(this->MASK_AVOID) && !this->isCount[static_cast<int>(FrameCountType::AVOID_CAN_ROTATE)])		return false;//回避
 	if (this->state->CheckFlag(this->MASK_ATTACK) && !this->isCount[static_cast<int>(FrameCountType::ATTACK_CAN_ROTATE)])		return false;//攻撃
-	if (this->state->CheckFlag(this->BLOCK))			return false;//防御
+	//if (this->state->CheckFlag(this->BLOCK))			return false;//防御
 	if (this->state->CheckFlag(this->HEAL))				return false;//回復
 	return true;
 }
@@ -1093,11 +1154,11 @@ const bool Player::CanAttack()const
 }
 const bool Player::CanBlock()const
 {
-	if (this->state->CheckFlag(this->MASK_REACTION))	return false;//リアクション
-	if (this->state->CheckFlag(this->DEATH))			return false;//デス
-	if (this->state->CheckFlag(this->MASK_AVOID))		return false;//回避
-	//if (this->state->CheckFlag(this->SLASH))			return false;//攻撃
-	if (this->state->CheckFlag(this->HEAL))				return false;//回復
+	if (this->state->CheckFlag(this->MASK_REACTION))						return false;//リアクション
+	if (this->state->CheckFlag(this->DEATH))								return false;//デス
+	if (this->state->CheckFlag(this->MASK_AVOID))							return false;//回避
+	if (this->state->CheckFlag(this->MASK_ATTACK) && !this->isCancelAttack)	return false;//攻撃
+	if (this->state->CheckFlag(this->HEAL))									return false;//回復
 	return true;
 }
 const bool Player::CanHeal()const

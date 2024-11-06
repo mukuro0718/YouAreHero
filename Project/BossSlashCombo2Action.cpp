@@ -225,7 +225,7 @@ void BossSlashCombo2Action::CalcParameter(const Boss& _boss)
 	this->parameter->desireValue = 0;
 
 	/*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
-	if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
+	if (_boss.GetHP() <= 0)
 	{
 		return;
 	}

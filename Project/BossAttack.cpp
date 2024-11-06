@@ -17,6 +17,7 @@
 BossAttack::BossAttack()
 	: collider			(nullptr)
 	, isStartHitCheck	(false)
+	, isNotOnHit		(false)
 	, frameCount		(0)
 	, attackIndex		(0)
 {
@@ -27,7 +28,7 @@ BossAttack::BossAttack()
 /// </summary>
 BossAttack::~BossAttack()
 {
-
+	DeleteMemberInstance(this->collider);
 }
 
 /// <summary>

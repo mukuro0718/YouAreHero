@@ -198,7 +198,7 @@ void BossPunchAction::CalcParameter(const Boss& _boss)
 	}
 
 	/*状態がTIRED,NORMAL,ANGRYだったら欲求値を増加する*/
-	if (_boss.GetAngryState() >= static_cast<int>(Boss::AngryStateType::TIRED))
+	if (_boss.GetAngryState() >= static_cast<int>(Boss::AngryStateType::NORMAL))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
 		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::PUNCH)])

@@ -241,13 +241,13 @@ void BossSlash2Action::CalcParameter(const Boss& _boss)
 	this->parameter->desireValue = 0;
 
 	/*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
-	if ((_boss.GetHP() <= 0) || (_boss.GetNowPhase() != _boss.GetPrevPhase()))
+	if (_boss.GetHP() <= 0)
 	{
 		return;
 	}
 
 	/*状態がTIRED,NORMAL,ANGRYだったら欲求値を増加する*/
-	else if (_boss.GetAngryState() >= static_cast<int>(Boss::AngryStateType::TIRED))
+	else if (_boss.GetAngryState() >= static_cast<int>(Boss::AngryStateType::NORMAL))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
 		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::SLASH_2)])

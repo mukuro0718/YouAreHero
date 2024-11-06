@@ -12,8 +12,8 @@
 /// コンストラクタ
 /// </summary>
 BossRoarAction::BossRoarAction()
+	: prevAngryState(0)
 {
-
 }
 
 /// <summary>
@@ -21,7 +21,6 @@ BossRoarAction::BossRoarAction()
 /// </summary>
 BossRoarAction::~BossRoarAction()
 {
-
 }
 /// <summary>
 /// 初期化
@@ -33,10 +32,13 @@ void BossRoarAction::Initialize()
 
 	this->isSelect				 = false;
 	this->isInitialize			 = false;
-	this->isPriority			 = true;
+	this->isInitializeColorScale = false;
+	this->isFinishedFirstRoar	 = false;
+	this->isPriority			 = false;
 	this->frameCount			 = 0;
 	this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 	this->parameter->interval	 = 0;
+	this->prevAngryState		 = 1;
 }
 
 /// <summary>
@@ -46,6 +48,41 @@ void BossRoarAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
 	if (_boss.GetHP() <= 0) { this->isSelect = false; return; }
+
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
+	/*カラースケールの処理*/
+	{
+		//税所の咆哮では色を変えない
+		if (this->isFinishedFirstRoar)
+		{
+			//ボスのモデルハンドル
+			const int MODEL_HANDLE = _boss.GetModelHandle();
+			//初期化フラグが立っていなかったらカラースケールの初期化
+			if (!this->isInitializeColorScale)
+			{
+				//初期化フラグを立てる
+				this->isInitializeColorScale = true;
+				//現在の色を取得
+				for (int i = 0; i < this->baseColorScale.size(); i++)
+				{
+					this->getColorScaleMap[i](this->baseColorScale[i], this->nowColorScale[i], MODEL_HANDLE);
+				}
+			}
+			//カラースケールの更新(ここでは赤色になるようにする)
+			for (int i = 0; i < this->nowColorScale.size(); i++)
+			{
+				const COLOR_F TARGET = ColorConvert(json.GetJson(JsonManager::FileType::ENEMY)["ROAR_TARGET_COLOR_SCALE"]);
+				const COLOR_F LERP = ColorConvert(json.GetJson(JsonManager::FileType::ENEMY)["LERP_COLOR_SCALE"]);
+				this->nowColorScale[i] = LerpColor(this->nowColorScale[i], TARGET, LERP);
+				this->setColorScaleMap[i](this->nowColorScale[i], MODEL_HANDLE);
+			}
+		}
+	}
+
+	/*怒り状態を合わせる*/
+	this->prevAngryState = _boss.GetAngryState();
 
 	/*選択されていたら欲求値を０にする*/
 	this->parameter->desireValue = 0;
@@ -84,8 +121,9 @@ void BossRoarAction::Update(Boss& _boss)
 	/*咆哮中にアニメーションが終了していたら、選択フラグを下してフェーズを統一する*/
 	if (this->isSelect && _boss.GetIsChangeAnimation())
 	{
-		_boss.UnifyPhases();
-		this->OffIsSelect(0);
+		OffIsSelect(0);
+		this->isFinishedFirstRoar = true;
+		this->isInitializeColorScale = false;
 	}
 }
 
@@ -106,12 +144,26 @@ void BossRoarAction::CalcParameter(const Boss& _boss)
 		return;
 	}
 
-	/*Phaseが異なっている時に、nowPhaseが８だったら*/
-	int nowPhase = _boss.GetNowPhase();
-	int prevPhase = _boss.GetPrevPhase();
-	if (nowPhase != prevPhase && nowPhase == static_cast<int>(Boss::Phase::PHASE_8))
+	/*一度も咆哮をしていなければ咆哮フラグと優先フラグを立てる*/
+	if (!this->isFinishedFirstRoar)
 	{
 		this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 		this->isPriority = true;
 	}
+
+	/*AngryStateTypeがANGRYになったら咆哮をする*/
+	int nowAngryState = _boss.GetAngryState();
+	if (nowAngryState != this->prevAngryState)
+	{
+		if (nowAngryState == static_cast<int>(Boss::AngryStateType::ANGRY))
+		{
+			this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+			this->isPriority = true;
+		}
+		else
+		{
+			this->prevAngryState = _boss.GetAngryState();
+		}
+	}
 }
+

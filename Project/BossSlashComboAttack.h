@@ -7,7 +7,7 @@ class BossAttack;
 class BossSlashComboAttack : public BossAttack
 {
 public:
-	BossSlashComboAttack(const int _attackIndex);	//コンストラクタ
+	 BossSlashComboAttack(const int _attackIndex);	//コンストラクタ
 	~BossSlashComboAttack();						//デストラクタ
 
 		  void Initialize() override;		//初期化

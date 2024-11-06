@@ -112,9 +112,6 @@
     <Filter Include="Collision">
       <UniqueIdentifier>{f1a33d7d-eecc-4dae-8795-b4ae50f423f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Collision\Collider">
-      <UniqueIdentifier>{fb90847f-4b7c-4961-9893-25347c34eb38}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI">
       <UniqueIdentifier>{efb3e4fa-b963-40ae-b20d-cc4705da50d7}</UniqueIdentifier>
     </Filter>
@@ -217,9 +214,6 @@
     <Filter Include="Scene\Type\Tutorial">
       <UniqueIdentifier>{bb1d5038-6afb-4f9c-abc7-95e2578a1db6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Bot">
-      <UniqueIdentifier>{f731babc-5b76-4f31-85c2-3fce41e60e76}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI\Scene\Game">
       <UniqueIdentifier>{171d95ff-3032-437d-b766-3b8dacfa174b}</UniqueIdentifier>
     </Filter>
@@ -247,17 +241,8 @@
     <Filter Include="Effect\Player">
       <UniqueIdentifier>{e6b6f140-7a77-4a46-9039-0ad0c39a851f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Effect\Player\Entry">
-      <UniqueIdentifier>{9d6b2c5f-59f0-4c58-9c11-36095ce8e138}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Effect\Boss">
       <UniqueIdentifier>{3c29b770-8ac6-4904-82d3-dd79bf1ddce2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Effect\Boss\Slash">
-      <UniqueIdentifier>{ccf8fbe4-291d-4196-93d5-7be2e127268d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Effect\Boss\Entry">
-      <UniqueIdentifier>{21ad70bc-9e04-4e04-8e49-e208c7b716a7}</UniqueIdentifier>
     </Filter>
     <Filter Include="UI\BossNameUI">
       <UniqueIdentifier>{04218eaf-3fe8-48ba-8997-1beca44a20dd}</UniqueIdentifier>
@@ -288,9 +273,6 @@
     </Filter>
     <Filter Include="Timer">
       <UniqueIdentifier>{1463850c-e73c-48b2-9915-8c4246a180d7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Effect\Player\JustGuard">
-      <UniqueIdentifier>{91b7a93f-0336-425d-bd41-d3fa0574af14}</UniqueIdentifier>
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\Attack\Punch">
       <UniqueIdentifier>{22a8e7a4-4cbf-4e37-a197-14d3952b7172}</UniqueIdentifier>
@@ -328,11 +310,8 @@
     <Filter Include="Object\Character\Enemy\Action\Parameter\Attack\SlashCombo">
       <UniqueIdentifier>{35d46ff5-cd11-4367-82fd-b174df7ee1fe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Effect\Boss\Flame">
-      <UniqueIdentifier>{15d0a1d3-c704-4379-9fb2-3a1c4a7f380c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\Parameter\Rotation">
-      <UniqueIdentifier>{61f07d06-f709-4fd8-b71e-0104586a5ce4}</UniqueIdentifier>
+    <Filter Include="Effect\Player\ChargeAttack">
+      <UniqueIdentifier>{75a56904-a943-4964-9fd8-554ea8e9a7e1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -415,9 +394,6 @@
     <ClCompile Include="EnemyManager.cpp">
       <Filter>Object\Character\EnemyManager</Filter>
     </ClCompile>
-    <ClCompile Include="Collider.cpp">
-      <Filter>Collision\Collider</Filter>
-    </ClCompile>
     <ClCompile Include="HPUI.cpp">
       <Filter>UI\HPUI</Filter>
     </ClCompile>
@@ -445,9 +421,6 @@
     <ClCompile Include="PlayerAttackManager.cpp">
       <Filter>Object\Attack\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="BossAttackManager.cpp">
-      <Filter>Object\Attack\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerAttack.cpp">
       <Filter>Object\Attack\Manager\Type\Player</Filter>
     </ClCompile>
@@ -462,9 +435,6 @@
     </ClCompile>
     <ClCompile Include="BossChaseAction.cpp">
       <Filter>Object\Character\Enemy\Action\Parameter\Chase</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneState.cpp">
-      <Filter>Scene\Changer</Filter>
     </ClCompile>
     <ClCompile Include="ColliderData.cpp">
       <Filter>Collision\ColliderData</Filter>
@@ -547,9 +517,6 @@
     <ClCompile Include="TutorialScene.cpp">
       <Filter>Scene\Type\Tutorial</Filter>
     </ClCompile>
-    <ClCompile Include="Bot.cpp">
-      <Filter>Object\Character\Bot</Filter>
-    </ClCompile>
     <ClCompile Include="GameUI.cpp">
       <Filter>UI\Scene\Game</Filter>
     </ClCompile>
@@ -571,25 +538,10 @@
     <ClCompile Include="GameOverScene.cpp">
       <Filter>Scene\Type\GameOver</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerEntryEffect.cpp">
-      <Filter>Effect\Player\Entry</Filter>
-    </ClCompile>
-    <ClCompile Include="BossEntryEffect.cpp">
-      <Filter>Effect\Boss\Entry</Filter>
-    </ClCompile>
-    <ClCompile Include="BossFlameEffect.cpp">
-      <Filter>Effect\Boss\Flame</Filter>
-    </ClCompile>
-    <ClCompile Include="BossSlashEffect.cpp">
-      <Filter>Effect\Boss\Slash</Filter>
-    </ClCompile>
     <ClCompile Include="BossNameUI.cpp">
       <Filter>UI\BossNameUI</Filter>
     </ClCompile>
     <ClCompile Include="HitStop.cpp">
-      <Filter>HitStopManager</Filter>
-    </ClCompile>
-    <ClCompile Include="HitStopData.cpp">
       <Filter>HitStopManager</Filter>
     </ClCompile>
     <ClCompile Include="BossJumpAttackAction.cpp">
@@ -646,8 +598,8 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Timer</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerJustGuardEffect.cpp">
-      <Filter>Effect\Player\JustGuard</Filter>
+    <ClCompile Include="PlayerChargeAttackEffect.cpp">
+      <Filter>Effect\Player\ChargeAttack</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -744,9 +696,6 @@
     <ClInclude Include="EnemyManager.h">
       <Filter>Object\Character\EnemyManager</Filter>
     </ClInclude>
-    <ClInclude Include="Collider.h">
-      <Filter>Collision\Collider</Filter>
-    </ClInclude>
     <ClInclude Include="HPUI.h">
       <Filter>UI\HPUI</Filter>
     </ClInclude>
@@ -783,9 +732,6 @@
     <ClInclude Include="PlayerAttackManager.h">
       <Filter>Object\Attack\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="BossAttackManager.h">
-      <Filter>Object\Attack\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerAttack.h">
       <Filter>Object\Attack\Manager\Type\Player</Filter>
     </ClInclude>
@@ -800,9 +746,6 @@
     </ClInclude>
     <ClInclude Include="BossChaseAction.h">
       <Filter>Object\Character\Enemy\Action\Parameter\Chase</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneState.h">
-      <Filter>Scene\Changer</Filter>
     </ClInclude>
     <ClInclude Include="CharacterColliderData.h">
       <Filter>Collision\ColliderData</Filter>
@@ -885,9 +828,6 @@
     <ClInclude Include="TutorialScene.h">
       <Filter>Scene\Type\Tutorial</Filter>
     </ClInclude>
-    <ClInclude Include="Bot.h">
-      <Filter>Object\Character\Bot</Filter>
-    </ClInclude>
     <ClInclude Include="GameUI.h">
       <Filter>UI\Scene\Game</Filter>
     </ClInclude>
@@ -909,18 +849,6 @@
     <ClInclude Include="GameOverScene.h">
       <Filter>Scene\Type\GameOver</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerEntryEffect.h">
-      <Filter>Effect\Player\Entry</Filter>
-    </ClInclude>
-    <ClInclude Include="BossEntryEffect.h">
-      <Filter>Effect\Boss\Entry</Filter>
-    </ClInclude>
-    <ClInclude Include="BossFlameEffect.h">
-      <Filter>Effect\Boss\Flame</Filter>
-    </ClInclude>
-    <ClInclude Include="BossSlashEffect.h">
-      <Filter>Effect\Boss\Slash</Filter>
-    </ClInclude>
     <ClInclude Include="BossNameUI.h">
       <Filter>UI\BossNameUI</Filter>
     </ClInclude>
@@ -928,9 +856,6 @@
       <Filter>Data\HeaderFile</Filter>
     </ClInclude>
     <ClInclude Include="HitStop.h">
-      <Filter>HitStopManager</Filter>
-    </ClInclude>
-    <ClInclude Include="HitStopData.h">
       <Filter>HitStopManager</Filter>
     </ClInclude>
     <ClInclude Include="BossJumpAttackAction.h">
@@ -987,8 +912,8 @@
     <ClInclude Include="Timer.h">
       <Filter>Timer</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerJustGuardEffect.h">
-      <Filter>Effect\Player\JustGuard</Filter>
+    <ClInclude Include="PlayerChargeAttackEffect.h">
+      <Filter>Effect\Player\ChargeAttack</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
