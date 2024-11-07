@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "VECTORtoUseful.h"
 #include "ActionParameter.h"
 #include "BossAction.h"
 #include "Rigidbody.h"
@@ -53,19 +54,22 @@ void BossChaseAction::Update(Boss& _boss)
 
 	/*使用する値の準備*/
 	const VECTOR POSITION = _boss.GetRigidbody().GetPosition();					//座標
-	const VECTOR MOVE_TARGET = player.GetRigidbody().GetPosition();					//移動目標
+	const VECTOR LERP_VALUE = Convert(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]);//回転率の補完値
+	this->moveTarget = player.GetRigidbody().GetPosition();					//移動目標
 	VECTOR nowRotation = _boss.GetRigidbody().GetRotation();					//回転率
 	VECTOR direction = VGet(0.0f, 0.0f, 0.0f);								//向き
 	const float  SPEED = json.GetJson(JsonManager::FileType::ENEMY)["SPEED"];	//速さ
 
 	/*移動ベクトルの設定*/
-	_boss.SetNowMoveTarget(MOVE_TARGET);
+	_boss.SetNowMoveTarget(this->moveTarget);
 
 	/*プレイヤーから自分の座標までのベクトルを出す*/
-	VECTOR positionToTargetVector = VSub(POSITION, MOVE_TARGET);
+	VECTOR positionToTargetVector = VSub(POSITION, this->moveTarget);
 
 	/*アークタンジェントを使って角度を求める*/
-	nowRotation.y = static_cast<float>(atan2(static_cast<double>(positionToTargetVector.x), static_cast<double>(positionToTargetVector.z)));
+					//回転率を補完する
+	nowRotation = GetLerpRotation(_boss, positionToTargetVector, nowRotation, LERP_VALUE);
+	//nowRotation.y = static_cast<float>(atan2(static_cast<double>(positionToTargetVector.x), static_cast<double>(positionToTargetVector.z)));
 
 	/*回転率を代入*/
 	_boss.SetRotation(nowRotation);

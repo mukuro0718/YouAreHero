@@ -8,6 +8,7 @@
 Animation::Animation()
 	: animationTotalTime		(0.0f)
 	, animationPlayTime			(0.0f)
+	, prevAnimationPlayTime		(0.0f)
 	, animationRate				(0.0f)
 	, addAnimationRate			(0.0f)
 	, isChange					(false)
@@ -70,8 +71,8 @@ void Animation::Play(int* _modelHandle, const int _nextAnimation, const float _a
 		this->prevAnimation = this->nowAnimation;
 		this->nowAnimation = _nextAnimation;
 		this->isChange = false;
+		this->prevAnimationPlayTime = this->animationPlayTime;
 		this->animationPlayTime = 0.0f;
-		MV1SetAttachAnimTime(*_modelHandle, this->animationAttachIndex, this->animationPlayTime);
 		//アニメーションのアタッチ
 		Attach(_modelHandle);
 	}
@@ -89,11 +90,9 @@ void Animation::Play(int* _modelHandle, const int _nextAnimation, const float _a
 		this->isChange = false;
 	}
 
-	/*アニメーションのブレンド率をセット*/
-	MV1SetAttachAnimBlendRate(*_modelHandle, this->prevAnimationAttachIndex, 1.0f - this->animationRate);
-	MV1SetAttachAnimBlendRate(*_modelHandle, this->animationAttachIndex, this->animationRate);
 
-	/*ブレンド率が1以上だったら*/
+	/*アニメーションのブレンド率をセット*/
+	//ブレンド率が1以上だったら
 	if (this->animationRate >= 1.0f)
 	{
 		//前のアタッチしていたアニメーションをデタッチする
@@ -103,6 +102,9 @@ void Animation::Play(int* _modelHandle, const int _nextAnimation, const float _a
 	{
 		//ブレンド率を増加
 		this->animationRate += this->addAnimationRate;
+		MV1SetAttachAnimBlendRate(*_modelHandle, this->prevAnimationAttachIndex, 1.0f - this->animationRate);
+		MV1SetAttachAnimBlendRate(*_modelHandle, this->animationAttachIndex, this->animationRate);
+		MV1SetAttachAnimTime(*_modelHandle, this->prevAnimationAttachIndex, this->prevAnimationPlayTime);
 	}
 
 	/*アニメーション再生時間を進める*/

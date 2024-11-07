@@ -21,5 +21,6 @@ private:
 	bool isChangeColorScale;	//カラースケールを初期化したか
 	int	 prevAngryState;		//前の怒り状態
 	bool isInitializeColorScale;//カラースケールを初期化したか
+	bool isDownUp;				//ダウンから起き上がっているか
 };
 

@@ -49,6 +49,7 @@ UIManager::~UIManager()
 	{
 		DeleteMemberInstance(this->scene[i]);
 	}
+	this->scene.clear();
 }
 
 /// <summary>

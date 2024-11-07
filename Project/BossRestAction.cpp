@@ -37,6 +37,7 @@ void BossRestAction::Initialize()
 	this->isInitialize			 = false;
 	this->isInitializeColorScale = false;
 	this->isChangeColorScale	 = false;
+	this->isDownUp				 = false;
 	this->frameCount			 = 0;
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
@@ -126,6 +127,7 @@ void BossRestAction::Update(Boss& _boss)
 		else
 		{
 			this->nowAnimationType = static_cast<int>(Boss::AnimationType::DOWN_UP);
+			this->isDownUp = true;
 		}
 		//アニメーション再生フラグが立っていたら
 		if (isPlayAnimation)

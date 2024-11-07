@@ -183,12 +183,6 @@ void Boss::Update()
 	/*怒り状態の設定*/
 	SetAngryState();
 
-	/*ここですべてのパラメータの計算を行う*/
-	for (auto& item : this->parameters)
-	{
-		item->CalcParameter(*this);
-	}
-
 	/*状態の切り替え*/
 	ChangeState();
 
@@ -245,19 +239,23 @@ void Boss::ChangeState()
 		/*選択されているか調べる*/
 		bool isSelect = false;//選択されているか
 		int  sumDesireValue = 0;	//欲求値の合計
-		for (auto& item : this->parameters)
+		for (int i = 0; i < this->parameters.size(); i++)
 		{
-			isSelect = item->GetIsSelect();
-			sumDesireValue += item->GetDesireValue();
+			isSelect = this->parameters[i]->GetIsSelect();
+			sumDesireValue += parameters[i]->GetDesireValue();
 			if (isSelect)return;
 		}
 		
-		/*優先フラグが立っているか調べる*/
+		/*ここですべてのパラメータの計算を行う*/
 		bool isPriority = false;//選択されているか
-		for (auto& item : this->parameters)
+		for (int i = 0; i < this->parameters.size(); i++)
 		{
-			isPriority = item->GetIsPriority();
-			if (isPriority)break;
+			this->parameters[i]->CalcParameter(*this);
+			//優先フラグが立っているかも調べる
+			if (this->parameters[i]->GetIsPriority())
+			{
+				isPriority = true;
+			}
 		}
 
 		/*今立っているフラグを下す*/
@@ -270,14 +268,14 @@ void Boss::ChangeState()
 			//各行動の期待値を求める
 			std::vector<int> actionWeight;//重み
 			int count = 0;
-			for (auto& item : this->parameters)
+			for (int i = 0; i < this->parameters.size(); i++)
 			{
-				actionWeight.emplace_back(item->GetWeight(sumDesireValue));
+				actionWeight.emplace_back(this->parameters[i]->GetWeight(sumDesireValue));
 				//もしリストの中で選択フラグが一つでも立っていたら
 				if (isPriority)
 				{
 					//現在のitemが選択フラグが立っていなかったら重みを0にする
-					if (!item->GetIsPriority())
+					if (!this->parameters[i]->GetIsPriority())
 					{
 						actionWeight[count] = 0;
 					}

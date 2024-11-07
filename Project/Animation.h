@@ -26,6 +26,7 @@ private:
     std::vector<int> animationIndex;            //使用したいアニメーションの番号
     float            animationTotalTime;        //アニメーション総再生時間
     float            animationPlayTime;         //アニメーション再生時間
+    float            prevAnimationPlayTime;     //アニメーション再生時間
     float            animationRate;             //アニメーションのブレンド率
     float            addAnimationRate;          //アニメーションブレンド率増加量
     bool             isChange;                  //アニメーション変更フラグ（true:変更可能 false:不可）
