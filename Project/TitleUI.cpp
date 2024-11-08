@@ -21,9 +21,9 @@ TitleUI::TitleUI()
 
 	/*画像クラスインスタンスの作成*/
 	const int TITLE_LOGO = asset.GetImage(LoadingAsset::ImageType::TITLE_LOGO);
-	const int PRESS_A = asset.GetImage(LoadingAsset::ImageType::PRESS_A);
+	const int PRESS_BUTTON_LOGO = asset.GetImage(LoadingAsset::ImageType::PRESS_BUTTON_LOGO);
 	this->image.emplace_back(new Image(TITLE_LOGO));
-	this->image.emplace_back(new Image(PRESS_A));
+	this->image.emplace_back(new Image(PRESS_BUTTON_LOGO));
 	Initialize();
 }
 

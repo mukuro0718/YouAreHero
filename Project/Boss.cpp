@@ -156,6 +156,11 @@ void Boss::Initialize()
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
+	const COLOR_F BASE = { 1.0f,1.0f,1.0f,1.0f };
+	MV1SetDifColorScale(this->modelHandle, BASE);
+	MV1SetSpcColorScale(this->modelHandle, BASE);
+	MV1SetEmiColorScale(this->modelHandle, BASE);
+	MV1SetAmbColorScale(this->modelHandle, BASE);
 }
 
 /// <summary>

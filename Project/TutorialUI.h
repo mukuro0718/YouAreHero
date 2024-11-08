@@ -33,7 +33,7 @@ private:
 	void			  ReducedWindow();
 
 	/*メンバ変数*/
-	Image*		window;				//window画像
+	//Image*		window;				//window画像
 	bool		isPrevPressButton;	//前にボタンが入力されているか
 	bool		isExtendWindow;		//画像を拡大するか
 	bool		isReducedWindow;	//縮小するか

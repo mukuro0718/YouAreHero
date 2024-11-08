@@ -64,11 +64,9 @@ private:
 	Vec2d	 playerHPPosition;	//プレイヤーHP座標
 	Vec2d	 bossHPPosition;	//ボスHP座標
 
+	int barTable;//バーテーブル
 	int	playerHPBar;	//HPバー
-	int playerHPTable;
-	int playerStaminaBar;
-	int playerStaminaTable;
-	int bossHPBar;
-	int bossHPTable;
-	int bossHPBarFrame;
+	int playerStaminaBar;//スタミナバー
+	int bossHPBar;//ボスHP
+	int bossHPBarFrame;//ボスHPフレーム
 };

@@ -24,12 +24,10 @@ HPUI::HPUI()
 	this->prevBossHPColor	 = ConvertColor(json.GetJson(JsonManager::FileType::UI)["BOSS_PREV_HP_COLOR"]	);
 	this->staminaColor		 = ConvertColor(json.GetJson(JsonManager::FileType::UI)["STAMINA_COLOR"]			);
 	this->playerHPBar		 = asset.GetImage(LoadingAsset::ImageType::PLAYER_HP_BAR);
-	this->playerHPTable		 = asset.GetImage(LoadingAsset::ImageType::BAR_TABLE);
+	this->barTable			 = asset.GetImage(LoadingAsset::ImageType::HP_TABLE);
 	this->playerStaminaBar	 = asset.GetImage(LoadingAsset::ImageType::PLAYER_STAMINA_BAR);
-	this->playerStaminaTable = asset.GetImage(LoadingAsset::ImageType::BAR_TABLE);
 	this->bossHPBar			 = asset.GetImage(LoadingAsset::ImageType::BOSS_HP_BAR);
-	this->bossHPTable		 = asset.GetImage(LoadingAsset::ImageType::BAR_TABLE);
-	this->bossHPBarFrame	 = asset.GetImage(LoadingAsset::ImageType::HP_BAR_FRAME);
+	this->bossHPBarFrame	 = asset.GetImage(LoadingAsset::ImageType::BOSS_HP_BAR_FRAME);
 }
 
 /// <summary>
@@ -104,7 +102,7 @@ const void HPUI::Draw()const
 		Vec2d tablePosiiton;
 		tablePosiiton.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_TABLE_POSITION"]);
 
-		DrawGraph		(tablePosiiton.x , tablePosiiton.y , this->playerHPTable, TRUE);
+		DrawGraph		(tablePosiiton.x , tablePosiiton.y , this->barTable, TRUE);
 		DrawBox			(box.lx, box.ly, box.lx + prevHP, box.ry, this->prevPlayerHPColor, TRUE);
 		DrawExtendGraph	(box.lx, box.ly, box.lx + nowHP, box.ry, this->playerHPBar, TRUE);
 	}
@@ -125,7 +123,7 @@ const void HPUI::Draw()const
 		box.rx = box.lx + indexBase;
 		box.ry = box.ly + height;
 
-		DrawGraph(table.x, table.y, this->playerStaminaTable, TRUE);
+		DrawGraph(table.x, table.y, this->barTable, TRUE);
 		DrawExtendGraph(box.lx, box.ly, box.lx + nowStamina, box.ry, this->playerStaminaBar, TRUE);
 	}
 	//BOSS
@@ -145,7 +143,7 @@ const void HPUI::Draw()const
 		box.rx = box.lx + indexBase;
 		box.ry = box.ly + height;
 
-		DrawExtendGraph(table[0], table[1], table[2], table[3], this->bossHPTable, TRUE);
+		DrawExtendGraph(table[0], table[1], table[2], table[3], this->barTable, TRUE);
 		DrawBox(box.lx, box.ly, box.lx + prevHP, box.ry, this->prevBossHPColor, TRUE);
 		DrawExtendGraph(box.lx, box.ly, box.lx + nowHP, box.ry, this->bossHPBar, TRUE);
 		DrawExtendGraph(table[0], table[1], table[2], table[3], this->bossHPBarFrame, TRUE);

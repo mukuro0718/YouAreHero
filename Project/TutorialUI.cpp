@@ -21,8 +21,8 @@ TutorialUI::TutorialUI()
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
 	/*画像クラスインスタンスの作成*/
-	const int WINDOW = asset.GetImage(LoadingAsset::ImageType::WINDOW);
-	this->window = new Image(WINDOW);
+	//const int WINDOW = asset.GetImage(LoadingAsset::ImageType::WINDOW);
+	//this->window = new Image(WINDOW);
 	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::MINTYO_50_32));
 	this->fontHandle.emplace_back(asset.GetFont(LoadingAsset::FontType::MINTYO_50_32));
 
@@ -45,9 +45,9 @@ void TutorialUI::Initialize()
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json   = Singleton<JsonManager>	 ::GetInstance();
 
-	this->window->SetPosition(json.GetJson(JsonManager::FileType::UI)["TUTORIAL_WINDOW_FIRST_DRAW_RECT"]);
-	this->window->alpha		 = Image::MAX_ALPHA;
-	this->window->isAddAlpha = false;
+	//this->window->SetPosition(json.GetJson(JsonManager::FileType::UI)["TUTORIAL_WINDOW_FIRST_DRAW_RECT"]);
+	//this->window->alpha		 = Image::MAX_ALPHA;
+	//this->window->isAddAlpha = false;
 	this->isExtendWindow	 = true;
 	this->isReducedWindow	 = false;
 	this->isEnd				 = false;
@@ -79,8 +79,8 @@ void TutorialUI::Update()
 /// </summary>
 const void TutorialUI::Draw()const
 {
-	vector<int> position = this->window->position;
-	DrawExtendGraph(position[0], position[1], position[2], position[3], this->window->imageHandle, TRUE);
+	//vector<int> position = this->window->position;
+	//DrawExtendGraph(position[0], position[1], position[2], position[3], this->window->imageHandle, TRUE);
 	/*拡大も縮小もしていなければ*/
 	if (!this->isExtendWindow && !this->isReducedWindow)
 	{
@@ -149,7 +149,7 @@ void TutorialUI::ExtendWindow()
 
 		/*拡大処理*/
 		bool isEndExtend = false;
-		isEndExtend = this->window->ExtendGraph(targetPosition, addValue);
+		//isEndExtend = this->window->ExtendGraph(targetPosition, addValue);
 		targetPosition = ReturnAddOffset(targetPosition, json.GetJson(JsonManager::FileType::UI)["TUTORIAL_WINDOW_OFFSET"]);
 		/*拡大していたら*/
 		if (isEndExtend)
@@ -173,7 +173,7 @@ void TutorialUI::ReducedWindow()
 
 		/*縮小処理*/
 		bool isEndReduced = false;
-		isEndReduced = this->window->ExtendGraph(targetPosition, decreaseValue);
+		//isEndReduced = this->window->ExtendGraph(targetPosition, decreaseValue);
 		targetPosition = ReturnAddOffset(targetPosition, json.GetJson(JsonManager::FileType::UI)["TUTORIAL_WINDOW_OFFSET"]);
 		
 		/*縮小していたら*/

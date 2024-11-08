@@ -17,8 +17,6 @@ ButtonUI::ButtonUI()
 
 	this->table = asset.GetImage(LoadingAsset::ImageType::POTION_TABLE);
 	this->potion = asset.GetImage(LoadingAsset::ImageType::POTION);
-	this->healOrb  = asset.GetImage(LoadingAsset::ImageType::HP_ORB);
-	this->emptyOrb = asset.GetImage(LoadingAsset::ImageType::EMPTY_ORB);
 
 	this->iconFont		= asset.GetFont(LoadingAsset::FontType::MINTYO_80_32);
 	this->operationFont = asset.GetFont(LoadingAsset::FontType::MINTYO_80_32);
@@ -27,12 +25,7 @@ ButtonUI::ButtonUI()
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::X_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::Y_BUTTON));
 	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::A_BUTTON));
-	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::LT_BUTTON));
-	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_B_BUTTON));
-	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_X_BUTTON));
-	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_Y_BUTTON));
-	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_A_BUTTON));
-	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::PRESS_LT_BUTTON));
+	this->button.emplace_back(asset.GetImage(LoadingAsset::ImageType::RIGHT_TRIGGER));
 	this->buttonFont = asset.GetFont(LoadingAsset::FontType::MINTYO_50_32);
 }
 
@@ -119,26 +112,10 @@ void ButtonUI::DrawButton()
 	auto& input = Singleton<InputManager>::GetInstance();
 
 	vector<vector<int>> position = json.GetJson(JsonManager::FileType::UI)["BUTTON_POSITION"];
-	int pad = input.GetPadState();
-	vector<bool> isTrigger;
-	isTrigger.emplace_back(pad & PAD_INPUT_4);
-	isTrigger.emplace_back(pad & PAD_INPUT_1);
-	isTrigger.emplace_back(pad & PAD_INPUT_2);
-	isTrigger.emplace_back(pad & PAD_INPUT_3);
-	isTrigger.emplace_back(pad & PAD_INPUT_8);
 
-	int drawGraph = -1;
 	for (int i = 0; i < position.size(); i++)
 	{
-		if (isTrigger[i])
-		{
-			drawGraph = this->button[i + this->PRESS_OFFSET];
-		}
-		else
-		{
-			drawGraph = this->button[i];
-		}
-		DrawExtendGraph(position[i][0], position[i][1], position[i][2], position[i][3], drawGraph, TRUE);
+		DrawExtendGraph(position[i][0], position[i][1], position[i][2], position[i][3], this->button[i], TRUE);
 	}
 }
 
@@ -153,41 +130,26 @@ void ButtonUI::DrawFont()
 
 	vector<vector<int>> position = json.GetJson(JsonManager::FileType::UI)["BUTTON_TEXT_POSITION"];
 	const int TEXT_NUM = 5;
-	int pad = input.GetPadState();
-	vector<bool> isTrigger;
-	isTrigger.emplace_back(pad & PAD_INPUT_4);
-	isTrigger.emplace_back(pad & PAD_INPUT_1);
-	isTrigger.emplace_back(pad & PAD_INPUT_2);
-	isTrigger.emplace_back(pad & PAD_INPUT_3);
-	isTrigger.emplace_back(pad & PAD_INPUT_8);
 
 	int textColor = 0;
 	for (int i = 0; i < TEXT_NUM; i++)
 	{
-		if (isTrigger[i])
-		{
-			textColor = this->PRESS_TEXT_COLOR;
-		}
-		else
-		{
-			textColor = this->TEXT_COLOR;
-		}
 		switch (i)
 		{
 		case static_cast<int>(TextType::AVOID):
-			DrawStringToHandle(position[i][0], position[i][1], "‰ñ”ð", textColor, this->buttonFont);
+			DrawStringToHandle(position[i][0], position[i][1], "‰ñ”ð", this->TEXT_COLOR, this->buttonFont);
 			break;
 		case static_cast<int>(TextType::W_ATTACK):
-			DrawStringToHandle(position[i][0], position[i][1], "ŽãUŒ‚", textColor, this->buttonFont);
+			DrawStringToHandle(position[i][0], position[i][1], "ŽãUŒ‚", this->TEXT_COLOR, this->buttonFont);
 			break;
 		case static_cast<int>(TextType::S_ATTACK):
-			DrawStringToHandle(position[i][0], position[i][1], "‹­UŒ‚", textColor, this->buttonFont);
+			DrawStringToHandle(position[i][0], position[i][1], "‹­UŒ‚", this->TEXT_COLOR, this->buttonFont);
 			break;
 		case static_cast<int>(TextType::HEAL):
-			DrawStringToHandle(position[i][0], position[i][1], "‰ñ•œ", textColor, this->buttonFont);
+			DrawStringToHandle(position[i][0], position[i][1], "‰ñ•œ", this->TEXT_COLOR, this->buttonFont);
 			break;
 		case static_cast<int>(TextType::GUARD):
-			DrawStringToHandle(position[i][0], position[i][1], "–hŒä", textColor, this->buttonFont);
+			DrawStringToHandle(position[i][0], position[i][1], "–hŒä", this->TEXT_COLOR, this->buttonFont);
 			break;
 		}
 	}
