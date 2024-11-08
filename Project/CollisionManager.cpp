@@ -37,7 +37,7 @@ void CollisionManager::Entry(ColliderData& _data)
 	/*“o˜^‚³‚ê‚Ä‚¢‚½‚çƒGƒ‰[‚ğ“f‚­*/
 	else
 	{
-		assert(0 && "w’è‚Ìcollidable‚Í“o˜^Ï‚İ‚Å‚·");
+		//assert(0 && "w’è‚Ìcollidable‚Í“o˜^Ï‚İ‚Å‚·");
 	}
 }
 
@@ -58,7 +58,7 @@ void CollisionManager::Exit(ColliderData& _data)
 	/*“o˜^‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çƒGƒ‰[‚ğ“f‚­*/
 	else
 	{
-		assert(0 && "w’è‚Ìcollidable‚Í“o˜^‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
+		//assert(0 && "w’è‚Ìcollidable‚Í“o˜^‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
 	}
 
 }
