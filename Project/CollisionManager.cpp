@@ -17,6 +17,7 @@
 #include "AttackCapsuleColliderData.h"
 #include "AttackSphereColliderData.h"
 #include "CharacterColliderData.h"
+#include "ModelColliderData.h"
 #include "Singleton.h"
 #include "CollisionManager.h"
 
@@ -360,6 +361,24 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 		//	isHit = true;
 		//}
 	}
+	else if (aKind == ColliderData::Kind::MODEL && bKind == ColliderData::Kind::CHARACTER_CAPSULE)
+	{
+		//フラグが立っていたら
+		auto& chara_coll = dynamic_cast<CharacterColliderData&>(_objectB);
+		if (chara_coll.isUseCollWithGround)
+		{
+			auto& model_coll = dynamic_cast<ModelColliderData&>(_objectA);
+			//構築したコリジョン情報とカプセルとの当たり判定を取り、構造体に格納する
+			VECTOR chara_pos = chara_coll.GetNextPosition();
+			chara_pos.y += chara_coll.radius;
+			MV1_COLL_RESULT_POLY_DIM hitPolyDim = MV1CollCheck_Sphere(model_coll.modelHandle, model_coll.frameIndex, chara_pos, chara_coll.radius);
+			//当たっていたら以下の処理を行う
+			if (hitPolyDim.HitNum > 0)
+			{
+				isHit = true;
+			}
+		}
+	}
 
 	return isHit;
 }
@@ -457,6 +476,106 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		//{
 		//}
 	}
+	/*モデルとキャラクターカプセル（モデルはSTATICなので、必ずprimaryがCHARACTER_CAPSULEになる）*/
+	else if (primaryKind == ColliderData::Kind::MODEL && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
+	{
+		//フラグが立っていたら
+		auto& ModelCollision = dynamic_cast<ModelColliderData&>(_primary);
+		auto& charaCollision = dynamic_cast<CharacterColliderData&>(_secondary);
+		//構築したコリジョン情報とカプセルとの当たり判定を取り、構造体に格納する
+		MV1_COLL_RESULT_POLY_DIM hitPolyDim = MV1CollCheck_Sphere(ModelCollision.modelHandle, ModelCollision.frameIndex, charaCollision.GetNextPosition(), charaCollision.radius);
+		//当たっていたら以下の処理を行う
+		if (hitPolyDim.HitNum > 0)
+		{
+			vector<MV1_COLL_RESULT_POLY> floor;
+			vector<MV1_COLL_RESULT_POLY> xpWall;
+			vector<MV1_COLL_RESULT_POLY> xmWall;
+			vector<MV1_COLL_RESULT_POLY> zpWall;
+			vector<MV1_COLL_RESULT_POLY> zmWall;
+			VECTOR nowNextPosition = _secondary.GetNextPosition();
+			VECTOR newNextPosition = _secondary.GetNextPosition();
+			float  radius = charaCollision.radius;
+			float  hit_height = charaCollision.topPositon.y;
+			VECTOR velocity = _secondary.rigidbody.GetVelocity();
+
+			//当たっている数だけループを回す
+			JudgeNorm(hitPolyDim, floor, xpWall, xmWall, zpWall, zmWall);
+
+			//最大補正座標
+			VECTOR maxfix = VGet(0.0f, 0.0f, 0.0f);
+			//当たったか
+			bool isHit = false;
+			//当たっているポリゴンの中で、床と判定されたポリゴンの処理
+			for (int i = 0; i < floor.size(); i++)
+			{
+				//三角形と線分の当たり判定を行う
+				HITRESULT_LINE hitResult = HitCheck_Line_Triangle(charaCollision.GetNextPosition(), VAdd(charaCollision.topPositon, VGet(0.0f, hit_height, 0.0f)), floor[i].Position[0], floor[i].Position[1], floor[i].Position[2]);
+				//当たっていたら
+				if (hitResult.HitFlag)
+				{
+					//ヒットフラグを立てる
+					isHit = true;
+					float fixY = hitResult.Position.y - charaCollision.GetNextPosition().y;
+					//もし今保存されている補正量よりも大きかったら
+					if (fixY > maxfix.y)
+					{
+						//補正量を代入する
+						maxfix.y = fixY;
+					}
+				}
+			}
+			if (isHit)
+			{
+				//out.isOnGround = true;
+				newNextPosition.y = nowNextPosition.y + maxfix.y + 0.001f;
+			}
+			//X+の壁と当たったか
+			if (xpWall.size() != 0)
+			{
+				isHit = HitCheckWall(maxfix.x, xpWall, nowNextPosition, hit_height, radius, false, true, false);
+				if (isHit)
+				{
+					newNextPosition.x = nowNextPosition.x + maxfix.x + 0.001f;
+				}
+			}
+			//x-当たったか
+			if (xmWall.size() != 0)
+			{
+				isHit = HitCheckWall(maxfix.x, xmWall, nowNextPosition, hit_height, radius, true, true, false);
+				if (isHit)
+				{
+					newNextPosition.x = nowNextPosition.x + maxfix.x - 0.001f;
+				}
+			}
+			//z+の壁と当たったか
+			if (zpWall.size() != 0)
+			{
+				isHit = HitCheckWall(maxfix.z, zpWall, nowNextPosition, hit_height, radius, false, false, true);
+				if (isHit)
+				{
+					newNextPosition.z = nowNextPosition.z + maxfix.z + 0.001f;
+				}
+			}
+			//z-当たったか
+			if (zmWall.size() != 0)
+			{
+				isHit = HitCheckWall(maxfix.z, zmWall, nowNextPosition, hit_height, radius, true, false, true);
+				if (isHit)
+				{
+					newNextPosition.z = nowNextPosition.z + maxfix.z - 0.001f;
+				}
+			}
+			/*格納した構造体を破棄する*/
+			MV1CollResultPolyDimTerminate(hitPolyDim);
+			floor.clear();
+			xpWall.clear();
+			xmWall.clear();
+			zpWall.clear();
+			zmWall.clear();
+			_secondary.SetNextPosition(newNextPosition);
+		}
+	}
+
 	//else
 	//{
 	//	assert(0 && "許可されていない当たり判定の位置補正です");
@@ -479,3 +598,123 @@ void CollisionManager::FixPosition()
 	}
 }
 
+/// <summary>
+/// 度数のgetter
+/// </summary>
+float CollisionManager::GetDegree(const VECTOR _norm1, const VECTOR _norm2)
+{
+	float dot = VDot(_norm1, _norm2);
+	float deg = acosf(dot);
+
+	return deg * 180.0f / DX_PI_F;
+}
+void CollisionManager::JudgeNorm(const MV1_COLL_RESULT_POLY_DIM _hitPolyDim, vector<MV1_COLL_RESULT_POLY>& _floor, vector<MV1_COLL_RESULT_POLY>& _xpWall, vector<MV1_COLL_RESULT_POLY>& _xmWall, vector<MV1_COLL_RESULT_POLY>& _zpWall, vector<MV1_COLL_RESULT_POLY>& _zmWall)
+{
+	for (int i = 0; i < _hitPolyDim.HitNum; i++)
+	{
+		//trueが返されたら状態を保存する
+		if (JudgeDegree(_hitPolyDim.Dim[i].Normal, FLOOR_NORM))
+		{
+			_floor.push_back(_hitPolyDim.Dim[i]);
+		}
+		else if (JudgeDegree(_hitPolyDim.Dim[i].Normal, X_PLUS_NORM))
+		{
+			_xpWall.push_back(_hitPolyDim.Dim[i]);
+		}
+		else if (JudgeDegree(_hitPolyDim.Dim[i].Normal, X_MINUS_NORM))
+		{
+			_xmWall.push_back(_hitPolyDim.Dim[i]);
+		}
+		else if (JudgeDegree(_hitPolyDim.Dim[i].Normal, Z_PLUS_NORM))
+		{
+			_zpWall.push_back(_hitPolyDim.Dim[i]);
+		}
+		else if (JudgeDegree(_hitPolyDim.Dim[i].Normal, Z_MINUS_NORM))
+		{
+			_zmWall.push_back(_hitPolyDim.Dim[i]);
+		}
+	}
+}
+bool CollisionManager::JudgeDegree(const VECTOR _norm1, const VECTOR _norm2)
+{
+	//床との内積の角度を求める
+	float deg = GetDegree(_norm1, _norm2);
+	//もし角度が最大度数未満か
+	if (deg < MAX_DEGREE)
+	{
+		return true;
+	}
+	return false;
+}
+float CollisionManager::JudgeMax(const float _nowMax, const float _judgeValue)
+{
+	/*現在の最大値と判定する値を比べて大きいほうを返す*/
+	if (_nowMax < _judgeValue)
+	{
+		return _judgeValue;
+	}
+	return _nowMax;
+}
+bool CollisionManager::HitCheckWall(float& _max, vector<MV1_COLL_RESULT_POLY> _wall, const VECTOR _pos, const float _height, const float _radius, const bool _sign, const bool isX, const bool isZ)
+{
+	bool isHit = false;
+	for (int i = 0; i < _wall.size(); i++)
+	{
+		//三角形と線分の当たり判定を行う
+		int hitResult = HitCheck_Capsule_Triangle(_pos, VAdd(_pos, VGet(0.0f, _height, 0.0f)), _radius, _wall[i].Position[0], _wall[i].Position[1], _wall[i].Position[2]);
+		//当たっていたら
+		if (hitResult)
+		{
+			//ヒットフラグを立てる
+			isHit = true;
+			for (int j = 0; j < 3; j++)
+			{
+				//if (_wall[i].Position[j].y > _pos.y + 1.0f)
+				//{
+				float fix = 0.0f;
+				if (isX)
+				{
+					if (_wall[i].Position[j].x > _pos.x)
+					{
+						fix = _wall[i].Position[j].x - (_pos.x + _radius);
+					}
+					else
+					{
+						fix = _wall[i].Position[j].x - (_pos.x - _radius);
+					}
+				}
+				else if (isZ)
+				{
+					if (_wall[i].Position[j].z > _pos.z)
+					{
+						fix = _wall[i].Position[j].z - (_pos.z + _radius);
+					}
+					else
+					{
+						fix = _wall[i].Position[j].z - (_pos.z - _radius);
+					}
+				}
+				//もし今保存されている補正量よりも大きかったら
+				if (_sign)
+				{
+					if (fix < _max)
+					{
+						//補正量を代入する
+						_max = fix;
+					}
+				}
+				else
+				{
+					if (fix > _max)
+					{
+						//補正量を代入する
+						_max = fix;
+					}
+				}
+				//}
+			}
+		}
+	}
+
+	return isHit;
+}

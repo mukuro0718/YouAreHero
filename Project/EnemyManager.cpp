@@ -5,15 +5,20 @@
 #include "Rigidbody.h"
 #include "Character.h"
 #include "Boss.h"
+#include "Beast.h"
+#include "Dragon.h"
 #include "EnemyManager.h"
+#include "EnemyChanger.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 EnemyManager::EnemyManager()
-	:boss(nullptr)
 {
-	this->boss = new Boss();
+	this->boss.emplace_back(new Boss());
+	this->boss.emplace_back(new Beast());
+	this->boss.emplace_back(new Dragon());
+	this->boss.emplace_back(new Boss());
 }
 
 /// <summary>
@@ -29,21 +34,23 @@ EnemyManager::~EnemyManager()
 /// </summary>
 void EnemyManager::Initialize()
 {
-	this->boss->Initialize();
+	auto& changer = Singleton<EnemyChanger>::GetInstance();
+	this->enemyType = changer.GetEnemyType();
+	this->boss[this->enemyType]->Initialize();
 }
 /// <summary>
 /// 更新
 /// </summary>
 void EnemyManager::Update()
 {
-	this->boss->Update();
+	this->boss[this->enemyType]->Update();
 }
 /// <summary>
 /// アクション
 /// </summary>
 void EnemyManager::Finalize()
 {
-	this->boss->Finalize();
+	this->boss[this->enemyType]->Finalize();
 }
 
 /// <summary>
@@ -51,7 +58,7 @@ void EnemyManager::Finalize()
 /// </summary>
 const void EnemyManager::Draw()const
 {
-	this->boss->Draw();
+	this->boss[this->enemyType]->Draw();
 }
 
 /// <summary>
@@ -59,7 +66,7 @@ const void EnemyManager::Draw()const
 /// </summary>
 const CharacterData& EnemyManager::GetCharacterData()const
 {
-	return this->boss->GetCharacterData();
+	return this->boss[this->enemyType]->GetCharacterData();
 }
 
 /// <summary>
@@ -67,7 +74,7 @@ const CharacterData& EnemyManager::GetCharacterData()const
 /// </summary>
 const Rigidbody& EnemyManager::GetRigidbody()const
 {
-	return this->boss->GetRigidbody();
+	return this->boss[this->enemyType]->GetRigidbody();
 }
 
 /// <summary>
@@ -75,7 +82,7 @@ const Rigidbody& EnemyManager::GetRigidbody()const
 /// </summary>
 const int EnemyManager::GetHP()const
 {
-	return this->boss->GetHP();
+	return this->boss[this->enemyType]->GetHP();
 }
 
 /// <summary>
@@ -83,7 +90,7 @@ const int EnemyManager::GetHP()const
 /// </summary>
 const bool EnemyManager::IsAttack()const
 {
-	return this->boss->GetIsAttack();
+	return this->boss[this->enemyType]->GetIsAttack();
 }
 
 /// <summary>
@@ -91,10 +98,10 @@ const bool EnemyManager::IsAttack()const
 /// </summary>
 const int EnemyManager::GetModelHandle()const
 {
-	return this->boss->GetModelHandle();
+	return this->boss[this->enemyType]->GetModelHandle();
 }
 
 const bool EnemyManager::GetIsAlive()const
 {
-	return this->boss->GetIsAlive();
+	return this->boss[this->enemyType]->GetIsAlive();
 }

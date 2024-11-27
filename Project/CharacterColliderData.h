@@ -23,4 +23,5 @@ public:
 	CharacterData*	data;		//キャラクターデータ
 	float			radius;		//半径
 	VECTOR			topPositon;	//カプセル上座標
+	bool			isUseCollWithGround;
 };

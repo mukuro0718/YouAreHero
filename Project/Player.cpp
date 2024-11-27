@@ -169,6 +169,7 @@ void Player::Initialize()
 	float height		= json.GetJson(JsonManager::FileType::PLAYER)["HIT_HEIGHT"];		//カプセルの高さ
 	collider.topPositon = /*VAdd(collider.rigidbody.GetPosition(), */VGet(0.0f, height, 0.0f)/*)*/;	//カプセルの上座標
 	collider.radius		= json.GetJson(JsonManager::FileType::PLAYER)["RADIUS"];			//カプセルの半径
+	collider.isUseCollWithGround = true;
 	data.hp				= json.GetJson(JsonManager::FileType::PLAYER)["HP"];				//HP
 	data.stamina		= json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];			//スタミナ
 	data.isInvinvible	= false;															//ダメージをカットするか
@@ -493,13 +494,13 @@ void Player::UpdateRotation()
 	if (CanRotation())
 	{
 		/*パッド入力の取得*/
-		int pad = input.GetPadState();
+		int pad = input.GetNowPadState();
 
 		/*スティック入力*/
 		lStick = VGet(static_cast<float>(input.GetLStickState().XBuf), 0.0f, static_cast<float>(input.GetLStickState().YBuf));
 
 		/*走ったか*/
-		bool isRun = (input.GetPadState() & PAD_INPUT_6);
+		bool isRun = (input.GetNowPadState() & PAD_INPUT_6);
 		this->isBlockingMove = false;
 
 			//スティック入力があるか
@@ -591,7 +592,7 @@ void Player::UpdateRotation()
 			//else
 			//{
 			this->nextRotation.y = static_cast<float>(
-				-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
+				- atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
 				- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
 			//}
 
@@ -741,7 +742,7 @@ void Player::Death()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& input = Singleton<InputManager> ::GetInstance();
 	auto& json = Singleton<JsonManager>  ::GetInstance();
-	int pad = input.GetPadState();
+	int pad = input.GetNowPadState();
 	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 
 	if (this->state->CheckFlag(this->DEATH))
@@ -775,7 +776,7 @@ void Player::Block()
 	auto& data		= dynamic_cast<PlayerData&>(*collider.data);
 
 	/*pad入力*/
-	int pad = input.GetPadState();
+	int pad = input.GetNowPadState();
 
 	/*ブロックできるか*/
 	if (!CanBlock())return;
@@ -849,7 +850,7 @@ void Player::Heal()
 	}
 
 	/*pad入力*/
-	int pad = input.GetPadState();
+	int pad = input.GetNowPadState();
 	bool isInputY = (pad & PAD_INPUT_1);
 
 	/*回復していたら*/
@@ -890,7 +891,7 @@ void Player::Rolling()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& input = Singleton<InputManager> ::GetInstance();
 	auto& json = Singleton<JsonManager>  ::GetInstance();
-	int pad = input.GetPadState();
+	int pad = input.GetNowPadState();
 
 	/*回避していたら*/
 	if (this->state->CheckFlag(this->MASK_AVOID))
@@ -982,7 +983,7 @@ void Player::Attack()
 
 
 	/*pad入力*/
-	int pad = input.GetPadState();
+	int pad = input.GetNowPadState();
 	bool isPushY = (pad & PAD_INPUT_2);
 	bool isPushB = (pad & PAD_INPUT_4);
 	this->isStopAnimation = false;
@@ -1241,7 +1242,7 @@ void Player::LockOn()
 	auto& input = Singleton<InputManager>  ::GetInstance();
 
 	/*右スティック押し込みがあったか*/
-	if ((input.GetPadState() & PAD_INPUT_10))
+	if ((input.GetNowPadState() & PAD_INPUT_10))
 	{
 		if (!this->isCount[static_cast<int>(FrameCountType::LOCK_ON)])
 		{

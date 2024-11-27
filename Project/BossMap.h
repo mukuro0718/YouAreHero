@@ -17,11 +17,10 @@ public:
 	const void	Draw			()const;//•`‰æ
 
 	/*getter*/
-	const int	GetModelHandle	()const { return this->modelHandle; }
+	const int	GetModelHandle()const;
 
 private:
 	/*ƒƒ“ƒo•Ï”*/
-	int modelHandle;
 	ColliderData* collider;
 };
 

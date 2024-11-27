@@ -30,6 +30,7 @@ private:
 	~EnemyManager();//デストラクタ
 
 	/*メンバ変数*/
-	Character* boss;//ボス
+	std::vector<Character*> boss;//ボス
+	int enemyType;
 };
 

@@ -220,9 +220,6 @@
     <Filter Include="UI\Scene\Title">
       <UniqueIdentifier>{70c3cf82-f898-4a6f-b685-885b8c0ad3c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI\Scene\Tutorial">
-      <UniqueIdentifier>{428ebf5b-faca-456b-8540-351c9c3a5d0f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI\Scene\GameClear">
       <UniqueIdentifier>{160ddbbe-aba5-4ff0-9b8f-3773bb94577a}</UniqueIdentifier>
     </Filter>
@@ -312,6 +309,18 @@
     </Filter>
     <Filter Include="Effect\Player\ChargeAttack">
       <UniqueIdentifier>{75a56904-a943-4964-9fd8-554ea8e9a7e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\EnemyChanger">
+      <UniqueIdentifier>{8a45c294-a222-4981-b5bc-cbc557c616c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scene\Select">
+      <UniqueIdentifier>{428ebf5b-faca-456b-8540-351c9c3a5d0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\beast">
+      <UniqueIdentifier>{e143db46-602f-44d4-94fe-9e0e91b5f19a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\dragon">
+      <UniqueIdentifier>{c76d36c1-9189-4379-b288-c36814c4e4d2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -514,7 +523,7 @@
     <ClCompile Include="GameClearScene.cpp">
       <Filter>Scene\Type\GameClear</Filter>
     </ClCompile>
-    <ClCompile Include="TutorialScene.cpp">
+    <ClCompile Include="SelectScene.cpp">
       <Filter>Scene\Type\Tutorial</Filter>
     </ClCompile>
     <ClCompile Include="GameUI.cpp">
@@ -526,8 +535,8 @@
     <ClCompile Include="TitleUI.cpp">
       <Filter>UI\Scene\Title</Filter>
     </ClCompile>
-    <ClCompile Include="TutorialUI.cpp">
-      <Filter>UI\Scene\Tutorial</Filter>
+    <ClCompile Include="SelectUI.cpp">
+      <Filter>UI\Scene\Select</Filter>
     </ClCompile>
     <ClCompile Include="GameOverUI.cpp">
       <Filter>UI\Scene\GameOver</Filter>
@@ -600,6 +609,18 @@
     </ClCompile>
     <ClCompile Include="PlayerChargeAttackEffect.cpp">
       <Filter>Effect\Player\ChargeAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelColliderData.cpp">
+      <Filter>Collision\ColliderData</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyChanger.cpp">
+      <Filter>Object\Character\EnemyChanger</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast.cpp">
+      <Filter>Object\Character\Enemy\beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Dragon.cpp">
+      <Filter>Object\Character\Enemy\dragon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -825,7 +846,7 @@
     <ClInclude Include="GameClearScene.h">
       <Filter>Scene\Type\GameClear</Filter>
     </ClInclude>
-    <ClInclude Include="TutorialScene.h">
+    <ClInclude Include="SelectScene.h">
       <Filter>Scene\Type\Tutorial</Filter>
     </ClInclude>
     <ClInclude Include="GameUI.h">
@@ -837,8 +858,8 @@
     <ClInclude Include="TitleUI.h">
       <Filter>UI\Scene\Title</Filter>
     </ClInclude>
-    <ClInclude Include="TutorialUI.h">
-      <Filter>UI\Scene\Tutorial</Filter>
+    <ClInclude Include="SelectUI.h">
+      <Filter>UI\Scene\Select</Filter>
     </ClInclude>
     <ClInclude Include="GameOverUI.h">
       <Filter>UI\Scene\GameOver</Filter>
@@ -915,6 +936,18 @@
     <ClInclude Include="PlayerChargeAttackEffect.h">
       <Filter>Effect\Player\ChargeAttack</Filter>
     </ClInclude>
+    <ClInclude Include="ModelColliderData.h">
+      <Filter>Collision\ColliderData</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyChanger.h">
+      <Filter>Object\Character\EnemyChanger</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast.h">
+      <Filter>Object\Character\Enemy\beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Dragon.h">
+      <Filter>Object\Character\Enemy\dragon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\Json\Camera.json">
@@ -966,6 +999,12 @@
       <Filter>Json\File</Filter>
     </None>
     <None Include="Data\Json\Bot.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\Beast.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\Dragon.json">
       <Filter>Json\File</Filter>
     </None>
   </ItemGroup>

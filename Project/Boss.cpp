@@ -125,6 +125,7 @@ void Boss::Initialize()
 	float height			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_HEIGHT"];
 	collider.topPositon		= VGet(0.0f, height, 0.0f);
 	collider.radius			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
+	collider.isUseCollWithGround = true;
 	data.hp					= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
 	data.isHit				= false;
 	

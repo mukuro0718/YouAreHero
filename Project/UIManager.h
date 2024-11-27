@@ -5,11 +5,7 @@
 #pragma once
 #include "Singleton.h"
 
-class HPUI;
-class ButtonUI;
 class SceneUI;
-class BossNameUI;
-class Audience;
 class UIManager : public Singleton<UIManager>
 {
 public:
@@ -28,9 +24,5 @@ private:
 
 	/*ƒƒ“ƒo•Ï”*/
 	std::vector<SceneUI*>	scene;
-	HPUI*					hp;
-	ButtonUI*				button;
-	BossNameUI*				bossName;
-	Audience*				audience;
 };
 

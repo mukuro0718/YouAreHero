@@ -30,6 +30,8 @@ public:
 		EFFECT			= 14,
 		BOT				= 15,
 		RANKING			= 16,
+		DRAGON = 17,
+		BEAST = 18,
 	};
 
 	void ReloadingJsonFile(const FileType _type);

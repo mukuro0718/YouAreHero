@@ -18,6 +18,8 @@ public:
 		ENEMY,
 		BOT,
 		SKYDOME,
+		BEAST,
+		DRAGON,
 	};
 	//画像の種類
 	enum class ImageType
@@ -42,6 +44,22 @@ public:
 		POTION_TABLE		= 17,
 		BACK_GROUND			= 18,
 		SHADOW				= 19,
+		SELECT_BACK			= 20,
+		SELECT_LOGO			= 21,
+		QUEST_ICON_1		= 22,
+		QUEST_ICON_2		= 23,
+		QUEST_ICON_3		= 24,
+		QUEST_ICON_4		= 25,
+		QUEST_IMAGE_1		= 26,
+		QUEST_IMAGE_2		= 27,
+		QUEST_IMAGE_3		= 28,
+		QUEST_IMAGE_4		= 29,
+		QUEST_SUMMARY_1		= 30,
+		QUEST_SUMMARY_2		= 31,
+		QUEST_SUMMARY_3		= 32,
+		QUEST_SUMMARY_4		= 33,
+		SELECT_ICON_FRAME	= 34,
+		SELECT_PROV_DECIDE = 35,
 	};
 	//フォントのタイプ
 	enum class FontType
@@ -70,6 +88,7 @@ public:
 		PLAYER_IMPACT,
 		PLAYER_JUST_GUARD,
 		PLAYER_CHARGE_ATTACK,
+		TMP_EFFECT,
 	};
 
 	/*getter*/

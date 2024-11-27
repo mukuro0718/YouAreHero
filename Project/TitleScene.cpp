@@ -76,7 +76,7 @@ void TitleScene::Update()
 	/*ƒV[ƒ“‚ÌI—¹ˆ—*/
 	if (this->IsEnd())
 	{
-		sceneChanger.ChangeScene(SceneChanger::SceneType::GAME);
+		sceneChanger.ChangeScene(SceneChanger::SceneType::SELECT);
 	}
 }
 

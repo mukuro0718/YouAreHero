@@ -18,6 +18,7 @@ public:
 		CHARACTER_CAPSULE	= 4,//キャラクターカプセル
 		ATTACK_SPHERE		= 5,//攻撃スフィア
 		ATTACK_CAPSULE		= 6,//攻撃カプセル
+		MODEL = 7,
 	};
 
 	/*位置補正の優先度判定に使う*/

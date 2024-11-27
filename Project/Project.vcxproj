@@ -143,6 +143,7 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AttackData.cpp" />
     <ClCompile Include="Audience.cpp" />
+    <ClCompile Include="Beast.cpp" />
     <ClCompile Include="BitFlag.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BossAction.cpp" />
@@ -175,9 +176,12 @@
     <ClCompile Include="AttackSphereColliderData.cpp" />
     <ClCompile Include="CapsuleColliderData.cpp" />
     <ClCompile Include="CharacterColliderData.cpp" />
+    <ClCompile Include="Dragon.cpp" />
+    <ClCompile Include="EnemyChanger.cpp" />
     <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="GameOverUI.cpp" />
     <ClCompile Include="GameUI.cpp" />
+    <ClCompile Include="ModelColliderData.cpp" />
     <ClCompile Include="PlayerChargeAttackEffect.cpp" />
     <ClCompile Include="PlayerImpactEffect.cpp" />
     <ClCompile Include="PlayerGuardHitEffect.cpp" />
@@ -231,8 +235,8 @@
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="TitleUI.cpp" />
     <ClCompile Include="Transform.cpp" />
-    <ClCompile Include="TutorialScene.cpp" />
-    <ClCompile Include="TutorialUI.cpp" />
+    <ClCompile Include="SelectScene.cpp" />
+    <ClCompile Include="SelectUI.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VECTORtoUseful.cpp" />
   </ItemGroup>
@@ -241,6 +245,7 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AttackData.h" />
     <ClInclude Include="Audience.h" />
+    <ClInclude Include="Beast.h" />
     <ClInclude Include="BitFlag.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossAction.h" />
@@ -274,9 +279,12 @@
     <ClInclude Include="CapsuleColliderData.h" />
     <ClInclude Include="CharacterColliderData.h" />
     <ClInclude Include="BossActionHeader.h" />
+    <ClInclude Include="Dragon.h" />
+    <ClInclude Include="EnemyChanger.h" />
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameOverUI.h" />
     <ClInclude Include="GameUI.h" />
+    <ClInclude Include="ModelColliderData.h" />
     <ClInclude Include="PlayerChargeAttackEffect.h" />
     <ClInclude Include="PlayerImpactEffect.h" />
     <ClInclude Include="PlayerGuardHitEffect.h" />
@@ -325,8 +333,8 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="TitleUI.h" />
-    <ClInclude Include="TutorialScene.h" />
-    <ClInclude Include="TutorialUI.h" />
+    <ClInclude Include="SelectScene.h" />
+    <ClInclude Include="SelectUI.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="UseJson.h" />
     <ClInclude Include="JsonLoader.h" />
@@ -343,9 +351,11 @@
     <ClInclude Include="VECTORtoUseful.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Data\Json\Beast.json" />
     <None Include="Data\Json\Bot.json" />
     <None Include="Data\Json\Camera.json" />
     <None Include="Data\Json\Debug.json" />
+    <None Include="Data\Json\Dragon.json" />
     <None Include="Data\Json\Effect.json" />
     <None Include="Data\Json\EffectPath.json" />
     <None Include="Data\Json\Enemy.json" />

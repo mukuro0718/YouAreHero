@@ -78,11 +78,11 @@ void Image::FadeInOut(const int _addAlpha)
 
 	if (this->isAddAlpha)
 	{
-		this->FadeIn(_addAlpha);
+		FadeIn(_addAlpha);
 	}
 	else
 	{
-		this->FadeOut(_addAlpha);
+		FadeOut(_addAlpha);
 	}
 }
 

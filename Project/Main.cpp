@@ -1,23 +1,20 @@
 #include <DxLib.h>
 #include "EffekseerForDXLib.h"
-#include "GoriLib.h"
-#include "UseSTL.h"
-#include "UseJson.h"
-#include "JsonLoader.h"
-#include "LoadingAsset.h"
+//#include "GoriLib.h"
+//#include "UseSTL.h"
+//#include "UseJson.h"
+//#include "JsonLoader.h"
+//#include "LoadingAsset.h"
 #include "ScreenSetup.h"
-#include "SceneChanger.h"
+//#include "SceneChanger.h"
 #include "SceneManager.h"
-#include "Debug.h"
-#include "InputManager.h"
-#include "CameraManager.h"
-#include "MapManager.h"
+//#include "Debug.h"
+//#include "InputManager.h"
+//#include "CameraManager.h"
+//#include "MapManager.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    // 使用する Direct3D のバージョンを設定
-    SetUseDirect3DVersion(DX_DIRECT3D_11);
-
     /*シングルトンクラスのインスタンスを作成*/
     //Singleton<JsonLoader>   ::CreateInstance();
     //Singleton<JsonManager>  ::CreateInstance();

@@ -24,6 +24,23 @@
 
     "Asset/Image/UI/Other/BackGround.png",
 
-    "Asset/Image/Shadow/Shadow.tga"
+    "Asset/Image/Shadow/Shadow.tga",
+
+    "Asset/Image/UI/Select/background.png",
+    "Asset/Image/UI/Select/logo.png",
+    "Asset/Image/UI/Select/quest_icon_1.png",
+    "Asset/Image/UI/Select/quest_icon_2.png",
+    "Asset/Image/UI/Select/quest_icon_3.png",
+    "Asset/Image/UI/Select/quest_icon_4.png",
+    "Asset/Image/UI/Select/quest_image_1.png",
+    "Asset/Image/UI/Select/quest_image_2.png",
+    "Asset/Image/UI/Select/quest_image_3.png",
+    "Asset/Image/UI/Select/quest_image_4.png",
+    "Asset/Image/UI/Select/summary_1.png",
+    "Asset/Image/UI/Select/summary_2.png",
+    "Asset/Image/UI/Select/summary_3.png",
+    "Asset/Image/UI/Select/summary_4.png",
+    "Asset/Image/UI/Select/select_icon_frame.png",
+    "Asset/Image/UI/Select/Prov.png"
   ]
 }

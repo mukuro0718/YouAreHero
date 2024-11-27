@@ -1,8 +1,13 @@
 #include <DxLib.h>
+#include "DeleteInstance.h"
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "SceneBase.h"
 #include "Image.h"
+#include "Audience.h"
+#include "HPUI.h"
+#include "ButtonUI.h"
+#include "BossNameUI.h"
 #include "SceneUI.h"
 #include "GameUI.h"
 #include "UIManager.h"
@@ -15,11 +20,19 @@
 /// コンストラクタ
 /// </summary>
 GameUI::GameUI()
+	: hp(nullptr)
+	, button(nullptr)
+	, bossName(nullptr)
+	, audience(nullptr)
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& asset = Singleton<LoadingAsset>::GetInstance();
+	/*インスタンスの生成*/
+	this->hp = new HPUI();
+	this->button = new ButtonUI();
+	this->bossName = new BossNameUI();
+	this->audience = new Audience();
 
 	/*画像クラスインスタンスの作成*/
+	auto& asset = Singleton<LoadingAsset>::GetInstance();
 	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
 	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_100_32);
 	Initialize();
@@ -30,6 +43,10 @@ GameUI::GameUI()
 /// </summary>
 GameUI::~GameUI()
 {
+	DeleteMemberInstance(this->hp);
+	DeleteMemberInstance(this->button);
+	DeleteMemberInstance(this->bossName);
+	DeleteMemberInstance(this->audience);
 }
 
 /// <summary>
@@ -37,11 +54,15 @@ GameUI::~GameUI()
 /// </summary>
 void GameUI::Initialize()
 {
-	/*シングルトンクラスのインスタンスを取得*/
+	/*クラスの初期化*/
+	this->hp->Initialize();
+	this->button->Initialize();
+	this->bossName->Initialize();
+	this->audience->Initialize();
+
+	/*変数の初期化*/
 	auto& json = Singleton<JsonManager>	 ::GetInstance();
-
 	this->alpha = 0;
-
 	this->isEnd = false;
 	this->type = -1;
 	this->frameCount = 0;
@@ -53,6 +74,10 @@ void GameUI::Initialize()
 /// </summary>
 void GameUI::Update()
 {
+	this->hp->Update();
+	this->button->Update();
+	this->bossName->Update();
+
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>	::GetInstance();
 	auto& input = Singleton<InputManager>::GetInstance();
@@ -83,6 +108,11 @@ void GameUI::Update()
 /// </summary>
 const void GameUI::Draw()const
 {
+	this->audience->Draw();
+	this->hp->Draw();
+	this->button->Draw();
+	this->bossName->Draw();
+
 	/*まだゲームが終了していなければ早期リターン*/
 	if (this->type == -1)return;
 	/*シングルトンクラスのインスタンスを取得*/

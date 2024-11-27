@@ -25,7 +25,7 @@ EffectManager::EffectManager()
 
 	this->effect.emplace_back(new BossImpactEffect		(asset.GetEffect(LoadingAsset::EffectType::BOSS_IMPACT)));
 	this->effect.emplace_back(new PlayerGuardHitEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_GUARD_HIT)));
-	this->effect.emplace_back(new PlayerHealEffect		(asset.GetEffect(LoadingAsset::EffectType::PLAYER_HEAL)));
+	this->effect.emplace_back(new PlayerHealEffect		(asset.GetEffect(LoadingAsset::EffectType::TMP_EFFECT)));
 	this->effect.emplace_back(new PlayerImpactEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_IMPACT)));
 	this->effect.emplace_back(new PlayerChargeAttackEffect(asset.GetEffect(LoadingAsset::EffectType::PLAYER_CHARGE_ATTACK)));
 }

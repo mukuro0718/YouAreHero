@@ -1,6 +1,5 @@
 #include <DxLib.h>
-#include <Effekseer.h>
-#include <EffekseerRendererDX11.h>
+#include "EffekseerForDXLib.h"
 #include "UseSTL.h"
 #include "SceneBase.h"
 #include "GameScene.h"

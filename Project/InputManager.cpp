@@ -7,7 +7,8 @@
 /// コンストラクタ
 /// </summary>
 InputManager::InputManager()
-	: pad(0)
+	: nowPad(0)
+	, prevPad(0)
 	, lStick{0,0}
 	, rStick{0,0}
 {
@@ -26,7 +27,8 @@ InputManager::~InputManager()
 void InputManager::InputPadState()
 {
 	/*ボタン入力の受付*/
-	this->pad = GetJoypadInputState(DX_INPUT_PAD1);
+	this->prevPad = this->nowPad;
+	this->nowPad = GetJoypadInputState(DX_INPUT_PAD1);
 	/*左スティック入力の取得*/
 	GetJoypadAnalogInput(&this->lStick.XBuf, &this->lStick.YBuf, DX_INPUT_PAD1);
 	/*右スティックの入力*/

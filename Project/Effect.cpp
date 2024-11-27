@@ -49,8 +49,11 @@ void Effect::Update()
 	/*再生フラグが立っていなければ早期リターン*/
 	if (!this->isPlayEffect)return;
 
-	/*エフェクトの再生に必要な情報の設定*/
-	SetInfoToPlayTheEffect();
+	if (this->frameCount == 0)
+	{
+		/*エフェクトの再生に必要な情報の設定*/
+		SetInfoToPlayTheEffect();
+	}
 
 	/*フレーム計測*/
 	//フレームの増加

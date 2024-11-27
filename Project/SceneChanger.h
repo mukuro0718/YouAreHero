@@ -16,7 +16,7 @@ public:
 	enum class SceneType
 	{
 		TITLE		= 0,
-		TUTORIAL	= 1,
+		SELECT		= 1,
 		GAME		= 2,//ÉQÅ[ÉÄ
 		GAME_CLEAR	= 3,
 		GAME_OVER	= 4,

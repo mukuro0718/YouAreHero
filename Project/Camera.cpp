@@ -144,9 +144,6 @@ void Camera::UpdateTarget()
 	case SceneChanger::SceneType::TITLE:
 		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
 		break;
-	case SceneChanger::SceneType::TUTORIAL:
-		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
-		break;
 	case SceneChanger::SceneType::GAME:
 		if (player.GetHP() < 0 || !player.GetIsLockOn())
 		{

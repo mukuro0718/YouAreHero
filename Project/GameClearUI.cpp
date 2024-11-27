@@ -217,7 +217,7 @@ bool GameClearUI::IsPressButton()
 	auto& json = Singleton<JsonManager>	 ::GetInstance();
 
 	/*pad“ü—Í*/
-	int pad = input.GetPadState();
+	int pad = input.GetNowPadState();
 	bool isPressButton = false;
 
 	/*window‚ªˆÚ“®‚µ‚Ä‚¢‚È‚¢/Šg‘å‚à‚µ‚Ä‚¢‚È‚¯‚ê‚Î*/

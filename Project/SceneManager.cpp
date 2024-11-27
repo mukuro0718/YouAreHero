@@ -5,7 +5,7 @@
 #include "GameClearScene.h"
 #include "GameOverScene.h"
 #include "TitleScene.h"
-#include "TutorialScene.h"
+#include "SelectScene.h"
 #include "LoadScene.h"
 #include "SceneChanger.h"
 #include "FPSController.h"
@@ -83,9 +83,9 @@ void SceneManager::SceneChange()
 			delete(this->mainScene);
 			this->mainScene = new TitleScene();
 			break;
-		case SceneChanger::SceneType::TUTORIAL:
+		case SceneChanger::SceneType::SELECT:
 			delete(this->mainScene);
-			this->mainScene = new TutorialScene();
+			this->mainScene = new SelectScene();
 			break;
 		case SceneChanger::SceneType::GAME:
 			delete(this->mainScene);
