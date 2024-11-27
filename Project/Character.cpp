@@ -162,3 +162,20 @@ const bool Character::GetIsChangeAnimation()const
 {
 	return this->animation->GetIsChangeAnim();
 }
+
+/// <summary>
+/// 回転率のセット
+/// </summary>
+void Character::SetRotation(const VECTOR _now, const VECTOR _next)
+{
+	this->nextRotation = _next;
+	this->collider->rigidbody.SetRotation(_now);
+}
+
+/// <summary>
+/// ベロシティの設定
+/// </summary>
+void Character::SetVelocity(const VECTOR _velocity)
+{
+	this->collider->rigidbody.SetVelocity(_velocity);
+}

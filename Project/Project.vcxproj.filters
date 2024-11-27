@@ -322,6 +322,42 @@
     <Filter Include="Object\Character\Enemy\dragon">
       <UniqueIdentifier>{c76d36c1-9189-4379-b288-c36814c4e4d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction">
+      <UniqueIdentifier>{f9e468c1-bb7d-45ab-8d9e-5681db83aa0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\Avoid">
+      <UniqueIdentifier>{2617ec1d-1743-4be1-80fd-0c66fef0d86f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\Death">
+      <UniqueIdentifier>{3033251f-edd7-4a54-94d4-98f8c3c2b8b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\Block">
+      <UniqueIdentifier>{4d04b1a3-939a-4d15-83e0-afad9a8f2824}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\Walk">
+      <UniqueIdentifier>{41e4f00c-3e41-4d90-9164-4b965eb324f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\Reaction">
+      <UniqueIdentifier>{d6b611db-766c-46b2-a46b-332256d32e71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\Run">
+      <UniqueIdentifier>{561ca5b8-67d1-438e-8c6d-c79db1d547f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\WeakAttack">
+      <UniqueIdentifier>{ae6795ed-430e-463a-887a-f7016c32088d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\StrongAttack">
+      <UniqueIdentifier>{c76a1d9d-e4fe-48fc-ae4d-59505640cf10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\Heal">
+      <UniqueIdentifier>{585044ea-eafc-41be-ac6b-ac3eaf83eed4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerController">
+      <UniqueIdentifier>{3b571b84-5ce1-4f99-a178-501a043a0e0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\Idle">
+      <UniqueIdentifier>{7e60549c-4cf4-4af6-80cb-c29a41d7320d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -621,6 +657,30 @@
     </ClCompile>
     <ClCompile Include="Dragon.cpp">
       <Filter>Object\Character\Enemy\dragon</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerController.cpp">
+      <Filter>Object\Character\Player\PlayerController</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerIdle.cpp">
+      <Filter>Object\Character\Player\PlayerAction\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAction.cpp">
+      <Filter>Object\Character\Player\PlayerAction</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerWalk.cpp">
+      <Filter>Object\Character\Player\PlayerAction\Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerRun.cpp">
+      <Filter>Object\Character\Player\PlayerAction\Run</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerDeath.cpp">
+      <Filter>Object\Character\Player\PlayerAction\Death</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBlock.cpp">
+      <Filter>Object\Character\Player\PlayerAction\Block</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAvoid.cpp">
+      <Filter>Object\Character\Player\PlayerAction\Avoid</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -947,6 +1007,30 @@
     </ClInclude>
     <ClInclude Include="Dragon.h">
       <Filter>Object\Character\Enemy\dragon</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.h">
+      <Filter>Object\Character\Player\PlayerController</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerIdle.h">
+      <Filter>Object\Character\Player\PlayerAction\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAction.h">
+      <Filter>Object\Character\Player\PlayerAction</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerWalk.h">
+      <Filter>Object\Character\Player\PlayerAction\Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerRun.h">
+      <Filter>Object\Character\Player\PlayerAction\Run</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerDeath.h">
+      <Filter>Object\Character\Player\PlayerAction\Death</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBlock.h">
+      <Filter>Object\Character\Player\PlayerAction\Block</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAvoid.h">
+      <Filter>Object\Character\Player\PlayerAction\Avoid</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

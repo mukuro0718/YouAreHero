@@ -29,16 +29,24 @@ public:
 			const bool			 GetIsChangeAnimation()const;
 			const bool			 GetIsAlive			 ()const { return this->isAlive; }
 				  void			 OffIsAlive			 () { this->isAlive = false; }
+			const VECTOR		 GetNextRotation()const { return this->nextRotation; }
 	/*らーぷ関数*/
 	float  Lerp(const float _start, const float _end, const float _percent);	//らーぷ関数
 	VECTOR Lerp(const VECTOR _start, const VECTOR _end, const VECTOR _percent);//らーぷ関数
 	VECTOR Lerp360Angle(const VECTOR _start, const VECTOR _end, const VECTOR _percent);
+
+	const float GetSpeed()const { return this->speed; }
+	void SetRotation(const VECTOR _now, const VECTOR _next);
+	void SetSpeed(float _speed) { this->speed = _speed; }
+	void SetVelocity(const VECTOR _velocity);
+
 protected:
 
 	/*メンバ変数*/
 	Animation*		animation;	//アニメーション
 	BitFlag*		state;		//状態
 	ColliderData*	collider;	//コライダー
+	VECTOR			nextRotation;		//次の回転率
 	int				modelHandle;//モデルハンドル
 	bool			isAlive;	//キャラクターが生存しているか
 	bool			isGround;	//地面に当たっている

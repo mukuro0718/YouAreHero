@@ -129,9 +129,9 @@ void Player::Initialize()
 	auto& data		= dynamic_cast<PlayerData&>(*collider.data);
 
 	/*jsonデータを各定数型に代入*/
-	const VECTOR POSITION = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_POSITION"]);//座標
-	const VECTOR SCALE	  = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	 //拡大率
-		  VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_ROTATION"]);//回転率
+	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_POSITION"]);//座標
+	const VECTOR SCALE	  = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	//拡大率
+		  VECTOR rotation = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_ROTATION"]);//回転率
 		  rotation.y	  = rotation.y * (DX_PI_F / 180.0f);
 	/*変数の初期化*/
 	this->isAlive			 = true;
@@ -371,7 +371,7 @@ void Player::UpdateMoveVector()
 	if (this->state->CheckFlag(this->MASK_RUN))
 	{
 		//補正値
-		const VECTOR LERP_VALUE = Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_VELOCITY"]);
+		const VECTOR LERP_VALUE = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_VELOCITY"]);
 		VECTOR larpVelocity = Lerp(prevVelocity, aimVelocity, LERP_VALUE);
 	}
 
@@ -489,81 +489,42 @@ void Player::UpdateRotation()
 	auto& enemy = Singleton<EnemyManager> ::GetInstance();
 	auto& json = Singleton<JsonManager>  ::GetInstance();
 
-
 	/*移動できるか*/
 	if (CanRotation())
 	{
-		/*パッド入力の取得*/
+		//パッド入力の取得
 		int pad = input.GetNowPadState();
-
-		/*スティック入力*/
+		//スティック入力
 		lStick = VGet(static_cast<float>(input.GetLStickState().XBuf), 0.0f, static_cast<float>(input.GetLStickState().YBuf));
-
-		/*走ったか*/
+		//走ったか
 		bool isRun = (input.GetNowPadState() & PAD_INPUT_6);
 		this->isBlockingMove = false;
-
-			//スティック入力があるか
-			if (lStick.x != 0.0f || lStick.z != 0.0f)
+		//スティック入力があるか
+		if (lStick.x != 0.0f || lStick.z != 0.0f)
+		{
+			isInputLStick = true;
+			if (this->state->CheckFlag(this->BLOCK))
 			{
-				isInputLStick = true;
-				if (this->state->CheckFlag(this->BLOCK))
-				{
-					this->isBlockingMove = true;
-				}
-				/*回避や攻撃をしていなければ移動状態を切り替える*/
-				else if (!this->state->CheckFlag(this->MASK_ATTACK | this->MASK_AVOID))
-				{
-					unsigned int moveState = 0;
-					//走っていたら
-					if (isRun)
-					{
-						//moveState = this->whenRunMoveState[moveState];
-						moveState = this->RUN_FRONT;
-					}
-					else
-					{
-						////ロックオンしていたら
-						//if (this->isLockOn)
-						//{
-						//	//Xのほうが入力されている値が大きければ
-						//	if (lStick.x * lStick.x > lStick.z * lStick.z)
-						//	{
-						//		//右
-						//		if (lStick.x > 0.0f)
-						//		{
-						//			moveState = this->WALK_RIGHT;
-						//		}
-						//		//左
-						//		else
-						//		{
-						//			moveState = this->WALK_LEFT;
-						//		}
-						//	}
-						//	else
-						//	{
-						//		//前
-						//		if (lStick.z < 0.0f)
-						//		{
-						moveState = this->WALK_FRONT;
-						//		}
-						//		//後ろ
-						//		else
-						//		{
-						//			moveState = this->WALK_BACK;
-						//		}
-						//	}
-						//}
-						//else
-						//{
-						//	moveState = this->WALK_FRONT;
-						//}
-					}
-					//状態のセット
-					this->state->ClearFlag(this->MASK_REACTION);
-					this->state->SetFlag(moveState);
-				}
+				this->isBlockingMove = true;
 			}
+			/*回避や攻撃をしていなければ移動状態を切り替える*/
+			else if (!this->state->CheckFlag(this->MASK_ATTACK | this->MASK_AVOID))
+			{
+				unsigned int moveState = 0;
+				//走っていたら
+				if (isRun)
+				{
+					moveState = this->RUN_FRONT;
+				}
+				else
+				{
+					moveState = this->WALK_FRONT;
+				}
+				//状態のセット
+				this->state->ClearFlag(this->MASK_REACTION);
+				this->state->SetFlag(moveState);
+			}
+		}
 
 		/*カメラの向きを出す*/
 		//カメラ座標からプレイヤーの座標へのベクトルを出す
@@ -592,7 +553,7 @@ void Player::UpdateRotation()
 			//else
 			//{
 			this->nextRotation.y = static_cast<float>(
-				- atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
+				-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
 				- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
 			//}
 
@@ -608,7 +569,7 @@ void Player::UpdateRotation()
 	}
 
 	/*現在の回転率を出す*/
-	VECTOR lerpValue = Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATE_LERP_VALUE"]);
+	VECTOR lerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATE_LERP_VALUE"]);
 	nowRotation = Lerp360Angle(nowRotation, this->nextRotation, lerpValue);
 	
 	/*回転率のセット*/
@@ -642,6 +603,21 @@ void Player::UpdateAnimation()
 
 	this->nowAnimation = this->animationMap[this->state->GetFlag()];
 }
+
+/// <summary>
+/// アニメーションの再生
+/// </summary>
+void Player::PlayAnimation(const int _nextAnimation, const float _playTime)
+{
+	this->animation->Play(&this->modelHandle, _nextAnimation, _playTime);
+}
+
+void Player::DeathProcess()
+{
+	this->isAlive = false;
+	this->isDraw = false;
+}
+
 void Player::Reaction()
 {
 	/*シングルトンクラスのインスタンスの取得*/
@@ -787,8 +763,8 @@ void Player::Block()
 		//敵のインスタンスを取得
 		auto& enemy = Singleton<EnemyManager>::GetInstance();
 		//敵とプレイヤーの向きの内積を計算し、定数以内ならガードが成功する
-		VECTOR enemyFirstDirection	= Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_DIRECTION"]);
-		VECTOR playerFirstDirection = Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);
+		VECTOR enemyFirstDirection	= Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_DIRECTION"]);
+		VECTOR playerFirstDirection = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);
 		VECTOR enemyDirection		= VTransform(enemyFirstDirection, MGetRotY(enemy.GetRigidbody().GetRotation().y));
 		VECTOR playerDirection		= VTransform(playerFirstDirection, MGetRotY(collider.rigidbody.GetRotation().y));
 		float  TOLERANCE_DOT		= json.GetJson(JsonManager::FileType::PLAYER)["TOLERANCE_DOT"];
@@ -1263,3 +1239,23 @@ void Player::LockOn()
 	}
 }
 
+/// <summary>
+/// キャラクターデータの取得
+/// これを持ってくるとデータのすべてを変更することができるので、
+/// あくまで下にぶら下がっているクラスのみで使用するようにする
+/// </summary>
+CharacterData& Player::GetPlayerData()
+{
+	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
+	return *collider.data;
+}
+
+/// <summary>
+/// リジッドボディの取得
+/// これを持ってくるとデータのすべてを変更することができるので、
+/// あくまで下にぶら下がっているクラスのみで使用するようにする
+/// </summary>
+Rigidbody& Player::GetPlayerRigidbody()
+{
+	return this->collider->rigidbody;
+}

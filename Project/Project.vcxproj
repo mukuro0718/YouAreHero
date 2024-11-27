@@ -182,7 +182,13 @@
     <ClCompile Include="GameOverUI.cpp" />
     <ClCompile Include="GameUI.cpp" />
     <ClCompile Include="ModelColliderData.cpp" />
+    <ClCompile Include="PlayerAction.cpp" />
+    <ClCompile Include="PlayerAvoid.cpp" />
+    <ClCompile Include="PlayerBlock.cpp" />
     <ClCompile Include="PlayerChargeAttackEffect.cpp" />
+    <ClCompile Include="PlayerController.cpp" />
+    <ClCompile Include="PlayerDeath.cpp" />
+    <ClCompile Include="PlayerIdle.cpp" />
     <ClCompile Include="PlayerImpactEffect.cpp" />
     <ClCompile Include="PlayerGuardHitEffect.cpp" />
     <ClCompile Include="HitStop.cpp" />
@@ -196,6 +202,8 @@
     <ClCompile Include="GameClearUI.cpp" />
     <ClCompile Include="BossSlashCombo2Attack.cpp" />
     <ClCompile Include="PlayerHealEffect.cpp" />
+    <ClCompile Include="PlayerRun.cpp" />
+    <ClCompile Include="PlayerWalk.cpp" />
     <ClCompile Include="Shadow.cpp" />
     <ClCompile Include="SphereColliderData.cpp" />
     <ClCompile Include="CharacterData.cpp" />
@@ -285,7 +293,13 @@
     <ClInclude Include="GameOverUI.h" />
     <ClInclude Include="GameUI.h" />
     <ClInclude Include="ModelColliderData.h" />
+    <ClInclude Include="PlayerAction.h" />
+    <ClInclude Include="PlayerAvoid.h" />
+    <ClInclude Include="PlayerBlock.h" />
     <ClInclude Include="PlayerChargeAttackEffect.h" />
+    <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="PlayerDeath.h" />
+    <ClInclude Include="PlayerIdle.h" />
     <ClInclude Include="PlayerImpactEffect.h" />
     <ClInclude Include="PlayerGuardHitEffect.h" />
     <ClInclude Include="HitStop.h" />
@@ -298,6 +312,8 @@
     <ClInclude Include="GameClearScene.h" />
     <ClInclude Include="GameClearUI.h" />
     <ClInclude Include="PlayerHealEffect.h" />
+    <ClInclude Include="PlayerRun.h" />
+    <ClInclude Include="PlayerWalk.h" />
     <ClInclude Include="ReactionType.h" />
     <ClInclude Include="BossSlashCombo2Attack.h" />
     <ClInclude Include="Shadow.h" />

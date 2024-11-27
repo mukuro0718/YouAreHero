@@ -22,6 +22,40 @@ public:
 	const bool  GetIsLockOn  ()const { return this->isLockOn; }		//ロックオンフラグの取得
 	const int	GetStamina	 ()const;								//スタミナの取得
 	const int	GetHealOrbNum()const { return this->healOrbNum; }	//回復オーブの数(今は回復回数になっている)
+
+	//アニメーションの種類
+	enum class AnimationType
+	{
+		IDLE = 0,
+		AVOID = 1,
+		DEATH = 2,
+		BLOCK = 3,
+		REACTION = 4,
+		BLOCK_REACTION = 5,
+		WALK_FRONT = 6,
+		WALK_BACK = 7,
+		WALK_LEFT = 8,
+		WALK_RIGHT = 9,
+		RUN_FRONT = 10,
+		RUN_BACK = 11,
+		RUN_LEFT = 12,
+		RUN_RIGHT = 13,
+		RUN_180_TURN = 14,
+		COMBO_1 = 15,
+		HEAL = 16,
+		COMBO_2 = 17,
+		COMBO_3 = 18,
+		SKILL = 19,
+		DOWN_REACTION = 20,
+		DOWN_UP = 21,
+	};
+
+	void PlayAnimation(const int _nextAnimation, const float _playTime);
+	void DeathProcess();
+	CharacterData& GetPlayerData();
+	Rigidbody& GetPlayerRigidbody();
+	const bool CanAction		(const float _staminaConsumed)const;//アクションができるか
+		  void CalcStamina		(const float _staminaConsumed);			//スタミナの回復処理
 private:
 	/*静的定数*/
 	static constexpr float	SHADOW_HEIGHT	= 10.0f;//影を投影する高さ
@@ -84,32 +118,6 @@ private:
 		REACTION_CANSEL   = 8,
 		CHARGE_ATTACK	  = 9,
 	};
-	//アニメーションの種類
-	enum class AnimationType
-	{
-		IDLE			= 0,
-		AVOID			= 1,
-		DEATH			= 2,
-		BLOCK			= 3,
-		REACTION		= 4,
-		BLOCK_REACTION  = 5,
-		WALK_FRONT		= 6,
-		WALK_BACK		= 7,
-		WALK_LEFT		= 8,
-		WALK_RIGHT		= 9,
-		RUN_FRONT		= 10,
-		RUN_BACK		= 11,
-		RUN_LEFT		= 12,
-		RUN_RIGHT		= 13,
-		RUN_180_TURN	= 14,
-		COMBO_1			= 15,
-		HEAL			= 16,
-		COMBO_2			= 17,
-		COMBO_3			= 18,
-		SKILL			= 19,
-		DOWN_REACTION	= 20,
-		DOWN_UP			= 21,
-	};
 	//攻撃の種類
 	enum class AttackType
 	{
@@ -140,10 +148,8 @@ private:
 	const bool CanBlock			()const;							//ガードできるか
 	const bool CanHeal			()const;							//回復できるか
 	const bool DontAnyAction	()const;							//ほかにアクションを行っているか
-	const bool CanAction		(const float _staminaConsumed)const;//アクションができるか
 
 		  void UpdateAnimation	();										//現在のアニメーションの更新
-		  void CalcStamina		(const float _staminaConsumed);			//スタミナの回復処理
 		  bool FrameCount		(const int _index,const int _maxFrame);	//フレームカウント
 		  void ResetFrameCount	(const int _index);//フレームカウントの初期化
 	/*メンバ変数*/
@@ -155,7 +161,6 @@ private:
 	std::map<int, unsigned int>			 reactionMap;		//リアクションマップ
 	std::map<unsigned int, unsigned int> whenRunMoveState;	//ダッシュ時の状態
 	std::map<int, unsigned int>			 attackMap;			//攻撃マップ
-	VECTOR								 nextRotation;		//次の回転率
 	int									 nowAnimation;		//アニメーション
 	float								 animationPlayTime;	//アニメーション再生時間
 	int									 attackComboCount;	//攻撃コンボカウント
