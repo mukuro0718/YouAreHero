@@ -40,9 +40,9 @@ void BossMap::Initialize()
 
 	/*リジッドボディの初期化*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	VECTOR position = Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_POSITION"]);
-	VECTOR scale	= Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_SCALE"]);	
-	VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_ROTATION"]);
+	VECTOR position = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_POSITION"]);
+	VECTOR scale	= Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_SCALE"]);
+	VECTOR rotation = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_ROTATION"]);
 	rotation.y = rotation.y * (DX_PI_F / 180.0f);
 	this->collider->rigidbody.Initialize(false);
 	this->collider->rigidbody.SetPosition(position);

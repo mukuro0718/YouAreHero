@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "UseSTL.h"
 #include "Rigidbody.h"
 #include "Character.h"
 #include "Player.h"
@@ -46,26 +47,19 @@ void PlayerWalk::Finalize()
 /// </summary>
 void PlayerWalk::Update(Player& _player)
 {
-	/*回転率を出す*/
-	VECTOR nextRotation = Gori::ORIGIN;
-	VECTOR nowRotation = _player.GetRigidbody().GetRotation();
-	UpdateRotation(nextRotation, nowRotation);
-	_player.SetRotation(nowRotation, nextRotation);
+	this->isEndAction = true;
 
-	/*移動速度を出す*/
+	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	float maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["WALK_SPEED"];
-	float nowSpeed = _player.GetSpeed();
-	UpdateSpeed(nowSpeed, maxSpeed, nowRotation, nextRotation);
-	_player.SetSpeed(nowSpeed);
+	MoveData data;
+	data.Set(Gori::ORIGIN, json.GetJson(JsonManager::FileType::PLAYER)["WALK_SPEED"], false, false);
+	Move(_player, data);
 
-	/*移動ベクトルを出す*/
-	VECTOR nowVelcity = _player.GetRigidbody().GetVelocity();
-	VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelcity, nowSpeed, false);
-	_player.SetVelocity(newVelocity);
+	/*スタミナの回復*/
+	_player.CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
 
 	/*アニメーションの再生*/
 	int nextAnimation = static_cast<int>(Player::AnimationType::WALK_FRONT);
-	int playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
+	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
 	_player.PlayAnimation(nextAnimation, playTime);
 }

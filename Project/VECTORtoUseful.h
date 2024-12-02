@@ -9,7 +9,11 @@ namespace Gori
 	static constexpr VECTOR ORIGIN = { 0.0f,0.0f,0.0f };
 	static constexpr VECTOR UP_VEC = { 0.0f,1.0f,0.0f };
 	static constexpr float PI_2 = (2.0f * DX_PI_F);
-	inline const VECTOR Convert(const std::vector<float> _value);
+	inline const VECTOR Convert(const std::vector<float> _value)
+	{
+		const VECTOR out = { _value[0],_value[1], _value[2] };
+		return out;
+	}
 	inline const float LerpFloat(const float _start, const float _end, const float _percent)
 	{
 		return _start + _percent * (_end - _start);
@@ -22,7 +26,7 @@ namespace Gori
 		out.z = LerpFloat(_start.z, _end.z, _percent.z);
 		return out;
 	}
-	const float LerpAngle(const float _start, const float _end, const float _percent)
+	inline const float LerpAngle(const float _start, const float _end, const float _percent)
 	{
 		float start = _start;
 		float end = _end;
@@ -69,7 +73,7 @@ namespace Gori
 		}
 		return out;
 	}
-	const VECTOR LerpAngle(const VECTOR _start, const VECTOR _end, const VECTOR _percent)
+	inline const VECTOR LerpAngle(const VECTOR _start, const VECTOR _end, const VECTOR _percent)
 	{
 		VECTOR out;
 

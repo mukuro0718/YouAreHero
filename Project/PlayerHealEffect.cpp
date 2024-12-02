@@ -27,7 +27,7 @@ void PlayerHealEffect::SetInfoToPlayTheEffect()
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	VECTOR position = player.GetRigidbody().GetPosition();
-	VECTOR scale = Convert(json.GetJson(JsonManager::FileType::EFFECT)["PLAYER_HEAL_SCALE"]);
+	VECTOR scale = Gori::Convert(json.GetJson(JsonManager::FileType::EFFECT)["PLAYER_HEAL_SCALE"]);
 	VECTOR rotation = player.GetRigidbody().GetRotation();
 
 	this->transform->SetPosition(position);

@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "UseSTL.h"
 #include "Rigidbody.h"
 #include "Character.h"
 #include "Player.h"
@@ -13,8 +14,9 @@
 /// コンストラクタ
 /// </summary>
 PlayerAvoid::PlayerAvoid()
-	: PlayerAction()
-	, isPlay (false)
+	: PlayerAction	()
+	, isPlay		(false)
+	, frameCount	(0)
 {
 }
 
@@ -33,6 +35,7 @@ void PlayerAvoid::Initialize()
 {
 	this->isPlay = false;
 	this->isChangeAction = false;
+	this->isEndAction = false;
 	this->frameCount = 0;
 }
 
@@ -59,14 +62,23 @@ void PlayerAvoid::Update(Player& _player)
 		//初速を入れる
 		_player.SetSpeed(json.GetJson(JsonManager::FileType::PLAYER)["ROLLING_SPEED"]);
 	}
+	else
+	{
+		//アニメーションが終了しているか
+		if (_player.GetIsChangeAnimation())
+		{
+			this->isEndAction = true;
+		}
+	}
 
 	/*フレームの計測*/
+	bool isRotate = true;
 	//フレームカウントの増加
 	this->frameCount++;
-	//アニメーションが終了しているか回避キャンセルが可能だったら
-	if (_player.GetIsChangeAnimation() || this->frameCount >= json.GetJson(JsonManager::FileType::PLAYER)["AVOID_CAN_ROTATE_FRAME"])
+	//アクションキャンセルが可能だったら
+	if (this->frameCount >= json.GetJson(JsonManager::FileType::PLAYER)["AVOID_CAN_ROTATE_FRAME"])
 	{
-		this->isChangeAction = true;
+		isRotate = false;
 	}
 	//無敵時間
 	if (this->frameCount >= json.GetJson(JsonManager::FileType::PLAYER)["JUST_AVOID_MAX_FRAME"])
@@ -74,25 +86,13 @@ void PlayerAvoid::Update(Player& _player)
 		_player.GetPlayerData().isInvinvible = false;
 	}
 
-	/*回転率を出す*/
-	VECTOR nextRotation = _player.GetNextRotation();
-	VECTOR nowRotation = _player.GetRigidbody().GetRotation();
-	UpdateRotation(nextRotation, nowRotation);
-	_player.SetRotation(nowRotation, nextRotation);
-
-	/*移動速度を出す*/
-	float maxSpeed = 0.0f;
-	float nowSpeed = _player.GetSpeed();
-	UpdateSpeed(nowSpeed, maxSpeed, nowRotation, nextRotation);
-	_player.SetSpeed(nowSpeed);
-
-	/*移動ベクトルを出す*/
-	VECTOR nowVelcity = _player.GetRigidbody().GetVelocity();
-	VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelcity, nowSpeed, false);
-	_player.SetVelocity(newVelocity);
+	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
+	MoveData data;
+	data.Set(_player.GetNextRotation(), 0.0f, isRotate, false);
+	Move(_player, data);
 
 	/*アニメーションの再生*/
-	int nextAnimation = static_cast<int>(Player::AnimationType::RUN_FRONT);
-	int playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
+	int nextAnimation = static_cast<int>(Player::AnimationType::AVOID);
+	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
 	_player.PlayAnimation(nextAnimation, playTime);
 }

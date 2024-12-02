@@ -105,7 +105,7 @@ void BossRotateSlashAction::Update(Boss& _boss)
 		//使用する値の準備
 		const VECTOR POSITION				= _boss.GetRigidbody().GetPosition();												//座標
 		const VECTOR MOVE_TARGET			= player.GetRigidbody().GetPosition();												//移動目標
-		const VECTOR LERP_VALUE				= Convert(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]);	//回転率の補完値
+		const VECTOR LERP_VALUE				= Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]);	//回転率の補完値
 			  VECTOR nowRotation			= _boss.GetRigidbody().GetRotation();												//回転率
 			  VECTOR positonToTargetVector	= VSub(POSITION, MOVE_TARGET);												//座標と移動目標間のベクトル
 			  VECTOR direction				= VGet(0.0f, 0.0f, 0.0f);														//向き

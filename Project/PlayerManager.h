@@ -20,8 +20,6 @@ public:
 	/*getter*/
 	const CharacterData& GetCharacterData()const;//キャラクターデータの取得
 	const Rigidbody&	 GetRigidbody	 ()const;//リジッドボディの取得
-	const bool			 IsMove			 ()const;//移動したか
-	const bool			 GetIsAttack	 ()const;//攻撃フラグの取得
 	const int			 GetHP			 ()const;//HPの取得
 	const float			 GetStamina		 ()const;//スタミナの取得
 	const int			 GetHealOrbNum	 ()const;//回復回数の取得

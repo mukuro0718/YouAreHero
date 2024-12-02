@@ -66,15 +66,15 @@ void Camera::Initialize()
 
 
 	/*メンバ変数の初期化*/
-	this->nowTarget			 = enemy.GetRigidbody().GetPosition() + Convert(TARGET_OFFSET);	//注視点
+	this->nowTarget			 = enemy.GetRigidbody().GetPosition() + Gori::Convert(TARGET_OFFSET);	//注視点
 	this->nextTarget		 = this->nowTarget;												//注視点
-	this->direction			 = Convert(FIRST_DIRECTION);									//カメラの向き
+	this->direction			 = Gori::Convert(FIRST_DIRECTION);									//カメラの向き
 	this->length			 = FIRST_LENGTH;												//注視点からの距離
 	this->fov				 = FOV;															//field of view
 	this->yow				 = 0.0f;														//ヨー
 	this->pitch				 = 0.0f;														//ピッチ
 	this->collider->rigidbody.SetPosition(this->nowTarget + (this->direction * this->length));	//カメラ座標
-	this->collider->rigidbody.SetPosition(Convert(FIRST_POSITION));						
+	this->collider->rigidbody.SetPosition(Gori::Convert(FIRST_POSITION));
 
 	/*カメラの手前クリップ距離と奥クリップ距離を設定する*/
 	SetCameraNearFar(NEAR_CLIP, FAR_CLIP);
@@ -142,13 +142,13 @@ void Camera::UpdateTarget()
 	switch (sceneChanger.GetNowSceneType())
 	{
 	case SceneChanger::SceneType::TITLE:
-		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
+		this->nextTarget = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
 		break;
 	case SceneChanger::SceneType::GAME:
 		if (player.GetHP() < 0 || !player.GetIsLockOn())
 		{
 			//注視点オフセット
-			const VECTOR POSITION_OFFSET = Convert(json.GetJson(JsonManager::FileType::CAMERA)["FREE_TARGET_OFFSET"]);
+			const VECTOR POSITION_OFFSET = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["FREE_TARGET_OFFSET"]);
 			this->nextTarget = VAdd(player.GetRigidbody().GetPosition(),POSITION_OFFSET);
 		}
 		else
@@ -157,15 +157,15 @@ void Camera::UpdateTarget()
 		}
 		break;
 	case SceneChanger::SceneType::GAME_OVER:
-		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
+		this->nextTarget = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
 		break;
 	case SceneChanger::SceneType::GAME_CLEAR:
-		this->nextTarget = Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
+		this->nextTarget = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
 		break;
 	}
 
 	/*現在の注視点を出す*/
-	const VECTOR LERP_PERCENT = Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_TARGET"]);	//線形補完のパーセント
+	const VECTOR LERP_PERCENT = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_TARGET"]);	//線形補完のパーセント
 	this->nowTarget = Lerp(this->nowTarget, this->nextTarget, LERP_PERCENT);
 }
 
@@ -319,7 +319,7 @@ void Camera::UpdateVelocity()
 		if (player.GetIsLockOn())
 		{
 			const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));
-			const VECTOR POSITION_OFFSET = Convert(json.GetJson(JsonManager::FileType::CAMERA)["POSITION_OFFSET"]);
+			const VECTOR POSITION_OFFSET = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["POSITION_OFFSET"]);
 			nextPosition = VScale(ENEMY_TO_PLAYER, this->length);
 			nextPosition = VAdd(player.GetRigidbody().GetPosition(), nextPosition);
 			nextPosition = VAdd(nextPosition, POSITION_OFFSET);
@@ -328,7 +328,7 @@ void Camera::UpdateVelocity()
 		{
 			/*アングルの更新*/
 			UpdateAngle();
-			const VECTOR FIRST_DIRECTION = Convert(json.GetJson(JsonManager::FileType::CAMERA)["FIRST_DIRECTION"]);
+			const VECTOR FIRST_DIRECTION = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["FIRST_DIRECTION"]);
 			VECTOR direction = VTransform(FIRST_DIRECTION, MGetRotY(this->yow));
 			VECTOR axis = VCross(direction, Gori::UP_VEC);
 			direction = VTransform(direction, MGetRotAxis(axis, this->pitch));
@@ -337,7 +337,7 @@ void Camera::UpdateVelocity()
 		break;
 	default:
 		const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));
-		const VECTOR POSITION_OFFSET = Convert(json.GetJson(JsonManager::FileType::CAMERA)["POSITION_OFFSET"]);
+		const VECTOR POSITION_OFFSET = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["POSITION_OFFSET"]);
 		nextPosition = VScale(ENEMY_TO_PLAYER, this->length);
 		nextPosition = VAdd(player.GetRigidbody().GetPosition(), nextPosition);
 		nextPosition = VAdd(nextPosition, POSITION_OFFSET);
@@ -345,7 +345,7 @@ void Camera::UpdateVelocity()
 	}
 
 	/*補正値*/
-	const VECTOR LERP_VALUE = Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_VELOCITY"]);
+	const VECTOR LERP_VALUE = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_VELOCITY"]);
 
 	/*次の座標と今の座標の差を移動ベクトルにする*/
 	VECTOR newPosition = Lerp(this->collider->rigidbody.GetPosition(), nextPosition, LERP_VALUE);

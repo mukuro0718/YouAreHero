@@ -140,9 +140,9 @@ void Dragon::Initialize()
 
 	/*•¨—‹““®‚Ì‰Šú‰»*/
 	//jsonƒf[ƒ^‚ð’è”‚É‘ã“ü
-	const VECTOR POSITION = Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_POSITION"]);//À•W
-	const VECTOR ROTATION = Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_ROTATION"]);//‰ñ“]—¦
-	const VECTOR SCALE = Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_SCALE"]);	 //Šg‘å—¦
+	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_POSITION"]);//À•W
+	const VECTOR ROTATION = Gori::Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_ROTATION"]);//‰ñ“]—¦
+	const VECTOR SCALE = Gori::Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_SCALE"]);	 //Šg‘å—¦
 	//‰Šú‰»
 	this->collider->rigidbody.Initialize(true);
 	this->collider->rigidbody.SetPosition(POSITION);

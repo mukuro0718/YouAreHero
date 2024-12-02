@@ -26,7 +26,7 @@ void PlayerImpactEffect::SetInfoToPlayTheEffect()
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
-	VECTOR scale = Convert(json.GetJson(JsonManager::FileType::EFFECT)["PLAYER_IMPACT_SCALE"]);
+	VECTOR scale = Gori::Convert(json.GetJson(JsonManager::FileType::EFFECT)["PLAYER_IMPACT_SCALE"]);
 	VECTOR rotation = player.GetRigidbody().GetRotation();
 
 	this->transform->SetScale(scale);

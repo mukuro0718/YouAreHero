@@ -11,6 +11,5 @@ public:
 	~PlayerData(){}//デストラクタ
 	
 	/*メンバ変数*/
-	float stamina;//スタミナ
 };
 

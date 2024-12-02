@@ -1,33 +1,51 @@
 #include <DxLib.h>
 #include <math.h>
+#include "UseSTL.h"
 #include "VECTORtoUseful.h"
+#include "UseJson.h"
+#include "Rigidbody.h"
+#include "Character.h"
+#include "Player.h"
 #include "PlayerAction.h"
 #include "InputManager.h"
 #include "CameraManager.h"
-#include "UseJson.h"
-#include "Character.h"
 
-void PlayerAction::UpdateRotation(VECTOR& _nextRotationation, VECTOR _nowRotationation)
+/// <summary>
+/// コンストラクタ
+/// </summary>
+PlayerAction::PlayerAction()
+	: isEndAction	(false)
+	, isChangeAction(false)
 {
-	/*スティック入力を取得*/
-	auto& input = Singleton<InputManager>::GetInstance();
-	VECTOR lStick = VGet(static_cast<float>(input.GetLStickState().XBuf), 0.0f, static_cast<float>(input.GetLStickState().YBuf));
-	//正規化
-	lStick = VNorm(lStick);
 
-	/*スティック入力がなければ早期リターン*/
-	if (lStick.x == 0.0f && lStick.z == 0.0f) return;
+}
 
-	/*カメラの向きを取得*/
-	auto& camera = Singleton<CameraManager>::GetInstance();
-	VECTOR cameraDirection = VNorm(camera.GetCameraDirection());
+/// <summary>
+/// 回転率の更新
+/// </summary>
+void PlayerAction::UpdateRotation(const bool isSkip, VECTOR& _nextRotationation, VECTOR& _nowRotationation)
+{
+	if (!isSkip)
+	{
+		/*スティック入力を取得*/
+		auto& input = Singleton<InputManager>::GetInstance();
+		VECTOR lStick = VGet(static_cast<float>(input.GetLStickState().XBuf), 0.0f, static_cast<float>(input.GetLStickState().YBuf));
+		//正規化
+		lStick = VNorm(lStick);
 
-	/*カメラの向きとスティックの入力をもとに回転率を出す*/
-	_nextRotationation = Gori::ORIGIN;
-	_nextRotationation.y = static_cast<float>(
-		- atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
-		- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
+		/*スティック入力がなければ早期リターン*/
+		if (lStick.x == 0.0f && lStick.z == 0.0f) return;
 
+		/*カメラの向きを取得*/
+		auto& camera = Singleton<CameraManager>::GetInstance();
+		VECTOR cameraDirection = VNorm(camera.GetCameraDirection());
+
+		/*カメラの向きとスティックの入力をもとに回転率を出す*/
+		_nextRotationation = Gori::ORIGIN;
+		_nextRotationation.y = static_cast<float>(
+			-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
+			- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
+	}
 	/*現在の回転率をラープで補完して出す*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	VECTOR lerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATION_LERP_VALUE"]);
@@ -92,9 +110,32 @@ VECTOR PlayerAction::UpdateVelocity(const VECTOR _rotation, const VECTOR _prevVe
 	VECTOR newVelocity = VGet(ainVelocity.x, prevVelcity.y, ainVelocity.z);
 
 	/*補正フラグが立っていたら補正する*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	VECTOR lerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["VELOCITY_LERP_VALUE"]);
-	newVelocity = Gori::LerpVECTOR(prevVelcity, ainVelocity, lerpValue);
-
+	if (_isLerp)
+	{
+		auto& json = Singleton<JsonManager>::GetInstance();
+		VECTOR lerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["VELOCITY_LERP_VALUE"]);
+		newVelocity = Gori::LerpVECTOR(prevVelcity, ainVelocity, lerpValue);
+	}
 	return newVelocity;
+}
+
+/// <summary>
+/// 移動処理
+/// </summary>
+void PlayerAction::Move(Player& _player, MoveData& _set)
+{
+	/*回転率の更新*/
+	VECTOR nowRotation = _player.GetRigidbody().GetRotation();
+	UpdateRotation(_set.isSkip, _set.nextRotation, nowRotation);
+	_player.SetRotation(nowRotation, _set.nextRotation);
+
+	/*移動速度の更新*/
+	float nowSpeed = _player.GetSpeed();
+	UpdateSpeed(nowSpeed, _set.maxSpeed, nowRotation, _set.nextRotation);
+	_player.SetSpeed(nowSpeed);
+
+	/*移動ベクトルを出す*/
+	VECTOR nowVelocity = _player.GetRigidbody().GetVelocity();
+	VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelocity, nowSpeed, _set.isLerp);
+	_player.SetVelocity(newVelocity);
 }

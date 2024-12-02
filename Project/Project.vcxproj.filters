@@ -106,9 +106,6 @@
     <Filter Include="Animation">
       <UniqueIdentifier>{9a45627d-9426-470a-9e62-4260da791afa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\EnemyManager">
-      <UniqueIdentifier>{06d10af2-3272-434d-8d5b-e7b6fa8af27b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Collision">
       <UniqueIdentifier>{f1a33d7d-eecc-4dae-8795-b4ae50f423f3}</UniqueIdentifier>
     </Filter>
@@ -310,9 +307,6 @@
     <Filter Include="Effect\Player\ChargeAttack">
       <UniqueIdentifier>{75a56904-a943-4964-9fd8-554ea8e9a7e1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\EnemyChanger">
-      <UniqueIdentifier>{8a45c294-a222-4981-b5bc-cbc557c616c3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI\Scene\Select">
       <UniqueIdentifier>{428ebf5b-faca-456b-8540-351c9c3a5d0f}</UniqueIdentifier>
     </Filter>
@@ -325,38 +319,59 @@
     <Filter Include="Object\Character\Player\PlayerAction">
       <UniqueIdentifier>{f9e468c1-bb7d-45ab-8d9e-5681db83aa0a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Player\PlayerAction\Avoid">
-      <UniqueIdentifier>{2617ec1d-1743-4be1-80fd-0c66fef0d86f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Player\PlayerAction\Death">
-      <UniqueIdentifier>{3033251f-edd7-4a54-94d4-98f8c3c2b8b9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Player\PlayerAction\Block">
-      <UniqueIdentifier>{4d04b1a3-939a-4d15-83e0-afad9a8f2824}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Player\PlayerAction\Walk">
-      <UniqueIdentifier>{41e4f00c-3e41-4d90-9164-4b965eb324f5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Player\PlayerAction\Reaction">
-      <UniqueIdentifier>{d6b611db-766c-46b2-a46b-332256d32e71}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Player\PlayerAction\Run">
-      <UniqueIdentifier>{561ca5b8-67d1-438e-8c6d-c79db1d547f9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Player\PlayerAction\WeakAttack">
-      <UniqueIdentifier>{ae6795ed-430e-463a-887a-f7016c32088d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Player\PlayerAction\StrongAttack">
-      <UniqueIdentifier>{c76a1d9d-e4fe-48fc-ae4d-59505640cf10}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Player\PlayerAction\Heal">
-      <UniqueIdentifier>{585044ea-eafc-41be-ac6b-ac3eaf83eed4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Player\PlayerController">
       <UniqueIdentifier>{3b571b84-5ce1-4f99-a178-501a043a0e0f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Player\PlayerAction\Idle">
+    <Filter Include="Object\Character\Enemy\EnemyChanger">
+      <UniqueIdentifier>{8a45c294-a222-4981-b5bc-cbc557c616c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\EnemyManager">
+      <UniqueIdentifier>{06d10af2-3272-434d-8d5b-e7b6fa8af27b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\A_Idle">
       <UniqueIdentifier>{7e60549c-4cf4-4af6-80cb-c29a41d7320d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\B_Avoid">
+      <UniqueIdentifier>{2617ec1d-1743-4be1-80fd-0c66fef0d86f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\C_Death">
+      <UniqueIdentifier>{3033251f-edd7-4a54-94d4-98f8c3c2b8b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\D_Block">
+      <UniqueIdentifier>{4d04b1a3-939a-4d15-83e0-afad9a8f2824}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\E_Stagger">
+      <UniqueIdentifier>{f9e711ea-841e-41e3-951c-601cc92fec9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\F_BlockStagger">
+      <UniqueIdentifier>{0cae343f-ae2a-4077-b181-8136524cc632}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\G_Knockdown">
+      <UniqueIdentifier>{048d6f5b-e8c9-43aa-94bc-1451e3bcd141}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\H_Heal">
+      <UniqueIdentifier>{585044ea-eafc-41be-ac6b-ac3eaf83eed4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\I_Run">
+      <UniqueIdentifier>{561ca5b8-67d1-438e-8c6d-c79db1d547f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\J_RUN_OUT_OF_STAMINA">
+      <UniqueIdentifier>{b8f03a57-2eff-4426-938b-68d2d56030fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\L_Combo1">
+      <UniqueIdentifier>{e480934d-5056-498e-bb2b-e1f593d8956f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\M_Combo2">
+      <UniqueIdentifier>{23159bec-e989-4142-8fa5-605fe3810871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\N_Combo3">
+      <UniqueIdentifier>{1d5436f9-61f9-40ff-9420-66ebefe44a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\K_Walk">
+      <UniqueIdentifier>{41e4f00c-3e41-4d90-9164-4b965eb324f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\O_StrongAttack">
+      <UniqueIdentifier>{c76a1d9d-e4fe-48fc-ae4d-59505640cf10}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -437,7 +452,7 @@
       <Filter>Object\Character\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="EnemyManager.cpp">
-      <Filter>Object\Character\EnemyManager</Filter>
+      <Filter>Object\Character\Enemy\EnemyManager</Filter>
     </ClCompile>
     <ClCompile Include="HPUI.cpp">
       <Filter>UI\HPUI</Filter>
@@ -650,7 +665,7 @@
       <Filter>Collision\ColliderData</Filter>
     </ClCompile>
     <ClCompile Include="EnemyChanger.cpp">
-      <Filter>Object\Character\EnemyChanger</Filter>
+      <Filter>Object\Character\Enemy\EnemyChanger</Filter>
     </ClCompile>
     <ClCompile Include="Beast.cpp">
       <Filter>Object\Character\Enemy\beast</Filter>
@@ -662,25 +677,52 @@
       <Filter>Object\Character\Player\PlayerController</Filter>
     </ClCompile>
     <ClCompile Include="PlayerIdle.cpp">
-      <Filter>Object\Character\Player\PlayerAction\Idle</Filter>
+      <Filter>Object\Character\Player\PlayerAction\A_Idle</Filter>
     </ClCompile>
     <ClCompile Include="PlayerAction.cpp">
       <Filter>Object\Character\Player\PlayerAction</Filter>
     </ClCompile>
     <ClCompile Include="PlayerWalk.cpp">
-      <Filter>Object\Character\Player\PlayerAction\Walk</Filter>
+      <Filter>Object\Character\Player\PlayerAction\K_Walk</Filter>
     </ClCompile>
     <ClCompile Include="PlayerRun.cpp">
-      <Filter>Object\Character\Player\PlayerAction\Run</Filter>
+      <Filter>Object\Character\Player\PlayerAction\I_Run</Filter>
     </ClCompile>
     <ClCompile Include="PlayerDeath.cpp">
-      <Filter>Object\Character\Player\PlayerAction\Death</Filter>
+      <Filter>Object\Character\Player\PlayerAction\C_Death</Filter>
     </ClCompile>
     <ClCompile Include="PlayerBlock.cpp">
-      <Filter>Object\Character\Player\PlayerAction\Block</Filter>
+      <Filter>Object\Character\Player\PlayerAction\D_Block</Filter>
     </ClCompile>
     <ClCompile Include="PlayerAvoid.cpp">
-      <Filter>Object\Character\Player\PlayerAction\Avoid</Filter>
+      <Filter>Object\Character\Player\PlayerAction\B_Avoid</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHeal.cpp">
+      <Filter>Object\Character\Player\PlayerAction\H_Heal</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerStagger.cpp">
+      <Filter>Object\Character\Player\PlayerAction\E_Stagger</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBlockStagger.cpp">
+      <Filter>Object\Character\Player\PlayerAction\F_BlockStagger</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerKnockdown.cpp">
+      <Filter>Object\Character\Player\PlayerAction\G_Knockdown</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerRunOutOfStamina.cpp">
+      <Filter>Object\Character\Player\PlayerAction\J_RUN_OUT_OF_STAMINA</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCombo1.cpp">
+      <Filter>Object\Character\Player\PlayerAction\L_Combo1</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCombo2.cpp">
+      <Filter>Object\Character\Player\PlayerAction\M_Combo2</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCombo3.cpp">
+      <Filter>Object\Character\Player\PlayerAction\N_Combo3</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerStrongAttack.cpp">
+      <Filter>Object\Character\Player\PlayerAction\O_StrongAttack</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -775,7 +817,7 @@
       <Filter>Object\Character\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="EnemyManager.h">
-      <Filter>Object\Character\EnemyManager</Filter>
+      <Filter>Object\Character\Enemy\EnemyManager</Filter>
     </ClInclude>
     <ClInclude Include="HPUI.h">
       <Filter>UI\HPUI</Filter>
@@ -1000,7 +1042,7 @@
       <Filter>Collision\ColliderData</Filter>
     </ClInclude>
     <ClInclude Include="EnemyChanger.h">
-      <Filter>Object\Character\EnemyChanger</Filter>
+      <Filter>Object\Character\Enemy\EnemyChanger</Filter>
     </ClInclude>
     <ClInclude Include="Beast.h">
       <Filter>Object\Character\Enemy\beast</Filter>
@@ -1012,25 +1054,55 @@
       <Filter>Object\Character\Player\PlayerController</Filter>
     </ClInclude>
     <ClInclude Include="PlayerIdle.h">
-      <Filter>Object\Character\Player\PlayerAction\Idle</Filter>
+      <Filter>Object\Character\Player\PlayerAction\A_Idle</Filter>
     </ClInclude>
     <ClInclude Include="PlayerAction.h">
       <Filter>Object\Character\Player\PlayerAction</Filter>
     </ClInclude>
     <ClInclude Include="PlayerWalk.h">
-      <Filter>Object\Character\Player\PlayerAction\Walk</Filter>
+      <Filter>Object\Character\Player\PlayerAction\K_Walk</Filter>
     </ClInclude>
     <ClInclude Include="PlayerRun.h">
-      <Filter>Object\Character\Player\PlayerAction\Run</Filter>
+      <Filter>Object\Character\Player\PlayerAction\I_Run</Filter>
     </ClInclude>
     <ClInclude Include="PlayerDeath.h">
-      <Filter>Object\Character\Player\PlayerAction\Death</Filter>
+      <Filter>Object\Character\Player\PlayerAction\C_Death</Filter>
     </ClInclude>
     <ClInclude Include="PlayerBlock.h">
-      <Filter>Object\Character\Player\PlayerAction\Block</Filter>
+      <Filter>Object\Character\Player\PlayerAction\D_Block</Filter>
     </ClInclude>
     <ClInclude Include="PlayerAvoid.h">
-      <Filter>Object\Character\Player\PlayerAction\Avoid</Filter>
+      <Filter>Object\Character\Player\PlayerAction\B_Avoid</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHeal.h">
+      <Filter>Object\Character\Player\PlayerAction\H_Heal</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerStagger.h">
+      <Filter>Object\Character\Player\PlayerAction\E_Stagger</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBlockStagger.h">
+      <Filter>Object\Character\Player\PlayerAction\F_BlockStagger</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerKnockdown.h">
+      <Filter>Object\Character\Player\PlayerAction\G_Knockdown</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerRunOutOfStamina.h">
+      <Filter>Object\Character\Player\PlayerAction\J_RUN_OUT_OF_STAMINA</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCombo1.h">
+      <Filter>Object\Character\Player\PlayerAction\L_Combo1</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCombo2.h">
+      <Filter>Object\Character\Player\PlayerAction\M_Combo2</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCombo3.h">
+      <Filter>Object\Character\Player\PlayerAction\N_Combo3</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerStrongAttack.h">
+      <Filter>Object\Character\Player\PlayerAction\O_StrongAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerActionHeader.h">
+      <Filter>Data\HeaderFile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

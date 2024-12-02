@@ -33,9 +33,9 @@ void Skydome::Initialize()
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*jsonデータを各定数型に代入*/
-	const VECTOR POSITION = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_POSITION"]);
-	const VECTOR SCALE = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_SCALE"]);
-		  VECTOR rotation = Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_ROTATION"]);
+	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_POSITION"]);
+	const VECTOR SCALE = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_SCALE"]);
+		  VECTOR rotation = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_ROTATION"]);
 	rotation.y = rotation.y * (DX_PI_F / 180.0f);
 
 

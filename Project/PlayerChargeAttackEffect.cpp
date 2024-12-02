@@ -27,7 +27,7 @@ void PlayerChargeAttackEffect::SetInfoToPlayTheEffect()
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	VECTOR position = player.GetRigidbody().GetPosition();
 	position.y += json.GetJson(JsonManager::FileType::EFFECT)["PLAYER_CHARGE_Y_OFFSET"];
-	VECTOR scale = Convert(json.GetJson(JsonManager::FileType::EFFECT)["PLAYER_CHARGE_SCALE"]);
+	VECTOR scale = Gori::Convert(json.GetJson(JsonManager::FileType::EFFECT)["PLAYER_CHARGE_SCALE"]);
 	VECTOR rotation = player.GetRigidbody().GetRotation();
 
 	this->transform->SetPosition(position);

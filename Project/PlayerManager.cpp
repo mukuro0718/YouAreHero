@@ -70,22 +70,6 @@ const Rigidbody& PlayerManager::GetRigidbody()const
 }
 
 /// <summary>
-/// ˆÚ“®ƒtƒ‰ƒO‚Ìæ“¾
-/// </summary>
-const bool PlayerManager::IsMove()const
-{
-	auto player = dynamic_cast<Player&>(*this->player);
-	return player.IsMove();
-}
-/// <summary>
-///	UŒ‚‚µ‚½‚©
-/// </summary>
-const bool PlayerManager::GetIsAttack()const
-{
-	return this->player->GetIsAttack();
-}
-
-/// <summary>
 /// HP‚Ìæ“¾
 /// </summary>
 const int PlayerManager::GetHP()const
@@ -108,7 +92,7 @@ const float PlayerManager::GetStamina()const
 const int PlayerManager::GetHealOrbNum()const
 {
 	auto& player = dynamic_cast<Player&>(*this->player);
-	return player.GetHealOrbNum();
+	return player.GetHealCount();
 }
 
 /// <summary>
@@ -124,8 +108,7 @@ const bool PlayerManager::GetIsAlive()const
 /// </summary>
 const bool PlayerManager::GetIsLockOn()const
 {
-	auto& player = dynamic_cast<Player&>(*this->player);
-	return player.GetIsLockOn();
+	return false;
 }
 
 /// <summary>

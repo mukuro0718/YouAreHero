@@ -28,7 +28,7 @@ void BossImpactEffect::SetInfoToPlayTheEffect()
 
 	VECTOR position = player.GetRigidbody().GetPosition();
 	position.y += json.GetJson(JsonManager::FileType::EFFECT)["BOSS_IMPACT_Y_OFFSET"];
-	VECTOR scale = Convert(json.GetJson(JsonManager::FileType::EFFECT)["BOSS_IMPACT_SCALE"]);
+	VECTOR scale = Gori::Convert(json.GetJson(JsonManager::FileType::EFFECT)["BOSS_IMPACT_SCALE"]);
 	VECTOR rotation = player.GetRigidbody().GetRotation();
 	//rotation.y += json.GetJson(JsonManager::FileType::EFFECT)["BOSS_SLASH_ROTATE_OFFSET"] * 180.0f / DX_PI_F;
 	

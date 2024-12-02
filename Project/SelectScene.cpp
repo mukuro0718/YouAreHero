@@ -54,8 +54,8 @@ void SelectScene::Update()
 	auto& input = Singleton<InputManager>::GetInstance();
 
 	/*更新処理*/
-	ui.Update();
 	input.Update();
+	ui.Update();
 
 	/*シーンの終了処理*/
 	if (this->IsEnd())

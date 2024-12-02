@@ -7,7 +7,6 @@
 /// コンストラクタ
 /// </summary>
 PlayerData::PlayerData()
-	: stamina(0.0f)
 {
 
 }

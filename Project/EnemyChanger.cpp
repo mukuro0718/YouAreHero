@@ -72,7 +72,7 @@ void EnemyChanger::Update()
 	/*Œˆ’è*/
 	int nowPad = input.GetNowPadState();
 	int prevPad = input.GetPrevPadState();
-	if (!(prevPad & InputManager::PAD_A) && (nowPad & InputManager::PAD_A))
+	if (!(prevPad & InputManager::PAD_B) && (nowPad & InputManager::PAD_B))
 	{
 		if (!this->isProvDecide)
 		{
@@ -83,7 +83,7 @@ void EnemyChanger::Update()
 			this->isFinalDecide = true;
 		}
 	}
-	else if (nowPad & InputManager::PAD_B)
+	else if (nowPad & InputManager::PAD_A)
 	{
 		this->isProvDecide = false;
 	}

@@ -110,7 +110,7 @@ void BossIdleAction::Update(Boss& _boss)
 	const float  SPEED					= json.GetJson(JsonManager::FileType::ENEMY)["SIDE_WALK_SPEED"];					//速度
 	const VECTOR MOVE_TARGET			= player.GetRigidbody().GetPosition();													//移動目標
 	const VECTOR POSITION				= _boss.GetRigidbody().GetPosition();													//ボスの座標
-	const VECTOR LERP_VALUE				= Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATE_LERP_VALUE"]);	//回転率の補完値
+	const VECTOR LERP_VALUE				= Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATE_LERP_VALUE"]);	//回転率の補完値
 		  VECTOR velocity				= Gori::ORIGIN;																			//向き
 		  VECTOR nowRotation			= _boss.GetRigidbody().GetRotation();													//現在の回転率
 		  VECTOR nextRotation			= Gori::ORIGIN;																			//次の座標

@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "UseSTL.h"
 #include "Rigidbody.h"
 #include "Character.h"
 #include "Player.h"
@@ -30,7 +31,8 @@ PlayerDeath::~PlayerDeath()
 /// </summary>
 void PlayerDeath::Initialize()
 {
-
+	this->isChangeAction = false;
+	this->isEndAction = true;
 }
 
 /// <summary>
@@ -46,31 +48,21 @@ void PlayerDeath::Finalize()
 /// </summary>
 void PlayerDeath::Update(Player& _player)
 {
-	if (!_player.GetIsAlive()) return;
-
-	/*移動速度を出す*/
-	VECTOR nextRotation = _player.GetRigidbody().GetRotation();
-	VECTOR nowRotation = _player.GetRigidbody().GetRotation();
-	auto& json = Singleton<JsonManager>::GetInstance();
-	bool isRun = false;
-	float maxSpeed = 0.0f;
-	float nowSpeed = _player.GetSpeed();
-	UpdateSpeed(nowSpeed, maxSpeed, nowRotation, nextRotation);
-	_player.SetSpeed(nowSpeed);
-
-	/*移動ベクトルを出す*/
-	VECTOR nowVelcity = _player.GetRigidbody().GetVelocity();
-	VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelcity, nowSpeed, false);
-	_player.SetVelocity(newVelocity);
+	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
+	MoveData data;
+	data.Set(_player.GetNextRotation(), 0.0f, true, false);
+	Move(_player, data);
 
 	/*アニメーションの再生*/
+	auto& json = Singleton<JsonManager>::GetInstance();
 	int nextAnimation = static_cast<int>(Player::AnimationType::DEATH);
-	int playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
+	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
 	_player.PlayAnimation(nextAnimation, playTime);
 
 	/*アニメーションが終了していたら*/
 	if (_player.GetIsChangeAnimation())
 	{
 		_player.DeathProcess();
+		this->isEndAction = true;
 	}
 }

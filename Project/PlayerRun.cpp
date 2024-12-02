@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "UseSTL.h"
 #include "Rigidbody.h"
 #include "Character.h"
 #include "Player.h"
@@ -46,43 +47,19 @@ void PlayerRun::Finalize()
 /// </summary>
 void PlayerRun::Update(Player& _player)
 {
-	/*回転率を出す*/
-	VECTOR nextRotation = Gori::ORIGIN;
-	VECTOR nowRotation = _player.GetRigidbody().GetRotation();
-	UpdateRotation(nextRotation, nowRotation);
-	_player.SetRotation(nowRotation, nextRotation);
+	this->isEndAction = true;
 
-	/*最大速度を出す*/
+	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	bool isRun = false;
-	float maxSpeed = 0.0f;
-	//スタミナが足りている
-	if (_player.CanAction(json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"]))
-	{
-		maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["RUN_SPEED"];
-	}
-	//足りていない
-	else
-	{
-		maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["NONE_STAMINA_RUN_SPEED"];
-	}
+	MoveData data;
+	data.Set(Gori::ORIGIN, json.GetJson(JsonManager::FileType::PLAYER)["RUN_SPEED"], false, true);
+	Move(_player, data);
 
 	/*スタミナの計算*/
 	_player.CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"]);
-
-	/*移動速度を出す*/
-	float nowSpeed = _player.GetSpeed();
-	UpdateSpeed(nowSpeed, maxSpeed, nowRotation, nextRotation);
-	_player.SetSpeed(nowSpeed);
-
-
-	/*移動ベクトルを出す*/
-	VECTOR nowVelcity = _player.GetRigidbody().GetVelocity();
-	VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelcity, nowSpeed, false);
-	_player.SetVelocity(newVelocity);
 	
 	/*アニメーションの再生*/
 	int nextAnimation = static_cast<int>(Player::AnimationType::RUN_FRONT);
-	int playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
+	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
 	_player.PlayAnimation(nextAnimation, playTime);
 }

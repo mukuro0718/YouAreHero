@@ -84,7 +84,7 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 		const float  POSITION_OFFSET		= json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET"];		//当たり判定座標オフセット
 		const float  Y_OFFSET				= json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"];		//Y座標用オフセット
 		//向きの設定
-		VECTOR firstDirection = Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);
+		VECTOR firstDirection = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);
 		VECTOR direction	  = VTransform(firstDirection,MGetRotY(player.GetRigidbody().GetRotation().y));
 		//座標の設定
 		VECTOR position	=  _position;											//プレイヤーの座標

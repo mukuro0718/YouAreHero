@@ -1,4 +1,6 @@
 #include <DxLib.h>
+#include "UseSTL.h"
+#include "UseJson.h"
 #include "Rigidbody.h"
 #include "Character.h"
 #include "Player.h"
@@ -7,7 +9,6 @@
 #include "PlayerAction.h"
 #include "CharacterData.h"
 #include "PlayerBlock.h"
-#include "UseJson.h"
 #include "EnemyManager.h"
 
 /// <summary>
@@ -32,7 +33,8 @@ PlayerBlock::~PlayerBlock()
 /// </summary>
 void PlayerBlock::Initialize()
 {
-
+	this->isChangeAction = false;
+	this->isEndAction = false;
 }
 
 /// <summary>
@@ -48,26 +50,11 @@ void PlayerBlock::Finalize()
 /// </summary>
 void PlayerBlock::Update(Player& _player)
 {
-	/*回転率を出す*/
-	VECTOR nextRotation = Gori::ORIGIN;
-	VECTOR nowRotation = _player.GetRigidbody().GetRotation();
-	UpdateRotation(nextRotation, nowRotation);
-	_player.SetRotation(nowRotation, nextRotation);
-
+	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	float maxSpeed = 0.0f;
-	float nowSpeed = _player.GetSpeed();
-	/*移動速度が０以上だったら処理を行う*/
-	if (nowSpeed > maxSpeed)
-	{
-		//移動速度を出す
-		UpdateSpeed(nowSpeed, maxSpeed, nowRotation, nextRotation);
-		_player.SetSpeed(nowSpeed);
-		//移動ベクトルを出す
-		VECTOR nowVelcity = _player.GetRigidbody().GetVelocity();
-		VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelcity, nowSpeed, false);
-		_player.SetVelocity(newVelocity);
-	}
+	MoveData data;
+	data.Set(Gori::ORIGIN, json.GetJson(JsonManager::FileType::PLAYER)["NONE_STAMINA_RUN_SPEED"], false, true);
+	Move(_player, data);
 
 	/*ガードが成功しているかの判定をする*/
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
@@ -94,6 +81,8 @@ void PlayerBlock::Update(Player& _player)
 
 	/*アニメーションの再生*/
 	int nextAnimation = static_cast<int>(Player::AnimationType::BLOCK);
-	int playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
+	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
 	_player.PlayAnimation(nextAnimation, playTime);
+
+	this->isEndAction = true;
 }
