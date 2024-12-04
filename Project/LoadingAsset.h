@@ -14,6 +14,7 @@ public:
 	enum class ModelType
 	{
 		FINALY_BOSS_STAGE,
+		COLL_ARENA,
 		PLAYER,
 		ENEMY,
 		BOT,

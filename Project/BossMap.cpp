@@ -21,7 +21,8 @@ BossMap::BossMap()
 	/*モデルハンドルの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 	auto& modelColiderData = dynamic_cast<ModelColliderData&>(*this->collider);
-	modelColiderData.modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::FINALY_BOSS_STAGE));
+	modelColiderData.modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::COLL_ARENA));
+	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::FINALY_BOSS_STAGE));
 }
 
 /// <summary>
@@ -49,14 +50,19 @@ void BossMap::Initialize()
 	this->collider->rigidbody.SetRotation(rotation);
 	this->collider->rigidbody.SetScale(scale);
 
-	/*モデルの設定*/
+	/*当たり判定用モデルの設定*/
 	auto& modelColiderData = dynamic_cast<ModelColliderData&>(*this->collider);
 	modelColiderData.frameIndex = json.GetJson(JsonManager::FileType::MAP)["COLL_FRAME_INDEX"];
 	MV1SetPosition(modelColiderData.modelHandle, this->collider->rigidbody.GetPosition());
 	MV1SetRotationXYZ(modelColiderData.modelHandle, this->collider->rigidbody.GetRotation());
 	MV1SetScale(modelColiderData.modelHandle, this->collider->rigidbody.GetScale());
-	MV1SetFrameVisible(modelColiderData.modelHandle, modelColiderData.frameIndex, FALSE);
 	MV1SetupCollInfo(modelColiderData.modelHandle, modelColiderData.frameIndex, 16, 16, 16);
+
+	/*描画用モデルの設定*/
+	MV1SetPosition(this->modelHandle, this->collider->rigidbody.GetPosition());
+	MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());
+	MV1SetScale(this->modelHandle, this->collider->rigidbody.GetScale());
+	MV1SetFrameVisible(this->modelHandle, 125, FALSE);
 }
 
 /// <summary>
@@ -66,6 +72,7 @@ void BossMap::Finalize()
 {
 	/*物理登録の解除*/
 	DeleteMemberInstance(this->collider);
+	MV1DeleteModel(this->modelHandle);
 }
 
 /// <summary>
@@ -80,8 +87,7 @@ void BossMap::Update()
 /// </summary>
 const void BossMap::Draw()const
 {
-	auto& modelColiderData = dynamic_cast<ModelColliderData&>(*this->collider);
-	MV1DrawModel(modelColiderData.modelHandle);
+	MV1DrawModel(this->modelHandle);
 }
 
 /// <summary>

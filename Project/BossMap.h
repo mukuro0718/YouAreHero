@@ -22,5 +22,6 @@ public:
 private:
 	/*ƒƒ“ƒo•Ï”*/
 	ColliderData* collider;
+	int modelHandle;
 };
 

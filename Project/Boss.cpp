@@ -322,29 +322,29 @@ const void Boss::DrawCharacterInfo()const
 	auto& map = Singleton<MapManager>::GetInstance();
 	auto& debug = Singleton<Debug>::GetInstance();
 	
-	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
-	{
+	//if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
+	//{
 		VECTOR position = this->collider->rigidbody.GetPosition();
 		VECTOR rotation = this->collider->rigidbody.GetRotation();
 		printfDx("Boss_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
 		printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
-		printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
-		printfDx("%d:IDLE						\n", this->state->CheckFlag(this->IDLE));
-		printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
-		printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
-		printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
-		printfDx("%d:SLASH_1					\n", this->state->CheckFlag(this->SLASH_1));
-		printfDx("%d:SLASH_2					\n", this->state->CheckFlag(this->SLASH_2));
-		printfDx("%d:STAB						\n", this->state->CheckFlag(this->STAB));
-		printfDx("%d:ROTATE_SLASH				\n", this->state->CheckFlag(this->ROTATE_SLASH));
-		printfDx("%d:PUNCH					\n", this->state->CheckFlag(this->PUNCH));
-		printfDx("%d:SLASH_COMBO_1			\n", this->state->CheckFlag(this->SLASH_COMBO_1));
-		printfDx("%d:SLASH_COMBO_2			\n", this->state->CheckFlag(this->SLASH_COMBO_2));
-		printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
-		printfDx("%d:STATE					\n", this->angryState);
+		//printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
+		//printfDx("%d:IDLE						\n", this->state->CheckFlag(this->IDLE));
+		//printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
+		//printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
+		//printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
+		//printfDx("%d:SLASH_1					\n", this->state->CheckFlag(this->SLASH_1));
+		//printfDx("%d:SLASH_2					\n", this->state->CheckFlag(this->SLASH_2));
+		//printfDx("%d:STAB						\n", this->state->CheckFlag(this->STAB));
+		//printfDx("%d:ROTATE_SLASH				\n", this->state->CheckFlag(this->ROTATE_SLASH));
+		//printfDx("%d:PUNCH					\n", this->state->CheckFlag(this->PUNCH));
+		//printfDx("%d:SLASH_COMBO_1			\n", this->state->CheckFlag(this->SLASH_COMBO_1));
+		//printfDx("%d:SLASH_COMBO_2			\n", this->state->CheckFlag(this->SLASH_COMBO_2));
+		//printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
+		//printfDx("%d:STATE					\n", this->angryState);
 		/*各アクションの当たり判定図形の描画*/
 		this->parameters[this->nowAction]->Draw();
-	}
+	//}
 
 	if (this->isDraw)
 	{

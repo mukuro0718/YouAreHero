@@ -170,8 +170,11 @@ void CollisionManager::CheckColide()
 						//次の座標を出す
 						FixNextPosition(*primary, *secondary);
 
-						doCheck = true;
-						break;
+						if (objectA->GetKind() != ColliderData::Kind::MODEL && objectB->GetKind() != ColliderData::Kind::MODEL)
+						{
+							doCheck = true;
+							break;
+						}
 					}
 				}
 			}
@@ -364,14 +367,13 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 	else if (aKind == ColliderData::Kind::MODEL && bKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
 		//フラグが立っていたら
-		auto& chara_coll = dynamic_cast<CharacterColliderData&>(_objectB);
-		if (chara_coll.isUseCollWithGround)
+		auto& charaCollision = dynamic_cast<CharacterColliderData&>(_objectB);
+		if (charaCollision.isUseCollWithGround)
 		{
 			auto& model_coll = dynamic_cast<ModelColliderData&>(_objectA);
 			//構築したコリジョン情報とカプセルとの当たり判定を取り、構造体に格納する
-			VECTOR chara_pos = chara_coll.GetNextPosition();
-			chara_pos.y += chara_coll.radius;
-			MV1_COLL_RESULT_POLY_DIM hitPolyDim = MV1CollCheck_Sphere(model_coll.modelHandle, model_coll.frameIndex, chara_pos, chara_coll.radius);
+			VECTOR moveVector = charaCollision.rigidbody.GetVelocity();
+			MV1_COLL_RESULT_POLY_DIM hitPolyDim = MV1CollCheck_Sphere(model_coll.modelHandle, model_coll.frameIndex, charaCollision.GetNextPosition(), charaCollision.radius + VSize(moveVector));
 			//当たっていたら以下の処理を行う
 			if (hitPolyDim.HitNum > 0)
 			{
@@ -480,6 +482,7 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 	else if (primaryKind == ColliderData::Kind::MODEL && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
 		//フラグが立っていたら
+
 		auto& ModelCollision = dynamic_cast<ModelColliderData&>(_primary);
 		auto& charaCollision = dynamic_cast<CharacterColliderData&>(_secondary);
 		//構築したコリジョン情報とカプセルとの当たり判定を取り、構造体に格納する
@@ -598,21 +601,17 @@ void CollisionManager::FixPosition()
 	}
 }
 
-/// <summary>
-/// 度数のgetter
-/// </summary>
 float CollisionManager::GetDegree(const VECTOR _norm1, const VECTOR _norm2)
 {
 	float dot = VDot(_norm1, _norm2);
 	float deg = acosf(dot);
-
 	return deg * 180.0f / DX_PI_F;
 }
+
 void CollisionManager::JudgeNorm(const MV1_COLL_RESULT_POLY_DIM _hitPolyDim, vector<MV1_COLL_RESULT_POLY>& _floor, vector<MV1_COLL_RESULT_POLY>& _xpWall, vector<MV1_COLL_RESULT_POLY>& _xmWall, vector<MV1_COLL_RESULT_POLY>& _zpWall, vector<MV1_COLL_RESULT_POLY>& _zmWall)
 {
 	for (int i = 0; i < _hitPolyDim.HitNum; i++)
 	{
-		//trueが返されたら状態を保存する
 		if (JudgeDegree(_hitPolyDim.Dim[i].Normal, FLOOR_NORM))
 		{
 			_floor.push_back(_hitPolyDim.Dim[i]);
@@ -637,9 +636,7 @@ void CollisionManager::JudgeNorm(const MV1_COLL_RESULT_POLY_DIM _hitPolyDim, vec
 }
 bool CollisionManager::JudgeDegree(const VECTOR _norm1, const VECTOR _norm2)
 {
-	//床との内積の角度を求める
 	float deg = GetDegree(_norm1, _norm2);
-	//もし角度が最大度数未満か
 	if (deg < MAX_DEGREE)
 	{
 		return true;
@@ -648,7 +645,6 @@ bool CollisionManager::JudgeDegree(const VECTOR _norm1, const VECTOR _norm2)
 }
 float CollisionManager::JudgeMax(const float _nowMax, const float _judgeValue)
 {
-	/*現在の最大値と判定する値を比べて大きいほうを返す*/
 	if (_nowMax < _judgeValue)
 	{
 		return _judgeValue;
@@ -660,58 +656,52 @@ bool CollisionManager::HitCheckWall(float& _max, vector<MV1_COLL_RESULT_POLY> _w
 	bool isHit = false;
 	for (int i = 0; i < _wall.size(); i++)
 	{
-		//三角形と線分の当たり判定を行う
 		int hitResult = HitCheck_Capsule_Triangle(_pos, VAdd(_pos, VGet(0.0f, _height, 0.0f)), _radius, _wall[i].Position[0], _wall[i].Position[1], _wall[i].Position[2]);
-		//当たっていたら
 		if (hitResult)
 		{
-			//ヒットフラグを立てる
 			isHit = true;
 			for (int j = 0; j < 3; j++)
 			{
-				//if (_wall[i].Position[j].y > _pos.y + 1.0f)
-				//{
-				float fix = 0.0f;
-				if (isX)
+				if (_wall[i].Position[j].y > -0.000001f)
 				{
-					if (_wall[i].Position[j].x > _pos.x)
+					float fix = 0.0f;
+					if (isX)
 					{
-						fix = _wall[i].Position[j].x - (_pos.x + _radius);
+						if (_wall[i].Position[j].x > _pos.x)
+						{
+							fix = _wall[i].Position[j].x - (_pos.x + _radius);
+						}
+						else
+						{
+							fix = _wall[i].Position[j].x - (_pos.x - _radius);
+						}
+					}
+					else if (isZ)
+					{
+						if (_wall[i].Position[j].z > _pos.z)
+						{
+							fix = _wall[i].Position[j].z - (_pos.z + _radius);
+						}
+						else
+						{
+							fix = _wall[i].Position[j].z - (_pos.z - _radius);
+						}
+					}
+					if (_sign)
+					{
+						if (fix < _max)
+						{
+							_max = fix;
+						}
 					}
 					else
 					{
-						fix = _wall[i].Position[j].x - (_pos.x - _radius);
+						if (fix > _max)
+						{
+							_max = fix;
+						}
 					}
 				}
-				else if (isZ)
-				{
-					if (_wall[i].Position[j].z > _pos.z)
-					{
-						fix = _wall[i].Position[j].z - (_pos.z + _radius);
-					}
-					else
-					{
-						fix = _wall[i].Position[j].z - (_pos.z - _radius);
-					}
-				}
-				//もし今保存されている補正量よりも大きかったら
-				if (_sign)
-				{
-					if (fix < _max)
-					{
-						//補正量を代入する
-						_max = fix;
-					}
-				}
-				else
-				{
-					if (fix > _max)
-					{
-						//補正量を代入する
-						_max = fix;
-					}
-				}
-				//}
 			}
 		}
 	}
