@@ -50,11 +50,15 @@ void PlayerCombo2::Finalize()
 /// </summary>
 void PlayerCombo2::Update(Player& _player)
 {
-	/*アニメーションが終了していたら早期リターン*/
-	if (_player.GetIsChangeAnimation())
+	/*開始時に一度だけ呼ばれる*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+	if (!this->isPlay)
 	{
-		this->isEndAction = true;
-		return;
+		auto& attack = Singleton<PlayerAttackManager>  ::GetInstance();
+		//ダメージのセット
+		attack.SetDamage(json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"][1]);
+		attack.OnIsStart();
+		this->isPlay = true;
 	}
 
 	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
@@ -63,7 +67,6 @@ void PlayerCombo2::Update(Player& _player)
 	Move(_player, data);
 
 	/*アニメーションの再生*/
-	auto& json = Singleton<JsonManager>::GetInstance();
 	int nextAnimation = static_cast<int>(Player::AnimationType::COMBO_2);
 	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
 	_player.PlayAnimation(nextAnimation, playTime);
@@ -71,16 +74,6 @@ void PlayerCombo2::Update(Player& _player)
 	/*アニメーションが終了していたら*/
 	if (_player.GetIsChangeAnimation())
 	{
-		this->isChangeAction = true;
-	}
-
-	/*開始時に一度だけ呼ばれる*/
-	if (!this->isPlay)
-	{
-		auto& attack = Singleton<PlayerAttackManager>  ::GetInstance();
-		//ダメージのセット
-		attack.SetDamage(json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"][1]);
-		attack.OnIsStart();
-		this->isPlay = true;
+		this->isEndAction = true;
 	}
 }

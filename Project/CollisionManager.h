@@ -16,7 +16,7 @@ public:
 
 
 	void Entry(ColliderData& _data);	//衝突物の登録
-	void Exit(ColliderData& _data);	//登録解除
+	void Exit(ColliderData& _data);		//登録解除
 	void Update();						//更新(登録オブジェクトの物理移動、衝突通知)
 private:
 	/*静的定数*/

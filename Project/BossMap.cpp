@@ -58,11 +58,10 @@ void BossMap::Initialize()
 	MV1SetScale(modelColiderData.modelHandle, this->collider->rigidbody.GetScale());
 	MV1SetupCollInfo(modelColiderData.modelHandle, modelColiderData.frameIndex, 16, 16, 16);
 
-	/*•`‰æ—pƒ‚ƒfƒ‹‚ÌÝ’è*/
 	MV1SetPosition(this->modelHandle, this->collider->rigidbody.GetPosition());
 	MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());
 	MV1SetScale(this->modelHandle, this->collider->rigidbody.GetScale());
-	MV1SetFrameVisible(this->modelHandle, 125, FALSE);
+	MV1SetFrameVisible(this->modelHandle, 125, false);
 }
 
 /// <summary>
@@ -72,7 +71,6 @@ void BossMap::Finalize()
 {
 	/*•¨—“o˜^‚Ì‰ðœ*/
 	DeleteMemberInstance(this->collider);
-	MV1DeleteModel(this->modelHandle);
 }
 
 /// <summary>
@@ -87,6 +85,7 @@ void BossMap::Update()
 /// </summary>
 const void BossMap::Draw()const
 {
+	//auto& modelColiderData = dynamic_cast<ModelColliderData&>(*this->collider);
 	MV1DrawModel(this->modelHandle);
 }
 
@@ -95,6 +94,6 @@ const void BossMap::Draw()const
 /// </summary>
 const int BossMap::GetModelHandle()const
 { 
-	auto& modelColiderData = dynamic_cast<ModelColliderData&>(*this->collider);
-	return modelColiderData.modelHandle;
+	//auto& modelColiderData = dynamic_cast<ModelColliderData&>(*this->collider);
+	return this->modelHandle;
 }

@@ -6,6 +6,7 @@
 #include "PlayerBlock.h"
 #include "PlayerStagger.h"
 #include "PlayerKnockdown.h"
+#include "PlayerKnockup.h"
 #include "PlayerBlockStagger.h"
 #include "PlayerHeal.h"
 #include "PlayerRun.h"

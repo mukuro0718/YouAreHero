@@ -25,43 +25,53 @@ public:
 	//アニメーション
 	enum class AnimationType
 	{
-		 DYING			= 0, //デス
-		 IDLE			= 1, //待機
-		 ROAR			= 2, //咆哮
-		 WALK			= 3, //歩き
-		 WALK_LEFT		= 4, //歩き
-		 WALK_RIGHT		= 5, //歩き
+		DYING		= 0, //デス
+		IDLE		= 1, //待機
+		ROAR		= 2, //咆哮(通常→怒り状態の変化)
+		WALK		= 3, //歩き
+		RUN			= 4, //ダッシュ
+		TURN_LEFT	= 5, //左を向く
+		TURN_RIGHT	= 6, //右を向く
 
-		 SLASH_1		= 6, //スラッシュ
-		 SLASH_2		= 7, //スラッシュ
-		 STAB			= 8, //突き刺し攻撃
-		 ROTATE_SLASH	= 9, //回転スラッシュ
-		 PUNCH			= 10,//パンチ
-		 SLASH_COMBO_1	= 11,//スラッシュコンボ１
-		 SLASH_COMBO_2	= 12,//スラッシュコンボ２
-		 JUMP_ATTACK	= 13,//ジャンプアタック
-		 DOWN			= 14,//ダウン
-		 DOWN_UP		= 15 //ダウンから起き上がる
+
+		SLASH_1 = 6, //スラッシュ
+		SLASH_2 = 7, //スラッシュ
+		STAB = 8, //突き刺し攻撃
+		ROTATE_SLASH = 9, //回転スラッシュ
+		PUNCH = 10,//パンチ
+		SLASH_COMBO_1 = 11,//スラッシュコンボ１
+		SLASH_COMBO_2 = 12,//スラッシュコンボ２
+		JUMP_ATTACK = 13,//ジャンプアタック
+		DOWN = 14,//ダウン
+		DOWN_UP = 15 //ダウンから起き上がる
 	};
-	//攻撃の種類
-	enum class AttackType
+	
+	enum class ActionType
 	{
-		NONE		  = -1,
-		SLASH_1		  = 0, //スラッシュ
-		SLASH_2		  = 1, //スラッシュ
-		STAB		  = 2, //突き刺し攻撃
-		ROTATE_SLASH  = 3, //回転スラッシュ
-		PUNCH		  = 4,//パンチ
-		SLASH_COMBO_1 = 5,//スラッシュコンボ１
-		SLASH_COMBO_2 = 6,//スラッシュコンボ２
-		JUMP_ATTACK	  = 7,//ジャンプアタック
-	};
-	//怒り状態の種類
-	enum class AngryStateType
-	{
-		TIRED,
-		NORMAL,
-		ANGRY,
+		DYING						= 0, //デス
+		IDLE						= 1, //待機
+		ROAR						= 2, //咆哮(通常→怒り状態の変化)
+		WALK						= 3, //歩き
+		RUN							= 4, //ダッシュ
+		TURN_LEFT					= 5, //左を向く
+		TURN_RIGHT					= 6, //右を向く
+		DOWN						= 7, //ダウン
+		LONG_FRIGHTENING			= 8, //長い怯み
+		SHORT_FRIGHTENING			= 9, //短い怯み
+		REST						= 10,//休憩
+		STEP_BACK					= 11,//後ろにジャンプして下がる
+		RAISE_LEVEL					= 12,//炎のチャージ率を上昇させる（咆哮）
+		BACKING_BREATH				= 13,//後ろに下がりながらブレス
+		RUSH						= 14,//突進
+		CHARGE_RIGHT_FOOT_ATTACK	= 15,//右前足溜め攻撃
+		CHARGE_BOTH_FOOT_ATTACK		= 16,//両前足溜め攻撃
+		BREATH						= 17,//ブレス
+		SUPER_NOVA					= 18,//スーパーノヴァ
+		WEAK_BREATH					= 19,//弱ブレス
+		SMALL_EXPLOSION				= 20,//小爆発
+		RIGHT_FOOT_ATTACK			= 21,//右足攻撃
+		RIGHT_FOOT_AND_ROT_ATTACK	= 22,//右足で攻撃した後回転攻撃
+		FOOT_COMBO_ATTACK			= 23,//3連足攻撃
 	};
 
 	/*getter/setter*/

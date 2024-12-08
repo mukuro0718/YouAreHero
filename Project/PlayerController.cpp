@@ -39,7 +39,7 @@ void PlayerController::Initialize()
 /// <summary>
 /// 状態変更クラス
 /// </summary>
-void PlayerController::StateChanger(const bool _isEndAction, const CharacterData& _data)
+bool PlayerController::StateChanger(const bool _isEndAction, const CharacterData& _data)
 {
 	int nextState = -1;
 
@@ -53,7 +53,7 @@ void PlayerController::StateChanger(const bool _isEndAction, const CharacterData
 	}
 
 	/*攻撃がヒットしていたらリアクションの種類別の状態にする*/
-	else if (_data.isHit)
+	else if (_data.isHit && !_data.isInvinvible)
 	{
 		//ガードしていたら
 		if (_data.isGuard)
@@ -77,7 +77,10 @@ void PlayerController::StateChanger(const bool _isEndAction, const CharacterData
 			}
 		}
 	}
-
+	else if (this->nowState == static_cast<int>(PlayerState::KNOCK_DOWN))
+	{
+		nextState = static_cast<int>(PlayerState::KNOCK_UP);
+	}
 	/*ガード*/
 	//スタミナは足りているか
 	else if (CanAction(_data.stamina, json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]) && input.GetNowPadState() & InputManager::PAD_RT)
@@ -88,7 +91,7 @@ void PlayerController::StateChanger(const bool _isEndAction, const CharacterData
 	/*弱攻撃*/
 	else if (input.GetNowPadState() & InputManager::PAD_B)
 	{
-		switch (this->prevState)
+		switch (this->nowState)
 		{
 		case static_cast<int>(PlayerState::COMBO_1):
 			nextState = static_cast<int>(PlayerState::COMBO_2);
@@ -152,7 +155,9 @@ void PlayerController::StateChanger(const bool _isEndAction, const CharacterData
 	{
 		this->prevState = this->nowState;
 		this->nowState = nextState;
+		return true;
 	}
+	return false;
 }
 
 /// <summary>

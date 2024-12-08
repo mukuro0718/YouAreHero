@@ -220,6 +220,8 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 	/*カプセルとカプセル*/
 	else if (aKind == ColliderData::Kind::CHARACTER_CAPSULE && bKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
+		//aのほうを補正するようにするので、aが移動していた時のみ以下の処理を行う
+		VECTOR moveVelocity = _objectA.rigidbody.GetVelocity();
 		auto aTob = VSub(_objectB.GetNextPosition(), _objectA.GetNextPosition());
 		auto aTobLength = VSize(aTob);
 
@@ -253,7 +255,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			}
 			auto& sphereColliderData = dynamic_cast<AttackSphereColliderData&>(*attackDataBase);
 			auto& capsuleColliderData = dynamic_cast<CharacterColliderData&>(*characterDataBase);
-			if (sphereColliderData.data->isDoHitCheck)
+			if (sphereColliderData.data->isDoHitCheck && !capsuleColliderData.data->isInvinvible)
 			{
 				VECTOR characterCapsuleTop = VAdd(characterCapsuleUnder,capsuleColliderData.topPositon);
 				if (HitCheck_Sphere_Capsule(attackSphereCenter, sphereColliderData.radius, characterCapsuleUnder, characterCapsuleTop, capsuleColliderData.radius))
@@ -294,7 +296,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			}
 			auto& attackColliderData = dynamic_cast<AttackCapsuleColliderData&>(*attackDataBase);
 			auto& characterColliderData = dynamic_cast<CharacterColliderData&>(*characterDataBase);
-			if (attackColliderData.data->isDoHitCheck)
+			if (attackColliderData.data->isDoHitCheck && !characterColliderData.data->isInvinvible)
 			{
 				VECTOR attackCapsuleTop = attackColliderData.topPositon;
 				VECTOR characterCapsuleTop = VAdd(characterCapsuleUnder, characterColliderData.topPositon);
@@ -416,7 +418,8 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
 
 		//そのままだとちょうど当たる位置になるので少し余分に離す
-		float awayDist = primaryColliderData.radius + secondaryColliderData.radius - secondaryToPrimarySize + 0.05f;
+		float awayDist = primaryColliderData.radius + secondaryColliderData.radius - secondaryToPrimarySize + 0.000001f;
+
 		VECTOR fixVector = VScale(secondaryToPrimaryNorm, awayDist);
 		VECTOR fixedPosition = VAdd(_primary.GetNextPosition(), fixVector);
 		_primary.SetNextPosition(fixedPosition);
@@ -607,7 +610,6 @@ float CollisionManager::GetDegree(const VECTOR _norm1, const VECTOR _norm2)
 	float deg = acosf(dot);
 	return deg * 180.0f / DX_PI_F;
 }
-
 void CollisionManager::JudgeNorm(const MV1_COLL_RESULT_POLY_DIM _hitPolyDim, vector<MV1_COLL_RESULT_POLY>& _floor, vector<MV1_COLL_RESULT_POLY>& _xpWall, vector<MV1_COLL_RESULT_POLY>& _xmWall, vector<MV1_COLL_RESULT_POLY>& _zpWall, vector<MV1_COLL_RESULT_POLY>& _zmWall)
 {
 	for (int i = 0; i < _hitPolyDim.HitNum; i++)

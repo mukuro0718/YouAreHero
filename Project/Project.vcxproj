@@ -139,11 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ActionNode.cpp" />
     <ClCompile Include="ActionParameter.cpp" />
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AttackData.cpp" />
     <ClCompile Include="Audience.cpp" />
     <ClCompile Include="Beast.cpp" />
+    <ClCompile Include="BeastBehaviorTree.cpp" />
+    <ClCompile Include="BehaviorTreeNode.cpp" />
     <ClCompile Include="BitFlag.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BossAction.cpp" />
@@ -176,12 +179,16 @@
     <ClCompile Include="AttackSphereColliderData.cpp" />
     <ClCompile Include="CapsuleColliderData.cpp" />
     <ClCompile Include="CharacterColliderData.cpp" />
+    <ClCompile Include="CompositeNode.cpp" />
+    <ClCompile Include="ConditionNode.cpp" />
+    <ClCompile Include="DecoratorNode.cpp" />
     <ClCompile Include="Dragon.cpp" />
     <ClCompile Include="EnemyChanger.cpp" />
     <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="GameOverUI.cpp" />
     <ClCompile Include="GameUI.cpp" />
     <ClCompile Include="ModelColliderData.cpp" />
+    <ClCompile Include="ParalellNode.cpp" />
     <ClCompile Include="PlayerAction.cpp" />
     <ClCompile Include="PlayerAvoid.cpp" />
     <ClCompile Include="PlayerBlock.cpp" />
@@ -207,12 +214,15 @@
     <ClCompile Include="BossSlashCombo2Attack.cpp" />
     <ClCompile Include="PlayerHealEffect.cpp" />
     <ClCompile Include="PlayerKnockdown.cpp" />
+    <ClCompile Include="PlayerKnockup.cpp" />
     <ClCompile Include="PlayerRun.cpp" />
     <ClCompile Include="PlayerRunOutOfStamina.cpp" />
     <ClCompile Include="PlayerStagger.cpp" />
     <ClCompile Include="PlayerStrongAttack.cpp" />
     <ClCompile Include="PlayerWalk.cpp" />
     <ClCompile Include="PlayerCombo1.cpp" />
+    <ClCompile Include="SelectorNode.cpp" />
+    <ClCompile Include="SequencerNode.cpp" />
     <ClCompile Include="Shadow.cpp" />
     <ClCompile Include="SphereColliderData.cpp" />
     <ClCompile Include="CharacterData.cpp" />
@@ -258,11 +268,14 @@
     <ClCompile Include="VECTORtoUseful.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActionNode.h" />
     <ClInclude Include="ActionParameter.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AttackData.h" />
     <ClInclude Include="Audience.h" />
     <ClInclude Include="Beast.h" />
+    <ClInclude Include="BeastBehaviorTree.h" />
+    <ClInclude Include="BehaviorTreeNode.h" />
     <ClInclude Include="BitFlag.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossAction.h" />
@@ -296,12 +309,16 @@
     <ClInclude Include="CapsuleColliderData.h" />
     <ClInclude Include="CharacterColliderData.h" />
     <ClInclude Include="BossActionHeader.h" />
+    <ClInclude Include="CompositeNode.h" />
+    <ClInclude Include="ConditionNode.h" />
+    <ClInclude Include="DecoratorNode.h" />
     <ClInclude Include="Dragon.h" />
     <ClInclude Include="EnemyChanger.h" />
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameOverUI.h" />
     <ClInclude Include="GameUI.h" />
     <ClInclude Include="ModelColliderData.h" />
+    <ClInclude Include="ParalellNode.h" />
     <ClInclude Include="PlayerAction.h" />
     <ClInclude Include="PlayerActionHeader.h" />
     <ClInclude Include="PlayerAvoid.h" />
@@ -327,6 +344,7 @@
     <ClInclude Include="GameClearUI.h" />
     <ClInclude Include="PlayerHealEffect.h" />
     <ClInclude Include="PlayerKnockdown.h" />
+    <ClInclude Include="PlayerKnockup.h" />
     <ClInclude Include="PlayerRun.h" />
     <ClInclude Include="PlayerRunOutOfStamina.h" />
     <ClInclude Include="PlayerStagger.h" />
@@ -335,6 +353,8 @@
     <ClInclude Include="PlayerCombo1.h" />
     <ClInclude Include="ReactionType.h" />
     <ClInclude Include="BossSlashCombo2Attack.h" />
+    <ClInclude Include="SelectorNode.h" />
+    <ClInclude Include="SequencerNode.h" />
     <ClInclude Include="Shadow.h" />
     <ClInclude Include="SphereColliderData.h" />
     <ClInclude Include="CharacterData.h" />

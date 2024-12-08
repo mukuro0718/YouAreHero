@@ -88,13 +88,6 @@ void PlayerHeal::Update(Player& _player)
 	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
 	_player.PlayAnimation(nextAnimation, playTime);
 
-	/*無敵フラグが立っていたら最大HPから変えない*/
-	auto& debug = Singleton<Debug>			::GetInstance();
-	if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER) && json.GetJson(JsonManager::FileType::DEBUG)["PLAYER_INVINCIBLE"])
-	{
-		_player.GetPlayerData().hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];
-	}
-
 	/*アニメーションが終了していたら*/
 	if (_player.GetIsChangeAnimation())
 	{

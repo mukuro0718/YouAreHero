@@ -45,12 +45,11 @@ void PlayerAction::UpdateRotation(const bool isSkip, VECTOR& _nextRotationation,
 		_nextRotationation.y = static_cast<float>(
 			-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
 			- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
+		/*現在の回転率をラープで補完して出す*/
+		auto& json = Singleton<JsonManager>::GetInstance();
+		VECTOR lerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATION_LERP_VALUE"]);
+		_nowRotationation = Gori::LerpAngle(_nowRotationation, _nextRotationation, lerpValue);
 	}
-	/*現在の回転率をラープで補完して出す*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	VECTOR lerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATION_LERP_VALUE"]);
-	_nowRotationation = Gori::LerpAngle(_nowRotationation, _nextRotationation, lerpValue);
-	
 }
 
 /// <summary>

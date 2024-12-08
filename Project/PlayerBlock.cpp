@@ -10,6 +10,7 @@
 #include "CharacterData.h"
 #include "PlayerBlock.h"
 #include "EnemyManager.h"
+#include "InputManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -50,23 +51,34 @@ void PlayerBlock::Finalize()
 /// </summary>
 void PlayerBlock::Update(Player& _player)
 {
-	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
+	/*スタミナの回復*/
 	auto& json = Singleton<JsonManager>::GetInstance();
+	_player.CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
+
+	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
+	auto& input = Singleton<InputManager>  ::GetInstance();
+	bool isSkip = true;
+	float maxSpeed = 0.0f;
+	if (input.GetLStickState().XBuf != 0 || input.GetLStickState().YBuf != 0)
+	{
+		isSkip = false;
+		maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["NONE_STAMINA_RUN_SPEED"];
+	}
 	MoveData data;
-	data.Set(Gori::ORIGIN, json.GetJson(JsonManager::FileType::PLAYER)["NONE_STAMINA_RUN_SPEED"], false, true);
+	data.Set(_player.GetNextRotation(), maxSpeed, isSkip, false);
 	Move(_player, data);
 
 	/*ガードが成功しているかの判定をする*/
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
-	VECTOR enemyFirstDirection	= Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_DIRECTION"]);		 //敵が最初に向いている向き
+	VECTOR enemyFirstDirection = Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_DIRECTION"]);		 //敵が最初に向いている向き
 	VECTOR playerFirstDirection = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);	 //プレイヤーが最初に向いている向き
-	VECTOR enemyDirection		= VTransform(enemyFirstDirection, MGetRotY(enemy.GetRigidbody().GetRotation().y));	 //今のエネミーの向き
-		   enemyDirection		= VNorm(enemyDirection);
-	VECTOR playerDirection		= VTransform(playerFirstDirection, MGetRotY(_player.GetRigidbody().GetRotation().y));//今のプレイヤーの向き
-		   playerDirection		= VNorm(playerDirection);
-	float  TOLERANCE_DOT		= json.GetJson(JsonManager::FileType::PLAYER)["TOLERANCE_DOT"];//内積の許容範囲
-	float  enemyAndPlayerDot	= VDot(enemyDirection, playerDirection);
-		   enemyAndPlayerDot	= enemyAndPlayerDot * 180.0f / DX_PI_F;
+	VECTOR enemyDirection = VTransform(enemyFirstDirection, MGetRotY(enemy.GetRigidbody().GetRotation().y));	 //今のエネミーの向き
+	enemyDirection = VNorm(enemyDirection);
+	VECTOR playerDirection = VTransform(playerFirstDirection, MGetRotY(_player.GetRigidbody().GetRotation().y));//今のプレイヤーの向き
+	playerDirection = VNorm(playerDirection);
+	float  TOLERANCE_DOT = json.GetJson(JsonManager::FileType::PLAYER)["TOLERANCE_DOT"];//内積の許容範囲
+	float  enemyAndPlayerDot = VDot(enemyDirection, playerDirection);
+	enemyAndPlayerDot = enemyAndPlayerDot * 180.0f / DX_PI_F;
 	//もし内積がマイナスなら＋に戻して判定する
 	if (enemyAndPlayerDot < 0) { enemyAndPlayerDot *= -1.0f; }
 	//内積が許容範囲かつスタミナが足りていたらガード成功

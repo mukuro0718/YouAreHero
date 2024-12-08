@@ -51,6 +51,7 @@ Player::Player()
 	this->action.emplace_back(new PlayerStagger());
 	this->action.emplace_back(new PlayerBlockStagger());
 	this->action.emplace_back(new PlayerKnockdown());
+	this->action.emplace_back(new PlayerKnockup());
 	this->action.emplace_back(new PlayerHeal());
 	this->action.emplace_back(new PlayerRun());
 	this->action.emplace_back(new PlayerRunOutOfStamina());
@@ -153,13 +154,15 @@ void Player::Update()
 
 	if (this->hitStop->IsHitStop()) return;
 
+
 	/*状態の変更*/
 	int nowState = this->controller->GetNowState();
-	int prevState = this->controller->GetPrevState();
-	this->controller->StateChanger(this->action[nowState]->GetIsEndAction(), GetCharacterData());
+	bool isInitialize = this->controller->StateChanger(this->action[nowState]->GetIsEndAction(), GetCharacterData());
+	nowState = this->controller->GetNowState();
+
 
 	/*状態が異なっていたらアクションを初期化する*/
-	if (nowState != prevState)
+	if (isInitialize)
 	{
 		this->action[nowState]->Initialize();
 		this->controller->SynchroState();
@@ -167,6 +170,18 @@ void Player::Update()
 
 	/*アクションの更新*/
 	this->action[nowState]->Update(*this);
+	//状態がガードじゃなければガードフラグを下す
+	if (nowState != static_cast<int>(PlayerController::PlayerState::BLOCK))
+	{
+		GetPlayerData().isGuard = false;
+	}
+
+	/*無敵フラグが立っていたら最大HPから変えない*/
+	auto& debug = Singleton<Debug>			::GetInstance();
+	if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER) && json.GetJson(JsonManager::FileType::DEBUG)["PLAYER_INVINCIBLE"])
+	{
+		GetPlayerData().hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];
+	}
 }
 
 /// <summary>

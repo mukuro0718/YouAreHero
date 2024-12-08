@@ -148,12 +148,10 @@ void BossSlashAction::Update(Boss& _boss)
 				_boss.SetRotation(nowRotation);
 			}
 		}
-		//アクション許可フラグが立っていなければ早期リターン
-		if (!this->isAllowAction)return;
 		//移動速度の設定
 		{
-			//一度も一定距離に近づいていない && 移動フラグが立っていたら
-			if (!this->isClose && isMove)
+			//一度も一定距離に近づいていない && 移動フラグが立っていたら && アクション許可フラグが立っていたら
+			if (!this->isClose && isMove && this->isAllowAction)
 			{
 				//座標と移動目標との距離を求める
 				const float DISTANCE = VSize(positonToTargetVector);
@@ -178,6 +176,8 @@ void BossSlashAction::Update(Boss& _boss)
 			//移動ベクトルの設定
 			_boss.SetVelocity(newVelocity);
 		}
+		////アクション許可フラグが立っていなければ早期リターン
+		//if (!this->isAllowAction)return;
 	}
 
 	/*アニメーション処理*/

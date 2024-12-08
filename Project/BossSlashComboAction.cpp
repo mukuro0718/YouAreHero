@@ -144,8 +144,8 @@ void BossSlashComboAction::Update(Boss& _boss)
 				_boss.SetRotation(nowRotation);
 			}
 		}
-		//アクション許可フラグが立っていなければ早期リターン
-		if (!this->isAllowAction)return;
+		////アクション許可フラグが立っていなければ早期リターン
+		//if (!this->isAllowAction)return;
 		//移動速度の設定
 		{
 			//一度も一定距離に近づいていない && 移動フラグが立っていたら

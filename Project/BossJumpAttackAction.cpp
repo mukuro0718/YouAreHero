@@ -111,14 +111,14 @@ void BossJumpAttackAction::Update(Boss& _boss)
 	/*移動処理*/
 	{
 		//使用する変数
-		const VECTOR POSITION = _boss.GetRigidbody().GetPosition();										//座標
-		const VECTOR LERP_VALUE = Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]);//回転率の補完値
-		VECTOR nowRotation = _boss.GetRigidbody().GetRotation();										//回転率
-		VECTOR positonToTargetVector = VSub(POSITION, this->moveTarget);											//座標と移動目標間のベクトル
-		VECTOR direction = VGet(0.0f, 0.0f, 0.0f);													//向き
-		float  speed = 0.0f;																		//移動スピードの設定
-		bool   isRotation = false;																	//回転するか
-		bool   isMove = false;																	//移動するか
+		VECTOR position				 = _boss.GetRigidbody().GetPosition();										//座標
+		VECTOR lerpValue			 = Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]);//回転率の補完値
+		VECTOR nowRotation			 = _boss.GetRigidbody().GetRotation();										//回転率
+		VECTOR positonToTargetVector = VSub(position, this->moveTarget);											//座標と移動目標間のベクトル
+		VECTOR direction			 = VGet(0.0f, 0.0f, 0.0f);													//向き
+		float  speed				 = 0.0f;																		//移動スピードの設定
+		bool   isRotation			 = false;																	//回転するか
+		bool   isMove				 = false;																	//移動するか
 		{
 			//フレームカウントが定数未満だったら許可フラグを立てる
 			if (this->frameCount > json.GetJson(JsonManager::FileType::ENEMY)["ROTATION_FIX_COUNT"])
@@ -146,7 +146,7 @@ void BossJumpAttackAction::Update(Boss& _boss)
 			if (isRotation)
 			{
 				//回転率を補完する
-				nowRotation = GetLerpRotation(_boss, positonToTargetVector, nowRotation, LERP_VALUE);
+				nowRotation = GetLerpRotation(_boss, positonToTargetVector, nowRotation, lerpValue);
 				//回転率を設定
 				_boss.SetRotation(nowRotation);
 			}

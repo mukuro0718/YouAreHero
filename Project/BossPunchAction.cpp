@@ -130,8 +130,8 @@ void BossPunchAction::Update(Boss& _boss)
 				_boss.SetRotation(nowRotation);
 			}
 		}
-		//アクション許可フラグが立っていなければ早期リターン
-		if (!this->isAllowAction)return;
+		////アクション許可フラグが立っていなければ早期リターン
+		//if (!this->isAllowAction)return;
 		//移動ベクトルの設定
 		{
 			//移動目標の設定
