@@ -24,12 +24,14 @@ SequencerNode::~SequencerNode()
 /// </summary>
 SequencerNode::NodeState SequencerNode::Update()
 {
+	/*q‚ğÀs*/
 	for (auto& child : this->children)
 	{
-		if (child->Update() == NodeState::FAILURE)
-		{
-			return NodeState::FAILURE;
-		}
+		NodeState state = child->Update();
+		//¸”s‚µ‚Ä‚¢‚½‚çó‘Ô‚ğ•Ô‚·
+		if (state == NodeState::FAILURE) return NodeState::FAILURE;
+		//Às’†‚È‚çó‘Ô‚ğ•Ô‚·
+		if (state == NodeState::RUNNING) return NodeState::RUNNING;
 	}
 	return NodeState::SUCCESS;
 }

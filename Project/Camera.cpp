@@ -148,8 +148,8 @@ void Camera::UpdateTarget()
 		if (player.GetHP() < 0 || !player.GetIsLockOn())
 		{
 			//注視点オフセット
-			const VECTOR POSITION_OFFSET = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["FREE_TARGET_OFFSET"]);
-			this->nextTarget = VAdd(player.GetRigidbody().GetPosition(),POSITION_OFFSET);
+			const VECTOR TARGET_OFFSET = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["TARGET_OFFSET"]);
+			this->nextTarget = VAdd(player.GetRigidbody().GetPosition(), TARGET_OFFSET);
 		}
 		else
 		{

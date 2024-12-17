@@ -19,6 +19,7 @@ public:
 
 	/*getter*/
 	const int	   GetHP()const;
+	Character& GetCharacter() { return *this->boss[this->enemyType]; }
 	const CharacterData& GetCharacterData()const;
 	const Rigidbody& GetRigidbody()const;
 	const bool IsAttack()const;

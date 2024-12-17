@@ -8,6 +8,7 @@
 class CompositeNode;
 class SequencerNode : public CompositeNode
 {
+public:
 	 SequencerNode();//コンストラクタ
 	~SequencerNode();//デストラクタ
 

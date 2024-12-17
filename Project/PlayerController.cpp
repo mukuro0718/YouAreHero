@@ -17,6 +17,13 @@ PlayerController::PlayerController()
 	auto& json = Singleton<JsonManager>  ::GetInstance();
 	vector<int> priority = json.GetJson(JsonManager::FileType::PLAYER)["ACTION_PRIORITY"];
 	this->priority = priority;
+
+	/*キャンセルフラグが立っているときに行えるアクション群*/
+	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::AVOID));
+	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::COMBO_1));
+	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::COMBO_2));
+	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::COMBO_3));
+	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::STRONG_ATTACK));
 }
 
 /// <summary>
@@ -39,7 +46,7 @@ void PlayerController::Initialize()
 /// <summary>
 /// 状態変更クラス
 /// </summary>
-bool PlayerController::StateChanger(const bool _isEndAction, const CharacterData& _data)
+bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEndAction, const CharacterData& _data)
 {
 	int nextState = -1;
 
@@ -156,6 +163,20 @@ bool PlayerController::StateChanger(const bool _isEndAction, const CharacterData
 		this->prevState = this->nowState;
 		this->nowState = nextState;
 		return true;
+	}
+
+	/*キャンセルフラグが立っているかつキャンセルできるアクション*/
+	else if (_isCancelAction)
+	{
+		for (int state : this->stateTheIsCancel)
+		{
+			if (state == nextState)
+			{
+				this->prevState = this->nowState;
+				this->nowState = nextState;
+				return true;
+			}
+		}
 	}
 	return false;
 }

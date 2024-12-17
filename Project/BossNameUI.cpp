@@ -5,6 +5,7 @@
 #include "BossNameUI.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"
+#include "EnemyChanger.h"
 
 /// <summary>
 /// コンストラクタ
@@ -53,10 +54,12 @@ const void BossNameUI::Draw()const
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-
-	vector<int>	 position = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_POSITION"];
-	vector<int> backGround = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_BACKGROUND"];
+	auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
+	int enemyType = enemyChanger.GetEnemyType();
+	vector<int>	 position = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_POSITION"][enemyType];
+	vector<int> backGround = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_BACKGROUND"][enemyType];
+	string name = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_TYPE"][enemyType];
 	DrawExtendGraph(backGround[0], backGround[1], backGround[2], backGround[3], this->imageHandle, TRUE);
-	DrawStringToHandle(position[0], position[1], "ゴ ル グ グ ラ ス", this->TEXT_COLOR, this->fontHandle);
+	DrawStringToHandle(position[0], position[1], name.c_str(), this->TEXT_COLOR, this->fontHandle);
 }
 

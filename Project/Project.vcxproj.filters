@@ -178,9 +178,6 @@
     <Filter Include="Scene\Type\Title">
       <UniqueIdentifier>{c7bb2f3e-8881-49cc-9503-a0a56c6be8ae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\Type\Tutorial">
-      <UniqueIdentifier>{bb1d5038-6afb-4f9c-abc7-95e2578a1db6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI\Scene\Game">
       <UniqueIdentifier>{171d95ff-3032-437d-b766-3b8dacfa174b}</UniqueIdentifier>
     </Filter>
@@ -406,9 +403,6 @@
     <Filter Include="Data\BehaviorTree\Composite\Sequencer">
       <UniqueIdentifier>{bb22b743-e140-4029-8151-876e3fde1443}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Data\BehaviorTree\ConditionNode">
-      <UniqueIdentifier>{6123cf44-d5cb-4a41-a69a-2770836f591a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\BehaviorTree">
       <UniqueIdentifier>{1d4c6ed1-b41c-4d6e-83c5-ca7fff7afb98}</UniqueIdentifier>
     </Filter>
@@ -417,9 +411,6 @@
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\BeastAction\1_DYING">
       <UniqueIdentifier>{09ffb293-5481-4dcf-a549-854713b9849c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BeastAction\3_ROAR">
-      <UniqueIdentifier>{67d0f528-ef90-46d0-a083-54cb14797f51}</UniqueIdentifier>
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\BeastAction\2_IDLE">
       <UniqueIdentifier>{c85c6ca7-cf09-43b2-acbb-f768728e7348}</UniqueIdentifier>
@@ -486,6 +477,69 @@
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\BeastAction\23_FootComboAttack">
       <UniqueIdentifier>{f9167d10-0be2-46f9-8df5-f4e067434577}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BeastAction\3_Roar">
+      <UniqueIdentifier>{67d0f528-ef90-46d0-a083-54cb14797f51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts">
+      <UniqueIdentifier>{7c754be3-4bb9-40bf-8c91-89c2566b70a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\BehaviorTree\ExecuteAll">
+      <UniqueIdentifier>{31383ffa-93d9-4148-8aa4-838cfa9fd7fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\BehaviorTree\Condition">
+      <UniqueIdentifier>{6123cf44-d5cb-4a41-a69a-2770836f591a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckDown">
+      <UniqueIdentifier>{bef90030-7b0d-48ed-abf4-12bdfc912f5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckDying">
+      <UniqueIdentifier>{3efd22df-0610-46c0-964e-17be79613763}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckAngry">
+      <UniqueIdentifier>{c27137ab-473e-4152-a298-7c728a10328c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckWalk">
+      <UniqueIdentifier>{3b516474-a866-478b-a4d5-493da50c5a53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Type\Select">
+      <UniqueIdentifier>{bb1d5038-6afb-4f9c-abc7-95e2578a1db6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Boss\Roar">
+      <UniqueIdentifier>{2915843b-06bd-4687-a3c2-93c7cab93231}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckRush">
+      <UniqueIdentifier>{f23d45b0-3a8a-4345-bc4b-cef75d811d99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CalcTargetDistance">
+      <UniqueIdentifier>{8af9bd69-f913-4bd5-815b-4eada3ff86c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckMoreFar">
+      <UniqueIdentifier>{da4d8cb4-b683-4697-aedc-c8f5d1c35021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckSuperNova">
+      <UniqueIdentifier>{64a427ae-ad4f-4bdb-911b-a0f3f01a3522}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckSpecial">
+      <UniqueIdentifier>{6d43b7ee-baa8-4bce-92e1-1f2bc3c9af13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckRaiseLevel">
+      <UniqueIdentifier>{4006848a-9779-4397-a7b5-7568382ef2ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckChargeBothAttack">
+      <UniqueIdentifier>{8adde360-71ce-4d74-b5c8-02266f5717ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckChargeRightAttack">
+      <UniqueIdentifier>{fa4fb10b-3c8a-4b90-9f77-0f74ff83010d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckRightAttack">
+      <UniqueIdentifier>{54af07d7-716b-42be-bbc2-1a88b2271bfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckCombo1Attack">
+      <UniqueIdentifier>{1c4e80f5-1d15-4525-8f39-c4f81188b0dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckCombo2Attack">
+      <UniqueIdentifier>{493d281f-9e28-4d0b-9db5-d37c0b420ccd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -686,7 +740,7 @@
       <Filter>Scene\Type\GameClear</Filter>
     </ClCompile>
     <ClCompile Include="SelectScene.cpp">
-      <Filter>Scene\Type\Tutorial</Filter>
+      <Filter>Scene\Type\Select</Filter>
     </ClCompile>
     <ClCompile Include="GameUI.cpp">
       <Filter>UI\Scene\Game</Filter>
@@ -863,10 +917,136 @@
       <Filter>Data\BehaviorTree\Composite\Sequencer</Filter>
     </ClCompile>
     <ClCompile Include="ConditionNode.cpp">
-      <Filter>Data\BehaviorTree\ConditionNode</Filter>
+      <Filter>Data\BehaviorTree\Condition</Filter>
     </ClCompile>
     <ClCompile Include="BeastBehaviorTree.cpp">
       <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_Dying.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\1_DYING</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_Idle.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\2_IDLE</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_Roar.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\3_Roar</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_Walk.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\4_Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="ExecuteAllNode.cpp">
+      <Filter>Data\BehaviorTree\ExecuteAll</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckDownCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckDown</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckDyingCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckDying</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckAngryCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckAngry</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckWalkCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckWalk</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckRushCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckRush</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_Run.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\5_Run</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_TurnLeft.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\6_TurnLeft</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_TurnRight.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\7_TurnRight</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_Down.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\8_Down</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_LongFrightening.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\9_LongFrightening</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_ShortFrightening.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\10_ShortFrightening</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_Rest.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\11_Rest</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_StepBack.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\12_StepBack</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_RaiseLevel.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\13_RaiseLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_BackingBreath.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\14_BackingBreath</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_Rush.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\15_Rush</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_ChargeRightFootAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\16_ChargeRightFootAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_ChargeBothFootAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\17_ChargeBothFootAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_Breath.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\18_Breath</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_SuperNova.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\19_SuperNova</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_WeakBreath.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\20_WeakBreath</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_SmallExplosion.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\21_SmallExplosion</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_RightFootAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\22_RightFootAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_FootComboAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\23_FootComboAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_RightFootAndRotAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\BeastAction\23_RightFootAndRotAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="BossRoarEffect.cpp">
+      <Filter>Effect\Boss\Roar</Filter>
+    </ClCompile>
+    <ClCompile Include="Beast_CalcToTargetDistance.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CalcTargetDistance</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckMoreFarCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckMoreFar</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckSpecialNodeCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckSpecial</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckSuperNovaCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckSuperNova</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckRaiseLevelCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckRaiseLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckCombo1AttackCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckCombo1Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckCombo2AttackCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckCombo2Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckChargeRightAttackCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckChargeRightAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckRightAttackCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckRightAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckChargeBothAttackCondition.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckChargeBothAttack</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1090,7 +1270,7 @@
       <Filter>Scene\Type\GameClear</Filter>
     </ClInclude>
     <ClInclude Include="SelectScene.h">
-      <Filter>Scene\Type\Tutorial</Filter>
+      <Filter>Scene\Type\Select</Filter>
     </ClInclude>
     <ClInclude Include="GameUI.h">
       <Filter>UI\Scene\Game</Filter>
@@ -1273,10 +1453,139 @@
       <Filter>Data\BehaviorTree\Composite\Sequencer</Filter>
     </ClInclude>
     <ClInclude Include="ConditionNode.h">
-      <Filter>Data\BehaviorTree\ConditionNode</Filter>
+      <Filter>Data\BehaviorTree\Condition</Filter>
     </ClInclude>
     <ClInclude Include="BeastBehaviorTree.h">
       <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_Dying.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\1_DYING</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_Idle.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\2_IDLE</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_Roar.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\3_Roar</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_Walk.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\4_Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecuteAllNode.h">
+      <Filter>Data\BehaviorTree\ExecuteAll</Filter>
+    </ClInclude>
+    <ClInclude Include="BeastBehaviorTreeHeader.h">
+      <Filter>Data\HeaderFile</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckDownCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckDown</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckDyingCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckDying</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckAngryCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckAngry</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckWalkCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckWalk</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckRushCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckRush</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_Run.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\5_Run</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_TurnLeft.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\6_TurnLeft</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_TurnRight.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\7_TurnRight</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_Down.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\8_Down</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_LongFrightening.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\9_LongFrightening</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_ShortFrightening.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\10_ShortFrightening</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_Rest.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\11_Rest</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_StepBack.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\12_StepBack</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_RaiseLevel.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\13_RaiseLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_BackingBreath.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\14_BackingBreath</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_Rush.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\15_Rush</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_ChargeRightFootAttack.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\16_ChargeRightFootAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_ChargeBothFootAttack.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\17_ChargeBothFootAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_Breath.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\18_Breath</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_SuperNova.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\19_SuperNova</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_WeakBreath.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\20_WeakBreath</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_SmallExplosion.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\21_SmallExplosion</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_RightFootAttack.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\22_RightFootAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_FootComboAttack.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\23_FootComboAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_RightFootAndRotAttack.h">
+      <Filter>Object\Character\Enemy\Action\BeastAction\23_RightFootAndRotAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="BossRoarEffect.h">
+      <Filter>Effect\Boss\Roar</Filter>
+    </ClInclude>
+    <ClInclude Include="Beast_CalcToTargetDistance.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CalcTargetDistance</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckMoreFarCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckMoreFar</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckSpecialNodeCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckSpecial</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckSuperNovaCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckSuperNova</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckRaiseLevelCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckRaiseLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckCombo1AttackCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckCombo1Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckCombo2AttackCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckCombo2Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckChargeRightAttackCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckChargeRightAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckRightAttackCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckRightAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckChargeBothAttackCondition.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckChargeBothAttack</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

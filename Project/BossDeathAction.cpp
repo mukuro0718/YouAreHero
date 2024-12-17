@@ -6,6 +6,7 @@
 #include "ActionParameter.h"
 #include "BossAction.h"
 #include "Character.h"
+#include "Enemy.h"
 #include "Boss.h"
 #include "BossDeathAction.h"
 #include "EffectManager.h"

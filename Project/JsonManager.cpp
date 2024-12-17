@@ -54,8 +54,6 @@ void JsonManager::LoadJsonFile()
 /// </summary>
 void JsonManager::ReloadingJsonFile(const FileType _type)
 {
-	const int TYPE = static_cast<int>(_type);
-
 	/*json読み込みクラスのインスタンスを取得*/
 	auto& loader = JsonLoader::GetInstance();
 
@@ -65,6 +63,10 @@ void JsonManager::ReloadingJsonFile(const FileType _type)
 	/*読み込んだファイルのデータを保持*/
 	std::vector<std::string> fileName = baseJson["FILE_NAME"];
 
-	//対応するファイル名のjsonを読み込み、保持する
-	this->json[TYPE] = loader.GetJsonData(fileName[TYPE]);
+	/*保持したデータの要素分だけループを回す*/
+	for (int i = 0; i < fileName.size(); i++)
+	{
+		//対応するファイル名のjsonを読み込み、保持する
+		this->json[i] = loader.GetJsonData(fileName[i]);
+	}
 }

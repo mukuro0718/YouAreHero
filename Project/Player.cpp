@@ -157,9 +157,10 @@ void Player::Update()
 
 	/*状態の変更*/
 	int nowState = this->controller->GetNowState();
-	bool isInitialize = this->controller->StateChanger(this->action[nowState]->GetIsEndAction(), GetCharacterData());
+	bool isChancel = this->action[nowState]->GetIsChangeAction();
+	bool isEndAction = this->action[nowState]->GetIsEndAction();
+	bool isInitialize = this->controller->StateChanger(isChancel, isEndAction, GetCharacterData());
 	nowState = this->controller->GetNowState();
-
 
 	/*状態が異なっていたらアクションを初期化する*/
 	if (isInitialize)

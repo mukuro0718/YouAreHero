@@ -93,7 +93,7 @@ void TitleUI::Update()
 	}
 
 	/*ボタンが押されていたらアルファを最大アルファにする*/
-	if (isPressButton)
+	if (isPressButton && !this->image[static_cast<int>(Type::TITLE)]->isAddAlpha)
 	{
 		this->isFadeOut = true;
 		this->image[static_cast<int>(Type::PRESS)]->alpha = 0;
@@ -157,6 +157,10 @@ bool TitleUI::IsPressButton()
 				isPressButton = false;
 			}
 	}
+
+	/*何かキーが押されたら、無条件でtrueを返す*/
+	if (CheckHitKeyAll()) return true;
+
 
 	return isPressButton;
 }

@@ -8,6 +8,7 @@
 #include "ActionParameter.h"
 #include "HitStop.h"
 #include "Character.h"
+#include "Enemy.h"
 #include "BossAttack.h"
 #include "Boss.h"
 #include "BossAction.h"

@@ -4,6 +4,7 @@
 #include "CharacterData.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "Enemy.h"
 #include "Boss.h"
 #include "Beast.h"
 #include "Dragon.h"

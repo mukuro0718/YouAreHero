@@ -13,33 +13,20 @@ public:
 	
 	virtual ~InputManager();//デストラクタ
 	
-	/*アナログスティック構造体*/
+	/*構造体*/
+	//アナログスティック
 	struct InputAnalogStick
 	{
 		int XBuf = 0;
 		int YBuf = 0;
 	};
+	//マウス
+	struct InputMouse
+	{
+		int XBuf = 0;
+		int YBuf = 0;
+	};
 	
-	/*移動に使用する一般的なキー*/
-	enum class ComKeysForMove
-	{
-		W,
-		A,
-		S,
-		D,
-		SPACE,	 //上昇
-		LCONTROL,//下降
-	};
-
-	/*矢印キー*/
-	enum class ArrowKey
-	{
-		RIGHT,
-		LEFT,
-		UP,
-		DOWN
-	};
-
 	/*静的定数*/
 	//D_input
 	static constexpr unsigned int PAD_X = PAD_INPUT_1;
@@ -50,7 +37,17 @@ public:
 	static constexpr unsigned int PAD_RB = PAD_INPUT_6;
 	static constexpr unsigned int PAD_LT = PAD_INPUT_7;
 	static constexpr unsigned int PAD_RT = PAD_INPUT_8;
-
+	//キーボード
+	static constexpr unsigned int KEY_ENTER = KEY_INPUT_RETURN;
+	static constexpr unsigned int KEY_E = KEY_INPUT_E;
+	static constexpr unsigned int KEY_F = KEY_INPUT_F;
+	static constexpr unsigned int KEY_W = KEY_INPUT_W;
+	static constexpr unsigned int KEY_A = KEY_INPUT_A;
+	static constexpr unsigned int KEY_S = KEY_INPUT_S;
+	static constexpr unsigned int KEY_D = KEY_INPUT_D;
+	//マウス
+	static constexpr unsigned int MOUSE_LEFT = MOUSE_INPUT_1;
+	static constexpr unsigned int MOUSE_RIGHT = MOUSE_INPUT_2;
 	void Update();//更新
 
 	/*getter*/
@@ -71,11 +68,17 @@ private:
 	InputManager();//コンストラクタ
 	void InputPadState();//PAD入力の取得
 	void InputKeyState();//キーボード入力の取得
+	void InputMouseState();//キーボード入力の取得
 
 	/*メンバ変数*/
 	InputAnalogStick lStick;
 	InputAnalogStick rStick;
+	InputMouse mouse;
 	int nowPad;//パッド入力変数
 	int prevPad;//パッド入力変数
+	int nowKey;//キー入力変数
+	int prevKey;//キー入力変数
+	int nowMouse;//マウスボタン入力変数
+	int prevMouse;//マウスボタン入力変数
 };
 

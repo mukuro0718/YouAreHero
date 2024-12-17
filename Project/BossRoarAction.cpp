@@ -5,8 +5,10 @@
 #include "BossAction.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "Enemy.h"
 #include "Boss.h"
 #include "BossRoarAction.h"
+#include "EffectManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -51,6 +53,13 @@ void BossRoarAction::Update(Boss& _boss)
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
+
+	if (this->frameCount == 0)
+	{
+		auto& effect = Singleton<EffectManager>::GetInstance();
+		//effect.OnIsEffect(EffectManager::EffectType::BOSS_ROAR);
+		this->frameCount++;
+	}
 
 	/*カラースケールの処理*/
 	{
@@ -124,6 +133,7 @@ void BossRoarAction::Update(Boss& _boss)
 		OffIsSelect(0);
 		this->isFinishedFirstRoar = true;
 		this->isInitializeColorScale = false;
+		this->frameCount = 0;
 	}
 }
 

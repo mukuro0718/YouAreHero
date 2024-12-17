@@ -11,7 +11,7 @@ public:
 	~PlayerController();
 
 	void Initialize();
-	bool StateChanger(const bool _isEndAction, const CharacterData& _data);
+	bool StateChanger(const bool _isCancelAction, const bool _isEndAction, const CharacterData& _data);
 	const int GetNowState()const { return this->nowState; }
 	const int GetPrevState()const { return this->prevState; }
 	void SynchroState() { this->prevState = this->nowState; }
@@ -51,6 +51,7 @@ private:
 	/*メンバ変数*/
 	int nowState;
 	int prevState;
-	vector<int> priority;//アクションごとの優先順位
+	std::vector<int> priority;//アクションごとの優先順位
+	std::vector<int> stateTheIsCancel;
 };
 

@@ -13,6 +13,6 @@ public:
 			 ConditionNode(){}//コンストラクタ
 	virtual ~ConditionNode(){}//デストラクタ
 
-	virtual NodeState Update() abstract;
+	virtual NodeState Update() abstract;//更新
 };
 

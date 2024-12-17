@@ -14,7 +14,8 @@
 #include "BitFlag.h"
 #include "Animation.h"
 #include "Character.h"
-//#include "BeastActionHeader.h"
+#include "Enemy.h"
+#include "BeastBehaviorTreeHeader.h"
 #include "Beast.h"
 #include "LoadingAsset.h"
 #include "PlayerManager.h"
@@ -29,15 +30,9 @@
 /// コンストラクタ
 /// </summary>
 Beast::Beast()
-	: prevAttack(AttackType::NONE)
-	, moveTarget			(Gori::ORIGIN)
+	: moveTarget			(Gori::ORIGIN)
 	, animationPlayTime		(0.0f)
-	, angryValue			(0.0f)
 	, nowAnimation			(0)
-	, nowAction				(0)
-	, angryState			(0)
-	, tiredInterval			(0)
-	, attackComboCount		(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json  = Singleton<JsonManager>::GetInstance();
@@ -45,53 +40,25 @@ Beast::Beast()
 
 	/*メンバクラスのインスタンスの作成*/
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::BEAST));
+	
 
 	/*アニメーションの設定*/
-	vector<int>	animationHandle	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_HANDLE"];
-	vector<int>		animationIndex	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_INDEX"];
+	int				animationHandle	  = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_HANDLE"];
+	vector<int>		animationIndex	  = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_INDEX"];
 			  this->nowAnimation	  = static_cast<int>(AnimationType::IDLE);
-			  this->animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
+			  this->animationPlayTime = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 	//アニメーションの追加
-	for (int i = 0; i < animationHandle.size(); i++)
+	for (int i = 0; i < animationIndex.size(); i++)
 	{
-		this->animation->Add(animationHandle[i], animationIndex[i]);
+		this->animation->Add(animationHandle, animationIndex[i]);
 	}
 	//アニメーションのアタッチ
 	this->animation->Attach(&this->modelHandle);
-
-	/*アクションマップの作成*/
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::DYING)			,this->DYING);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::IDLE)			,this->IDLE);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROAR)			,this->ROAR);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::WALK)			,this->WALK);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::REST)			,this->REST);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_1)		,this->SLASH_1);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_2)		,this->SLASH_2);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::STAB)			,this->STAB);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROTATE_SLASH)	,this->ROTATE_SLASH);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::PUNCH)			,this->PUNCH);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_COMBO_1)	,this->SLASH_COMBO_1);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_COMBO_2),this->SLASH_COMBO_2);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::JUMP_ATTACK)	,this->JUMP_ATTACK);
 
 	/*コライダーデータの作成*/
 	CharacterData* data = new BossData();
 	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, data);
 
-	/*アクションパラメーターの作成*/
-	//this->parameters.emplace_back(new BeastDeathAction());
-	//this->parameters.emplace_back(new BeastIdleAction());
-	//this->parameters.emplace_back(new BeastRoarAction());
-	//this->parameters.emplace_back(new BeastChaseAction());
-	//this->parameters.emplace_back(new BeastRestAction());
-	//this->parameters.emplace_back(new BeastSlashAction());
-	//this->parameters.emplace_back(new BeastSlash2Action());
-	//this->parameters.emplace_back(new BeastStabAction());
-	//this->parameters.emplace_back(new BeastRotateSlashAction());
-	//this->parameters.emplace_back(new BeastPunchAction());
-	//this->parameters.emplace_back(new BeastSlashComboAction());
-	//this->parameters.emplace_back(new BeastSlashCombo2Action());
-	//this->parameters.emplace_back(new BeastJumpAttackAction());
 }
 
 /// <summary>
@@ -119,25 +86,13 @@ void Beast::Initialize()
 	this->entryInterval		= 0;
 	this->moveTarget		= Gori::ORIGIN;
 	this->nowAnimation		= static_cast<int>(AnimationType::ROAR);
-	this->nowAction			= static_cast<int>(ActionType::ROAR);
-	this->attackComboCount	= 0;
-	this->angryState		= static_cast<int>(AngryStateType::NORMAL);
-	float height			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_HEIGHT"];
+	float height			= json.GetJson(JsonManager::FileType::BEAST)["HIT_HEIGHT"];
 	collider.topPositon		= VGet(0.0f, height, 0.0f);
-	collider.radius			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
+	collider.radius			= json.GetJson(JsonManager::FileType::BEAST)["HIT_RADIUS"];
 	collider.isUseCollWithGround = true;
-	data.hp					= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
+	data.hp					= json.GetJson(JsonManager::FileType::BEAST)["HP"];
 	data.isHit				= false;
 	
-	/*コンボの設定*/
-	SetAttackComboCount();
-
-	/*パラメータの初期化*/
-	//for (int i = 0; i < this->parameters.size(); i++)
-	//{
-	//	this->parameters[i]->Initialize();
-	//}
-
 	/*物理挙動の初期化*/
 	//jsonデータを定数に代入
 	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::BEAST)["INIT_POSITION"]);//座標
@@ -152,16 +107,9 @@ void Beast::Initialize()
 	MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());
 	MV1SetScale		 (this->modelHandle, this->collider->rigidbody.GetScale());
 
-	this->state->ClearFlag(this->MASK_ALL);
-	this->state->SetFlag(this->ROAR);
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
-	const COLOR_F BASE = { 1.0f,1.0f,1.0f,1.0f };
-	MV1SetDifColorScale(this->modelHandle, BASE);
-	MV1SetSpcColorScale(this->modelHandle, BASE);
-	MV1SetEmiColorScale(this->modelHandle, BASE);
-	MV1SetAmbColorScale(this->modelHandle, BASE);
 }
 
 /// <summary>
@@ -169,12 +117,6 @@ void Beast::Initialize()
 /// </summary>
 void Beast::Finalize()
 {
-	this->actionTypeMap.clear();
-	//for (int i = 0; i < this->parameters.size(); i++)
-	//{
-	//	DeleteMemberInstance(this->parameters[i]);
-	//}
-	this->parameters.clear();
 }
 
 /// <summary>
@@ -184,16 +126,9 @@ void Beast::Update()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
+	auto& tree = Singleton<BeastBehaviorTree>::GetInstance();
 
-	/*怒り状態の設定*/
-	SetAngryState();
-
-	/*状態の切り替え*/
-	ChangeState();
-
-	/*ここに各アクションごとの更新処理を入れたい*/
-	//this->parameters[this->nowAction]->Update(*this);
+	tree.Update();
 }
 
 /// <summary>
@@ -211,108 +146,6 @@ void Beast::PlayAnimation()
 }
 
 /// <summary>
-/// 攻撃コンボ回数のセット
-/// </summary>
-void Beast::SetAttackComboCount()
-{
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
-	/*コンボ数の設定*/
-	this->attackComboCount = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_COMBO_COUNT"][this->angryState];
-}
-
-/// <summary>
-/// 状態の変更
-/// </summary>
-void Beast::ChangeState()
-{
-	///*シングルトンクラスのインスタンスを取得*/
-	//auto& debug = Singleton<Debug>::GetInstance();
-	//auto& json = Singleton<JsonManager>::GetInstance();
-
-	//int debugActionType = json.GetJson(JsonManager::FileType::DEBUG)["Beast_ACTION"];
-	//if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY) && debugActionType != static_cast<int>(Beast::ActionType::NONE))
-	//{
-	//	/*今立っているフラグを下す*/
-	//	unsigned int clearFlag = this->actionTypeMap[this->nowAction];
-	//	this->state->ClearFlag(clearFlag);
-	//	this->nowAction = debugActionType;
-	//	this->parameters[this->nowAction]->OnIsSelect();
-	//}
-	//else
-	//{
-	//	/*選択されているか調べる*/
-	//	bool isSelect = false;//選択されているか
-	//	int  sumDesireValue = 0;	//欲求値の合計
-	//	for (int i = 0; i < this->parameters.size(); i++)
-	//	{
-	//		isSelect = this->parameters[i]->GetIsSelect();
-	//		sumDesireValue += parameters[i]->GetDesireValue();
-	//		if (isSelect)return;
-	//	}
-	//	
-	//	/*ここですべてのパラメータの計算を行う*/
-	//	bool isPriority = false;//選択されているか
-	//	for (int i = 0; i < this->parameters.size(); i++)
-	//	{
-	//		this->parameters[i]->CalcParameter(*this);
-	//		//優先フラグが立っているかも調べる
-	//		if (this->parameters[i]->GetIsPriority())
-	//		{
-	//			isPriority = true;
-	//		}
-	//	}
-
-	//	/*今立っているフラグを下す*/
-	//	unsigned int clearFlag = this->actionTypeMap[this->nowAction];
-	//	this->state->ClearFlag(clearFlag);
-
-	//	/*選択されていなかったら*/
-	//	if (!isSelect)
-	//	{
-	//		//各行動の期待値を求める
-	//		std::vector<int> actionWeight;//重み
-	//		int count = 0;
-	//		for (int i = 0; i < this->parameters.size(); i++)
-	//		{
-	//			actionWeight.emplace_back(this->parameters[i]->GetWeight(sumDesireValue));
-	//			//もしリストの中で選択フラグが一つでも立っていたら
-	//			if (isPriority)
-	//			{
-	//				//現在のitemが選択フラグが立っていなかったら重みを0にする
-	//				if (!this->parameters[i]->GetIsPriority())
-	//				{
-	//					actionWeight[count] = 0;
-	//				}
-	//			}
-	//			count++;
-	//		}
-	//		//重みをランダムで出す
-	//		int randomWeight = GetRand(this->parameters[0]->GetBaseWeight() - 1);
-	//		//forでvectorを回し、重みが０以下になったところのアクションを行う
-	//		for (int i = 0; i < actionWeight.size(); i++)
-	//		{
-	//			randomWeight -= actionWeight[i];
-	//			if (randomWeight < 0 || this->parameters[i]->GetIsPriority())
-	//			{
-	//				this->nowAction = i;
-	//				this->parameters[i]->OnIsSelect();
-	//				isSelect = true;
-	//				break;
-	//			}
-	//		}
-	//	}
-	//	if (!isSelect)
-	//	{
-	//		this->nowAction = static_cast<int>(ActionType::IDLE);
-	//	}
-	//}
-	//unsigned int setFlag = this->actionTypeMap[this->nowAction];
-	//this->state->SetFlag(setFlag);
-}
-
-/// <summary>
 /// 描画
 /// </summary>
 const void Beast::DrawCharacterInfo()const
@@ -324,26 +157,10 @@ const void Beast::DrawCharacterInfo()const
 	
 	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
 	{
-		VECTOR position = this->collider->rigidbody.GetPosition();
-		VECTOR rotation = this->collider->rigidbody.GetRotation();
-		printfDx("Beast_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-		printfDx("Beast_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
-		printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
-		printfDx("%d:IDLE						\n", this->state->CheckFlag(this->IDLE));
-		printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
-		printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
-		printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
-		printfDx("%d:SLASH_1					\n", this->state->CheckFlag(this->SLASH_1));
-		printfDx("%d:SLASH_2					\n", this->state->CheckFlag(this->SLASH_2));
-		printfDx("%d:STAB						\n", this->state->CheckFlag(this->STAB));
-		printfDx("%d:ROTATE_SLASH				\n", this->state->CheckFlag(this->ROTATE_SLASH));
-		printfDx("%d:PUNCH					\n", this->state->CheckFlag(this->PUNCH));
-		printfDx("%d:SLASH_COMBO_1			\n", this->state->CheckFlag(this->SLASH_COMBO_1));
-		printfDx("%d:SLASH_COMBO_2			\n", this->state->CheckFlag(this->SLASH_COMBO_2));
-		printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
-		printfDx("%d:STATE					\n", this->angryState);
-		/*各アクションの当たり判定図形の描画*/
-		//this->parameters[this->nowAction]->Draw();
+		//VECTOR position = this->collider->rigidbody.GetPosition();
+		//VECTOR rotation = this->collider->rigidbody.GetRotation();
+		//printfDx("Beast_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+		//printfDx("Beast_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
 	}
 
 	if (this->isDraw)
@@ -355,7 +172,6 @@ const void Beast::DrawCharacterInfo()const
 
 const bool Beast::GetIsAttack()const
 {
-	if (this->state->CheckFlag(this->MASK_ATTACK))return true;
 	return false;
 }
 
@@ -367,57 +183,6 @@ const float Beast::GetAnimationPlayTime()const
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	return json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nowAnimation];
-}
-
-/// <summary>
-/// 怒り状態の設定
-/// </summary>
-void Beast::SetAngryState()
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
-	
-	/*怒り状態*/
-	switch (this->angryState)
-	{
-		//怒り
-	case static_cast<int>(AngryStateType::ANGRY):
-		this->angryValue--;
-		if (this->angryValue < 0)
-		{
-			this->angryState = static_cast<int>(AngryStateType::TIRED);
-			this->angryValue = 0;
-		}
-		break;
-		//通常
-	case static_cast<int>(AngryStateType::NORMAL):
-		//怒り値を増加
-		this->angryValue++;
-		//攻撃が当たっていたら怒り値をさらに増加
-		if (collider.data->isHit)
-		{
-			this->angryValue++;
-		}
-		//怒り値が最大以上だったら状態をANGRYにする
-		if (this->angryValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"])
-		{
-			this->angryState = static_cast<int>(AngryStateType::ANGRY);
-		}
-		break;
-	//疲れ
-	case static_cast<int>(AngryStateType::TIRED):
-		//疲れ時間を増加
-		this->tiredInterval++;
-		//最大値を超えたら状態を通常に変更
-		if (this->tiredInterval >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_INTERVAL"])
-		{
-			this->angryState = static_cast<int>(AngryStateType::NORMAL);
-			this->tiredInterval = 0;
-		}
-		break;
-	}
 }
 
 /// <summary>

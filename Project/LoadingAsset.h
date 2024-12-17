@@ -83,6 +83,7 @@ public:
 	enum class EffectType
 	{
 		BOSS_IMPACT,
+		BOSS_ROAR,
 		BOSS_FLAME,
 		PLAYER_GUARD_HIT,
 		PLAYER_HEAL,

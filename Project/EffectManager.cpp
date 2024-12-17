@@ -4,6 +4,7 @@
 #include "UseJson.h"
 #include "Effect.h"
 #include "BossImpactEffect.h"
+#include "BossRoarEffect.h"
 #include "PlayerGuardHitEffect.h"
 #include "PlayerHealEffect.h"
 #include "PlayerImpactEffect.h"
@@ -24,6 +25,7 @@ EffectManager::EffectManager()
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	this->effect.emplace_back(new BossImpactEffect		(asset.GetEffect(LoadingAsset::EffectType::BOSS_IMPACT)));
+	this->effect.emplace_back(new BossRoarEffect		(asset.GetEffect(LoadingAsset::EffectType::BOSS_ROAR)));
 	this->effect.emplace_back(new PlayerGuardHitEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_GUARD_HIT)));
 	this->effect.emplace_back(new PlayerHealEffect		(asset.GetEffect(LoadingAsset::EffectType::TMP_EFFECT)));
 	this->effect.emplace_back(new PlayerImpactEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_IMPACT)));

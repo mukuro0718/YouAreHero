@@ -1,7 +1,25 @@
 {
-  "ANIMATION_HANDLE": [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-  "ANIMATION_INDEX": [ 1, 0, 14, 2, 3, 4, 10, 5, 11, 7, 6, 8, 9, 15, 16, 17 ],
-  "ANIMATION_PLAY_TIME": [ 0.8, 0.8, 0.8, 0.8, 0.5, 0.5, 0.9, 0.9, 0.9, 0.9, 0.7, 0.8, 0.8, 1.0, 1.0, 1.0 ],
+  "ANIMATION_HANDLE": -1,
+  "ANIMATION_INDEX":     [  97, 111, 110, 121, 117, 119, 120,   4, 103, 102, 100,  48,  49,  89,  90,  91,   8,  14,  10,  75,  76,  77,  78,  52,  50,  51,  45,  46,  47,  27,  28,  29,  80,   9,  40,  21,  22 ],
+  "ANIMATION_PLAY_TIME": [ 1.0, 1.0, 0.7, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ],
+  "INIT_POSITION": [ 0.0, 0.0, 0.0 ],
+  "INIT_SCALE": [ 0.03, 0.03, 0.03 ],
+  "INIT_ROTATION": [ 0.0, 0.0, 0.0 ],
+
+  "MAX_DOWN_VALUE": 1000,
+  "CHANGE_ANGRY_LIMIT_DAMAGE": 1000,
+  "HP": 1000,
+
+  "ACCEL": 0.05,
+  "DECEL": 0.05,
+  "WALK_SPEED": 0.3,
+  "RUN_SPEED": 0.5,
+  "STEP_BACK_SPEED": -0.5,
+  "BACKING_BREATH_SPEED": -0.3,
+
+  "RAY_RANGE": 100.0,
+  "APPROACH_DISTANCE": 100.0,
+
 
   "REST_INTERVAL": 300,
   "CHASE_INTERVAL": 120,
@@ -30,13 +48,9 @@
   "OUT_POSITION": [ 0.0, 500.0, 0.0 ],
   "MAX_HIT_POSITION_OFFSET": [ 5.0, 5.0, 5.0 ],
   "MIN_HIT_POSITION_OFFSET": [ -5.0, -5.0, -5.0 ],
-  "INIT_POSITION": [ 0.0, 0.0, 0.0 ],
-  "INIT_SCALE": [ 0.04, 0.04, 0.04 ],
-  "INIT_ROTATION": [ 0.0, 0.0, 0.0 ],
   "COMBO_COUNT": [ 2, 3, 5 ],
   "HIT_RADIUS": 7.0,
   "HIT_HEIGHT": 10.0,
-  "HP": 1000,
   "ATTACK_COMBO_INDEX_OFFSET": [ 0, 2, 5 ],
   "SPEED": 0.8,
   "SIDE_WALK_SPEED": 0.2,

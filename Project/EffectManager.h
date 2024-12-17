@@ -17,10 +17,11 @@ public:
 	enum class EffectType
 	{
 		BOSS_IMPACT		 = 0,//ボスの攻撃が当たった時のエフェクト
-		PLAYER_GUARD_HIT = 1,//プレイヤーのガードが成功したときのエフェクト
-		PLAYER_HEAL		 = 2,//プレイヤーが回復したときのエフェクト
-		PLAYER_IMPACT	 = 3,//プレイヤーの攻撃が当たった時のエフェクト
-		PLAYER_CHARGE	 = 4,//プレイヤーの溜め攻撃エフェクト
+		BOSS_ROAR		 = 1,//ボスの攻撃が当たった時のエフェクト
+		PLAYER_GUARD_HIT = 2,//プレイヤーのガードが成功したときのエフェクト
+		PLAYER_HEAL		 = 3,//プレイヤーが回復したときのエフェクト
+		PLAYER_IMPACT	 = 4,//プレイヤーの攻撃が当たった時のエフェクト
+		PLAYER_CHARGE	 = 5,//プレイヤーの溜め攻撃エフェクト
 	};
 
 		  void Initialize();	 //初期化

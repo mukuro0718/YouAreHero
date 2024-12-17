@@ -46,7 +46,7 @@
   "DASH_BUTTON_2_TEXT_POSITION": [ 1810, 30, 1850, 70 ],
   "DASH_BUTTON_3_TEXT_POSITION": [ 1860, 30, 1900, 70 ],
 
-  "TITLE_LOGO_DRAW_RECT": [ 310, 100, 1610, 700 ],
+  "TITLE_LOGO_DRAW_RECT": [ 510, 250, 1410, 550 ],
   "TITLE_LOGO_ADD_ALPHA": 5,
   "PRESS_A_DRAW_RECT": [ 720, 710, 1200, 890 ],
   "PRESS_A_ADD_ALPHA": 5,
@@ -95,14 +95,26 @@
   "GAME_OVER_TABLE_POSITION": [ 760, 290, 1160, 790 ],
   "GAME_OVER_ADD_VALUE": [ -7, -2, 7, 2 ],
   "GAME_OVER_ADD_VALUE_2": [ -1, -1, 1, 1 ],
-
   "GAME_OVER_TEXT_POSITION": [
     [ 880, 400 ],
     [ 880, 550 ]
   ],
 
-  "BOSS_NAME_BACKGROUND": [ 710, 35, 1330, 110 ],
-  "BOSS_NAME_POSITION": [ 710, 35 ],
+  "BOSS_NAME_BACKGROUND": [
+    [ 650, 35, 1250, 110 ], 
+    [ 723, 35, 1177, 110 ],
+    [ 723, 35, 1177, 110 ] 
+  ],
+  "BOSS_NAME_POSITION": [
+    [ 670, 35 ],
+    [ 743, 35 ],
+    [ 710, 35 ]
+  ],
+  "BOSS_NAME_TYPE": [
+    "GORG GRASS",
+    "LUXURIO",
+    "MORNACT"
+  ],
 
   "BUTTON_POSITION": [
     [ 1630, 910, 1690, 970 ],
@@ -111,20 +123,28 @@
     [ 1565, 975, 1625, 1035 ],
     [ 1570, 780, 1650, 840 ]
   ],
-  "BUTTON_TEXT_POSITION": [
-    [ 1695, 915 ],
-    [ 1400, 915 ],
-    [ 1630, 850 ],
-    [ 1630, 980 ],
-    [ 1655, 785 ]
-  ],
+  "BUTTON_TEXT_POSITION"
+    :
+    [
+      [ 1695, 915 ],
+      [ 1400, 915 ],
+      [ 1630, 850 ],
+      [ 1630, 980 ],
+      [ 1655, 785 ]
+    ],
 
-  "AUDIENCE_VERTEX_NUM": 4,
-  "AUDIENCE_VERTEX_INDEX": [ 0, 1, 2, 3, 2, 1 ],
-  "AUDIENCE_VERTEX_POSITION": [
-    [ 100.0, 0.0, -100.0 ],
-    [ -100.0, 0.0, -100.0 ],
-    [ 100.0, 200.0, -100.0 ],
-    [ -100.0, 200.0, -100.0 ]
-  ]
+    "AUDIENCE_VERTEX_NUM"
+    :
+    4,
+    "AUDIENCE_VERTEX_INDEX"
+    :
+    [ 0, 1, 2, 3, 2, 1 ],
+    "AUDIENCE_VERTEX_POSITION"
+    :
+    [
+      [ 100.0, 0.0, -100.0 ],
+      [ -100.0, 0.0, -100.0 ],
+      [ 100.0, 200.0, -100.0 ],
+      [ -100.0, 200.0, -100.0 ]
+    ]
 }

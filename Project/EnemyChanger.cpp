@@ -43,7 +43,7 @@ void EnemyChanger::Update()
 	auto& input = Singleton<InputManager>::GetInstance();
 	if (this->inputInterval <= 0)
 	{
-		if (input.GetLStickState().YBuf < 0)
+		if ((input.GetLStickState().YBuf < 0) || CheckHitKey(KEY_INPUT_UP))
 		{
 			this->enemyType--;
 			int min = static_cast<int>(EnemyType::GOLEM);
@@ -53,7 +53,7 @@ void EnemyChanger::Update()
 			}
 			this->inputInterval = this->MAX_INPUT_INTERBVAL;
 		}
-		else if (input.GetLStickState().YBuf > 0)
+		else if ((input.GetLStickState().YBuf > 0) || CheckHitKey(KEY_INPUT_DOWN))
 		{
 			this->enemyType++;
 			int max = static_cast<int>(EnemyType::TUTORIAL);
@@ -72,7 +72,8 @@ void EnemyChanger::Update()
 	/*決定*/
 	int nowPad = input.GetNowPadState();
 	int prevPad = input.GetPrevPadState();
-	if (!(prevPad & InputManager::PAD_B) && (nowPad & InputManager::PAD_B))
+	//パッドのBまたはキーのEが押されたら
+	if ((!(prevPad & InputManager::PAD_B) && (nowPad & InputManager::PAD_B)) || CheckHitKey(KEY_INPUT_E))
 	{
 		if (!this->isProvDecide)
 		{
@@ -83,7 +84,8 @@ void EnemyChanger::Update()
 			this->isFinalDecide = true;
 		}
 	}
-	else if (nowPad & InputManager::PAD_A)
+	//パッドのAまたはキーのFが押されたら
+	else if ((nowPad & InputManager::PAD_A) || CheckHitKey(KEY_INPUT_F))
 	{
 		this->isProvDecide = false;
 	}

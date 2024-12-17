@@ -14,6 +14,7 @@
 #include "BitFlag.h"
 #include "Animation.h"
 #include "Character.h"
+#include "Enemy.h"
 #include "BossActionHeader.h"
 #include "Boss.h"
 #include "LoadingAsset.h"
@@ -29,11 +30,9 @@
 /// コンストラクタ
 /// </summary>
 Boss::Boss()
-	: prevAttack(AttackType::NONE)
-	, moveTarget			(Gori::ORIGIN)
-	, animationPlayTime		(0.0f)
+	: Enemy()
+	, prevAttack(AttackType::NONE)
 	, angryValue			(0.0f)
-	, nowAnimation			(0)
 	, nowAction				(0)
 	, angryState			(0)
 	, tiredInterval			(0)
@@ -50,7 +49,7 @@ Boss::Boss()
 	vector<int>	animationHandle	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_HANDLE"];
 	vector<int>		animationIndex	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_INDEX"];
 			  this->nowAnimation	  = static_cast<int>(AnimationType::IDLE);
-			  this->animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
+			  this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 	//アニメーションの追加
 	for (int i = 0; i < animationHandle.size(); i++)
 	{
@@ -102,6 +101,9 @@ Boss::~Boss()
 	Finalize();
 }
 
+/// <summary>
+/// 初期化
+/// </summary>
 void Boss::Initialize()
 {
 	/*シングルトンクラスのインスタンスの取得*/
@@ -324,10 +326,10 @@ const void Boss::DrawCharacterInfo()const
 	
 	//if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
 	//{
-		VECTOR position = this->collider->rigidbody.GetPosition();
-		VECTOR rotation = this->collider->rigidbody.GetRotation();
-		printfDx("Boss_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-		printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
+		//VECTOR position = this->collider->rigidbody.GetPosition();
+		//VECTOR rotation = this->collider->rigidbody.GetRotation();
+		//printfDx("Boss_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+		//printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
 		//printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
 		//printfDx("%d:IDLE						\n", this->state->CheckFlag(this->IDLE));
 		//printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
@@ -343,7 +345,7 @@ const void Boss::DrawCharacterInfo()const
 		//printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
 		//printfDx("%d:STATE					\n", this->angryState);
 		/*各アクションの当たり判定図形の描画*/
-		this->parameters[this->nowAction]->Draw();
+		//this->parameters[this->nowAction]->Draw();
 	//}
 
 	if (this->isDraw)
@@ -359,15 +361,6 @@ const bool Boss::GetIsAttack()const
 	return false;
 }
 
-/// <summary>
-/// アニメーション再生時間の取得
-/// </summary>
-const float Boss::GetAnimationPlayTime()const
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	return json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nowAnimation];
-}
 
 /// <summary>
 /// 怒り状態の設定
@@ -420,18 +413,3 @@ void Boss::SetAngryState()
 	}
 }
 
-/// <summary>
-/// 回転率の設定
-/// </summary>
-void Boss::SetRotation(const VECTOR _rotation)
-{
-	this->collider->rigidbody.SetRotation(_rotation);
-}
-
-/// <summary>
-/// 移動ベクトルの設定
-/// </summary>
-void Boss::SetVelocity(const VECTOR _velocity)
-{
-	this->collider->rigidbody.SetVelocity(_velocity);
-}

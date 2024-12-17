@@ -47,10 +47,10 @@ Dragon::Dragon()
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::DRAGON));
 
 	/*アニメーションの設定*/
-	vector<int>	animationHandle	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_HANDLE"];
-	vector<int>		animationIndex	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_INDEX"];
+	vector<int>	animationHandle		  = json.GetJson(JsonManager::FileType::DRAGON)["ANIMATION_HANDLE"];
+	vector<int>		animationIndex	  = json.GetJson(JsonManager::FileType::DRAGON)["ANIMATION_INDEX"];
 			  this->nowAnimation	  = static_cast<int>(AnimationType::IDLE);
-			  this->animationPlayTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nowAnimation];
+			  this->animationPlayTime = json.GetJson(JsonManager::FileType::DRAGON)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 	//アニメーションの追加
 	for (int i = 0; i < animationHandle.size(); i++)
 	{
@@ -59,39 +59,9 @@ Dragon::Dragon()
 	//アニメーションのアタッチ
 	this->animation->Attach(&this->modelHandle);
 
-	/*アクションマップの作成*/
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::DYING)			,this->DYING);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::IDLE)			,this->IDLE);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROAR)			,this->ROAR);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::WALK)			,this->WALK);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::REST)			,this->REST);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_1)		,this->SLASH_1);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_2)		,this->SLASH_2);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::STAB)			,this->STAB);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROTATE_SLASH)	,this->ROTATE_SLASH);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::PUNCH)			,this->PUNCH);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_COMBO_1)	,this->SLASH_COMBO_1);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_COMBO_2),this->SLASH_COMBO_2);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::JUMP_ATTACK)	,this->JUMP_ATTACK);
-
 	/*コライダーデータの作成*/
 	CharacterData* data = new BossData();
 	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, data);
-
-	/*アクションパラメーターの作成*/
-	//this->parameters.emplace_back(new DragonDeathAction());
-	//this->parameters.emplace_back(new DragonIdleAction());
-	//this->parameters.emplace_back(new DragonRoarAction());
-	//this->parameters.emplace_back(new DragonChaseAction());
-	//this->parameters.emplace_back(new DragonRestAction());
-	//this->parameters.emplace_back(new DragonSlashAction());
-	//this->parameters.emplace_back(new DragonSlash2Action());
-	//this->parameters.emplace_back(new DragonStabAction());
-	//this->parameters.emplace_back(new DragonRotateSlashAction());
-	//this->parameters.emplace_back(new DragonPunchAction());
-	//this->parameters.emplace_back(new DragonSlashComboAction());
-	//this->parameters.emplace_back(new DragonSlashCombo2Action());
-	//this->parameters.emplace_back(new DragonJumpAttackAction());
 }
 
 /// <summary>
@@ -122,21 +92,13 @@ void Dragon::Initialize()
 	this->nowAction			= static_cast<int>(ActionType::ROAR);
 	this->attackComboCount	= 0;
 	this->angryState		= static_cast<int>(AngryStateType::NORMAL);
-	float height			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_HEIGHT"];
+	float height			= json.GetJson(JsonManager::FileType::DRAGON)["HIT_HEIGHT"];
 	collider.topPositon		= VGet(0.0f, height, 0.0f);
-	collider.radius			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
+	collider.radius			= json.GetJson(JsonManager::FileType::DRAGON)["HIT_RADIUS"];
 	collider.isUseCollWithGround = true;
-	data.hp					= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
+	data.hp					= json.GetJson(JsonManager::FileType::DRAGON)["HP"];
 	data.isHit				= false;
 	
-	/*コンボの設定*/
-	SetAttackComboCount();
-
-	/*パラメータの初期化*/
-	//for (int i = 0; i < this->parameters.size(); i++)
-	//{
-	//	this->parameters[i]->Initialize();
-	//}
 
 	/*物理挙動の初期化*/
 	//jsonデータを定数に代入
@@ -169,12 +131,6 @@ void Dragon::Initialize()
 /// </summary>
 void Dragon::Finalize()
 {
-	this->actionTypeMap.clear();
-	//for (int i = 0; i < this->parameters.size(); i++)
-	//{
-	//	DeleteMemberInstance(this->parameters[i]);
-	//}
-	this->parameters.clear();
 }
 
 /// <summary>
@@ -186,14 +142,9 @@ void Dragon::Update()
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
-	/*怒り状態の設定*/
-	SetAngryState();
-
-	/*状態の切り替え*/
-	ChangeState();
-
-	/*ここに各アクションごとの更新処理を入れたい*/
-	//this->parameters[this->nowAction]->Update(*this);
+	this->nowAction = static_cast<int>(AnimationType::ROAR);
+	this->animationPlayTime = json.GetJson(JsonManager::FileType::DRAGON)["ANIMATION_PLAY_TIME"][this->nowAnimation];
+	PlayAnimation();
 }
 
 /// <summary>
@@ -219,7 +170,7 @@ void Dragon::SetAttackComboCount()
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*コンボ数の設定*/
-	this->attackComboCount = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_COMBO_COUNT"][this->angryState];
+	this->attackComboCount = json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_COMBO_COUNT"][this->angryState];
 }
 
 /// <summary>
@@ -324,24 +275,24 @@ const void Dragon::DrawCharacterInfo()const
 	
 	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
 	{
-		VECTOR position = this->collider->rigidbody.GetPosition();
-		VECTOR rotation = this->collider->rigidbody.GetRotation();
-		printfDx("Dragon_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-		printfDx("Dragon_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
-		printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
-		printfDx("%d:IDLE						\n", this->state->CheckFlag(this->IDLE));
-		printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
-		printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
-		printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
-		printfDx("%d:SLASH_1					\n", this->state->CheckFlag(this->SLASH_1));
-		printfDx("%d:SLASH_2					\n", this->state->CheckFlag(this->SLASH_2));
-		printfDx("%d:STAB						\n", this->state->CheckFlag(this->STAB));
-		printfDx("%d:ROTATE_SLASH				\n", this->state->CheckFlag(this->ROTATE_SLASH));
-		printfDx("%d:PUNCH					\n", this->state->CheckFlag(this->PUNCH));
-		printfDx("%d:SLASH_COMBO_1			\n", this->state->CheckFlag(this->SLASH_COMBO_1));
-		printfDx("%d:SLASH_COMBO_2			\n", this->state->CheckFlag(this->SLASH_COMBO_2));
-		printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
-		printfDx("%d:STATE					\n", this->angryState);
+		//VECTOR position = this->collider->rigidbody.GetPosition();
+		//VECTOR rotation = this->collider->rigidbody.GetRotation();
+		//printfDx("Dragon_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+		//printfDx("Dragon_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
+		//printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
+		//printfDx("%d:IDLE						\n", this->state->CheckFlag(this->IDLE));
+		//printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
+		//printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
+		//printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
+		//printfDx("%d:SLASH_1					\n", this->state->CheckFlag(this->SLASH_1));
+		//printfDx("%d:SLASH_2					\n", this->state->CheckFlag(this->SLASH_2));
+		//printfDx("%d:STAB						\n", this->state->CheckFlag(this->STAB));
+		//printfDx("%d:ROTATE_SLASH				\n", this->state->CheckFlag(this->ROTATE_SLASH));
+		//printfDx("%d:PUNCH					\n", this->state->CheckFlag(this->PUNCH));
+		//printfDx("%d:SLASH_COMBO_1			\n", this->state->CheckFlag(this->SLASH_COMBO_1));
+		//printfDx("%d:SLASH_COMBO_2			\n", this->state->CheckFlag(this->SLASH_COMBO_2));
+		//printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
+		//printfDx("%d:STATE					\n", this->angryState);
 		/*各アクションの当たり判定図形の描画*/
 		//this->parameters[this->nowAction]->Draw();
 	}
@@ -366,7 +317,7 @@ const float Dragon::GetAnimationPlayTime()const
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	return json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nowAnimation];
+	return json.GetJson(JsonManager::FileType::DRAGON)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 }
 
 /// <summary>
@@ -401,7 +352,7 @@ void Dragon::SetAngryState()
 			this->angryValue++;
 		}
 		//怒り値が最大以上だったら状態をANGRYにする
-		if (this->angryValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"])
+		if (this->angryValue >= json.GetJson(JsonManager::FileType::DRAGON)["MAX_ANGRY_VALUE"])
 		{
 			this->angryState = static_cast<int>(AngryStateType::ANGRY);
 		}
@@ -411,7 +362,7 @@ void Dragon::SetAngryState()
 		//疲れ時間を増加
 		this->tiredInterval++;
 		//最大値を超えたら状態を通常に変更
-		if (this->tiredInterval >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_INTERVAL"])
+		if (this->tiredInterval >= json.GetJson(JsonManager::FileType::DRAGON)["MAX_TIRED_INTERVAL"])
 		{
 			this->angryState = static_cast<int>(AngryStateType::NORMAL);
 			this->tiredInterval = 0;

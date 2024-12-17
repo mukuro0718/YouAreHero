@@ -63,10 +63,10 @@
     0.8,
     0.8,
     0.8,
-    1.3,
+    1.0,
     0.8,
-    1.3,
-    1.3,
+    1.0,
+    1.0,
     1.0,
     1.0,
     2.0
@@ -88,6 +88,13 @@
   "ACCEL": 0.05,
   "DECEL": -0.03,
   "TOLERANCE_DOT": 40.0,
+
+  "COMBO1_CANCEL_FRAME": 20,
+  "COMBO1_START_ANIM_PLAY_TIME": 10.0,
+  "COMBO2_CANCEL_FRAME": 30,
+  "COMBO2_START_ANIM_PLAY_TIME": 15.0,
+  "COMBO3_CANCEL_FRAME": 45,
+  "COMBO3_START_ANIM_PLAY_TIME": 15.0,
 
   "CHARGE_ATTACK_STOP_FRAME": 10,
   "CHARGE_ATTACK_STOP_MAX_FRAME": 40,

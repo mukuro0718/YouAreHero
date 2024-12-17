@@ -12,7 +12,6 @@
 #include "PlayerManager.h"
 #include "PlayerAttackManager.h"
 #include "EnemyManager.h"
-//#include "BossAttackManager.h"
 #include "UIManager.h"
 #include "EffectManager.h"
 #include "CollisionManager.h"
@@ -74,13 +73,11 @@ void GameScene::Finalize()
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
-	//auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 
 	map.Finalize();
 	enemy.Finalize();
 	player.Finalize();
 	playerAttack.Finalize();
-	//enemyAttack.Finalize();
 
 }
 
@@ -97,7 +94,6 @@ void GameScene::Update()
 	auto& player = Singleton<PlayerManager>		::GetInstance();
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>		::GetInstance();
-	//auto& enemyAttack = Singleton<BossAttackManager>	::GetInstance();
 	auto& effect = Singleton<EffectManager>		::GetInstance();
 	auto& ui = Singleton<UIManager>			::GetInstance();
 	auto& collision = Singleton<CollisionManager>	::GetInstance();
@@ -115,7 +111,6 @@ void GameScene::Update()
 	enemy.Update();
 	player.Update();
 	playerAttack.Update();
-	//enemyAttack.Update();
 	effect.Update();
 	collision.Update();
 	ui.Update();
@@ -145,7 +140,6 @@ const void GameScene::Draw()const
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
 	auto& camera = Singleton<CameraManager>	 ::GetInstance();
 	auto& enemy = Singleton<EnemyManager>		 ::GetInstance();
-	//auto& enemyAttack = Singleton<BossAttackManager>::GetInstance();
 	auto& effect = Singleton<EffectManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 	auto& timer = Singleton<Timer>::GetInstance();
@@ -154,7 +148,6 @@ const void GameScene::Draw()const
 	camera.Draw();
 	map.Draw();
 	enemy.Draw();
-	//enemyAttack.Draw();
 	player.Draw();
 	playerAttack.Draw();
 	effect.Draw();
