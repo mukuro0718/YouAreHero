@@ -541,6 +541,15 @@
     <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckCombo2Attack">
       <UniqueIdentifier>{493d281f-9e28-4d0b-9db5-d37c0b420ccd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Blackboard">
+      <UniqueIdentifier>{4c4937fc-cb1c-4d7e-8e1c-8b6b62082d38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\StateMachine">
+      <UniqueIdentifier>{3d037a7b-698b-4cd7-84b7-de3949996c09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\StateMachine\State">
+      <UniqueIdentifier>{6c6f6c00-3323-464b-ae1d-4abd03c864c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -1047,6 +1056,15 @@
     </ClCompile>
     <ClCompile Include="CheckChargeBothAttackCondition.cpp">
       <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckChargeBothAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="State.cpp">
+      <Filter>Data\StateMachine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Blackboard.cpp">
+      <Filter>Data\Blackboard</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachine.cpp">
+      <Filter>Data\StateMachine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1586,6 +1604,15 @@
     </ClInclude>
     <ClInclude Include="CheckChargeBothAttackCondition.h">
       <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\CheckChargeBothAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>Data\StateMachine\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Blackboard.h">
+      <Filter>Data\Blackboard</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>Data\StateMachine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -173,6 +173,7 @@
     <ClCompile Include="Beast_WeakBreath.cpp" />
     <ClCompile Include="BehaviorTreeNode.cpp" />
     <ClCompile Include="BitFlag.cpp" />
+    <ClCompile Include="Blackboard.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BossAction.cpp" />
     <ClCompile Include="BossAttack.cpp" />
@@ -300,6 +301,8 @@
     <ClCompile Include="ScreenSetup.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="Skydome.cpp" />
+    <ClCompile Include="State.cpp" />
+    <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="TitleUI.cpp" />
@@ -345,6 +348,7 @@
     <ClInclude Include="Beast_WeakBreath.h" />
     <ClInclude Include="BehaviorTreeNode.h" />
     <ClInclude Include="BitFlag.h" />
+    <ClInclude Include="Blackboard.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossAction.h" />
     <ClInclude Include="BossAttack.h" />
@@ -470,6 +474,8 @@
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="DeleteInstance.h" />
     <ClInclude Include="Skydome.h" />
+    <ClInclude Include="State.h" />
+    <ClInclude Include="StateMachine.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="TitleUI.h" />
