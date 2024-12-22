@@ -21,5 +21,5 @@ const void Timer::Draw()const
 	int minute = second / 60;
 	second -= minute * 60;
 
-	DrawFormatStringToHandle(1650, 10, this->TEXT_COLOR, this->fontHandle, "Œo‰ßŠÔ\n %d•ª%d•b", minute, second);
+	//DrawFormatStringToHandle(1650, 10, this->TEXT_COLOR, this->fontHandle, "Œo‰ßŠÔ\n %d•ª%d•b", minute, second);
 }

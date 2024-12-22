@@ -163,12 +163,6 @@
     <Filter Include="Collision\CharacterData">
       <UniqueIdentifier>{e865ab3e-51cd-4217-991a-39fb9fa5152d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Collision\CharacterData\Player">
-      <UniqueIdentifier>{ac6574e3-c8ea-4a79-af2b-09e3500ae94b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Collision\CharacterData\Enemy">
-      <UniqueIdentifier>{6b6284fe-8353-433d-bd87-affe2af9cbdf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="HitStopManager">
       <UniqueIdentifier>{31fe7dbc-888b-4de1-bcd5-82599d8ac1d3}</UniqueIdentifier>
     </Filter>
@@ -550,6 +544,12 @@
     <Filter Include="Data\StateMachine\State">
       <UniqueIdentifier>{6c6f6c00-3323-464b-ae1d-4abd03c864c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\R_DrawSword2">
+      <UniqueIdentifier>{9674cf27-fb54-4868-bc0c-247f1408c2e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Player\PlayerAction\Q_DrawSword1">
+      <UniqueIdentifier>{3c8d8e2f-74a6-48d5-8fe3-67905cfffec6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -690,18 +690,6 @@
     </ClCompile>
     <ClCompile Include="Character.cpp">
       <Filter>Object\Character</Filter>
-    </ClCompile>
-    <ClCompile Include="BossData.cpp">
-      <Filter>Collision\CharacterData\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerData.cpp">
-      <Filter>Collision\CharacterData\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="BossAttackData.cpp">
-      <Filter>Collision\AttackData</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerAttackData.cpp">
-      <Filter>Collision\AttackData</Filter>
     </ClCompile>
     <ClCompile Include="ActionParameter.cpp">
       <Filter>Object\Character\Enemy\Action\BossAction\Parameter</Filter>
@@ -1066,6 +1054,12 @@
     <ClCompile Include="StateMachine.cpp">
       <Filter>Data\StateMachine</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerDrawSword1.cpp">
+      <Filter>Object\Character\Player\PlayerAction\Q_DrawSword1</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerDrawSword2.cpp">
+      <Filter>Object\Character\Player\PlayerAction\R_DrawSword2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPSController.h">
@@ -1226,18 +1220,6 @@
     </ClInclude>
     <ClInclude Include="Character.h">
       <Filter>Object\Character</Filter>
-    </ClInclude>
-    <ClInclude Include="BossData.h">
-      <Filter>Collision\CharacterData\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerData.h">
-      <Filter>Collision\CharacterData\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="BossAttackData.h">
-      <Filter>Collision\AttackData</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerAttackData.h">
-      <Filter>Collision\AttackData</Filter>
     </ClInclude>
     <ClInclude Include="ActionParameter.h">
       <Filter>Object\Character\Enemy\Action\BossAction\Parameter</Filter>
@@ -1613,6 +1595,12 @@
     </ClInclude>
     <ClInclude Include="StateMachine.h">
       <Filter>Data\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerDrawSword1.h">
+      <Filter>Object\Character\Player\PlayerAction\Q_DrawSword1</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerDrawSword2.h">
+      <Filter>Object\Character\Player\PlayerAction\R_DrawSword2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

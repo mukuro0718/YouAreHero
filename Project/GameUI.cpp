@@ -34,7 +34,7 @@ GameUI::GameUI()
 	/*画像クラスインスタンスの作成*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
-	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_100_32);
+	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_150_32);
 	Initialize();
 }
 

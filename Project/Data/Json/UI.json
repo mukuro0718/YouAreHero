@@ -6,20 +6,20 @@
   "BOSS_HP_COLOR": [ 200, 200, 200 ],
   "BOSS_PREV_HP_COLOR": [ 230, 130, 100 ],
 
-  "PLAYER_HP_HEIGHT": 25,
-  "PLAYER_HP_WIDTH": 385,
-  "PLAYER_HP_POSITION": [ 57, 57 ],
-  "PLAYER_HP_TABLE_POSITION": [ 50, 50 ],
+  "PLAYER_HP_HEIGHT": 20,
+  "PLAYER_HP_WIDTH": 400,
+  "PLAYER_HP_POSITION": [ 100, 50 ],
+  "PLAYER_HP_TABLE_POSITION": [ 97, 47, 503, 70 ],
 
-  "PLAYER_STAMINA_HEIGHT": 25,
-  "PLAYER_STAMINA_WIDTH": 385,
-  "PLAYER_STAMINA_POSITION": [ 57, 102 ],
-  "PLAYER_STAMINA_TABLE_POSITION": [ 50, 95 ],
+  "PLAYER_STAMINA_HEIGHT": 20,
+  "PLAYER_STAMINA_WIDTH": 402,
+  "PLAYER_STAMINA_POSITION": [ 100, 70 ],
+  "PLAYER_STAMINA_TABLE_POSITION": [ 97, 67, 503, 93 ],
 
-  "BOSS_HP_HEIGHT": 20,
-  "BOSS_HP_WIDTH": 986,
-  "BOSS_HP_POSITION": [ 496, 116 ],
-  "BOSS_HP_TABLE_POSITION": [ 480, 110, 1488, 142 ],
+  "BOSS_HP_HEIGHT": 25,
+  "BOSS_HP_WIDTH": 800,
+  "BOSS_HP_POSITION": [ 560, 150 ],
+  "BOSS_HP_TABLE_POSITION": [ 553, 145, 1365, 180 ],
 
   "HP_TABLE_OFFSET": 5,
   "HP_TABLE_BOX": [ 88, 958, 612, 992 ],
@@ -27,12 +27,41 @@
 
   "TEXT_COLOR": [ 200, 200, 200 ],
 
-  "POTION_POSITION": [ 50, 840, 260, 1050 ],
-  "TABLE_POSITION": [ 50, 840, 260, 1050 ],
-  "ORB_POSITION": [ 170, 840 ],
-  "ORB_WIDTH": 33,
+  "ITEM_POSITION": [ 1590, 890, 1715, 1015 ],
+  "ITEM_TABLE_POSITION": [ 1590, 890, 1715, 1015 ],
+  "ITEM_BUTTON_POSITION": [ 1560, 965, 1620, 1025 ],
+  "ITEM_NUM_POSITION": [ 1695, 980, 1720, 995 ],
+  "ITEM_NUM_TABLE_POSITION": [ 1720, 995 ],
+  "NUM_COLOR": [ 250, 150, 50 ],
+  "TABLE_COLOR": [ 50, 50, 80 ],
+  "RADIUS": 25,
+  "THICKNESS": 2,
+  "ITEM_BUTTON_TYPE": 2,
 
   "ICON_SIZE": 50,
+  "DISPLAY_BUTTON_INDEX": [
+    [ 4, 8, 0, 5, 1, 3, 2 ],
+    [ 4, 8, 0, 5, 1, 3, 2 ],
+    [ 4, 8, 0, 5, 1, 3, 2 ],
+    [ 4, 8, 0, 5, 1, 3, 2 ],
+    [ 4, 8, 0, 5, 1, 3, 2 ],
+    [ 4, 8, 0, 7, 2 ]
+  ],
+  "DISPLAY_TEXT_INDEX": [
+    [ 0, 9, 2, 3, 5, 7, 8 ],
+    [ 0, 9, 2, 3, 6, 7, 8 ],
+    [ 0, 9, 2, 3, 4, 7, 8 ],
+    [ 0, 9, 2, 3, 4, 7, 8 ],
+    [ 0, 9, 2, 3, 4, 7, 8 ],
+    [ 0, 1, 2, 10, 8 ]
+  ],
+  "DISPLAY_BUTTON_POSITION": [ 1755, 50 ],
+  "DISPLAY_BUTTON_WIDTH": [ 30, 30, 30, 30, 30, 35, 35, 80, 80 ],
+  "DISPLAY_BUTTON_HEIGHT": 35,
+  "DISPLAY_TEXT_POSITION": [ 1605, 50 ],
+  "DISPLAY_TEXT_WIDTH": 150,
+  "DISPLAY_TEXT_HEIGHT": 35,
+
 
   "MAIN_ATTACK_TEXT_POSITION": [ 1350, 900 ],
   "SPECIAL_ATTACK_TEXT_POSITION": [ 1390, 800 ],
@@ -74,8 +103,8 @@
   "GAME_CLEAR_MAX_RANKING_USER": 100,
   "GAME_CLEAR_RANKING_FILE_NAME": "Data/Json/Ranking.json",
   "GAME_CLEAR_RANKING_INDEX_NAME": "RANKING",
-  "GAME_CLEAR_TIME_POSITION":       [ 650, 390 ],
-  "GAME_CLEAR_RANKING_POSITION":    [ 650, 475 ],
+  "GAME_CLEAR_TIME_POSITION": [ 650, 390 ],
+  "GAME_CLEAR_RANKING_POSITION": [ 650, 475 ],
   "GAME_CLEAR_BACK_TITLE_POSITION": [ 650, 580 ],
   "GAME_CLEAR_TABLE_POSITION": [ 560, 340, 1360, 740 ],
 
@@ -101,9 +130,9 @@
   ],
 
   "BOSS_NAME_BACKGROUND": [
-    [ 650, 35, 1250, 110 ], 
+    [ 650, 35, 1250, 110 ],
     [ 723, 35, 1177, 110 ],
-    [ 723, 35, 1177, 110 ] 
+    [ 723, 35, 1177, 110 ]
   ],
   "BOSS_NAME_POSITION": [
     [ 670, 35 ],
@@ -115,36 +144,12 @@
     "LUXURIO",
     "MORNACT"
   ],
-
-  "BUTTON_POSITION": [
-    [ 1630, 910, 1690, 970 ],
-    [ 1500, 910, 1560, 970 ],
-    [ 1565, 845, 1625, 905 ],
-    [ 1565, 975, 1625, 1035 ],
-    [ 1570, 780, 1650, 840 ]
-  ],
-  "BUTTON_TEXT_POSITION"
-    :
-    [
-      [ 1695, 915 ],
-      [ 1400, 915 ],
-      [ 1630, 850 ],
-      [ 1630, 980 ],
-      [ 1655, 785 ]
-    ],
-
-    "AUDIENCE_VERTEX_NUM"
-    :
-    4,
-    "AUDIENCE_VERTEX_INDEX"
-    :
-    [ 0, 1, 2, 3, 2, 1 ],
-    "AUDIENCE_VERTEX_POSITION"
-    :
-    [
-      [ 100.0, 0.0, -100.0 ],
-      [ -100.0, 0.0, -100.0 ],
-      [ 100.0, 200.0, -100.0 ],
-      [ -100.0, 200.0, -100.0 ]
-    ]
+  "AUDIENCE_VERTEX_NUM": 4,
+  "AUDIENCE_VERTEX_INDEX": [ 0, 1, 2, 3, 2, 1 ],
+  "AUDIENCE_VERTEX_POSITION": [
+    [ 100.0, 0.0, -100.0 ],
+    [ -100.0, 0.0, -100.0 ],
+    [ 100.0, 200.0, -100.0 ],
+    [ -100.0, 200.0, -100.0 ]
+  ]
 }

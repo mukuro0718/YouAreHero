@@ -63,7 +63,7 @@ void PlayerStagger::Update(Player& _player)
 		effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
 		//スピードの設定
 		const CharacterData& data = _player.GetCharacterData();
-		_player.SetSpeed(json.GetJson(JsonManager::FileType::PLAYER)["REACTION_SPEED"][data.playerReaction]);
+		_player.SetSpeed(json.GetJson(JsonManager::FileType::PLAYER)["REACTION_SPEED"][data.reactionType]);
 		//ヒットストップの設定
 		_player.SetHitStop(data.hitStopTime, data.hitStopType, data.hitStopDelay, data.slowFactor);
 		//ヒットフラグを下す

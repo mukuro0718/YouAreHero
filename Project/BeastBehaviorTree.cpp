@@ -116,7 +116,7 @@ BeastBehaviorTree::BeastBehaviorTree()
 			nearAngryAttackNode->AddChild(comboAttack2);
 			//NormalŽž‹ßÚƒZƒbƒg
 			BehaviorTreeNode* nearNormalAttackNodeSet = new SequencerNode();
-			nearNormalAttackNodeSet->AddChild();
+			//nearNormalAttackNodeSet->AddChild();
 		}
 
 

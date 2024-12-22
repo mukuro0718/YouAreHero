@@ -6,7 +6,6 @@
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "AttackData.h"
-#include "BossAttackData.h"
 #include "AttackCapsuleColliderData.h"
 #include "AttackSphereColliderData.h"
 #include "BossAttack.h"

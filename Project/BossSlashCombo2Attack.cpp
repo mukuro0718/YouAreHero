@@ -7,7 +7,6 @@
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "AttackData.h"
-#include "BossAttackData.h"
 #include "AttackCapsuleColliderData.h"
 #include "BossAttack.h"
 #include "BossSlashCombo2Attack.h"
@@ -28,8 +27,7 @@ BossSlashCombo2Attack::BossSlashCombo2Attack(const int _attackIndex)
 	this->attackIndex = _attackIndex;
 
 	/*コライダーデータの作成*/
-	AttackData* data = new BossAttackData();
-	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, data);
+	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
 }
 
 /// <summary>
@@ -50,16 +48,15 @@ void BossSlashCombo2Attack::Initialize()
 
 	/*コライダーの初期化*/
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-	auto& data = dynamic_cast<BossAttackData&>(*collider.data);
-	collider.radius = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
-	data.damage = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
-	data.playerReaction = static_cast<int>(Gori::PlayerReactionType::NORMAL);
+	collider.radius				= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
+	collider.data->damage		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
+	collider.data->reactionType = static_cast<int>(Gori::PlayerReactionType::NORMAL);
 	//ここでのヒットストップ系の変数は、キャラクター側に与えるものになる
-	data.hitStopTime = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
-	data.hitStopType = static_cast<int>(HitStop::Type::STOP);
-	data.hitStopDelay = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
-	data.slowFactor = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
-	data.isHitAttack = false;
+	collider.data->hitStopTime	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
+	collider.data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
+	collider.data->hitStopDelay	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
+	collider.data->slowFactor	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
+	collider.data->isHitAttack	= false;
 
 	/*変数の初期化*/
 	this->frameCount			= 0;
@@ -79,7 +76,6 @@ void BossSlashCombo2Attack::Update()
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-	auto& data = dynamic_cast<BossAttackData&>(*collider.data);
 
 	/*当たり判定の確認が開始している*/
 	if (this->isStartHitCheck)
@@ -97,7 +93,7 @@ void BossSlashCombo2Attack::Update()
 
 		if (!this->isNotOnHit)
 		{
-			data.isDoHitCheck = true;
+			collider.data->isDoHitCheck = true;
 			this->isNotOnHit = true;
 		}
 
@@ -109,12 +105,12 @@ void BossSlashCombo2Attack::Update()
 			//指定フレームの時に、当たり判定フラグをもう一度立てる
 			if (this->frameCount == onDoHitFrame[i])
 			{
-				data.isDoHitCheck = true;
+				collider.data->isDoHitCheck = true;
 			}
 			//指定フレームの時に当たり判定フラグを下す
 			else if (this->frameCount == onDoHitFrame[i])
 			{
-				data.isDoHitCheck = false;
+				collider.data->isDoHitCheck = false;
 			}
 		}
 
@@ -137,9 +133,9 @@ void BossSlashCombo2Attack::Update()
 		if (this->frameCount > END_HIT_CHECK_FRAME)
 		{
 			this->isStartHitCheck = false;
-			data.isDoHitCheck = false;
+			collider.data->isDoHitCheck = false;
 			this->frameCount = 0;
-			data.isHitAttack = false;
+			collider.data->isHitAttack = false;
 		}
 	}
 }
@@ -149,17 +145,11 @@ void BossSlashCombo2Attack::Update()
 /// </summary>
 const void BossSlashCombo2Attack::Draw()const
 {
-	auto& debug = Singleton<Debug>::GetInstance();
-	//if (debug.CheckEnemyFlag())
-	//{
 	if (this->isStartHitCheck)
 	{
 		auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-		auto& data = dynamic_cast<BossAttackData&>(*collider.data);
-
 		DrawCapsule3D(collider.rigidbody.GetPosition(), collider.topPositon, collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
 	}
 	VECTOR position = this->collider->rigidbody.GetPosition();
-	printfDx("HURRICANE_KICK X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-	//}
+	printfDx("SLASH_COMBO_2 X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
 }

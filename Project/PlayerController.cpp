@@ -24,6 +24,8 @@ PlayerController::PlayerController()
 	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::COMBO_2));
 	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::COMBO_3));
 	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::STRONG_ATTACK));
+	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::DRAW_SWORD_1));
+	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::DRAW_SWORD_2));
 }
 
 /// <summary>
@@ -46,7 +48,7 @@ void PlayerController::Initialize()
 /// <summary>
 /// 状態変更クラス
 /// </summary>
-bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEndAction, const CharacterData& _data)
+bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEndAction, const bool _isDrawSword, const CharacterData& _data)
 {
 	int nextState = -1;
 
@@ -70,7 +72,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 		else
 		{
 			//リアクション
-			switch (_data.playerReaction)
+			switch (_data.reactionType)
 			{
 			case static_cast<int>(Gori::PlayerReactionType::NORMAL):
 				nextState = static_cast<int>(PlayerState::STAGGER);
@@ -92,30 +94,51 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	//スタミナは足りているか
 	else if (CanAction(_data.stamina, json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]) && input.GetNowPadState() & InputManager::PAD_RT)
 	{
-		nextState = static_cast<int>(PlayerState::BLOCK);
+		if (_isDrawSword)
+		{
+			nextState = static_cast<int>(PlayerState::BLOCK);
+		}
+		else
+		{
+			nextState = static_cast<int>(PlayerState::DRAW_SWORD_2);
+		}
 	}
 
 	/*弱攻撃*/
 	else if (input.GetNowPadState() & InputManager::PAD_B)
 	{
-		switch (this->nowState)
+		if (_isDrawSword)
 		{
-		case static_cast<int>(PlayerState::COMBO_1):
-			nextState = static_cast<int>(PlayerState::COMBO_2);
-			break;
-		case static_cast<int>(PlayerState::COMBO_2):
-			nextState = static_cast<int>(PlayerState::COMBO_3);
-			break;
-		default:
-			nextState = static_cast<int>(PlayerState::COMBO_1);
-			break;
+			switch (this->nowState)
+			{
+			case static_cast<int>(PlayerState::COMBO_1):
+				nextState = static_cast<int>(PlayerState::COMBO_2);
+				break;
+			case static_cast<int>(PlayerState::COMBO_2):
+				nextState = static_cast<int>(PlayerState::COMBO_3);
+				break;
+			default:
+				nextState = static_cast<int>(PlayerState::COMBO_1);
+				break;
+			}
+		}
+		else
+		{
+			nextState = static_cast<int>(PlayerState::DRAW_SWORD_2);
 		}
 	}
 
 	/*強攻撃*/
 	else if (input.GetNowPadState() & InputManager::PAD_Y)
 	{
-		nextState = static_cast<int>(PlayerState::STRONG_ATTACK);
+		if (_isDrawSword)
+		{
+			nextState = static_cast<int>(PlayerState::STRONG_ATTACK);
+		}
+		else
+		{
+			nextState = static_cast<int>(PlayerState::DRAW_SWORD_2);
+		}
 	}
 
 	/*回避*/
@@ -135,15 +158,22 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	{
 		if (input.GetNowPadState() & InputManager::PAD_RB)
 		{
-			//ダッシュ
-			if (CanAction(_data.stamina, json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"]))
+			if (!_isDrawSword)
 			{
-				nextState = static_cast<int>(PlayerState::RUN);
+				//ダッシュ
+				if (CanAction(_data.stamina, json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"]))
+				{
+					nextState = static_cast<int>(PlayerState::RUN);
+				}
+				//スタミナ切れ
+				else
+				{
+					nextState = static_cast<int>(PlayerState::RUNNING_OUT_OF_STAMINA);
+				}
 			}
-			//スタミナ切れ
 			else
 			{
-				nextState = static_cast<int>(PlayerState::RUNNING_OUT_OF_STAMINA);
+				nextState = static_cast<int>(PlayerState::DRAW_SWORD_1);
 			}
 		}
 		else
@@ -152,6 +182,12 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 			nextState = static_cast<int>(PlayerState::WALK);
 		}
 	}
+
+	///*武器だし*/
+	//else if (input.GetNowPadState() & InputManager::PAD_RB && _isDrawSword)
+	//{
+	//	nextState = static_cast<int>(PlayerState::DRAW_SWORD_1);
+	//}
 	else
 	{
 		nextState = static_cast<int>(PlayerState::IDLE);
@@ -187,6 +223,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 const bool PlayerController::CanAction(const float _stamina, const float _staminaConsumed)const
 {
 	/*スタミナの消費量が現在のスタミナの総量よりも多ければfalseを返す*/
-	if (_staminaConsumed > _stamina)return false;
+	float staminaConsumed = _staminaConsumed * -1.0f;
+	if (staminaConsumed > _stamina)return false;
 	return true;
 }

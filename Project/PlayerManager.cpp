@@ -78,6 +78,15 @@ const int PlayerManager::GetHP()const
 }
 
 /// <summary>
+/// 現在の状態を取得
+/// </summary>
+const int PlayerManager::GetNowState()const
+{
+	auto& player = dynamic_cast<Player&>(*this->player);
+	return player.GetNowState();
+}
+
+/// <summary>
 /// スタミナの取得
 /// </summary>
 const float PlayerManager::GetStamina()const
@@ -109,6 +118,15 @@ const bool PlayerManager::GetIsAlive()const
 const bool PlayerManager::GetIsLockOn()const
 {
 	return false;
+}
+
+/// <summary>
+/// 抜刀フラグの取得
+/// </summary>
+const bool PlayerManager::GetIsDrawSword()const
+{
+	auto& player = dynamic_cast<Player&>(*this->player);
+	return player.GetIsDrawSword();
 }
 
 /// <summary>

@@ -11,7 +11,7 @@ public:
 	~PlayerController();
 
 	void Initialize();
-	bool StateChanger(const bool _isCancelAction, const bool _isEndAction, const CharacterData& _data);
+	bool StateChanger(const bool _isCancelAction, const bool _isEndAction, const bool _isDrawSword, const CharacterData& _data);
 	const int GetNowState()const { return this->nowState; }
 	const int GetPrevState()const { return this->prevState; }
 	void SynchroState() { this->prevState = this->nowState; }
@@ -33,6 +33,8 @@ public:
 		COMBO_2					= 13,
 		COMBO_3					= 14,
 		STRONG_ATTACK			= 15,
+		DRAW_SWORD_1			= 16,
+		DRAW_SWORD_2			= 17
 	};
 private:
 	/*—ñ‹“‘Ì*/

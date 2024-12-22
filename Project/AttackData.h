@@ -17,6 +17,7 @@ public:
 	int		hitStopType;	//ヒットストップの種類
 	int		hitStopDelay;	//ヒットストップディレイ
 	float	slowFactor;		//スロウ
+	int		reactionType;
 	/*
 	HACK:
 	ここでのヒットストップ系の変数は、キャラクター側に与えるものになる

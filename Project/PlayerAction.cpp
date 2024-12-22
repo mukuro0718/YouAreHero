@@ -61,16 +61,16 @@ void PlayerAction::UpdateSpeed(float& _nowSpeed, const float _maxSpeed, const VE
 	float max_speed = _maxSpeed;
 
 	/*Ÿ‚Ì‰ñ“]—¦‚Æ¡‚Ì‰ñ“]—¦‚Ì·‚ª’è”ˆÈã‚È‚çŒ¸‘¬‚³‚¹‚é*/
-	float nowDeg = (_nowRotation.y * 180.0f / DX_PI_F);
-	float nextDeg = (_nextRotation.y * 180.0f / DX_PI_F);
-	const float PI_2 = 360.0f;
-	if (nextDeg < 0.0f) { nextDeg += PI_2; }
-	float diff = nowDeg - nextDeg;
-	if (diff < 0.0f) { diff *= -1.0f; }
-	if (diff >= 180.0f)
-	{
-		max_speed = 0.0f;
-	}
+	//float nowDeg = (_nowRotation.y * 180.0f / DX_PI_F);
+	//float nextDeg = (_nextRotation.y * 180.0f / DX_PI_F);
+	//const float PI_2 = 360.0f;
+	//if (nextDeg < 0.0f) { nextDeg += PI_2; }
+	//float diff = nowDeg - nextDeg;
+	//if (diff < 0.0f) { diff *= -1.0f; }
+	//if (diff >= 180.0f)
+	//{
+	//	max_speed = 0.0f;
+	//}
 
 	/*V‚µ‚¢‘¬“x‚ğo‚·*/
 	auto& json = Singleton<JsonManager>::GetInstance();

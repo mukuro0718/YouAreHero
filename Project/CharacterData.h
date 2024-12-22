@@ -15,8 +15,8 @@ public:
 	bool	isGuard;		//ガードフラグ
 	bool	isInvinvible;	//無敵フラグ
 	int		hp;				//HP
-	float stamina;//スタミナ
-	int		playerReaction;	//プレイヤーのリアクションタイプ
+	float   stamina;		//スタミナ
+	int		reactionType;	//リアクションタイプ
 	int		hitStopTime;	//ヒットストップの時間
 	int		hitStopType;	//ヒットストップの種類
 	int		hitStopDelay;	//ヒットストップディレイ

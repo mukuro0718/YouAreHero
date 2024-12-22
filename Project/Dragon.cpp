@@ -1,6 +1,5 @@
 #include <DxLib.h>
-#include <Effekseer.h>
-#include <EffekseerRendererDX11.h>
+#include "EffekseerForDXLib.h"
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "VECTORtoUseful.h"
@@ -8,7 +7,6 @@
 #include "ReactionType.h"
 #include "Rigidbody.h"
 #include "CharacterData.h"
-#include "BossData.h"
 #include "ColliderData.h"
 #include "CharacterColliderData.h"
 #include "BitFlag.h"
@@ -60,8 +58,7 @@ Dragon::Dragon()
 	this->animation->Attach(&this->modelHandle);
 
 	/*コライダーデータの作成*/
-	CharacterData* data = new BossData();
-	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, data);
+	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
 }
 
 /// <summary>
@@ -78,7 +75,6 @@ void Dragon::Initialize()
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
-	auto& data = dynamic_cast<BossData&>(*collider.data);
 
 	/*変数の初期化*/
 	this->isAlive			= true;
@@ -96,8 +92,8 @@ void Dragon::Initialize()
 	collider.topPositon		= VGet(0.0f, height, 0.0f);
 	collider.radius			= json.GetJson(JsonManager::FileType::DRAGON)["HIT_RADIUS"];
 	collider.isUseCollWithGround = true;
-	data.hp					= json.GetJson(JsonManager::FileType::DRAGON)["HP"];
-	data.isHit				= false;
+	collider.data->hp					= json.GetJson(JsonManager::FileType::DRAGON)["HP"];
+	collider.data->isHit				= false;
 	
 
 	/*物理挙動の初期化*/

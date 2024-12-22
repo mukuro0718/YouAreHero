@@ -16,7 +16,7 @@ BossNameUI::BossNameUI()
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
-	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_80_32);
+	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_80_64);
 	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
 }
 

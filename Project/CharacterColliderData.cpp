@@ -3,9 +3,7 @@
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "CharacterData.h"
-#include "PlayerData.h"
 #include "AttackData.h"
-#include "PlayerAttackData.h"
 #include "CharacterColliderData.h"
 #include "HitStopManager.h"
 
@@ -46,18 +44,10 @@ void CharacterColliderData::OnHit(const AttackData& _data, const VECTOR _attackP
 		this->data->hitStopType  = _data.hitStopType;
 		this->data->hitStopDelay = _data.hitStopDelay;
 		this->data->slowFactor	 = _data.slowFactor;
+		this->data->reactionType = _data.reactionType;
 	}
 
 	/*ヒットフラグを立てる*/
 	this->data->isHit = true;
 }
 
-/// <summary>
-/// プレイヤーリアクションの設定
-/// </summary>
-void CharacterColliderData::SetPlayerReaction(const int _type)
-{
-	auto& playerData = dynamic_cast<PlayerData&>(*this->data);
-
-	playerData.playerReaction = _type;
-}

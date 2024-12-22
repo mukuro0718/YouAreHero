@@ -31,7 +31,7 @@ GameOverUI::GameOverUI()
 	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
 
 	/*fontHandle�̎擾*/
-	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_80_32);
+	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_80_64);
 }
 
 /// <summary>

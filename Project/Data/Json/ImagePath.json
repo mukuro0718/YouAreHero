@@ -18,6 +18,8 @@
     "Asset/Image/UI/Button/Push_right_stick.png",
     "Asset/Image/UI/Button/Right_trigger.png",
     "Asset/Image/UI/Button/Right_bumper.png",
+    "Asset/Image/UI/Button/button_set_1.png",
+    "Asset/Image/UI/Button/button_set_2.png",
 
     "Asset/Image/UI/Icon/hp_potion.png",
     "Asset/Image/UI/Icon/Potion_table.png",
@@ -41,6 +43,18 @@
     "Asset/Image/UI/Select/summary_3.png",
     "Asset/Image/UI/Select/summary_4.png",
     "Asset/Image/UI/Select/select_icon_frame.png",
-    "Asset/Image/UI/Select/Prov.png"
+    "Asset/Image/UI/Select/Prov.png",
+
+    "Asset/Image/UI/Operation/walk.png",
+    "Asset/Image/UI/Operation/dash.png",
+    "Asset/Image/UI/Operation/avoid.png",
+    "Asset/Image/UI/Operation/guard.png",
+    "Asset/Image/UI/Operation/devaluation.png",
+    "Asset/Image/UI/Operation/roundingUp.png",
+    "Asset/Image/UI/Operation/diveCutting.png",
+    "Asset/Image/UI/Operation/rotaryCutter.png",
+    "Asset/Image/UI/Operation/useItem.png",
+    "Asset/Image/UI/Operation/swordDelivery.png",
+    "Asset/Image/UI/Operation/swordDrawing.png"
   ]
 }

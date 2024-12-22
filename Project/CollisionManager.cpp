@@ -5,11 +5,7 @@
 #include "GameObjectTag.h"
 #include "Rigidbody.h"
 #include "CharacterData.h"
-#include "BossData.h"
-#include "PlayerData.h"
 #include "AttackData.h"
-#include "BossAttackData.h"
-#include "PlayerAttackData.h"
 #include "ColliderData.h"
 #include "CapsuleColliderData.h"
 #include "SphereColliderData.h"
@@ -253,20 +249,15 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 				characterDataBase = &_objectA;
 				characterCapsuleUnder = _objectA.GetNextPosition();
 			}
-			auto& sphereColliderData = dynamic_cast<AttackSphereColliderData&>(*attackDataBase);
-			auto& capsuleColliderData = dynamic_cast<CharacterColliderData&>(*characterDataBase);
-			if (sphereColliderData.data->isDoHitCheck && !capsuleColliderData.data->isInvinvible)
+			auto& attackColliderData = dynamic_cast<AttackSphereColliderData&>(*attackDataBase);
+			auto& characterColliderData = dynamic_cast<CharacterColliderData&>(*characterDataBase);
+			if (attackColliderData.data->isDoHitCheck && !characterColliderData.data->isInvinvible)
 			{
-				VECTOR characterCapsuleTop = VAdd(characterCapsuleUnder,capsuleColliderData.topPositon);
-				if (HitCheck_Sphere_Capsule(attackSphereCenter, sphereColliderData.radius, characterCapsuleUnder, characterCapsuleTop, capsuleColliderData.radius))
+				VECTOR characterCapsuleTop = VAdd(characterCapsuleUnder, characterColliderData.topPositon);
+				if (HitCheck_Sphere_Capsule(attackSphereCenter, attackColliderData.radius, characterCapsuleUnder, characterCapsuleTop, characterColliderData.radius))
 				{
-					sphereColliderData.OnHit(*capsuleColliderData.data);
-					capsuleColliderData.OnHit(*sphereColliderData.data, sphereColliderData.GetNextPosition());
-					if (sphereColliderData.GetTag() == GameObjectTag::BOSS_ATTACK && capsuleColliderData.GetTag() == GameObjectTag::PLAYER)
-					{
-						auto& primaryAttackData = dynamic_cast<BossAttackData&> (*sphereColliderData.data);
-						capsuleColliderData.SetPlayerReaction(primaryAttackData.playerReaction);
-					}
+					attackColliderData.OnHit(*characterColliderData.data);
+					characterColliderData.OnHit(*attackColliderData.data, characterColliderData.GetNextPosition());
 				}
 			}
 		}
@@ -304,11 +295,6 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 				{
 					attackColliderData.OnHit(*characterColliderData.data);
 					characterColliderData.OnHit(*attackColliderData.data, attackColliderData.GetNextPosition());
-					if (attackColliderData.GetTag() == GameObjectTag::BOSS_ATTACK && characterColliderData.GetTag() == GameObjectTag::PLAYER)
-					{
-						auto& primaryAttackData = dynamic_cast<BossAttackData&> (*attackColliderData.data);
-						characterColliderData.SetPlayerReaction(primaryAttackData.playerReaction);
-					}
 				}
 			}
 		}

@@ -7,7 +7,6 @@
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "AttackData.h"
-#include "BossAttackData.h"
 #include "AttackCapsuleColliderData.h"
 #include "BossAttack.h"
 #include "BossPunchAttack.h"
@@ -28,8 +27,7 @@ BossPunchAttack::BossPunchAttack(const int _attackIndex)
 	this->attackIndex = _attackIndex;
 
 	/*コライダーデータの作成*/
-	AttackData* data = new BossAttackData();
-	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, data);
+	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
 }
 
 /// <summary>
@@ -50,16 +48,15 @@ void BossPunchAttack::Initialize()
 
 	/*コライダーの初期化*/
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-	auto& data = dynamic_cast<BossAttackData&>(*collider.data);
-	collider.radius = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
-	data.damage = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
-	data.playerReaction = static_cast<int>(Gori::PlayerReactionType::NORMAL);
+	collider.radius				= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
+	collider.data->damage		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
+	collider.data->reactionType = static_cast<int>(Gori::PlayerReactionType::NORMAL);
 	//ここでのヒットストップ系の変数は、キャラクター側に与えるものになる
-	data.hitStopTime = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
-	data.hitStopType = static_cast<int>(HitStop::Type::STOP);
-	data.hitStopDelay = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
-	data.slowFactor = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
-	data.isHitAttack = false;
+	collider.data->hitStopTime	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
+	collider.data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
+	collider.data->hitStopDelay = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
+	collider.data->slowFactor	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
+	collider.data->isHitAttack	= false;
 
 	/*変数の初期化*/
 	this->frameCount = 0;
@@ -79,7 +76,6 @@ void BossPunchAttack::Update()
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-	auto& data = dynamic_cast<BossAttackData&>(*collider.data);
 
 	/*当たり判定の確認が開始している*/
 	if (this->isStartHitCheck)
@@ -98,7 +94,7 @@ void BossPunchAttack::Update()
 		//今回の攻撃中に当たり判定フラグが一度もたっていなかったら
 		if (!this->isNotOnHit)
 		{
-			data.isDoHitCheck = true;
+			collider.data->isDoHitCheck = true;
 			this->isNotOnHit = true;
 		}
 
@@ -109,9 +105,9 @@ void BossPunchAttack::Update()
 		if (this->frameCount > END_HIT_CHECK_FRAME)
 		{
 			this->isStartHitCheck = false;
-			data.isDoHitCheck = false;
+			collider.data->isDoHitCheck = false;
 			this->frameCount = 0;
-			data.isHitAttack = false;
+			collider.data->isHitAttack = false;
 		}
 	}
 }
@@ -121,17 +117,11 @@ void BossPunchAttack::Update()
 /// </summary>
 const void BossPunchAttack::Draw()const
 {
-	auto& debug = Singleton<Debug>::GetInstance();
-	//if (debug.CheckEnemyFlag())
-	//{
 	if (this->isStartHitCheck)
 	{
 		auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-		auto& data = dynamic_cast<BossAttackData&>(*collider.data);
-
 		DrawCapsule3D(collider.rigidbody.GetPosition(), collider.topPositon, collider.radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
 	}
 	VECTOR position = this->collider->rigidbody.GetPosition();
 	printfDx("SLAP X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-	//}
 }

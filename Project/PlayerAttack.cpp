@@ -7,7 +7,6 @@
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "AttackData.h"
-#include "PlayerAttackData.h"
 #include "AttackSphereColliderData.h"
 #include "PlayerAttack.h"
 #include "Debug.h"
@@ -27,8 +26,7 @@ PlayerAttack::PlayerAttack()
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*コライダーデータの作成*/
-	AttackData* data = new PlayerAttackData();
-	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER_ATTACK, data);
+	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER_ATTACK, new AttackData());
 }
 
 /// <summary>
@@ -48,10 +46,9 @@ void PlayerAttack::Initialize()
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	auto& collider	= dynamic_cast<AttackSphereColliderData&>(*this->collider);
-	auto& data			= dynamic_cast<PlayerAttackData&>(*collider.data);
 	
 	collider.radius		  = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_RADIUS"];
-	data.hitStopTime	  = json.GetJson(JsonManager::FileType::PLAYER)["HIT_STOP_TIME"];
+	collider.data->hitStopTime	  = json.GetJson(JsonManager::FileType::PLAYER)["HIT_STOP_TIME"];
 	this->isStartHitCheck = false;
 	this->frameCount	  = 0;
 	this->isNotOnHit	  = false;
@@ -73,7 +70,6 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
-	auto& data = dynamic_cast<PlayerAttackData&>(*collider.data);
 
 	/*当たり判定の確認が開始している*/
 	if (this->isStartHitCheck)
@@ -99,26 +95,26 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 		//今回の攻撃中に当たり判定フラグが一度もたっていなかったらフラグを立てる
 		if (!this->isNotOnHit)
 		{
-			data.isDoHitCheck = true;
+			collider.data->isDoHitCheck = true;
 			this->isNotOnHit = true;
 		}
 		//攻撃が当たっていたらエフェクトを再生
-		if (data.isHitAttack)
+		if (collider.data->isHitAttack)
 		{
 			auto& effect = Singleton<EffectManager>::GetInstance();
 			effect.OnIsEffect(EffectManager::EffectType::PLAYER_IMPACT);
 			effect.SetPosition(EffectManager::EffectType::PLAYER_IMPACT, this->collider->rigidbody.GetPosition());
-			data.isHitAttack = false;
+			collider.data->isHitAttack = false;
 		}
 
 		//当たり判定の座標のセット
 		this->collider->rigidbody.SetPosition(position);
 
 		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
-		if (this->frameCount > END_HIT_CHECK_FRAME || (this->isNotOnHit && !data.isDoHitCheck))
+		if (this->frameCount > END_HIT_CHECK_FRAME || (this->isNotOnHit && !collider.data->isDoHitCheck))
 		{
 			this->isStartHitCheck = false;
-			data.isDoHitCheck = false;
+			collider.data->isDoHitCheck = false;
 			this->frameCount = 0;
 		}
 	}
@@ -130,9 +126,8 @@ void PlayerAttack::Update(const VECTOR _position, const VECTOR _direction)
 void PlayerAttack::SetDamage(const float _damage)
 {
 	auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
-	auto& data = dynamic_cast<PlayerAttackData&>(*collider.data);
 
-	data.damage = _damage;
+	collider.data->damage = _damage;
 }
 
 /// <summary>

@@ -84,69 +84,40 @@ const void HPUI::Draw()const
 	auto& json = Singleton<JsonManager>::GetInstance();
 	//HP
 	{
-		Vec2d position;
-		Box box;
-		int height;
-		int indexBase = json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_WIDTH"];
-		int nowHP = static_cast<int>(this->playerHP.GetNow() / this->playerHP.GetMax() * indexBase);
-		int prevHP = static_cast<int>(this->playerHP.GetPrev() / this->playerHP.GetMax() * indexBase);
-		position.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_POSITION"]);
-		height = json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_HEIGHT"];
-		Box table;
-		table.Set(json.GetJson(JsonManager::FileType::UI)["HP_TABLE_BOX"]);
-		box.lx = position.x;
-		box.ly = position.y;
-		box.rx = box.lx + indexBase;
-		box.ry = box.ly + height;
+		vector<int> table = json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_TABLE_POSITION"];
+		vector<int>	hp = json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_POSITION"];
+		int			height = json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_HEIGHT"];
+		int			indexBase = json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_WIDTH"];
+		int			nowHP = static_cast<int>(this->playerHP.GetNow() / this->playerHP.GetMax() * indexBase);
+		int			prevHP = static_cast<int>(this->playerHP.GetPrev() / this->playerHP.GetMax() * indexBase);
 
-		Vec2d tablePosiiton;
-		tablePosiiton.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_HP_TABLE_POSITION"]);
-
-		DrawGraph		(tablePosiiton.x , tablePosiiton.y , this->barTable, TRUE);
-		DrawBox			(box.lx, box.ly, box.lx + prevHP, box.ry, this->prevPlayerHPColor, TRUE);
-		DrawExtendGraph	(box.lx, box.ly, box.lx + nowHP, box.ry, this->playerHPBar, TRUE);
+		DrawExtendGraph(table[0], table[1], table[2], table[3], this->barTable, TRUE);
+		DrawBox			(hp[0], hp[1], hp[0] + prevHP, hp[1] + height, this->prevPlayerHPColor, TRUE);
+		DrawExtendGraph	(hp[0], hp[1], hp[0] + nowHP, hp[1] + height, this->playerHPBar, TRUE);
 	}
 	//STAMINA
 	{
-		Vec2d table;
-		Vec2d position;
-		Box box;
-		int height;
-		int indexBase = json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_WIDTH"];
-		int nowStamina =static_cast<int>(this->playerStamina.GetNow() / this->playerStamina.GetMax() * indexBase);
-		position.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_POSITION"]);
-		table.Set(json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_TABLE_POSITION"]);
-		height = json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_HEIGHT"];
+		vector<int> stamina		= json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_POSITION"];
+		vector<int> table		= json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_TABLE_POSITION"];
+		int			indexBase	= json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_WIDTH"];
+		int			nowStamina	= static_cast<int>(this->playerStamina.GetNow() / this->playerStamina.GetMax() * indexBase);
+		int			height		= json.GetJson(JsonManager::FileType::UI)["PLAYER_STAMINA_HEIGHT"];
 
-		box.lx = position.x;
-		box.ly = position.y;
-		box.rx = box.lx + indexBase;
-		box.ry = box.ly + height;
-
-		DrawGraph(table.x, table.y, this->barTable, TRUE);
-		DrawExtendGraph(box.lx, box.ly, box.lx + nowStamina, box.ry, this->playerStaminaBar, TRUE);
+		DrawExtendGraph(table[0], table[1], table[2], table[3], this->barTable, TRUE);
+		DrawExtendGraph(stamina[0], stamina[1], stamina[0] + nowStamina, stamina[1] + height, this->playerStaminaBar, TRUE);
 	}
 	//BOSS
 	{
-		Vec2d position;
-		Box box;
-		int height;
-		vector<int> table = json.GetJson(JsonManager::FileType::UI)["BOSS_HP_TABLE_POSITION"];
-		int indexBase = json.GetJson(JsonManager::FileType::UI)["BOSS_HP_WIDTH"];
-		int nowHP = static_cast<int>(this->bossHP.GetNow() / this->bossHP.GetMax() * indexBase);
-		int prevHP = static_cast<int>(this->bossHP.GetPrev() / this->bossHP.GetMax() * indexBase);
-		position.Set(json.GetJson(JsonManager::FileType::UI)["BOSS_HP_POSITION"]);
-		height = json.GetJson(JsonManager::FileType::UI)["BOSS_HP_HEIGHT"];
-
-		box.lx = position.x;
-		box.ly = position.y;
-		box.rx = box.lx + indexBase;
-		box.ry = box.ly + height;
+		vector<int> table		= json.GetJson(JsonManager::FileType::UI)["BOSS_HP_TABLE_POSITION"];
+		vector<int> hp			= json.GetJson(JsonManager::FileType::UI)["BOSS_HP_POSITION"];
+		int			indexBase	= json.GetJson(JsonManager::FileType::UI)["BOSS_HP_WIDTH"];
+		int			nowHP		= static_cast<int>(this->bossHP.GetNow() / this->bossHP.GetMax() * indexBase);
+		int			prevHP		= static_cast<int>(this->bossHP.GetPrev() / this->bossHP.GetMax() * indexBase);
+		int			height		= json.GetJson(JsonManager::FileType::UI)["BOSS_HP_HEIGHT"];
 
 		DrawExtendGraph(table[0], table[1], table[2], table[3], this->barTable, TRUE);
-		DrawBox(box.lx, box.ly, box.lx + prevHP, box.ry, this->prevBossHPColor, TRUE);
-		DrawExtendGraph(box.lx, box.ly, box.lx + nowHP, box.ry, this->bossHPBar, TRUE);
-		DrawExtendGraph(table[0], table[1], table[2], table[3], this->bossHPBarFrame, TRUE);
+		DrawBox(hp[0], hp[1], hp[0] + prevHP, hp[1] + height, this->prevBossHPColor, TRUE);
+		DrawExtendGraph(hp[0], hp[1], hp[0] + nowHP, hp[1] + height, this->bossHPBar, TRUE);
 	}
 }
 /// <summary>

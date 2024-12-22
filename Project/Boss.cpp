@@ -1,6 +1,5 @@
 #include <DxLib.h>
-#include <Effekseer.h>
-#include <EffekseerRendererDX11.h>
+#include "EffekseerForDXLib.h"
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "VECTORtoUseful.h"
@@ -8,7 +7,6 @@
 #include "ReactionType.h"
 #include "Rigidbody.h"
 #include "CharacterData.h"
-#include "BossData.h"
 #include "ColliderData.h"
 #include "CharacterColliderData.h"
 #include "BitFlag.h"
@@ -74,8 +72,7 @@ Boss::Boss()
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::JUMP_ATTACK)	,this->JUMP_ATTACK);
 
 	/*コライダーデータの作成*/
-	CharacterData* data = new BossData();
-	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, data);
+	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
 
 	/*アクションパラメーターの作成*/
 	this->parameters.emplace_back(new BossDeathAction());
@@ -110,7 +107,6 @@ void Boss::Initialize()
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
-	auto& data = dynamic_cast<BossData&>(*collider.data);
 
 	/*変数の初期化*/
 	this->isAlive			= true;
@@ -128,8 +124,8 @@ void Boss::Initialize()
 	collider.topPositon		= VGet(0.0f, height, 0.0f);
 	collider.radius			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
 	collider.isUseCollWithGround = true;
-	data.hp					= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
-	data.isHit				= false;
+	collider.data->hp					= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
+	collider.data->isHit				= false;
 	
 	/*コンボの設定*/
 	SetAttackComboCount();

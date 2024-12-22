@@ -16,3 +16,5 @@
 #include "PlayerCombo2.h"
 #include "PlayerCombo3.h"
 #include "PlayerStrongAttack.h"
+#include "PlayerDrawSword1.h"
+#include "PlayerDrawSword2.h"

@@ -17,7 +17,6 @@ public:
 
 	/*getter/setter*/
 	const CharacterData& GetCharacterData ()const;			//キャラクターデータの取得
-		  void			 SetPlayerReaction(const int _type);//プレイヤーリアクションのセット
 
 	/*メンバ変数*/
 	CharacterData*	data;		//キャラクターデータ

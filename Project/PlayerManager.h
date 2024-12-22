@@ -18,6 +18,7 @@ public:
 	const void Draw		 ()const;					   //描画
 
 	/*getter*/
+	const int			 GetNowState	 ()const;
 	const CharacterData& GetCharacterData()const;//キャラクターデータの取得
 	const Rigidbody&	 GetRigidbody	 ()const;//リジッドボディの取得
 	const int			 GetHP			 ()const;//HPの取得
@@ -26,6 +27,7 @@ public:
 	const int			 GetModelHandle	 ()const;//モデルハンドルの取得
 	const bool			 GetIsAlive		 ()const;//生存フラグの取得
 	const bool			 GetIsLockOn	 ()const;//ロックオンフラグの取得
+	const bool			 GetIsDrawSword	 ()const;//抜刀フラグの取得
 private:
 	/*内部処理関数*/
 	PlayerManager();//コンストラクタ

@@ -70,6 +70,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -83,6 +95,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../Dxlib.h</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -102,6 +115,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>Dxlib.h</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,6 +131,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../Dxlib.h</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,6 +151,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>Dxlib.h</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -177,9 +193,7 @@
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BossAction.cpp" />
     <ClCompile Include="BossAttack.cpp" />
-    <ClCompile Include="BossAttackData.cpp" />
     <ClCompile Include="BossChaseAction.cpp" />
-    <ClCompile Include="BossData.cpp" />
     <ClCompile Include="BossDeathAction.cpp" />
     <ClCompile Include="BossJumpAttack.cpp" />
     <ClCompile Include="BossJumpAttackAction.cpp" />
@@ -241,6 +255,8 @@
     <ClCompile Include="PlayerCombo3.cpp" />
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="PlayerDeath.cpp" />
+    <ClCompile Include="PlayerDrawSword1.cpp" />
+    <ClCompile Include="PlayerDrawSword2.cpp" />
     <ClCompile Include="PlayerHeal.cpp" />
     <ClCompile Include="PlayerIdle.cpp" />
     <ClCompile Include="PlayerImpactEffect.cpp" />
@@ -250,7 +266,6 @@
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="BossSlashComboAction.cpp" />
     <ClCompile Include="PlaneColliderData.cpp" />
-    <ClCompile Include="PlayerAttackData.cpp" />
     <ClCompile Include="BossRotateSlashAction.cpp" />
     <ClCompile Include="GameClearScene.cpp" />
     <ClCompile Include="GameClearUI.cpp" />
@@ -290,7 +305,6 @@
     <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="PlayerAttackManager.cpp" />
     <ClCompile Include="PlayerAttack.cpp" />
-    <ClCompile Include="PlayerData.cpp" />
     <ClCompile Include="PlayerManager.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="BossRotateSlashAttack.cpp" />
@@ -352,9 +366,7 @@
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossAction.h" />
     <ClInclude Include="BossAttack.h" />
-    <ClInclude Include="BossAttackData.h" />
     <ClInclude Include="BossChaseAction.h" />
-    <ClInclude Include="BossData.h" />
     <ClInclude Include="BossDeathAction.h" />
     <ClInclude Include="BossJumpAttack.h" />
     <ClInclude Include="BossJumpAttackAction.h" />
@@ -418,6 +430,8 @@
     <ClInclude Include="PlayerCombo3.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="PlayerDeath.h" />
+    <ClInclude Include="PlayerDrawSword1.h" />
+    <ClInclude Include="PlayerDrawSword2.h" />
     <ClInclude Include="PlayerHeal.h" />
     <ClInclude Include="PlayerIdle.h" />
     <ClInclude Include="PlayerImpactEffect.h" />
@@ -427,7 +441,6 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="BossSlashComboAction.h" />
     <ClInclude Include="PlaneColliderData.h" />
-    <ClInclude Include="PlayerAttackData.h" />
     <ClInclude Include="BossRotateSlashAction.h" />
     <ClInclude Include="GameClearScene.h" />
     <ClInclude Include="GameClearUI.h" />
@@ -465,7 +478,6 @@
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="PlayerAttackManager.h" />
     <ClInclude Include="PlayerAttack.h" />
-    <ClInclude Include="PlayerData.h" />
     <ClInclude Include="PlayerManager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rigidbody.h" />

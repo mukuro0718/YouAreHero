@@ -9,6 +9,7 @@
 #include "LoadScene.h"
 #include "SceneChanger.h"
 #include "FPSController.h"
+#include "ScreenSetup.h"
 
 //SceneManager* Singleton<SceneManager>::instance = nullptr;
 
@@ -38,6 +39,7 @@ void SceneManager::Update()
 	if (GetASyncLoadNum() == 0)
 	{
 		auto& fps = Singleton<FPSController>::GetInstance();
+		auto& screen = Singleton<ScreenSetup>::GetInstance();
 
 		fps.CalcStartTime();
 

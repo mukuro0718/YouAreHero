@@ -3,6 +3,7 @@
 //======================================================
 
 #pragma once
+
 class ButtonUI
 {
 public:
@@ -19,33 +20,27 @@ private:
 		S_ATTACK,
 		AVOID,
 		GUARD,
-	};
-	/*構造体*/
-	struct Vec2d
-	{
-		void Set(const int _x, const int _y) { this->x = _x; this->y = _y; }
-		void Set(const std::vector<int> _pos) { this->x = _pos[0]; this->y = _pos[1]; }
-		int x, y;
-	};
-	struct Box
-	{
-		void Set(const std::vector<int> _pos) { this->lx = _pos[0]; this->ly = _pos[1]; this->rx = _pos[2]; this->ry = _pos[3];}
-		int lx, ly, rx, ry;
-	};
+	};	
 
 	/*静的定数*/
 	static constexpr int TEXT_COLOR = 0xffffff;
 
 	/*内部処理関数*/
 	int ConvertColor(const std::vector<int> _color);
-	void DrawIcon();
-	void DrawFont();
+	void DrawItem();
+	void DrawTextImage();
 	void DrawButton();
 
 	/*メンバ変数*/
 	int table;
 	int potion;
-	int iconFont, operationFont;
+	int operationFont;
+	int itemFont;
 	vector<int> button;
-	int buttonFont;
+	vector<int>	textList; //文字のリスト
+	vector<int>	buttonList;//画像のリスト
+	map<int, vector<int>> displayTextMap;
+	map<int, vector<int>> displayButtonMap;
+	vector<int> changeDisplayIndexType;
+	int displayIndex;
 };
