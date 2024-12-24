@@ -51,5 +51,6 @@ private:
 
 	/*ƒƒ“ƒo•Ï”*/
 	std::list<ColliderData*> collidables;//“o˜^‚³‚ê‚½Collidable‚ÌƒŠƒXƒg
+	int frameTime;//ˆ—‚Ü‚Å‚É‚©‚©‚Á‚½ŠÔ
 };
 

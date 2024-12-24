@@ -41,7 +41,17 @@ protected:
 	VECTOR	UpdateVelocity	(const VECTOR _rotation, const VECTOR _prevVelocity, const float _speed, const bool _isLerp);	//移動ベクトルの更新
 
 	/*メンバ変数*/
-	bool isChangeAction;//アクションの変更ができる状態になればこのフラグを立てる
-	bool isEndAction;//アクションがすべて終了したらこのフラグを立てる
+	bool  isChangeAction;//アクションの変更ができる状態になればこのフラグを立てる
+	bool  isEndAction;//アクションがすべて終了したらこのフラグを立てる
+	short frameCount;
+	int	  frameTime;//処理までにかかった時間
+	float staminaRecoveryValue;
+	float maxStamina;
+	float playTime;
+	int   nextAnimation;
+	VECTOR rotateLerpValue;
+	VECTOR velocityLerpValue;
+	float accel;
+	float decel;
 };
 

@@ -9,6 +9,8 @@
 #include "MapManager.h"
 #include "Debug.h"
 #include "InputManager.h"
+#include "Character.h"
+#include "Player.h"
 #include "PlayerManager.h"
 #include "PlayerAttackManager.h"
 #include "EnemyManager.h"
@@ -24,6 +26,8 @@
 /// コンストラクタ
 /// </summary>
 GameScene::GameScene()
+	: startTime(0)
+	, frameTime(0)
 {
 	Initialize();
 }
@@ -86,6 +90,7 @@ void GameScene::Finalize()
 /// </summary>
 void GameScene::Update()
 {
+	//this->startTime = GetNowCount();
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& input = Singleton<InputManager>		::GetInstance();
 	auto& debug = Singleton<Debug>				::GetInstance();
@@ -127,6 +132,8 @@ void GameScene::Update()
 			sceneChanger.ChangeScene(SceneChanger::SceneType::GAME_CLEAR);
 		}
 	}
+	//int endTime = GetNowCount();
+	//this->frameTime = endTime - startTime;
 }
 
 /// <summary>
@@ -153,6 +160,7 @@ const void GameScene::Draw()const
 	effect.Draw();
 	ui.Draw();
 	timer.Draw();
+	//printfDx("GAME_FRAMETIME:%d\n", this->frameTime);
 }
 
 /// <summary>

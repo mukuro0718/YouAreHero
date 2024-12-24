@@ -20,8 +20,6 @@ public:
 		  void SetDamage	(const float _damage);										 //ダメージの設定
 	const bool GetIsStart	()const { return this->isStartHitCheck; }					 //当たり判定開始フラグを取得
 private:
-
-
 	/*メンバ変数*/
 	ColliderData* collider;			//コライダー
 	bool		  isStartHitCheck;	//ヒットチェック

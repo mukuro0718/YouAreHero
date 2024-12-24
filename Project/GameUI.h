@@ -8,7 +8,6 @@ class Image;
 class HPUI;
 class ButtonUI;
 class BossNameUI;
-class Audience;
 class GameUI : public SceneUI
 {
 public:
@@ -37,7 +36,6 @@ private:
 	HPUI* hp;
 	ButtonUI* button;
 	BossNameUI* bossName;
-	Audience* audience;
 	int imageHandle;
 	bool isEnd;
 	int alpha;

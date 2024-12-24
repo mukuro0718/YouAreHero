@@ -5,6 +5,8 @@
 #include "Image.h"
 #include "SceneUI.h"
 #include "GameOverUI.h"
+#include "Character.h"
+#include "Player.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"
 #include "CameraManager.h"

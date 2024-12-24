@@ -4,7 +4,6 @@
 #include "UseJson.h"
 #include "SceneBase.h"
 #include "Image.h"
-#include "Audience.h"
 #include "HPUI.h"
 #include "ButtonUI.h"
 #include "BossNameUI.h"
@@ -13,6 +12,8 @@
 #include "UIManager.h"
 #include "InputManager.h"
 #include "LoadingAsset.h"
+#include "Character.h"
+#include "Player.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"
 
@@ -23,13 +24,11 @@ GameUI::GameUI()
 	: hp(nullptr)
 	, button(nullptr)
 	, bossName(nullptr)
-	, audience(nullptr)
 {
 	/*インスタンスの生成*/
 	this->hp = new HPUI();
 	this->button = new ButtonUI();
 	this->bossName = new BossNameUI();
-	this->audience = new Audience();
 
 	/*画像クラスインスタンスの作成*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
@@ -46,7 +45,6 @@ GameUI::~GameUI()
 	DeleteMemberInstance(this->hp);
 	DeleteMemberInstance(this->button);
 	DeleteMemberInstance(this->bossName);
-	DeleteMemberInstance(this->audience);
 }
 
 /// <summary>
@@ -58,7 +56,6 @@ void GameUI::Initialize()
 	this->hp->Initialize();
 	this->button->Initialize();
 	this->bossName->Initialize();
-	this->audience->Initialize();
 
 	/*変数の初期化*/
 	auto& json = Singleton<JsonManager>	 ::GetInstance();
@@ -108,7 +105,6 @@ void GameUI::Update()
 /// </summary>
 const void GameUI::Draw()const
 {
-	this->audience->Draw();
 	this->hp->Draw();
 	this->button->Draw();
 	this->bossName->Draw();

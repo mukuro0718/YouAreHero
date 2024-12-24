@@ -6,6 +6,7 @@
 #include "BossAction.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "Player.h"
 #include "Enemy.h"
 #include "Boss.h"
 #include "BossChaseAction.h"

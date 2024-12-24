@@ -217,9 +217,6 @@
     <Filter Include="Effect\Player\Attack">
       <UniqueIdentifier>{864f1921-cfdf-41f6-a694-09df82e26b0f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI\Audience">
-      <UniqueIdentifier>{39376430-e6d4-49d7-bce7-d682bfcc6ed9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Timer">
       <UniqueIdentifier>{1463850c-e73c-48b2-9915-8c4246a180d7}</UniqueIdentifier>
     </Filter>
@@ -814,9 +811,6 @@
     <ClCompile Include="PlayerImpactEffect.cpp">
       <Filter>Effect\Player\Attack</Filter>
     </ClCompile>
-    <ClCompile Include="Audience.cpp">
-      <Filter>UI\Audience</Filter>
-    </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Timer</Filter>
     </ClCompile>
@@ -1349,9 +1343,6 @@
     </ClInclude>
     <ClInclude Include="PlayerImpactEffect.h">
       <Filter>Effect\Player\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="Audience.h">
-      <Filter>UI\Audience</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Timer</Filter>

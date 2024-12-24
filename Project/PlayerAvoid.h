@@ -13,7 +13,10 @@ public:
 	void Finalize	() override;				//後処理
 	void Update		(Player& _player) override;	//更新
 private:
-	bool isPlay;//このアクションを行っているか
-	int frameCount;
+	float staminaConsumpion;//スタミナの消費量
+	float firstSpeed;//初速
+	short rotatableFrame;//回転可能フレーム
+	short justAvoidFrame;
+	bool  isRotate;
 };
 

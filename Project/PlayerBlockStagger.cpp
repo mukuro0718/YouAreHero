@@ -15,6 +15,11 @@
 PlayerBlockStagger::PlayerBlockStagger()
 	: PlayerAction()
 {
+	auto& json = Singleton<JsonManager>  ::GetInstance();
+	this->staminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"];
+	this->maxStamina = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
+	this->nextAnimation = static_cast<int>(Player::AnimationType::BLOCK_REACTION);
+	this->playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 
 }
 
@@ -49,20 +54,15 @@ void PlayerBlockStagger::Finalize()
 /// </summary>
 void PlayerBlockStagger::Update(Player& _player)
 {
-	/*アニメーションの再生が終了していたら早期リターン*/
-	if (_player.GetIsChangeAnimation())
+	/*移動速度が０以上の時処理を行う*/
+	if (_player.GetSpeed() != 0)
 	{
-		this->isEndAction = true;
-		return;
+		MoveData data;
+		data.Set(_player.GetNextRotation(), 0.0f, true, false);
+		Move(_player, data);
 	}
 
-	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
-	MoveData data;
-	data.Set(_player.GetNextRotation(), 0.0f, true, false);
-	Move(_player, data);
-
 	/*処理の開始時に一度だけ行う処理*/
-	auto& json = Singleton<JsonManager>  ::GetInstance();
 	if (this->frameCount == 0)
 	{
 		//エフェクトの再生
@@ -71,19 +71,24 @@ void PlayerBlockStagger::Update(Player& _player)
 		//ヒットフラグを下す
 		_player.GetPlayerData().isHit = false;
 		//スタミナを減らす
-		_player.CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]);
+		_player.CalcStamina(this->staminaConsumption, this->maxStamina);
 	}
 
-
 	/*フレーム計測*/
-	this->frameCount++;
-	if (this->frameCount >= json.GetJson(JsonManager::FileType::PLAYER)["REACTION_CANCEL_MAX_FRAME"])
+	if (!this->isChangeAction)
 	{
-		this->isChangeAction = true;
+		this->frameCount++;
+		if (this->frameCount >= this->cancelableFrame)
+		{
+			this->isChangeAction = true;
+		}
 	}
 
 	/*アニメーションの再生*/
-	int nextAnimation = static_cast<int>(Player::AnimationType::BLOCK_REACTION);
-	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
-	_player.PlayAnimation(nextAnimation, playTime);
+	_player.PlayAnimation(this->nextAnimation, this->playTime);
+
+	if (_player.GetIsChangeAnimation())
+	{
+		this->isEndAction = true;
+	}
 }

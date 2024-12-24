@@ -24,5 +24,6 @@ private:
 
 	/*ƒƒ“ƒo•Ï”*/
 	std::vector<SceneUI*>	scene;
+	int frameTime;//ˆ—‚Ü‚Å‚É‚©‚©‚Á‚½ŠÔ
 };
 

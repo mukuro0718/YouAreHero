@@ -15,8 +15,9 @@ public:
 	void Update		  (Boss& _boss)		  override;//パラメータの計算
 	void CalcParameter(const Boss& _boss) override;//パラメーターの計算
 private:
-	int	 prevAngryState;		//前の怒り状態
-	bool isFinishedFirstRoar;	//最初の咆哮が終了したかフラグ
-	bool isInitializeColorScale;//カラースケールを初期化したか
+	static constexpr char FLAG_YES = 1 << 0;
+	int	 prevState;		//前の怒り状態
+	char isFinishedFirstRoar;	//最初の咆哮が終了したかフラグ
+	char isInitializeColorScale;//カラースケールを初期化したか
 };
 

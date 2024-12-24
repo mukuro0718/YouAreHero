@@ -7,6 +7,7 @@
 #include "BossAction.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "Player.h"
 #include "Enemy.h"
 #include "Boss.h"
 #include "HitStop.h"
@@ -235,7 +236,7 @@ void BossSlashAction::CalcParameter(const Boss& _boss)
 	}
 
 	/*ó‘Ô‚ªTIRED,NORMAL,ANGRY‚¾‚Á‚½‚ç—~‹’l‚ğ‘‰Á‚·‚é*/
-	if (_boss.GetAngryState() >= static_cast<int>(Boss::AngryStateType::NORMAL))
+	if (_boss.GetAngryState() >= static_cast<int>(Boss::BossState::NORMAL))
 	{
 
 		/*‹——£‚ª’è”ˆÈ“à‚¾‚Á‚½‚ç—~‹’l‚ğ’Êí‚É‚·‚é*/

@@ -7,6 +7,8 @@
 #include "Rigidbody.h"
 #include "Effect.h"
 #include "PlayerGuardHitEffect.h"
+#include "Character.h"
+#include "Player.h"
 #include "PlayerManager.h"
 
 /// <summary>

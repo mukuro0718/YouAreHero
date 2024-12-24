@@ -18,7 +18,16 @@
 PlayerBlock::PlayerBlock()
 	: PlayerAction()
 {
-
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->staminaRecoveryValue = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"];
+	this->maxStamina = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
+	this->maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["NONE_STAMINA_RUN_SPEED"];
+	this->enemyFirstDirection = Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_DIRECTION"]);
+	this->playerFirstDirection = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);
+	this->toleranceDot = json.GetJson(JsonManager::FileType::PLAYER)["TOLERANCE_DOT"];
+	this->staminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"];
+	this->nextAnimation = static_cast<int>(Player::AnimationType::BLOCK);
+	this->playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 }
 
 /// <summary>
@@ -52,8 +61,7 @@ void PlayerBlock::Finalize()
 void PlayerBlock::Update(Player& _player)
 {
 	/*スタミナの回復*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	_player.CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
+	_player.CalcStamina(this->staminaRecoveryValue, this->maxStamina);
 
 	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
 	auto& input = Singleton<InputManager>  ::GetInstance();
@@ -62,7 +70,7 @@ void PlayerBlock::Update(Player& _player)
 	if (input.GetLStickState().XBuf != 0 || input.GetLStickState().YBuf != 0)
 	{
 		isSkip = false;
-		maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["NONE_STAMINA_RUN_SPEED"];
+		maxSpeed = this->maxSpeed;
 	}
 	MoveData data;
 	data.Set(_player.GetNextRotation(), maxSpeed, isSkip, false);
@@ -70,19 +78,16 @@ void PlayerBlock::Update(Player& _player)
 
 	/*ガードが成功しているかの判定をする*/
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
-	VECTOR enemyFirstDirection = Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_DIRECTION"]);		 //敵が最初に向いている向き
-	VECTOR playerFirstDirection = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);	 //プレイヤーが最初に向いている向き
-	VECTOR enemyDirection = VTransform(enemyFirstDirection, MGetRotY(enemy.GetRigidbody().GetRotation().y));	 //今のエネミーの向き
+	VECTOR enemyDirection = VTransform(this->enemyFirstDirection, MGetRotY(enemy.GetRigidbody().GetRotation().y));	 //今のエネミーの向き
 	enemyDirection = VNorm(enemyDirection);
-	VECTOR playerDirection = VTransform(playerFirstDirection, MGetRotY(_player.GetRigidbody().GetRotation().y));//今のプレイヤーの向き
+	VECTOR playerDirection = VTransform(this->playerFirstDirection, MGetRotY(_player.GetRigidbody().GetRotation().y));//今のプレイヤーの向き
 	playerDirection = VNorm(playerDirection);
-	float  TOLERANCE_DOT = json.GetJson(JsonManager::FileType::PLAYER)["TOLERANCE_DOT"];//内積の許容範囲
 	float  enemyAndPlayerDot = VDot(enemyDirection, playerDirection);
 	enemyAndPlayerDot = enemyAndPlayerDot * 180.0f / DX_PI_F;
 	//もし内積がマイナスなら＋に戻して判定する
 	if (enemyAndPlayerDot < 0) { enemyAndPlayerDot *= -1.0f; }
 	//内積が許容範囲かつスタミナが足りていたらガード成功
-	if (enemyAndPlayerDot >= TOLERANCE_DOT && _player.CanAction(json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]))
+	if (enemyAndPlayerDot >= this->toleranceDot && _player.CanAction(this->staminaConsumption))
 	{
 		_player.GetPlayerData().isGuard = true;
 	}
@@ -92,9 +97,7 @@ void PlayerBlock::Update(Player& _player)
 	}
 
 	/*アニメーションの再生*/
-	int nextAnimation = static_cast<int>(Player::AnimationType::BLOCK);
-	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
-	_player.PlayAnimation(nextAnimation, playTime);
+	_player.PlayAnimation(this->nextAnimation, this->playTime);
 
 	this->isEndAction = true;
 }

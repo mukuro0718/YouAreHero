@@ -97,7 +97,6 @@ void Player::Initialize()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json		= Singleton<JsonManager>::GetInstance();
 	auto& asset		= Singleton<LoadingAsset>::GetInstance();
-	auto& collider	= dynamic_cast<CharacterColliderData&>(*this->collider);
 
 	/*変数の初期化*/
 	this->isAlive			 = true;
@@ -123,14 +122,14 @@ void Player::Initialize()
 	MV1SetScale		 (this->modelHandle, this->collider->rigidbody.GetScale());
 
 	float height				 = json.GetJson(JsonManager::FileType::PLAYER)["HIT_HEIGHT"];					//カプセルの高さ
-	collider.topPositon			 = /*VAdd(collider.rigidbody.GetPosition(), */VGet(0.0f, height, 0.0f)/*)*/;	//カプセルの上座標
-	collider.radius				 = json.GetJson(JsonManager::FileType::PLAYER)["RADIUS"];						//カプセルの半径
-	collider.isUseCollWithGround = true;																			//地面との当たり判定をとるか
-	collider.data->hp			 = json.GetJson(JsonManager::FileType::PLAYER)["HP"];							//HP
-	collider.data->stamina		 = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];						//スタミナ
-	collider.data->isInvinvible	 = false;																			//ダメージをカットするか
-	collider.data->isGuard		 = false;																			//ダメージをカットするか
-	collider.data->isHit		 = false;																			//攻撃がヒットしたか
+	this->collider->topPositon			 = /*VAdd(this->collider->rigidbody.GetPosition(), */VGet(0.0f, height, 0.0f)/*)*/;	//カプセルの上座標
+	this->collider->radius				 = json.GetJson(JsonManager::FileType::PLAYER)["RADIUS"];						//カプセルの半径
+	this->collider->isUseCollWithGround = true;																			//地面との当たり判定をとるか
+	this->collider->data->hp			 = json.GetJson(JsonManager::FileType::PLAYER)["HP"];							//HP
+	this->collider->data->stamina		 = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];						//スタミナ
+	this->collider->data->isInvinvible	 = false;																			//ダメージをカットするか
+	this->collider->data->isGuard		 = false;																			//ダメージをカットするか
+	this->collider->data->isHit		 = false;																			//攻撃がヒットしたか
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
@@ -148,18 +147,19 @@ void Player::Finalize()
 /// </summary>
 void Player::Update()
 {
+	int startTime = GetNowCount();
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	if (this->hitStop->IsHitStop()) return;
 
-
-	/*状態の変更*/
-	int nowState = this->controller->GetNowState();
-	bool isChancel = this->action[nowState]->GetIsChangeAction();
-	bool isEndAction = this->action[nowState]->GetIsEndAction();
-	bool isInitialize = this->controller->StateChanger(isChancel, isEndAction, this->isDrawSword, GetCharacterData());
-	nowState = this->controller->GetNowState();
+	/*状態の変更(0~1m/s)*/
+	int  nowState		= this->controller->GetNowState();
+	bool isChancel		= this->action[nowState]->GetIsChangeAction();
+	bool isEndAction	= this->action[nowState]->GetIsEndAction();
+	bool isInitialize	= this->controller->StateChanger(isChancel, isEndAction, this->isDrawSword, GetCharacterData());
+		 nowState		= this->controller->GetNowState();
+	
 
 	/*状態が異なっていたらアクションを初期化する*/
 	if (isInitialize)
@@ -176,12 +176,17 @@ void Player::Update()
 		GetPlayerData().isGuard = false;
 	}
 
+	int endTime = GetNowCount();
+	this->frameTime = endTime - startTime;
 	/*無敵フラグが立っていたら最大HPから変えない*/
-	auto& debug = Singleton<Debug>			::GetInstance();
-	if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER) && json.GetJson(JsonManager::FileType::DEBUG)["PLAYER_INVINCIBLE"])
-	{
-		GetPlayerData().hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];
-	}
+#ifdef _DEBUG
+	//auto& debug = Singleton<Debug>			::GetInstance();
+	//if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER) && json.GetJson(JsonManager::FileType::DEBUG)["PLAYER_INVINCIBLE"])
+	//{
+	//	GetPlayerData().hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];
+	//}
+	printfDx("PLAYER_FRAMETIME:%d\n", this->frameTime);
+#endif // _DEBUG
 }
 
 /// <summary>
@@ -202,7 +207,7 @@ const void Player::DrawCharacterInfo()const
 		//printfDx("PLAYER_ROTATION X:%f,Y:%f,Z:%f	\n", rotation.x, rotation.y, rotation.z);
 		//printfDx("PLAYER_SPEED:%f					\n", this->speed);
 		//auto& characterCollider = dynamic_cast<CharacterColliderData&> (*this->collider);
-		//printfDx("%d:REACTION_TYPE				\n", characterCollider.data->reactionType);
+		//printfDx("%d:REACTION_TYPE				\n", characterthis->collider->data->reactionType);
 		//auto& json = Singleton<JsonManager>::GetInstance();
 		//string stateInfo = json.GetJson(JsonManager::FileType::PLAYER)["STATE_INFO"][this->controller->GetNowState()];
 		//printfDx(stateInfo.c_str());
@@ -239,32 +244,27 @@ void Player::DeathProcess()
 /// </summary>
 const bool Player::CanAction(const float _staminaConsumed)const
 {
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 	float staminaConsumed = _staminaConsumed * -1.0f;
 	/*スタミナの消費量が現在のスタミナの総量よりも多ければfalseを返す*/
-	if (staminaConsumed > collider.data->stamina)return false;
+	if (staminaConsumed > this->collider->data->stamina)return false;
 	return true;
 }
 
 /// <summary>
-/// スタミナの回復処理
+/// スタミナの計算
 /// </summary>
-void Player::CalcStamina(const float _staminaConsumed)
+void Player::CalcStamina(const float _staminaConsumed, const float _maxStamina)
 {
-	auto& json = Singleton<JsonManager>  ::GetInstance();
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
+	this->collider->data->stamina += _staminaConsumed;
 
-	/*それ以外の状態だったら状態に応じてスタミナを消費する*/
-	//走り
-	collider.data->stamina += _staminaConsumed;
 	/*上限値、下限値を超えないように調整*/
-	if (collider.data->stamina >= json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"])
+	if (this->collider->data->stamina >= _maxStamina)
 	{
-		collider.data->stamina = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
+		this->collider->data->stamina = _maxStamina;
 	}
-	else if (collider.data->stamina < 0)
+	else if (this->collider->data->stamina < 0)
 	{
-		collider.data->stamina = 0;
+		this->collider->data->stamina = 0;
 	}
 }
 
@@ -282,8 +282,7 @@ const int Player::GetNowState()const
 /// </summary>
 const int Player::GetStamina()const
 {
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
-	return collider.data->stamina;
+	return this->collider->data->stamina;
 }
 
 /// <summary>
@@ -293,8 +292,7 @@ const int Player::GetStamina()const
 /// </summary>
 CharacterData& Player::GetPlayerData()
 {
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
-	return *collider.data;
+	return *this->collider->data;
 }
 
 /// <summary>

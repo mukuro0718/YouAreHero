@@ -50,7 +50,7 @@ void PlayerController::Initialize()
 /// </summary>
 bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEndAction, const bool _isDrawSword, const CharacterData& _data)
 {
-	int nextState = -1;
+	PlayerState nextState;
 
 	auto& json = Singleton<JsonManager>  ::GetInstance();
 	auto& input = Singleton<InputManager>  ::GetInstance();
@@ -58,7 +58,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	/*HPが0以下なら状態をDEATHにする*/
 	if (_data.hp <= 0 )
 	{
-		nextState = static_cast<int>(PlayerState::DEATH);
+		nextState = PlayerState::DEATH;
 	}
 
 	/*攻撃がヒットしていたらリアクションの種類別の状態にする*/
@@ -67,7 +67,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 		//ガードしていたら
 		if (_data.isGuard)
 		{
-			nextState = static_cast<int>(PlayerState::BLOCK_STAGGER);
+			nextState = PlayerState::BLOCK_STAGGER;
 		}
 		else
 		{
@@ -75,20 +75,28 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 			switch (_data.reactionType)
 			{
 			case static_cast<int>(Gori::PlayerReactionType::NORMAL):
-				nextState = static_cast<int>(PlayerState::STAGGER);
+				nextState = PlayerState::STAGGER;
 				break;
 			case static_cast<int>(Gori::PlayerReactionType::BLOW_SMALL):
-				nextState = static_cast<int>(PlayerState::STAGGER);
+				nextState = PlayerState::STAGGER;
 				break;
 			case static_cast<int>(Gori::PlayerReactionType::BLOW_BIG):
-				nextState = static_cast<int>(PlayerState::KNOCK_DOWN);
+				nextState = PlayerState::KNOCK_DOWN;
 				break;
 			}
 		}
 	}
+
+	/*アクションが終了しておらず、キャンセルフラグもたっていなかったら早期リターン*/
+	else if (!_isEndAction && !_isCancelAction)
+	{
+		return false;
+	}
+
+	/*起き上がる*/
 	else if (this->nowState == static_cast<int>(PlayerState::KNOCK_DOWN))
 	{
-		nextState = static_cast<int>(PlayerState::KNOCK_UP);
+		nextState = PlayerState::KNOCK_UP;
 	}
 	/*ガード*/
 	//スタミナは足りているか
@@ -96,11 +104,11 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	{
 		if (_isDrawSword)
 		{
-			nextState = static_cast<int>(PlayerState::BLOCK);
+			nextState = PlayerState::BLOCK;
 		}
 		else
 		{
-			nextState = static_cast<int>(PlayerState::DRAW_SWORD_2);
+			nextState = PlayerState::DRAW_SWORD_2;
 		}
 	}
 
@@ -112,19 +120,19 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 			switch (this->nowState)
 			{
 			case static_cast<int>(PlayerState::COMBO_1):
-				nextState = static_cast<int>(PlayerState::COMBO_2);
+				nextState = PlayerState::COMBO_2;
 				break;
 			case static_cast<int>(PlayerState::COMBO_2):
-				nextState = static_cast<int>(PlayerState::COMBO_3);
+				nextState = PlayerState::COMBO_3;
 				break;
 			default:
-				nextState = static_cast<int>(PlayerState::COMBO_1);
+				nextState = PlayerState::COMBO_1;
 				break;
 			}
 		}
 		else
 		{
-			nextState = static_cast<int>(PlayerState::DRAW_SWORD_2);
+			nextState = PlayerState::DRAW_SWORD_2;
 		}
 	}
 
@@ -133,24 +141,24 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	{
 		if (_isDrawSword)
 		{
-			nextState = static_cast<int>(PlayerState::STRONG_ATTACK);
+			nextState = PlayerState::STRONG_ATTACK;
 		}
 		else
 		{
-			nextState = static_cast<int>(PlayerState::DRAW_SWORD_2);
+			nextState = PlayerState::DRAW_SWORD_2;
 		}
 	}
 
 	/*回避*/
 	else if (CanAction(_data.stamina, json.GetJson(JsonManager::FileType::PLAYER)["AVOID_STAMINA_CONSUMPTION"]) && input.GetNowPadState() & InputManager::PAD_A)
 	{
-		nextState = static_cast<int>(PlayerState::AVOID);
+		nextState = PlayerState::AVOID;
 	}
 
 	/*回復*/
 	else if (input.GetNowPadState() & InputManager::PAD_X)
 	{
-		nextState = static_cast<int>(PlayerState::HEAL);
+		nextState = PlayerState::HEAL;
 	}
 
 	/*移動*/
@@ -163,41 +171,37 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 				//ダッシュ
 				if (CanAction(_data.stamina, json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"]))
 				{
-					nextState = static_cast<int>(PlayerState::RUN);
+					nextState = PlayerState::RUN;
 				}
 				//スタミナ切れ
 				else
 				{
-					nextState = static_cast<int>(PlayerState::RUNNING_OUT_OF_STAMINA);
+					nextState = PlayerState::RUNNING_OUT_OF_STAMINA;
 				}
 			}
 			else
 			{
-				nextState = static_cast<int>(PlayerState::DRAW_SWORD_1);
+				nextState = PlayerState::DRAW_SWORD_1;
 			}
 		}
 		else
 		{
 			//歩き
-			nextState = static_cast<int>(PlayerState::WALK);
+			nextState = PlayerState::WALK;
 		}
 	}
-
-	///*武器だし*/
-	//else if (input.GetNowPadState() & InputManager::PAD_RB && _isDrawSword)
-	//{
-	//	nextState = static_cast<int>(PlayerState::DRAW_SWORD_1);
-	//}
 	else
 	{
-		nextState = static_cast<int>(PlayerState::IDLE);
+		nextState = PlayerState::IDLE;
 	}
 
+	int newState = static_cast<int>(nextState);
+
 	/*アクションが終了しているか、選択された状態の優先順位が高いか*/
-	if (_isEndAction || this->priority[nextState] > this->priority[this->nowState])
+	if (_isEndAction || this->priority[newState] > this->priority[this->nowState])
 	{
 		this->prevState = this->nowState;
-		this->nowState = nextState;
+		this->nowState = newState;
 		return true;
 	}
 
@@ -206,10 +210,10 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	{
 		for (int state : this->stateTheIsCancel)
 		{
-			if (state == nextState)
+			if (state == newState)
 			{
 				this->prevState = this->nowState;
-				this->nowState = nextState;
+				this->nowState = newState;
 				return true;
 			}
 		}

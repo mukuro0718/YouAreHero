@@ -52,11 +52,12 @@ protected:
 	ActionParameter*		 parameter;		//パラメータ
 	VECTOR					 moveTarget;	//移動目標
 	bool					 isSelect;		//アクションが選択されたか
-	int						 frameCount;	//フレームカウント
+	short					 frameCount;	//フレームカウント
 	bool					 isInitialize;	//初期化されたか
 	bool					 isPriority;	//優先フラグ
 	bool					 isAllowAction;	//アクションを許可する
 	std::vector<COLOR_F>	 baseColorScale;//元の色
 	std::vector<COLOR_F>	 nowColorScale;	//今の色
+	int frameTime;
 };
 

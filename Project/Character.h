@@ -3,7 +3,7 @@
 //=============================================================
 #pragma once
 
-class ColliderData;
+class CharacterColliderData;
 class CharacterData;
 class Rigidbody;
 class BitFlag;
@@ -44,8 +44,8 @@ protected:
 
 	/*メンバ変数*/
 	Animation*		animation;	//アニメーション
-	BitFlag*		state;		//状態
-	ColliderData*	collider;	//コライダー
+	BitFlag*				state;		//状態
+	CharacterColliderData*	collider;	//コライダー
 	VECTOR			nextRotation;		//次の回転率
 	int				modelHandle;//モデルハンドル
 	bool			isAlive;	//キャラクターが生存しているか

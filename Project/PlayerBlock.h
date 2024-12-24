@@ -13,5 +13,10 @@ public:
 	void Finalize	() override;				//Œãˆ—
 	void Update		(Player& _player) override;	//XV
 private:
+	float maxSpeed;
+	VECTOR enemyFirstDirection;
+	VECTOR playerFirstDirection;
+	float toleranceDot;
+	float staminaConsumption;
 };
 

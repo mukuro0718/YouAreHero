@@ -15,6 +15,7 @@
 /// コンストラクタ
 /// </summary>
 EnemyManager::EnemyManager()
+	: frameTime(0)
 {
 	this->boss.emplace_back(new Boss());
 	this->boss.emplace_back(new Beast());
@@ -44,7 +45,10 @@ void EnemyManager::Initialize()
 /// </summary>
 void EnemyManager::Update()
 {
+	//int startTime = GetNowCount();
 	this->boss[this->enemyType]->Update();
+	//int endTime = GetNowCount();
+	//this->frameTime = endTime - startTime;
 }
 /// <summary>
 /// アクション
@@ -60,6 +64,7 @@ void EnemyManager::Finalize()
 const void EnemyManager::Draw()const
 {
 	this->boss[this->enemyType]->Draw();
+	//printfDx("M_ENEMY_FRAMETIME:%d\n", this->frameTime);
 }
 
 /// <summary>

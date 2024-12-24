@@ -137,14 +137,12 @@ VECTOR Character::Lerp360Angle(const VECTOR _start, const VECTOR _end, const VEC
 /// </summary>
 const CharacterData& Character::GetCharacterData()const
 {
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
-	return *collider.data;
+	return *this->collider->data;
 }
 
 const int Character::GetHP()const
 {
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
-	return collider.data->hp;
+	return this->collider->data->hp;
 }
 
 /// <summary>

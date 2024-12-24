@@ -7,6 +7,8 @@
 #include "Rigidbody.h"
 #include "Effect.h"
 #include "PlayerImpactEffect.h"
+#include "Character.h"
+#include "Player.h"
 #include "PlayerManager.h"
 
 /// <summary>

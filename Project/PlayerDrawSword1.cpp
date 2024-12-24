@@ -16,7 +16,11 @@
 PlayerDrawSword1::PlayerDrawSword1()
 	: PlayerAction()
 {
-
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->nextAnimation = static_cast<int>(Player::AnimationType::DRAW_SWORD_1);
+	this->playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
+	this->cancelableFrame = json.GetJson(JsonManager::FileType::PLAYER)["DRAW_SWORD_1_CANCEL_FRAME"];
+	this->frameIndex = json.GetJson(JsonManager::FileType::PLAYER)["DRAW_SWORD_VISIBLE_FRAME"];
 }
 
 /// <summary>
@@ -50,25 +54,29 @@ void PlayerDrawSword1::Finalize()
 /// </summary>
 void PlayerDrawSword1::Update(Player& _player)
 {
-
-	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
-	MoveData data;
-	data.Set(_player.GetNextRotation(), 0.0f, true, false);
-	Move(_player, data);
+	/*移動速度が０以上の時処理を行う*/
+	if (_player.GetSpeed() != 0)
+	{
+		MoveData data;
+		data.Set(_player.GetNextRotation(), 0.0f, true, false);
+		Move(_player, data);
+	}
 
 	/*アニメーションの再生*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	int nextAnimation = static_cast<int>(Player::AnimationType::DRAW_SWORD_1);
-	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
-	_player.PlayAnimation(nextAnimation, playTime);
+	_player.PlayAnimation(this->nextAnimation, this->playTime);
 
-	this->frameCount++;
-	if (this->frameCount >= json.GetJson(JsonManager::FileType::PLAYER)["DRAW_SWORD_1_CANCEL_FRAME"])
+	/*キャンセルフラグが立っていなったら*/
+	if (!this->isChangeAction)
 	{
-		this->isChangeAction = true;
-		MV1SetFrameVisible(_player.GetModelHandle(), json.GetJson(JsonManager::FileType::PLAYER)["DRAW_SWORD_VISIBLE_FRAME"], false);
-		_player.SetIsDrawSword(false);
+		this->frameCount++;
+		if (this->frameCount >= this->cancelableFrame)
+		{
+			this->isChangeAction = true;
+			MV1SetFrameVisible(_player.GetModelHandle(), this->frameIndex, false);
+			_player.SetIsDrawSword(false);
+		}
 	}
+
 	/*アニメーションが終了していたら早期リターン*/
 	if (_player.GetIsChangeAnimation())
 	{

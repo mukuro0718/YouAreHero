@@ -93,6 +93,5 @@ const void FPSController::Draw()const
 	if (debug.IsShowDebugInfo(Debug::ItemType::FPS))
 	{
 		printfDx("FPS:%f\n", this->fps);
-		printfDx("P:+ M:- TARGET_FPS:%d\n", this->targetFPS);
 	}
 }

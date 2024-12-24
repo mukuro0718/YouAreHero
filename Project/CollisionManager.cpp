@@ -65,6 +65,7 @@ void CollisionManager::Exit(ColliderData& _data)
 /// </summary>
 void CollisionManager::Update()
 {
+	//int startTime = GetNowCount();
 	/*ˆÚ“®*/
 	for (auto& item : this->collidables)
 	{
@@ -122,7 +123,9 @@ void CollisionManager::Update()
 
 	/*ˆÊ’uŠm’è*/
 	FixPosition();
-
+	//int endTime = GetNowCount();
+	//this->frameTime = endTime - startTime;
+	//printfDx("COLL_FRAMETIME:%d\n", this->frameTime);
 }
 
 /// <summary>

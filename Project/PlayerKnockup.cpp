@@ -15,6 +15,11 @@
 PlayerKnockup::PlayerKnockup()
 	: PlayerAction()
 {
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->staminaRecoveryValue = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"];
+	this->maxStamina = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
+	this->nextAnimation = static_cast<int>(Player::AnimationType::DOWN_UP);
+	this->playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 
 }
 
@@ -33,6 +38,7 @@ void PlayerKnockup::Initialize()
 {
 	this->isChangeAction = false;
 	this->isEndAction = false;
+	this->frameCount = 0;
 }
 
 /// <summary>
@@ -50,19 +56,24 @@ void PlayerKnockup::Update(Player& _player)
 {
 	/*スタミナの回復*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	_player.CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
+	_player.CalcStamina(this->staminaRecoveryValue, this->maxStamina);
 
-	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
-	MoveData data;
-	data.Set(_player.GetNextRotation(), 0.0f, true, false);
-	Move(_player, data);
+	/*移動速度が０以上の時処理を行う*/
+	if (_player.GetSpeed() != 0)
+	{
+		MoveData data;
+		data.Set(_player.GetNextRotation(), 0.0f, true, false);
+		Move(_player, data);
+	}
 
-	_player.GetPlayerData().isInvinvible = false;
+	if (this->frameCount == 0)
+	{
+		_player.GetPlayerData().isInvinvible = false;
+		this->frameCount++;
+	}
 
 	/*アニメーションの再生*/
-	int nextAnimation = static_cast<int>(Player::AnimationType::DOWN_UP);
-	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
-	_player.PlayAnimation(nextAnimation, playTime);
+	_player.PlayAnimation(this->nextAnimation, this->playTime);
 
 	/*アニメーションの再生が終了していたら早期リターン*/
 	if (_player.GetIsChangeAnimation())

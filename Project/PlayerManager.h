@@ -34,6 +34,7 @@ private:
 	~PlayerManager();//デストラクタ
 
 	/*メンバ変数*/
-	Character* player;//プレイヤー
+	Player* player;//プレイヤー
+	int frameTime;//処理までにかかった時間
 };
 

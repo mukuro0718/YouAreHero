@@ -54,6 +54,6 @@ private:
 	int nowState;
 	int prevState;
 	std::vector<int> priority;//ƒAƒNƒVƒ‡ƒ“‚²‚Æ‚Ì—Dæ‡ˆÊ
-	std::vector<int> stateTheIsCancel;
+	std::list<int> stateTheIsCancel;
 };
 

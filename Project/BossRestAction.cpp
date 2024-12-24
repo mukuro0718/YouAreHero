@@ -6,6 +6,7 @@
 #include "Rigidbody.h"
 #include "BossAction.h"
 #include "Character.h"
+#include "Player.h"
 #include "Enemy.h"
 #include "Boss.h"
 #include "BossRestAction.h"
@@ -168,7 +169,7 @@ void BossRestAction::CalcParameter(const Boss& _boss)
 	/*“{‚èó‘Ô*/
 	int nowAngryState = _boss.GetAngryState();
 	/*AngryState‚ªTIRED‚Ì‚É*/
-	if (nowAngryState == static_cast<int>(Boss::AngryStateType::TIRED))
+	if (nowAngryState == static_cast<int>(Boss::BossState::TIRED))
 	{
 		//•Û‘¶‚µ‚Ä‚¢‚éó‘Ô‚ÆˆÙ‚È‚Á‚Ä‚¢‚½‚ç
 		if (nowAngryState != this->prevAngryState)

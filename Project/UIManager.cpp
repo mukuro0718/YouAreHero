@@ -50,8 +50,11 @@ void UIManager::Initialize()
 /// </summary>
 void UIManager::Update()
 {
+	//int startTime = GetNowCount();
 	auto& sceneChanger = Singleton<SceneChanger>::GetInstance();
 	this->scene[static_cast<int>(sceneChanger.GetNextSceneType())]->Update();
+	//int endTime = GetNowCount();
+	//this->frameTime = endTime - startTime;
 }
 
 /// <summary>
@@ -61,6 +64,7 @@ const void UIManager::Draw()const
 {
 	auto& sceneChanger = Singleton<SceneChanger>::GetInstance();
 	this->scene[static_cast<int>(sceneChanger.GetNextSceneType())]->Draw();
+	//printfDx("UI_FRAMETIME:%d\n", this->frameTime);
 }
 
 const bool UIManager::IsDraw()const

@@ -7,6 +7,7 @@
 #include "BossAction.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "Player.h"
 #include "Enemy.h"
 #include "Boss.h"
 #include "HitStop.h"
@@ -225,7 +226,7 @@ void BossSlashComboAction::CalcParameter(const Boss& _boss)
 	}
 
 	/*状態がANGRYだったら欲求値を増加する*/
-	else if (_boss.GetAngryState() >= static_cast<int>(Boss::AngryStateType::ANGRY)) 
+	else if (_boss.GetAngryState() >= static_cast<int>(Boss::BossState::ANGRY))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
 		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::SLASH_COMBO_1)])

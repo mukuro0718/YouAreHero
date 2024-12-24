@@ -4,6 +4,8 @@
 #include "SceneBase.h"
 #include "Image.h"
 #include "GameClearScene.h"
+#include "Character.h"
+#include "Player.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"
 #include "CameraManager.h"

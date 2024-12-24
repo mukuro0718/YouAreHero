@@ -58,7 +58,7 @@ public:
 		JUMP_ATTACK	  = 7,//ジャンプアタック
 	};
 	//怒り状態の種類
-	enum class AngryStateType
+	enum class BossState
 	{
 		TIRED,
 		NORMAL,
@@ -136,5 +136,6 @@ private:
 	int							angryState;				//怒り状態
 	int							tiredInterval;			//疲労インターバル
 	int							attackComboCount;		//攻撃コンボ数
+	int frameTime;
 };
 

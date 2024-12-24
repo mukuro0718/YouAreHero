@@ -9,7 +9,8 @@
 /// コンストラクタ
 /// </summary>
 PlayerManager::PlayerManager()
-	:player(nullptr)
+	: player	(nullptr)
+	, frameTime	(0)
 {
 	this->player = new Player();
 }
@@ -43,7 +44,10 @@ void PlayerManager::Finalize()
 /// </summary>
 void PlayerManager::Update()
 {
+	//int startTime = GetNowCount();
 	this->player->Update();
+	//int endTime = GetNowCount();
+	//this->frameTime = endTime - startTime;
 }
 /// <summary>
 /// 描画
@@ -51,6 +55,7 @@ void PlayerManager::Update()
 const void PlayerManager::Draw()const
 {
 	this->player->Draw();
+	//printfDx("PLAYER_FRAMETIME:%d\n", this->frameTime);
 }
 
 /// <summary>
@@ -82,8 +87,7 @@ const int PlayerManager::GetHP()const
 /// </summary>
 const int PlayerManager::GetNowState()const
 {
-	auto& player = dynamic_cast<Player&>(*this->player);
-	return player.GetNowState();
+	return this->player->GetNowState();
 }
 
 /// <summary>
@@ -91,8 +95,7 @@ const int PlayerManager::GetNowState()const
 /// </summary>
 const float PlayerManager::GetStamina()const
 {
-	auto& player = dynamic_cast<Player&>(*this->player);
-	return player.GetStamina();
+	return player->GetStamina();
 }
 
 /// <summary>
@@ -100,8 +103,7 @@ const float PlayerManager::GetStamina()const
 /// </summary>
 const int PlayerManager::GetHealOrbNum()const
 {
-	auto& player = dynamic_cast<Player&>(*this->player);
-	return player.GetHealCount();
+	return player->GetHealCount();
 }
 
 /// <summary>
@@ -125,8 +127,7 @@ const bool PlayerManager::GetIsLockOn()const
 /// </summary>
 const bool PlayerManager::GetIsDrawSword()const
 {
-	auto& player = dynamic_cast<Player&>(*this->player);
-	return player.GetIsDrawSword();
+	return player->GetIsDrawSword();
 }
 
 /// <summary>

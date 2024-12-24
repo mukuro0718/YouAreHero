@@ -2,13 +2,16 @@
 #include "UseJson.h"
 #include "UseSTL.h"
 #include "Rigidbody.h"
+#include "ColliderData.h"
+#include "AttackData.h"
+#include "AttackSphereColliderData.h"
 #include "Character.h"
 #include "Player.h"
 #include "UseSTL.h"
 #include "VECTORtoUseful.h"
 #include "PlayerAction.h"
 #include "PlayerCombo3.h"
-#include "PlayerAttackManager.h"
+#include "EffectManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -16,6 +19,25 @@
 PlayerCombo3::PlayerCombo3()
 	: PlayerAction()
 {
+	/*コライダーデータの作成*/
+	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER_ATTACK, new AttackData());
+
+	/*初期化*/
+	auto& json						  = Singleton<JsonManager>::GetInstance();
+	this->collider->radius			  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_ATTACK_RADIUS"];						//半径
+	this->collider->data->hitStopTime = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_HIT_STOP_TIME"];						//ヒットストップ時間
+	this->collider->data->damage	  = json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"][2];							//ダメージ
+	this->nextAnimation				  = static_cast<int>(Player::AnimationType::COMBO_3);											//次のアニメーション
+	this->playTime					  = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];	//アニメーション再生時間
+	this->firstPlayTime				  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_START_ANIM_PLAY_TIME"];					//アニメーションの初期再生時間
+	this->cancelableFrame			  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_CANCEL_FRAME"];							//キャンセル可能フレーム
+	this->startHitCheckFrame		  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_START_HIT_CHECK_FRAME"];				//当たり判定開始フレーム
+	this->endHitCheckFrame			  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_END_HIT_CHECK_FRAME"];					//当たり判定終了フレーム
+	this->positionOffset			  = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET"];								//座標オフセット値フレーム
+	this->yOffset					  = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"];								//Yオフセット値フレーム
+	this->firstDirection			  = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);				//最初の向き
+
+
 
 }
 
@@ -33,8 +55,10 @@ PlayerCombo3::~PlayerCombo3()
 void PlayerCombo3::Initialize()
 {
 	this->isChangeAction = false;
-	this->isEndAction = false;
-	this->frameCount = 0;
+	this->isEndAction	 = false;
+	this->frameCount	 = 0;
+	this->collider->rigidbody.Initialize(false);
+	this->collider->rigidbody.SetPosition(VGet(0.0f, 500.0f, 0.0f));
 }
 
 /// <summary>
@@ -50,30 +74,27 @@ void PlayerCombo3::Finalize()
 /// </summary>
 void PlayerCombo3::Update(Player& _player)
 {
-	/*開始時に一度だけ呼ばれる*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	if (this->frameCount == 0)
+	/*移動速度が０以上の時処理を行う*/
+	if (_player.GetSpeed() != 0)
 	{
-		auto& attack = Singleton<PlayerAttackManager>  ::GetInstance();
-		attack.OnIsStart();
-		attack.SetDamage(json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"][2]);
+		MoveData data;
+		data.Set(_player.GetNextRotation(), 0.0f, true, false);
+		Move(_player, data);
 	}
 
-	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
-	MoveData data;
-	data.Set(_player.GetNextRotation(), 0.0f, true, false);
-	Move(_player, data);
-
 	/*アニメーションの再生*/
-	int nextAnimation = static_cast<int>(Player::AnimationType::COMBO_3);
-	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
-	if (this->frameCount == 0) playTime = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_START_ANIM_PLAY_TIME"];
-	_player.PlayAnimation(nextAnimation, playTime);
+	float playTime = this->playTime;
+	if (this->frameCount == 0) playTime = this->firstPlayTime;
+	_player.PlayAnimation(this->nextAnimation, playTime);
 
+	/*キャンセルフラグが立っていなったら*/
 	this->frameCount++;
-	if (this->frameCount >= json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_CANCEL_FRAME"])
+	if (!this->isChangeAction)
 	{
-		this->isChangeAction = true;
+		if (this->frameCount >= this->cancelableFrame)
+		{
+			this->isChangeAction = true;
+		}
 	}
 
 	/*アニメーションが終了していたら*/
@@ -81,4 +102,43 @@ void PlayerCombo3::Update(Player& _player)
 	{
 		this->isEndAction = true;
 	}
+
+	/*当たり判定が開始していなければ早期リターン*/
+	if (this->frameCount < this->startHitCheckFrame) return;
+
+	/*当たり判定が開始したタイミングで1度だけ呼ばれる*/
+	if (this->frameCount == this->startHitCheckFrame)
+	{
+		this->collider->data->isDoHitCheck = true;
+	}
+
+	/*攻撃が当たっていたらエフェクトを再生*/
+	if (this->collider->data->isHitAttack)
+	{
+		auto& effect = Singleton<EffectManager>::GetInstance();
+		effect.OnIsEffect(EffectManager::EffectType::PLAYER_IMPACT);
+		effect.SetPosition(EffectManager::EffectType::PLAYER_IMPACT, this->collider->rigidbody.GetPosition());
+		this->collider->data->isHitAttack = false;
+	}
+
+	/*当たり判定許可フラグが立っていなかったら早期リターン*/
+	if (!this->collider->data->isDoHitCheck) return;
+
+	/*当たり判定座標の更新*/
+	VECTOR direction = VTransform(this->firstDirection, MGetRotY(_player.GetRigidbody().GetRotation().y));	//向きの設定
+	VECTOR position = _player.GetRigidbody().GetPosition();																//プレイヤーの座標
+	position = VAdd(position, VScale(direction, this->positionOffset));								//プレイヤーの座標に、オフセット値を足す
+	position.y += this->yOffset;																						//Y座標オフセット値を足す
+	this->collider->rigidbody.SetPosition(position);
+
+	//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
+	if (this->frameCount > this->endHitCheckFrame)
+	{
+		this->collider->data->isDoHitCheck = false;
+	}
+
+#ifdef _DEBUG
+	DrawSphere3D(this->collider->rigidbody.GetPosition(), this->collider->radius, 16, GetColor(100, 100, 150), GetColor(100, 100, 150), FALSE);
+#endif // _DEBUG
+
 }

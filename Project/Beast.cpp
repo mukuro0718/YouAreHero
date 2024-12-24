@@ -13,6 +13,7 @@
 #include "Animation.h"
 #include "Character.h"
 #include "Enemy.h"
+#include "Player.h"
 #include "BeastBehaviorTreeHeader.h"
 #include "Beast.h"
 #include "LoadingAsset.h"
@@ -71,7 +72,6 @@ void Beast::Initialize()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 
 	/*変数の初期化*/
 	this->isAlive			= true;
@@ -83,11 +83,11 @@ void Beast::Initialize()
 	this->moveTarget		= Gori::ORIGIN;
 	this->nowAnimation		= static_cast<int>(AnimationType::ROAR);
 	float height			= json.GetJson(JsonManager::FileType::BEAST)["HIT_HEIGHT"];
-	collider.topPositon		= VGet(0.0f, height, 0.0f);
-	collider.radius			= json.GetJson(JsonManager::FileType::BEAST)["HIT_RADIUS"];
-	collider.isUseCollWithGround = true;
-	collider.data->hp					= json.GetJson(JsonManager::FileType::BEAST)["HP"];
-	collider.data->isHit				= false;
+	this->collider->topPositon		= VGet(0.0f, height, 0.0f);
+	this->collider->radius			= json.GetJson(JsonManager::FileType::BEAST)["HIT_RADIUS"];
+	this->collider->isUseCollWithGround = true;
+	this->collider->data->hp					= json.GetJson(JsonManager::FileType::BEAST)["HP"];
+	this->collider->data->isHit				= false;
 	
 	/*物理挙動の初期化*/
 	//jsonデータを定数に代入

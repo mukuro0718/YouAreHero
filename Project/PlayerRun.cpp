@@ -15,6 +15,12 @@
 PlayerRun::PlayerRun()
 	: PlayerAction()
 {
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["RUN_SPEED"];
+	this->staminaRecoveryValue = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"];
+	this->maxStamina = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
+	this->nextAnimation = static_cast<int>(Player::AnimationType::RUN_FRONT);
+	this->playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 
 }
 
@@ -50,16 +56,13 @@ void PlayerRun::Update(Player& _player)
 	this->isEndAction = true;
 
 	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
-	auto& json = Singleton<JsonManager>::GetInstance();
 	MoveData data;
-	data.Set(Gori::ORIGIN, json.GetJson(JsonManager::FileType::PLAYER)["RUN_SPEED"], false, true);
+	data.Set(Gori::ORIGIN, this->maxSpeed, false, true);
 	Move(_player, data);
 
 	/*スタミナの計算*/
-	_player.CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"]);
+	_player.CalcStamina(this->staminaRecoveryValue, this->maxStamina);
 	
 	/*アニメーションの再生*/
-	int nextAnimation = static_cast<int>(Player::AnimationType::RUN_FRONT);
-	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
-	_player.PlayAnimation(nextAnimation, playTime);
+	_player.PlayAnimation(this->nextAnimation, this->playTime);
 }

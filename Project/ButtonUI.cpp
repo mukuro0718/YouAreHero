@@ -2,6 +2,8 @@
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "ButtonUI.h"
+#include "Character.h"
+#include "Player.h"
 #include "LoadingAsset.h"
 #include "InputManager.h"
 #include "PlayerManager.h"

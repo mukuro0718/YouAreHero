@@ -3,6 +3,8 @@
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "Effect.h"
+#include "Character.h"
+#include "Player.h"
 #include "BossImpactEffect.h"
 #include "BossRoarEffect.h"
 #include "PlayerGuardHitEffect.h"
@@ -60,6 +62,7 @@ void EffectManager::Initialize()
 /// </summary>
 void EffectManager::Update()
 {
+	//int startTime = GetNowCount();
 	// DXライブラリのカメラとEffekseerのカメラを同期する。
 	Effekseer_Sync3DSetting();
 	for (int i = 0; i < this->effect.size(); i++)
@@ -67,6 +70,8 @@ void EffectManager::Update()
 		this->effect[i]->Update();
 	}
 	//this->bossFlame->Update();
+	//int endTime = GetNowCount();
+	//this->frameTime = endTime - startTime;
 }
 
 /// <summary>
@@ -78,6 +83,7 @@ const void EffectManager::Draw()const
 	{
 		this->effect[i]->Draw();
 	}
+	//printfDx("EFFEK_FRAMETIME:%d\n", this->frameTime);
 }
 void EffectManager::OnIsEffect(const EffectType _type)
 {

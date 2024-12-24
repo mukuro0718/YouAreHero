@@ -45,7 +45,7 @@ int ScreenSetup::Initialize()
     //フラグを立てることで非同期ロードが可能になる
     SetUseASyncLoadFlag(FALSE);
     //ScreenFlipを実行しても垂直同期信号を待たない
-    SetWaitVSyncFlag(TRUE);
+    SetWaitVSyncFlag(FALSE);
     // ＤＸライブラリの初期化
     if (DxLib_Init() == -1)
     {

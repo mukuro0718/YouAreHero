@@ -36,5 +36,6 @@ private:
 		
 	/*ƒƒ“ƒo•Ï”*/
 	std::vector<Effect*> effect;
+	int frameTime;//ˆ—‚Ü‚Å‚É‚©‚©‚Á‚½ŠÔ
 };
 

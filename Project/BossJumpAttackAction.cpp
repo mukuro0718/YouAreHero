@@ -7,6 +7,7 @@
 #include "BossAction.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "Player.h"
 #include "Enemy.h"
 #include "Boss.h"
 #include "HitStop.h"
@@ -232,7 +233,7 @@ void BossJumpAttackAction::CalcParameter(const Boss& _boss)
 	}
 
 	/*状態がNORMALかANGRYだったら欲求値を増加する*/
-	else if (_boss.GetAngryState() >= static_cast<int>(Boss::AngryStateType::NORMAL))
+	else if (_boss.GetAngryState() >= static_cast<int>(Boss::BossState::NORMAL))
 	{
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
 		if (DISTANCE >= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::JUMP_ATTACK)])

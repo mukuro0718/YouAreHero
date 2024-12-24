@@ -4,6 +4,8 @@
 #include "VECTORtoUseful.h"
 #include "DeleteInstance.h"
 #include "Rigidbody.h"
+#include "Character.h"
+#include "Player.h"
 #include "PlayerAttack.h"
 #include "PlayerAttackManager.h"
 #include "PlayerManager.h"

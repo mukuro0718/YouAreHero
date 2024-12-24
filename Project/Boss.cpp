@@ -12,6 +12,7 @@
 #include "BitFlag.h"
 #include "Animation.h"
 #include "Character.h"
+#include "Player.h"
 #include "Enemy.h"
 #include "BossActionHeader.h"
 #include "Boss.h"
@@ -106,7 +107,6 @@ void Boss::Initialize()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 
 	/*変数の初期化*/
 	this->isAlive			= true;
@@ -119,13 +119,13 @@ void Boss::Initialize()
 	this->nowAnimation		= static_cast<int>(AnimationType::ROAR);
 	this->nowAction			= static_cast<int>(ActionType::ROAR);
 	this->attackComboCount	= 0;
-	this->angryState		= static_cast<int>(AngryStateType::NORMAL);
+	this->angryState		= static_cast<int>(BossState::NORMAL);
 	float height			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_HEIGHT"];
-	collider.topPositon		= VGet(0.0f, height, 0.0f);
-	collider.radius			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
-	collider.isUseCollWithGround = true;
-	collider.data->hp					= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
-	collider.data->isHit				= false;
+	this->collider->topPositon		= VGet(0.0f, height, 0.0f);
+	this->collider->radius			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
+	this->collider->isUseCollWithGround = true;
+	this->collider->data->hp					= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
+	this->collider->data->isHit				= false;
 	
 	/*コンボの設定*/
 	SetAttackComboCount();
@@ -183,15 +183,18 @@ void Boss::Update()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
-
+	
 	/*怒り状態の設定*/
 	SetAngryState();
-
 	/*状態の切り替え*/
 	ChangeState();
 
+
+	//int startTime = GetNowCount();
 	/*ここに各アクションごとの更新処理を入れたい*/
 	this->parameters[this->nowAction]->Update(*this);
+	//int endTime = GetNowCount();
+	//this->frameTime = endTime - startTime;
 }
 
 /// <summary>
@@ -341,7 +344,7 @@ const void Boss::DrawCharacterInfo()const
 		//printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
 		//printfDx("%d:STATE					\n", this->angryState);
 		/*各アクションの当たり判定図形の描画*/
-		//this->parameters[this->nowAction]->Draw();
+		this->parameters[this->nowAction]->Draw();
 	//}
 
 	if (this->isDraw)
@@ -349,6 +352,7 @@ const void Boss::DrawCharacterInfo()const
 		/*かげの描画*/
 		shadow.Draw(map.GetStageModelHandle(), this->collider->rigidbody.GetPosition(), this->SHADOW_HEIGHT, this->SHADOW_SIZE);
 	}
+	//printfDx("ENEMY_FRAMETIME:%d\n", this->frameTime);
 }
 
 const bool Boss::GetIsAttack()const
@@ -365,44 +369,42 @@ void Boss::SetAngryState()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 	
 	/*怒り状態*/
 	switch (this->angryState)
 	{
 		//怒り
-	case static_cast<int>(AngryStateType::ANGRY):
+	case static_cast<int>(BossState::ANGRY):
 		this->angryValue--;
 		if (this->angryValue < 0)
 		{
-			this->angryState = static_cast<int>(AngryStateType::TIRED);
+			this->angryState = static_cast<int>(BossState::TIRED);
 			this->angryValue = 0;
 		}
 		break;
 		//通常
-	case static_cast<int>(AngryStateType::NORMAL):
+	case static_cast<int>(BossState::NORMAL):
 		//怒り値を増加
 		this->angryValue++;
 		//攻撃が当たっていたら怒り値をさらに増加
-		if (collider.data->isHit)
+		if (this->collider->data->isHit)
 		{
 			this->angryValue++;
 		}
 		//怒り値が最大以上だったら状態をANGRYにする
 		if (this->angryValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"])
 		{
-			this->angryState = static_cast<int>(AngryStateType::ANGRY);
+			this->angryState = static_cast<int>(BossState::ANGRY);
 		}
 		break;
 	//疲れ
-	case static_cast<int>(AngryStateType::TIRED):
+	case static_cast<int>(BossState::TIRED):
 		//疲れ時間を増加
 		this->tiredInterval++;
 		//最大値を超えたら状態を通常に変更
 		if (this->tiredInterval >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_INTERVAL"])
 		{
-			this->angryState = static_cast<int>(AngryStateType::NORMAL);
+			this->angryState = static_cast<int>(BossState::NORMAL);
 			this->tiredInterval = 0;
 		}
 		break;

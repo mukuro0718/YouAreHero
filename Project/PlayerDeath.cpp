@@ -15,6 +15,9 @@
 PlayerDeath::PlayerDeath()
 	: PlayerAction()
 {
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->nextAnimation = static_cast<int>(Player::AnimationType::DEATH);
+	this->playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 
 }
 
@@ -49,15 +52,15 @@ void PlayerDeath::Finalize()
 void PlayerDeath::Update(Player& _player)
 {
 	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
-	MoveData data;
-	data.Set(_player.GetNextRotation(), 0.0f, true, false);
-	Move(_player, data);
+	if (_player.GetSpeed() != 0)
+	{
+		MoveData data;
+		data.Set(_player.GetNextRotation(), 0.0f, true, false);
+		Move(_player, data);
+	}
 
 	/*アニメーションの再生*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	int nextAnimation = static_cast<int>(Player::AnimationType::DEATH);
-	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
-	_player.PlayAnimation(nextAnimation, playTime);
+	_player.PlayAnimation(this->nextAnimation, this->playTime);
 
 	/*アニメーションが終了していたら*/
 	if (_player.GetIsChangeAnimation())

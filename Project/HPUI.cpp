@@ -3,6 +3,8 @@
 #include "UseJson.h"
 #include "LoadingAsset.h"
 #include "HPUI.h"
+#include "Character.h"
+#include "Player.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"
 

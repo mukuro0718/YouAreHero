@@ -11,6 +11,8 @@
 #include "PlayerAttack.h"
 #include "Debug.h"
 #include "EffectManager.h"
+#include "Character.h"
+#include "Player.h"
 #include "PlayerManager.h"
 
 /// <summary>
@@ -22,9 +24,6 @@ PlayerAttack::PlayerAttack()
 	, collider(nullptr)
 	, isNotOnHit(false)
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
 	/*コライダーデータの作成*/
 	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER_ATTACK, new AttackData());
 }

@@ -16,8 +16,22 @@
 PlayerAction::PlayerAction()
 	: isEndAction	(false)
 	, isChangeAction(false)
+	, frameCount(0)
+	, frameTime(0)
+	, staminaRecoveryValue(0.0f)
+	, maxStamina(0.0f)
+	, playTime(0.0f)
+	, nextAnimation(0)
+	, rotateLerpValue{0.0f,0.0f,0.0f}
+	, velocityLerpValue{0.0f,0.0f,0.0f}
+	, accel(0.0f)
+	, decel(0.0f)
 {
-
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->rotateLerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATION_LERP_VALUE"]);
+	this->velocityLerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["VELOCITY_LERP_VALUE"]);
+	this->accel = static_cast<float>(json.GetJson(JsonManager::FileType::PLAYER)["ACCEL"]);
+	this->decel = static_cast<float>(json.GetJson(JsonManager::FileType::PLAYER)["DECEL"]);
 }
 
 /// <summary>
@@ -46,9 +60,7 @@ void PlayerAction::UpdateRotation(const bool isSkip, VECTOR& _nextRotationation,
 			-atan2(static_cast<double>(cameraDirection.z), static_cast<double>(cameraDirection.x))
 			- atan2(-static_cast<double>(lStick.z), static_cast<double>(lStick.x)));
 		/*現在の回転率をラープで補完して出す*/
-		auto& json = Singleton<JsonManager>::GetInstance();
-		VECTOR lerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATION_LERP_VALUE"]);
-		_nowRotationation = Gori::LerpAngle(_nowRotationation, _nextRotationation, lerpValue);
+		_nowRotationation = Gori::LerpAngle(_nowRotationation, _nextRotationation, this->rotateLerpValue);
 	}
 }
 
@@ -73,10 +85,9 @@ void PlayerAction::UpdateSpeed(float& _nowSpeed, const float _maxSpeed, const VE
 	//}
 
 	/*新しい速度を出す*/
-	auto& json = Singleton<JsonManager>::GetInstance();
 	if (max_speed != 0)
 	{
-		_nowSpeed += static_cast<float>(json.GetJson(JsonManager::FileType::PLAYER)["ACCEL"]);
+		_nowSpeed += this->accel;
 		//最大速度を超えないように調整する
 		if (_nowSpeed >= max_speed)
 		{
@@ -85,7 +96,7 @@ void PlayerAction::UpdateSpeed(float& _nowSpeed, const float _maxSpeed, const VE
 	}
 	else
 	{
-		_nowSpeed += static_cast<float>(json.GetJson(JsonManager::FileType::PLAYER)["DECEL"]);
+		_nowSpeed += this->decel;
 		//０以下にならないように調整する
 		if (_nowSpeed <= 0)
 		{
@@ -111,9 +122,7 @@ VECTOR PlayerAction::UpdateVelocity(const VECTOR _rotation, const VECTOR _prevVe
 	/*補正フラグが立っていたら補正する*/
 	if (_isLerp)
 	{
-		auto& json = Singleton<JsonManager>::GetInstance();
-		VECTOR lerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["VELOCITY_LERP_VALUE"]);
-		newVelocity = Gori::LerpVECTOR(prevVelcity, ainVelocity, lerpValue);
+		newVelocity = Gori::LerpVECTOR(prevVelcity, ainVelocity, this->velocityLerpValue);
 	}
 	return newVelocity;
 }

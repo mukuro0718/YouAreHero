@@ -13,6 +13,7 @@
 #include "Animation.h"
 #include "Character.h"
 //#include "DragonActionHeader.h"
+#include "Player.h"
 #include "Dragon.h"
 #include "LoadingAsset.h"
 #include "PlayerManager.h"
@@ -74,7 +75,6 @@ void Dragon::Initialize()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 
 	/*変数の初期化*/
 	this->isAlive			= true;
@@ -89,11 +89,11 @@ void Dragon::Initialize()
 	this->attackComboCount	= 0;
 	this->angryState		= static_cast<int>(AngryStateType::NORMAL);
 	float height			= json.GetJson(JsonManager::FileType::DRAGON)["HIT_HEIGHT"];
-	collider.topPositon		= VGet(0.0f, height, 0.0f);
-	collider.radius			= json.GetJson(JsonManager::FileType::DRAGON)["HIT_RADIUS"];
-	collider.isUseCollWithGround = true;
-	collider.data->hp					= json.GetJson(JsonManager::FileType::DRAGON)["HP"];
-	collider.data->isHit				= false;
+	this->collider->topPositon		= VGet(0.0f, height, 0.0f);
+	this->collider->radius			= json.GetJson(JsonManager::FileType::DRAGON)["HIT_RADIUS"];
+	this->collider->isUseCollWithGround = true;
+	this->collider->data->hp					= json.GetJson(JsonManager::FileType::DRAGON)["HP"];
+	this->collider->data->isHit				= false;
 	
 
 	/*物理挙動の初期化*/
@@ -323,8 +323,6 @@ void Dragon::SetAngryState()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-
-	auto& collider = dynamic_cast<CharacterColliderData&>(*this->collider);
 	
 	/*怒り状態*/
 	switch (this->angryState)
@@ -343,7 +341,7 @@ void Dragon::SetAngryState()
 		//怒り値を増加
 		this->angryValue++;
 		//攻撃が当たっていたら怒り値をさらに増加
-		if (collider.data->isHit)
+		if (this->collider->data->isHit)
 		{
 			this->angryValue++;
 		}

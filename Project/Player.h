@@ -20,7 +20,7 @@ public:
 	void PlayAnimation(const int _nextAnimation, const float _playTime);
 	void DeathProcess();
 	const bool CanAction		(const float _staminaConsumed)const;//アクションができるか
-		  void CalcStamina		(const float _staminaConsumed);			//スタミナの回復処理
+	void CalcStamina(const float _staminaConsumed, const float _maxStamina);			//スタミナの回復処理
 
 	/*getter*/
 	const int		GetNowState			()const;
@@ -74,5 +74,6 @@ private:
 	HitStop*				hitStop;			//ヒットストップ
 	int						healCount;		//回復オーブの数
 	bool isDrawSword;
+	int frameTime;//処理までにかかった時間
 };
 

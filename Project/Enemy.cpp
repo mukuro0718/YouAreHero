@@ -12,6 +12,7 @@
 #include "CharacterColliderData.h"
 #include "Animation.h"
 #include "Character.h"
+#include "Player.h"
 #include "Enemy.h"
 #include "PlayerManager.h"
 
@@ -25,8 +26,7 @@ Enemy::Enemy()
 
 {
 	/*コライダーデータの作成*/
-	CharacterData* data = new CharacterData();
-	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, data);
+	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
 }
 
 /// <summary>

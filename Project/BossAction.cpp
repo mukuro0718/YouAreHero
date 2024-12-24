@@ -8,6 +8,7 @@
 #include "ActionParameter.h"
 #include "HitStop.h"
 #include "Character.h"
+#include "Player.h"
 #include "Enemy.h"
 #include "BossAttack.h"
 #include "Boss.h"
@@ -79,10 +80,11 @@ BossAction::~BossAction()
 /// </summary>
 const void BossAction::Draw()const
 {
-	if (this->attack != nullptr)
-	{
-		this->attack->Draw();
-	}
+	//if (this->attack != nullptr)
+	//{
+	//	this->attack->Draw();
+	//}
+	//printfDx("ENEMY_FRAMETIME:%d\n", this->frameTime);
 }
 
 /// <summary>

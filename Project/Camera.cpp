@@ -6,6 +6,8 @@
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "SphereColliderData.h"
+#include "Character.h"
+#include "Player.h"
 #include "Camera.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"

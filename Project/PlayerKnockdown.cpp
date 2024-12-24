@@ -3,6 +3,7 @@
 #include "UseJson.h"
 #include "Rigidbody.h"
 #include "CharacterData.h"
+#include "ReactionType.h"
 #include "Character.h"
 #include "Player.h"
 #include "PlayerAction.h"
@@ -16,6 +17,12 @@
 PlayerKnockdown::PlayerKnockdown()
 	: PlayerAction()
 {
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->staminaRecoveryValue = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"];
+	this->maxStamina = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
+	this->maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["REACTION_SPEED"][static_cast<int>(Gori::PlayerReactionType::BLOW_BIG)];
+	this->nextAnimation = static_cast<int>(Player::AnimationType::DOWN_REACTION);
+	this->playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 
 }
 
@@ -51,14 +58,15 @@ void PlayerKnockdown::Finalize()
 void PlayerKnockdown::Update(Player& _player)
 {
 	/*スタミナの回復*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	_player.CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"]);
+	_player.CalcStamina(this->staminaRecoveryValue, this->maxStamina);
 
-	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
-	MoveData data;
-	data.Set(_player.GetNextRotation(), 0.0f, true, false);
-	Move(_player, data);
-
+	/*移動速度が０以上の時処理を行う*/
+	if (_player.GetSpeed() != 0)
+	{
+		MoveData data;
+		data.Set(_player.GetNextRotation(), 0.0f, true, false);
+		Move(_player, data);
+	}
 
 	/*処理の開始時に一度だけ行う処理*/
 	if (this->frameCount == 0)
@@ -68,14 +76,13 @@ void PlayerKnockdown::Update(Player& _player)
 		effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
 		//スピードの設定
 		const CharacterData& data = _player.GetCharacterData();
-		_player.SetSpeed(json.GetJson(JsonManager::FileType::PLAYER)["REACTION_SPEED"][data.reactionType]);
+		_player.SetSpeed(this->maxSpeed);
 		//ヒットストップの設定
 		_player.SetHitStop(data.hitStopTime, data.hitStopType, data.hitStopDelay, data.slowFactor);
 		//ヒットフラグを下す
 		_player.GetPlayerData().isHit = false;
 		//無敵フラグを立てる
 		_player.GetPlayerData().isInvinvible = true;
-		this->nextAnimation = static_cast<int>(Player::AnimationType::DOWN_REACTION);
 	}
 
 	/*アニメーションの再生*/
@@ -86,8 +93,7 @@ void PlayerKnockdown::Update(Player& _player)
 	}
 	if (!isStopAnimation)
 	{
-		float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
-		_player.PlayAnimation(nextAnimation, playTime);
+		_player.PlayAnimation(this->nextAnimation, this->playTime);
 	}
 
 	/*アニメーションの再生が終了していたら早期リターン*/

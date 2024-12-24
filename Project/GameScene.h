@@ -19,5 +19,7 @@ public:
 
 private:
 	bool IsEnd();
+	int frameTime;//ˆ—‚Ü‚Å‚É‚©‚©‚Á‚½ŠÔ
+	int startTime;
 };
 

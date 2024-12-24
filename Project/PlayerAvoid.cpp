@@ -15,9 +15,16 @@
 /// </summary>
 PlayerAvoid::PlayerAvoid()
 	: PlayerAction	()
-	, isPlay		(false)
-	, frameCount	(0)
 {
+	auto& json		= Singleton<JsonManager>::GetInstance();
+	this->maxStamina			= json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
+	this->staminaRecoveryValue	= json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"];
+	this->firstSpeed			= json.GetJson(JsonManager::FileType::PLAYER)["ROLLING_SPEED"];
+	this->staminaConsumpion		= json.GetJson(JsonManager::FileType::PLAYER)["AVOID_STAMINA_CONSUMPTION"];
+	this->rotatableFrame		= json.GetJson(JsonManager::FileType::PLAYER)["AVOID_CAN_ROTATE_FRAME"];
+	this->justAvoidFrame		= json.GetJson(JsonManager::FileType::PLAYER)["JUST_AVOID_MAX_FRAME"];
+	this->nextAnimation			= static_cast<int>(Player::AnimationType::AVOID);
+	this->playTime				= json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 }
 
 /// <summary>
@@ -33,10 +40,11 @@ PlayerAvoid::~PlayerAvoid()
 /// </summary>
 void PlayerAvoid::Initialize()
 {
-	this->isPlay = false;
 	this->isChangeAction = false;
 	this->isEndAction = false;
 	this->frameCount = 0;
+	this->isRotate = true;
+
 }
 
 /// <summary>
@@ -52,15 +60,11 @@ void PlayerAvoid::Finalize()
 void PlayerAvoid::Update(Player& _player)
 {
 	/*開始直後の処理*/
-	auto& json = Singleton<JsonManager>::GetInstance();
 	if (this->frameCount == 0)
 	{
-		//無敵フラグを立てる
 		_player.GetPlayerData().isInvinvible = true;
-		//スタミナの計算
-		_player.CalcStamina(json.GetJson(JsonManager::FileType::PLAYER)["AVOID_STAMINA_CONSUMPTION"]);
-		//初速を入れる
-		_player.SetSpeed(json.GetJson(JsonManager::FileType::PLAYER)["ROLLING_SPEED"]);
+		_player.CalcStamina(this->staminaConsumpion, this->maxStamina);
+		_player.SetSpeed(this->firstSpeed);
 	}
 	else
 	{
@@ -72,27 +76,26 @@ void PlayerAvoid::Update(Player& _player)
 	}
 
 	/*フレームの計測*/
-	bool isRotate = true;
-	//フレームカウントの増加
-	this->frameCount++;
-	//アクションキャンセルが可能だったら
-	if (this->frameCount >= json.GetJson(JsonManager::FileType::PLAYER)["AVOID_CAN_ROTATE_FRAME"])
+	if (this->frameCount < this->rotatableFrame)
 	{
-		isRotate = false;
+		//フレームカウントの増加
+		this->frameCount++;
+		//アクションキャンセルが可能だったら
+		if (this->isRotate && (this->frameCount >= this->rotatableFrame))
+		{
+			this->isRotate = false;
+		}
+		//無敵時間
+		if (this->frameCount >= this->justAvoidFrame)
+		{
+			_player.GetPlayerData().isInvinvible = false;
+		}
 	}
-	//無敵時間
-	if (this->frameCount >= json.GetJson(JsonManager::FileType::PLAYER)["JUST_AVOID_MAX_FRAME"])
-	{
-		_player.GetPlayerData().isInvinvible = false;
-	}
-
 	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
 	MoveData data;
 	data.Set(_player.GetNextRotation(), 0.0f, isRotate, false);
 	Move(_player, data);
 
 	/*アニメーションの再生*/
-	int nextAnimation = static_cast<int>(Player::AnimationType::AVOID);
-	float playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][nextAnimation];
-	_player.PlayAnimation(nextAnimation, playTime);
+	_player.PlayAnimation(this->nextAnimation, this->playTime);
 }

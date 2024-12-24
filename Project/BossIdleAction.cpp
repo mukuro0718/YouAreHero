@@ -6,6 +6,7 @@
 #include "BossAction.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "Player.h"
 #include "Enemy.h"
 #include "Boss.h"
 #include "BossIdleAction.h"
@@ -73,7 +74,7 @@ void BossIdleAction::Update(Boss& _boss)
 	/*カラースケールの変更*/
 	{
 		if (!this->isChangeColorScale && 
-			_boss.GetAngryState() == static_cast<int>(Boss::AngryStateType::NORMAL))
+			_boss.GetAngryState() == static_cast<int>(Boss::BossState::NORMAL))
 		{
 			this->isChangeColorScale = true;
 		}
@@ -188,7 +189,7 @@ void BossIdleAction::CalcParameter(const Boss& _boss)
 	int nowAngryState = _boss.GetAngryState();
 
 	/*AngryStateがNORMALの時に攻撃コンボが残っていなかったら*/
-	if (nowAngryState == static_cast<int>(Boss::AngryStateType::NORMAL))
+	if (nowAngryState == static_cast<int>(Boss::BossState::NORMAL))
 	{
 		if (nowAngryState != this->prevAngryState)
 		{

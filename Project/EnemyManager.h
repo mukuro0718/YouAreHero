@@ -33,5 +33,6 @@ private:
 	/*ƒƒ“ƒo•Ï”*/
 	std::vector<Character*> boss;//ƒ{ƒX
 	int enemyType;
+	int frameTime;
 };
 
