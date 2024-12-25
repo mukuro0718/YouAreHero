@@ -26,8 +26,6 @@
 /// コンストラクタ
 /// </summary>
 GameScene::GameScene()
-	: startTime(0)
-	, frameTime(0)
 {
 	Initialize();
 }
@@ -90,7 +88,6 @@ void GameScene::Finalize()
 /// </summary>
 void GameScene::Update()
 {
-	//this->startTime = GetNowCount();
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& input = Singleton<InputManager>		::GetInstance();
 	auto& debug = Singleton<Debug>				::GetInstance();
@@ -107,18 +104,95 @@ void GameScene::Update()
 	auto& timer = Singleton<Timer>::GetInstance();
 
 	/*更新処理*/
-	timer.Update();
-	debug.Update();
-	input.Update();
-	hitStop.Update();
-	camera.Update();
-	map.Update();
-	enemy.Update();
-	player.Update();
-	playerAttack.Update();
-	effect.Update();
-	collision.Update();
-	ui.Update();
+	{
+		int startTime = GetNowCount();
+		timer.Update();
+		int endTime = GetNowCount();
+		int frameTime = endTime - startTime;
+		printfDx("TIMER:%d\n", frameTime);
+	}
+	{
+		int startTime = GetNowCount();
+		debug.Update();
+		int endTime = GetNowCount();
+		int frameTime = endTime - startTime;
+		printfDx("DEBUG:%d\n", frameTime);
+	}
+
+	{
+		int startTime = GetNowCount();
+		input.Update();
+		int endTime = GetNowCount();
+		int frameTime = endTime - startTime;
+		printfDx("INPUT:%d\n", frameTime);
+	}
+
+	{
+		int startTime = GetNowCount();
+		hitStop.Update();
+		int endTime = GetNowCount();
+		int frameTime = endTime - startTime;
+		printfDx("HITSTOP:%d\n", frameTime);
+	}
+
+	{
+		int startTime = GetNowCount();
+		camera.Update();
+		int endTime = GetNowCount();
+		int frameTime = endTime - startTime;
+		printfDx("CAMERA:%d\n", frameTime);
+	}
+
+	{
+		int startTime = GetNowCount();
+		map.Update();
+		int endTime = GetNowCount();
+		int frameTime = endTime - startTime;
+		printfDx("MAP:%d\n", frameTime);
+	}
+
+	{
+		int startTime = GetNowCount();
+		enemy.Update();
+		int endTime = GetNowCount();
+		int frameTime = endTime - startTime;
+		printfDx("ENEMY:%d\n", frameTime);
+	}
+
+
+	{
+		int startTime = GetNowCount();
+		player.Update();
+		int endTime = GetNowCount();
+		int frameTime = endTime - startTime;
+		printfDx("PLAYER:%d\n", frameTime);
+	}
+
+	//playerAttack.Update();
+
+	{
+		int startTime = GetNowCount();
+		effect.Update();
+		int endTime = GetNowCount();
+		int frameTime = endTime - startTime;
+		printfDx("EFFECT:%d\n", frameTime);
+	}
+
+	{
+		int startTime = GetNowCount();
+		collision.Update();
+		int endTime = GetNowCount();
+		int frameTime = endTime - startTime;
+		printfDx("COLL:%d\n", frameTime);
+	}
+	{
+		int startTime = GetNowCount();
+
+		ui.Update();
+		int endTime = GetNowCount();
+		int frameTime = endTime - startTime;
+		printfDx("UI:%d\n", frameTime);
+	}
 
 	/*シーンの終了処理*/
 	if (this->IsEnd())
@@ -132,8 +206,6 @@ void GameScene::Update()
 			sceneChanger.ChangeScene(SceneChanger::SceneType::GAME_CLEAR);
 		}
 	}
-	//int endTime = GetNowCount();
-	//this->frameTime = endTime - startTime;
 }
 
 /// <summary>

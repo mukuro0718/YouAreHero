@@ -44,5 +44,11 @@ protected:
 	int			  attackIndex;		//攻撃番号
 	bool		  isNotOnHit;		//処理中に当たり判定がオンになったか
 	bool		  isStartHitCheck;	//当たり判定を行うか
-	//当たり判定のスフィアと座標はCollidableが持つため、発生タイミングを管理する
+
+	short		  startHitCheckFrame;
+	short		  endHitCheckFrame;
+	float		  positionOffset;
+	float		  yOffset;
+	float backBornSize;
+	float crowSize;
 };

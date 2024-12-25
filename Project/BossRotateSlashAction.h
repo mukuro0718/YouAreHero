@@ -15,6 +15,15 @@ public:
 	void Update			(Boss& _boss)		override;//更新
 	void CalcParameter	(const Boss& _boss)	override;//パラメーターの計算
 private:
-	bool isClose;//近づいたか
+	bool	isClose;			//近づいたか
+	float	hitStopTime;		//ヒットストップ時間
+	int		hitStopDelay;		//ヒットストップディレイ
+	int		hitStopType;		//ヒットストップの種類
+	float	slowFactor;			//スロー係数
+	VECTOR	rotateLerpValue;	//回転補正量
+	short	rotateFrame;		//回転用
+	short	maxInterval;		//最大インターバル
+	short	checkState;			//どの状態で確認するか
+	float	actionDistance;		//アクションが可能になる距離
+	short	normalDesireValue;	//通常の欲求値
 };
-

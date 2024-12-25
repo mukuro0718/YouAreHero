@@ -16,9 +16,13 @@
 /// </summary>
 BossRoarAction::BossRoarAction()
 	: prevState				(0)
-	, isFinishedFirstRoar	(0)
-	, isInitializeColorScale(0)
+	, isFinishedFirstRoar	(false)
+	, isInitializeColorScale(false)
+	, checkedState(0)
 {
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->maxDesireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+	this->checkedState = static_cast<int>(Boss::BossState::ANGRY);
 }
 
 /// <summary>
@@ -32,19 +36,17 @@ BossRoarAction::~BossRoarAction()
 /// </summary>
 void BossRoarAction::Initialize()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
 	this->isSelect				 = false;
 	this->isInitialize			 = false;
 	this->isInitializeColorScale = false;
 	this->isFinishedFirstRoar	 = false;
 	this->isPriority			 = false;
 	this->frameCount			 = 0;
-	this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+	this->parameter->desireValue = this->maxDesireValue;
 	this->parameter->interval	 = 0;
-	this->prevState = 1;
-	this->frameTime = 0;
+	this->prevState				 = 1;
+	this->frameTime				 = 0;
+	this->nextAnimation = static_cast<int>(Boss::AnimationType::ROAR);
 }
 
 /// <summary>
@@ -56,9 +58,6 @@ void BossRoarAction::Update(Boss& _boss)
 
 	/*死亡していたらisSelectをfalseにして早期リターン*/
 	if (_boss.GetHP() <= 0) { this->isSelect = false; return; }
-
-	/*シングルトンクラスのインスタンスの取得*/
-	//auto& json = Singleton<JsonManager>::GetInstance();
 
 	///*カラースケールの処理*/
 	//{
@@ -100,21 +99,21 @@ void BossRoarAction::Update(Boss& _boss)
 		//選択されていたら欲求値を０にする
 		this->parameter->desireValue = 0;
 		//アニメーションの設定
-		_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::ROAR));
+		_boss.SetNowAnimation(this->nextAnimation);
 		//アニメーション再生時間の設定
 		_boss.SetAnimationPlayTime(_boss.GetAnimationPlayTime());
 		//スピードを０にする
 		float speed = 0.0f;
 		_boss.SetSpeed(speed);
 		//回転率をもとに、移動する向きを出す
-		const VECTOR ROTATION = _boss.GetRigidbody().GetRotation();//
-		VECTOR direction = VGet(0.0f, 0.0f, 0.0f);		 //向き
-		direction = VGet(-sinf(ROTATION.y), 0.0f, -cosf(ROTATION.y));
-		direction = VNorm(direction);
+		VECTOR	rotation  = _boss.GetRigidbody().GetRotation();					//回転率
+		VECTOR	direction = VGet(0.0f, 0.0f, 0.0f);								//向き
+				direction = VGet(-sinf(rotation.y), 0.0f, -cosf(rotation.y));
+				direction = VNorm(direction);
 		//移動ベクトルを出す（重力を加算するため、Yベクトルのみ前のベクトルを使用する）
-		VECTOR aimVelocity = VScale(direction, speed);								//算出された移動ベクトル
+		VECTOR aimVelocity  = VScale(direction, speed);								//算出された移動ベクトル
 		VECTOR prevVelocity = _boss.GetRigidbody().GetVelocity();					//前の移動ベクトル
-		VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);	//新しい移動ベクトル
+		VECTOR newVelocity  = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);	//新しい移動ベクトル
 		//移動ベクトルの設定
 		_boss.SetVelocity(newVelocity);
 	}
@@ -139,9 +138,6 @@ void BossRoarAction::Update(Boss& _boss)
 /// </summary>
 void BossRoarAction::CalcParameter(const Boss& _boss)
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
 	this->parameter->desireValue = 0;
 	this->isPriority = false;
 
@@ -154,22 +150,22 @@ void BossRoarAction::CalcParameter(const Boss& _boss)
 	/*一度も咆哮をしていなければ咆哮フラグと優先フラグを立てる*/
 	if (!this->isFinishedFirstRoar)
 	{
-		this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+		this->parameter->desireValue = this->maxDesireValue;
 		this->isPriority = true;
 	}
 
 	/*AngryStateTypeがANGRYになったら咆哮をする*/
-	int nowAngryState = _boss.GetAngryState();
-	if (nowAngryState != this->prevState)
+	int nowState = _boss.GetAngryState();
+	if (nowState != this->prevState)
 	{
-		if (nowAngryState == static_cast<int>(Boss::BossState::ANGRY))
+		if (nowState == this->checkedState)
 		{
-			this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+			this->parameter->desireValue = this->maxDesireValue;
 			this->isPriority = true;
 		}
 		else
 		{
-			this->prevState = _boss.GetAngryState();
+			this->prevState = nowState;
 		}
 	}
 }

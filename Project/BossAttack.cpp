@@ -9,6 +9,7 @@
 #include "AttackCapsuleColliderData.h"
 #include "AttackSphereColliderData.h"
 #include "BossAttack.h"
+#include "UseJson.h"
 
 /// <summary>
 /// コンストラクタ
@@ -20,6 +21,9 @@ BossAttack::BossAttack()
 	, frameCount		(0)
 	, attackIndex		(0)
 {
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->backBornSize = json.GetJson(JsonManager::FileType::ENEMY)["BACK_BORN_SIZE"];
+	this->crowSize = json.GetJson(JsonManager::FileType::ENEMY)["CROW_SIZE"];
 }
 
 /// <summary>

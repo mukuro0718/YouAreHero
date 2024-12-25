@@ -28,6 +28,20 @@ BossRotateSlashAttack::BossRotateSlashAttack(const int _attackIndex)
 
 	/*コライダーデータの作成*/
 	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
+	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
+	collider.radius = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
+	collider.data->damage = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
+	collider.data->reactionType = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
+	//ここでのヒットストップ系の変数は、キャラクター側に与えるものになる
+	collider.data->hitStopTime = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
+	collider.data->hitStopType = static_cast<int>(HitStop::Type::STOP);
+	collider.data->hitStopDelay = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
+	collider.data->slowFactor = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
+
+	this->startHitCheckFrame = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_FRAME"][this->attackIndex];
+	this->endHitCheckFrame = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"][this->attackIndex];
+	this->positionOffset = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"][this->attackIndex];
+	this->yOffset = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"][this->attackIndex];
 
 }
 
@@ -49,14 +63,6 @@ void BossRotateSlashAttack::Initialize()
 
 	/*コライダーの初期化*/
 	auto& collider	= dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-	collider.radius		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
-	collider.data->damage		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
-	collider.data->reactionType = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
-	//ここでのヒットストップ系の変数は、キャラクター側に与えるものになる
-	collider.data->hitStopTime	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
-	collider.data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
-	collider.data->hitStopDelay	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
-	collider.data->slowFactor	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
 	collider.data->isHitAttack	= false;
 	/*変数の初期化*/
 	this->frameCount	  = 0;
@@ -72,25 +78,17 @@ void BossRotateSlashAttack::Initialize()
 /// </summary>
 void BossRotateSlashAttack::Update()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& enemy = Singleton<EnemyManager>::GetInstance();
-	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
 
 	/*当たり判定の確認が開始している*/
 	if (this->isStartHitCheck)
 	{
-		//変数の準備
-		const int	START_HIT_CHECK_FRAME = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_FRAME"][this->attackIndex];
-		const int	END_HIT_CHECK_FRAME	  = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"][this->attackIndex];
-		const float POSITION_OFFSET		  = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"][this->attackIndex];
-		const float Y_OFFSET			  = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"][this->attackIndex];
-
 		//フレームを増やす
 		this->frameCount++;
 		//フレームが定数を超えていなかったら早期リターン
-		if (this->frameCount < START_HIT_CHECK_FRAME)return;
+		if (this->frameCount < this->startHitCheckFrame)return;
 
+		auto& enemy = Singleton<EnemyManager>::GetInstance();
+		auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
 		//今回の攻撃中に当たり判定フラグが一度もたっていなかったら
 		if (!this->isNotOnHit)
 		{
@@ -105,7 +103,7 @@ void BossRotateSlashAttack::Update()
 		//ひじから手へ伸びるベクトル
 		VECTOR underToTopBaseVector = VNorm(VSub(topPositionBase, elbowPosition));
 		//ひじから手へ伸びるベクトルを定数でスケーリングしたものをひじの座標に足したものを爪の先端座標とする
-		VECTOR crowTopPosition = VScale(underToTopBaseVector, json.GetJson(JsonManager::FileType::ENEMY)["CROW_SIZE"]);
+		VECTOR crowTopPosition = VScale(underToTopBaseVector, this->crowSize);
 		crowTopPosition = VAdd(crowTopPosition, elbowPosition);
 		//ひじの座標をカプセル下座標とする
 		collider.rigidbody.SetPosition(elbowPosition);
@@ -113,7 +111,7 @@ void BossRotateSlashAttack::Update()
 		collider.topPositon = crowTopPosition;
 
 		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
-		if (this->frameCount > END_HIT_CHECK_FRAME || (this->isNotOnHit && !collider.data->isDoHitCheck))
+		if (this->frameCount > this->endHitCheckFrame || (this->isNotOnHit && !collider.data->isDoHitCheck))
 		{
 			this->isStartHitCheck = false;
 			collider.data->isDoHitCheck = false;

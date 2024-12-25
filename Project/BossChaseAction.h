@@ -15,6 +15,9 @@ public:
 	void Update		  (Boss& _boss)		  override;//更新
 	void CalcParameter(const Boss& _boss) override;//パラメーターの計算
 private:
-	
+	VECTOR rotateLerpValue;
+	float speed;
+	float moveDistance;
+	short maxInterval;
 };
 

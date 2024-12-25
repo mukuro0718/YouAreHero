@@ -23,7 +23,23 @@
 BossRotateSlashAction::BossRotateSlashAction()
 	: isClose(false)
 {
-	this->attack = new BossRotateSlashAttack(static_cast<int>(BossAttack::AttackType::ROTATE_SLASH));
+	const int ATTACK_TYPE	= static_cast<int>(Boss::AttackType::ROTATE_SLASH);
+	this->attack			= new BossRotateSlashAttack(ATTACK_TYPE);
+	auto& json	= Singleton<JsonManager>::GetInstance();
+	this->hitStopTime		= json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][ATTACK_TYPE];
+	this->hitStopType		= static_cast<int>(HitStop::Type::STOP);
+	this->hitStopDelay		= json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][ATTACK_TYPE];
+	this->slowFactor		= json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][ATTACK_TYPE];
+	this->rotateLerpValue	= Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]);
+	this->rotateFrame		= json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_SLASH_ROTATE_FRAME"];
+	this->nextAnimation		= static_cast<int>(Boss::AnimationType::ROTATE_SLASH);
+	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nextAnimation];
+	this->maxInterval		= json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_SLASH_INTERVAL"];
+	this->checkState		= static_cast<int>(Boss::BossState::ANGRY);
+	this->actionDistance	= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][ATTACK_TYPE];
+	this->maxDesireValue	= json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+	this->normalDesireValue = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DESIRE_VALUE"];
+
 }
 
 /// <summary>
@@ -60,8 +76,6 @@ void BossRotateSlashAction::Update(Boss& _boss)
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
-	auto& effect = Singleton<EffectManager>::GetInstance();
-	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*攻撃準備*/
 	{
@@ -82,16 +96,8 @@ void BossRotateSlashAction::Update(Boss& _boss)
 		//攻撃が当たっていたら
 		if (this->attack->GetIsHitAttack())
 		{
-			//攻撃の種類
-			const int ATTACK_TYPE = static_cast<int>(Boss::AttackType::ROTATE_SLASH);
 			//ヒットストップの設定
-			this->hitStop->SetHitStop
-			(
-				json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][ATTACK_TYPE],
-				static_cast<int>(HitStop::Type::STOP),
-				json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][ATTACK_TYPE],
-				json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][ATTACK_TYPE]
-			);
+			this->hitStop->SetHitStop(this->hitStopTime, this->hitStopType, this->hitStopDelay, this->slowFactor);
 			//攻撃ヒットフラグを下す
 			this->attack->OffIsHitAttack();
 		}
@@ -107,7 +113,6 @@ void BossRotateSlashAction::Update(Boss& _boss)
 		//使用する値の準備
 		const VECTOR POSITION				= _boss.GetRigidbody().GetPosition();												//座標
 		const VECTOR MOVE_TARGET			= player.GetRigidbody().GetPosition();												//移動目標
-		const VECTOR LERP_VALUE				= Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]);	//回転率の補完値
 			  VECTOR nowRotation			= _boss.GetRigidbody().GetRotation();												//回転率
 			  VECTOR positonToTargetVector	= VSub(POSITION, MOVE_TARGET);												//座標と移動目標間のベクトル
 			  VECTOR direction				= VGet(0.0f, 0.0f, 0.0f);														//向き
@@ -117,13 +122,9 @@ void BossRotateSlashAction::Update(Boss& _boss)
 		this->isAllowAction = true;
 		{
 			//フレームカウントが定数以内なら回転フラグを立てる
-			if (this->frameCount < json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_SLASH_ROTATE_FRAME"])
+			if (this->frameCount < this->rotateFrame)
 			{
 				isRotation = true;
-			}
-			//フレームカウントが定数以内なら移動目標を更新する
-			if (this->frameCount < json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_SLASH_HOMING_FRAME"])
-			{
 				this->moveTarget = player.GetRigidbody().GetPosition();
 			}
 		}
@@ -132,7 +133,7 @@ void BossRotateSlashAction::Update(Boss& _boss)
 			if (isRotation)
 			{
 				//回転率を補完する
-				nowRotation = GetLerpRotation(_boss, positonToTargetVector, nowRotation, LERP_VALUE);
+				nowRotation = GetLerpRotation(_boss, positonToTargetVector, nowRotation, this->rotateLerpValue);
 				//回転率を設定
 				_boss.SetRotation(nowRotation);
 			}
@@ -151,10 +152,9 @@ void BossRotateSlashAction::Update(Boss& _boss)
 	/*アニメーション処理*/
 	{
 		//アニメーションの設定
-		_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::ROTATE_SLASH));
+		_boss.SetNowAnimation(this->nextAnimation);
 		//再生時間の設定
-		float animationPlayTime = _boss.GetAnimationPlayTime();
-		_boss.SetAnimationPlayTime(animationPlayTime);
+		_boss.SetAnimationPlayTime(this->animationPlayTime);
 		//アニメーションの再生
 		_boss.PlayAnimation();
 	}
@@ -167,7 +167,7 @@ void BossRotateSlashAction::Update(Boss& _boss)
 	{
 		this->isInitialize = false;
 		this->isClose = false;
-		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_SLASH_INTERVAL"]);
+		OffIsSelect(this->maxInterval);
 		_boss.DecAttackComboCount();
 	}
 }
@@ -177,16 +177,6 @@ void BossRotateSlashAction::Update(Boss& _boss)
 /// </summary>
 void BossRotateSlashAction::CalcParameter(const Boss& _boss)
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
-
-	/*距離を求める*/
-	const VECTOR POSITION = _boss.GetRigidbody().GetPosition();	//座標
-	const VECTOR MOVE_TARGET = player.GetRigidbody().GetPosition();	//移動目標
-	const VECTOR POSITION_TO_TARGET = VSub(POSITION, MOVE_TARGET);	//目標から現在の移動目標へのベクトル
-	const float  DISTANCE = VSize(POSITION_TO_TARGET);			//距離
-
 	this->parameter->desireValue = 0;
 
 	/*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
@@ -196,10 +186,17 @@ void BossRotateSlashAction::CalcParameter(const Boss& _boss)
 	}
 
 	/*状態がNORMAL,ANGRYだったら欲求値を増加する*/
-	else if (_boss.GetAngryState() >= static_cast<int>(Boss::BossState::ANGRY))
+	else if (_boss.GetAngryState() >= this->checkState)
 	{
+		/*距離を求める*/
+		auto& player = Singleton<PlayerManager>::GetInstance();
+		const VECTOR POSITION = _boss.GetRigidbody().GetPosition();	//座標
+		const VECTOR MOVE_TARGET = player.GetRigidbody().GetPosition();	//移動目標
+		const VECTOR POSITION_TO_TARGET = VSub(POSITION, MOVE_TARGET);	//目標から現在の移動目標へのベクトル
+		const float  DISTANCE = VSize(POSITION_TO_TARGET);			//距離
+
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
-		if (DISTANCE <= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][static_cast<int>(Boss::AttackType::ROTATE_SLASH)])
+		if (DISTANCE <= this->actionDistance)
 		{
 			Boss::AttackType type = _boss.GetPrevAttackType();
 			//コンボが０だったら早期リターン
@@ -207,12 +204,12 @@ void BossRotateSlashAction::CalcParameter(const Boss& _boss)
 			//前の攻撃がスラッシュコンボ２だったら
 			if (type == Boss::AttackType::SLASH_COMBO_2)
 			{
-				this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+				this->parameter->desireValue = this->maxDesireValue;
 			}
 			//それ以外だったら
 			else
 			{
-				this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DESIRE_VALUE"];
+				this->parameter->desireValue = this->normalDesireValue;
 			}
 		}
 	}

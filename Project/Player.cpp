@@ -147,7 +147,7 @@ void Player::Finalize()
 /// </summary>
 void Player::Update()
 {
-	int startTime = GetNowCount();
+	//int startTime = GetNowCount();
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
@@ -176,15 +176,15 @@ void Player::Update()
 		GetPlayerData().isGuard = false;
 	}
 
-	int endTime = GetNowCount();
-	this->frameTime = endTime - startTime;
+	//int endTime = GetNowCount();
+	//this->frameTime = endTime - startTime;
 	/*無敵フラグが立っていたら最大HPから変えない*/
 #ifdef _DEBUG
-	//auto& debug = Singleton<Debug>			::GetInstance();
-	//if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER) && json.GetJson(JsonManager::FileType::DEBUG)["PLAYER_INVINCIBLE"])
-	//{
-	//	GetPlayerData().hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];
-	//}
+	auto& debug = Singleton<Debug>			::GetInstance();
+	if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER) && json.GetJson(JsonManager::FileType::DEBUG)["PLAYER_INVINCIBLE"])
+	{
+		GetPlayerData().hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];
+	}
 	printfDx("PLAYER_FRAMETIME:%d\n", this->frameTime);
 #endif // _DEBUG
 }

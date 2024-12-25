@@ -16,7 +16,10 @@
 /// </summary>
 BossDeathAction::BossDeathAction()
 {
-
+	auto& json	= Singleton<JsonManager>::GetInstance();
+	this->nextAnimation		= static_cast<int>(Boss::AnimationType::DYING);
+	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nextAnimation];
+	this->maxDesireValue	= json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 }
 
 /// <summary>
@@ -46,14 +49,16 @@ void BossDeathAction::Initialize()
 /// </summary>
 void BossDeathAction::Update(Boss& _boss)
 {
-	/*選択されていたら欲求値を０にする*/
-	this->parameter->desireValue = 0;
+	/*選択されていたら*/
+	if (this->parameter->desireValue != 0)
+	{
+		this->parameter->desireValue = 0;//欲求値を０にする
+		_boss.SetNowAnimation(this->nextAnimation);//アニメーションの設定
+		_boss.SetAnimationPlayTime(this->animationPlayTime);//アニメーション再生時間の設定
 
-	/*アニメーションの設定*/
-	_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::DYING));
+	}
 
 	/*アニメーションの再生*/
-	_boss.SetAnimationPlayTime(_boss.GetAnimationPlayTime());
 	_boss.PlayAnimation();
 
 	/*もしアニメーションが終了していたら*/
@@ -62,18 +67,16 @@ void BossDeathAction::Update(Boss& _boss)
 		_boss.OffIsAlive();
 	}
 }
+
 /// <summary>
 /// パラメーターの計算
 /// </summary>
 void BossDeathAction::CalcParameter(const Boss& _boss)
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	
 	/*HPが０以下だったら欲求値を最大にし、優先フラグを立てる*/
 	if (_boss.GetHP() <= 0)
 	{
-		this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+		this->parameter->desireValue = this->maxDesireValue;
 		this->isPriority = true;
 	}
 	/*それ以外なら欲求値を０にして優先フラグを下す*/

@@ -180,9 +180,7 @@ void Boss::Finalize()
 /// </summary>
 void Boss::Update()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
+	//int startTime = GetNowCount();
 	
 	/*怒り状態の設定*/
 	SetAngryState();
@@ -190,7 +188,6 @@ void Boss::Update()
 	ChangeState();
 
 
-	//int startTime = GetNowCount();
 	/*ここに各アクションごとの更新処理を入れたい*/
 	this->parameters[this->nowAction]->Update(*this);
 	//int endTime = GetNowCount();

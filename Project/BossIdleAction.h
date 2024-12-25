@@ -15,19 +15,21 @@ public:
 	void Update		  (Boss& _boss)		  override;//更新
 	void CalcParameter(const Boss& _boss) override;//パラメーターの計算
 private:
-	/*列挙体*/
-	enum class DirectionType//向き
-	{
-		LEFT = 0,
-		RIGHT = 1,
-	};
+	/*静的定数*/
+	static constexpr int LEFT = 0;
+	static constexpr int RIGHT = 1;
 
 	/*メンバ変数*/
 	bool isSetMoveDirection;	//向きをセットしたか
 	int  directionType;			//向きの種類
 	int  maxFrameCount;			//フレームカウント
 	bool isChangeColorScale;	//カラースケールを変更するか
-	int	 prevAngryState;		//前の怒り状態
+	int	 prevState;				//前の状態
 	bool isInitializeColorScale;//カラースケールを初期化したか
+	float speed;
+	VECTOR rotateLerpValue;
+	short nextAnimation2;
+	int maxInterval;
+	short checkedState;
 };
 

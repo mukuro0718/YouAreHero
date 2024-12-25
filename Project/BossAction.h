@@ -59,5 +59,9 @@ protected:
 	std::vector<COLOR_F>	 baseColorScale;//Œ³‚ÌF
 	std::vector<COLOR_F>	 nowColorScale;	//¡‚ÌF
 	int frameTime;
+	short nextAnimation;
+	float animationPlayTime;
+	short maxDesireValue;		 //Å‘å—~‹’l
+
 };
 

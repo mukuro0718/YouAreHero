@@ -18,7 +18,16 @@
 BossIdleAction::BossIdleAction()
 	: maxFrameCount(0)
 {
-
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->speed = json.GetJson(JsonManager::FileType::ENEMY)["SIDE_WALK_SPEED"];
+	this->rotateLerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATE_LERP_VALUE"]);
+	this->nextAnimation = static_cast<int>(Boss::AnimationType::WALK_RIGHT);
+	this->nextAnimation2 = static_cast<int>(Boss::AnimationType::WALK_LEFT);
+	this->maxInterval = json.GetJson(JsonManager::FileType::ENEMY)["REST_INTERVAL"];
+	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nextAnimation];
+	this->maxDesireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+	this->checkedState = static_cast<int>(Boss::BossState::NORMAL);
+	this->maxFrameCount = json.GetJson(JsonManager::FileType::ENEMY)["IDLE_ACTION_MAX_FRAME"];
 }
 
 /// <summary>
@@ -43,7 +52,7 @@ void BossIdleAction::Initialize()
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
 	this->maxFrameCount			 = 0;
-	this->prevAngryState		 = 1;
+	this->prevState				 = 1;
 }
 
 /// <summary>
@@ -51,113 +60,106 @@ void BossIdleAction::Initialize()
 /// </summary>
 void BossIdleAction::Update(Boss& _boss)
 {
-	///////////////////////////////
 	/*死亡していたらisSelectをfalseにして早期リターン*/
 	if (_boss.GetHP() < 0 ) { OffIsSelect(this->maxFrameCount); return; }
-
-	/*選択されていたら欲求値を０にする*/
-	this->parameter->desireValue = 0;
 
 	/*移動する方向が設定されていなければ*/
 	if (!this->isSetMoveDirection)
 	{
-		//移動方向の設定（RIGHT=1）
-		this->directionType = GetRand(static_cast<int>(DirectionType::RIGHT));
-		//フラグを立てる
-		this->isSetMoveDirection = true;
+		this->parameter->desireValue = 0;							//欲求値を０にする
+		this->directionType			 = GetRand(this->RIGHT);	//移動方向の設定（RIGHT=1）
+		this->isSetMoveDirection	 = true;						//フラグを立てる
+		this->prevState				 = _boss.GetAngryState();		//ボスの状態を取得
+		_boss.SetSpeed(this->speed);							//スピード処理
+		_boss.SetAnimationPlayTime(this->animationPlayTime);//アニメーションの再生時間の設定
+		if (this->directionType == this->RIGHT)
+		{
+			_boss.SetNowAnimation(this->nextAnimation);
+		}
+		else
+		{
+			_boss.SetNowAnimation(this->nextAnimation2);
+		}
 	}
 
 	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	/*カラースケールの変更*/
-	{
-		if (!this->isChangeColorScale && 
-			_boss.GetAngryState() == static_cast<int>(Boss::BossState::NORMAL))
-		{
-			this->isChangeColorScale = true;
-		}
+	//{
+	//	if (!this->isChangeColorScale && 
+	//		_boss.GetAngryState() == static_cast<int>(Boss::BossState::NORMAL))
+	//	{
+	//		this->isChangeColorScale = true;
+	//	}
 
-		//初期化フラグが立っていたら現在の色を取得する
-		if (this->isChangeColorScale)
-		{
-			//ボスのモデルハンドル
-			const int MODEL_HANDLE = _boss.GetModelHandle();
-			//フラグが立っていなかったらカラースケールの変更
-			if (!this->isInitializeColorScale)
-			{
-				//カラースケールの更新(ここでは赤色になるようにする)
-				for (int i = 0; i < this->nowColorScale.size(); i++)
-				{
-					this->getColorScaleMap[i](this->baseColorScale[i], this->nowColorScale[i], MODEL_HANDLE);
-				}
-				this->isInitializeColorScale = true;
-			}
-			//カラースケールの更新(ここでは赤色になるようにする)
-			for (int i = 0; i < this->nowColorScale.size(); i++)
-			{
-				const COLOR_F TARGET = ColorConvert(json.GetJson(JsonManager::FileType::ENEMY)["IDLE_TARGET_COLOR_SCALE"]);
-				const COLOR_F LERP = ColorConvert(json.GetJson(JsonManager::FileType::ENEMY)["LERP_COLOR_SCALE"]);
-				this->nowColorScale[i] = LerpColor(this->nowColorScale[i], TARGET, LERP);
-				this->setColorScaleMap[i](this->nowColorScale[i], MODEL_HANDLE);
-			}
-		}
-	}
-
-	/*怒り状態を合わせる*/
-	this->prevAngryState = _boss.GetAngryState();
+	//	//初期化フラグが立っていたら現在の色を取得する
+	//	if (this->isChangeColorScale)
+	//	{
+	//		//ボスのモデルハンドル
+	//		const int MODEL_HANDLE = _boss.GetModelHandle();
+	//		//フラグが立っていなかったらカラースケールの変更
+	//		if (!this->isInitializeColorScale)
+	//		{
+	//			//カラースケールの更新(ここでは赤色になるようにする)
+	//			for (int i = 0; i < this->nowColorScale.size(); i++)
+	//			{
+	//				this->getColorScaleMap[i](this->baseColorScale[i], this->nowColorScale[i], MODEL_HANDLE);
+	//			}
+	//			this->isInitializeColorScale = true;
+	//		}
+	//		//カラースケールの更新(ここでは赤色になるようにする)
+	//		for (int i = 0; i < this->nowColorScale.size(); i++)
+	//		{
+	//			const COLOR_F TARGET = ColorConvert(json.GetJson(JsonManager::FileType::ENEMY)["IDLE_TARGET_COLOR_SCALE"]);
+	//			const COLOR_F LERP = ColorConvert(json.GetJson(JsonManager::FileType::ENEMY)["LERP_COLOR_SCALE"]);
+	//			this->nowColorScale[i] = LerpColor(this->nowColorScale[i], TARGET, LERP);
+	//			this->setColorScaleMap[i](this->nowColorScale[i], MODEL_HANDLE);
+	//		}
+	//	}
+	//}
 
 	/*使用する値の準備*/
-	const float  SPEED					= json.GetJson(JsonManager::FileType::ENEMY)["SIDE_WALK_SPEED"];					//速度
-	const VECTOR MOVE_TARGET			= player.GetRigidbody().GetPosition();													//移動目標
-	const VECTOR POSITION				= _boss.GetRigidbody().GetPosition();													//ボスの座標
-	const VECTOR LERP_VALUE				= Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATE_LERP_VALUE"]);	//回転率の補完値
-		  VECTOR velocity				= Gori::ORIGIN;																			//向き
-		  VECTOR nowRotation			= _boss.GetRigidbody().GetRotation();													//現在の回転率
-		  VECTOR nextRotation			= Gori::ORIGIN;																			//次の座標
-		  VECTOR positionToTargetVector	= VSub(POSITION,MOVE_TARGET);														//ターゲットから自分の座標までのベクトルを出す
+	const VECTOR MOVE_TARGET			= player.GetRigidbody().GetPosition();
+	const VECTOR POSITION				= _boss.GetRigidbody().GetPosition();
+		  VECTOR velocity				= Gori::ORIGIN;							
+		  VECTOR nowRotation			= _boss.GetRigidbody().GetRotation();
+		  VECTOR nextRotation			= Gori::ORIGIN;							
+		  VECTOR positionToTargetVector	= VSub(POSITION,MOVE_TARGET);		
 
 	/*回転処理*/
 	{
 		//移動目標の設定
 		_boss.SetNowMoveTarget(MOVE_TARGET);
 		//回転率を保管する
-		nowRotation = GetLerpRotation(_boss,positionToTargetVector,nowRotation,LERP_VALUE);
+		nowRotation = GetLerpRotation(_boss, positionToTargetVector, nowRotation, this->rotateLerpValue);
 		//回転率を設定
 		_boss.SetRotation(nowRotation);
 	}
 	
-	/*スピードを０にする*/
-	_boss.SetSpeed(SPEED);
-
-	/*回転率をもとに、移動する向きを出す*/
-	if (this->directionType == static_cast<int>(DirectionType::RIGHT))
+	/*移動処理*/
+	//回転率をもとに、移動する向きを出す
+	if (this->directionType == this->RIGHT)
 	{
 		velocity = VCross(positionToTargetVector, Gori::UP_VEC);
-		_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::WALK_RIGHT));
+		_boss.SetNowAnimation(this->nextAnimation);
 	}
 	else
 	{
 		velocity = VCross(positionToTargetVector, Gori::UP_VEC);
 		velocity = VScale(velocity, -1.0f);
-		_boss.SetNowAnimation(static_cast<int>(Boss::AnimationType::WALK_LEFT));
+		_boss.SetNowAnimation(this->nextAnimation2);
 	}
-
-
-	/*向きベクトルを正規化*/
+	//向きベクトルを正規化
 	velocity = VNorm(velocity);
-
-	/*移動ベクトルを出す（重力を加算するため、Yベクトルのみ前のベクトルを使用する）*/
-	VECTOR aimVelocity = VScale(velocity, SPEED);						//算出された移動ベクトル
+	//移動ベクトルを出す（重力を加算するため、Yベクトルのみ前のベクトルを使用する）
+	VECTOR aimVelocity  = VScale(velocity, this->speed);					//算出された移動ベクトル
 	VECTOR prevVelocity = _boss.GetRigidbody().GetVelocity();					//前の移動ベクトル
-	VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);	//新しい移動ベクトル
-
-	/*移動ベクトルの設定*/
+	VECTOR newVelocity  = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);	//新しい移動ベクトル
+	//移動ベクトルの設定
 	_boss.SetVelocity(newVelocity);
 
 	/*アニメーションの再生*/
-	_boss.SetAnimationPlayTime(_boss.GetAnimationPlayTime());
 	_boss.PlayAnimation();
 
 	//フレーム計測
@@ -165,7 +167,7 @@ void BossIdleAction::Update(Boss& _boss)
 	//フレーム計測が終了していたら
 	if (isEndCount)
 	{
-		OffIsSelect(json.GetJson(JsonManager::FileType::ENEMY)["REST_INTERVAL"]);
+		OffIsSelect(this->maxInterval);
 		_boss.SetAttackComboCount();
 		this->isChangeColorScale = false;
 	}
@@ -176,9 +178,6 @@ void BossIdleAction::Update(Boss& _boss)
 /// </summary>
 void BossIdleAction::CalcParameter(const Boss& _boss)
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
 	this->parameter->desireValue = 0;
 	this->isPriority = false;
 
@@ -189,11 +188,11 @@ void BossIdleAction::CalcParameter(const Boss& _boss)
 	int nowAngryState = _boss.GetAngryState();
 
 	/*AngryStateがNORMALの時に攻撃コンボが残っていなかったら*/
-	if (nowAngryState == static_cast<int>(Boss::BossState::NORMAL))
+	if (nowAngryState == this->checkedState)
 	{
-		if (nowAngryState != this->prevAngryState)
+		if (nowAngryState != this->prevState)
 		{
-			this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+			this->parameter->desireValue = this->maxDesireValue;
 			this->isPriority			 = true;
 			this->isChangeColorScale	 = true;
 			this->isInitializeColorScale = false;
@@ -201,7 +200,7 @@ void BossIdleAction::CalcParameter(const Boss& _boss)
 		//ボスの攻撃が０だったら
 		else if (_boss.GetAttackComboCount() == 0)
 		{
-			this->parameter->desireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+			this->parameter->desireValue = this->maxDesireValue;
 			this->isPriority = true;
 			this->isChangeColorScale = true;
 			this->isInitializeColorScale = false;
@@ -211,9 +210,6 @@ void BossIdleAction::CalcParameter(const Boss& _boss)
 	/*違う状態なら現在の状態を保存する*/
 	else
 	{
-		this->prevAngryState = _boss.GetAngryState();
+		this->prevState = _boss.GetAngryState();
 	}
-
-	/*ボスのAngryTypeをもとに最大フレームも決めておく*/
-	this->maxFrameCount = json.GetJson(JsonManager::FileType::ENEMY)["IDLE_ACTION_MAX_FRAME"];
 }
