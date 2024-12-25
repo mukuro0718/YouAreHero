@@ -36,6 +36,32 @@ Camera::Camera()
 	this->collider->rigidbody.SetUseGravity(false);
 	auto& collider = dynamic_cast<SphereColliderData&>(*this->collider);
 	collider.radius = json.GetJson(JsonManager::FileType::CAMERA)["RADIUS"];
+
+	this->nearClip				= json.GetJson(JsonManager::FileType::CAMERA)["NEAR"];
+	this->farClip				= json.GetJson(JsonManager::FileType::CAMERA)["FAR"];
+	this->fov					= json.GetJson(JsonManager::FileType::CAMERA)["FOV"];
+	this->firstLength			= json.GetJson(JsonManager::FileType::CAMERA)["FIRST_LENGTH"];
+	this->firstAngle			= json.GetJson(JsonManager::FileType::CAMERA)["FIRST_ANGLE"];
+	this->firstDirection		= Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["FIRST_DIRECTION"]);
+	this->targetOffset			= Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["TARGET_OFFSET"]);
+	this->firstPosition			= Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["FIRST_POSITION"]);
+	this->titleTarget			= Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
+	this->lerpValueForTarget	= Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_TARGET"]);
+	this->addAngle				= json.GetJson(JsonManager::FileType::CAMERA)["ADD_ANGLE"];
+	this->maxYow				= json.GetJson(JsonManager::FileType::CAMERA)["MAX_YOW"];
+	this->minYow				= json.GetJson(JsonManager::FileType::CAMERA)["MIN_YOW"];
+	this->maxPitch				= json.GetJson(JsonManager::FileType::CAMERA)["MAX_PITCH"];
+	this->minPitch				= json.GetJson(JsonManager::FileType::CAMERA)["MIN_PITCH"];
+	this->titleMaxLength		= json.GetJson(JsonManager::FileType::CAMERA)["TITLE_MAX_LENGTH"];
+	this->titleMinLength		= json.GetJson(JsonManager::FileType::CAMERA)["TITLE_MIN_LENGTH"];
+	this->deathMaxLength		= json.GetJson(JsonManager::FileType::CAMERA)["DEATH_MAX_LENGTH"];
+	this->deathMinLength		= json.GetJson(JsonManager::FileType::CAMERA)["DEATH_MIN_LENGTH"];
+	this->maxLength				= json.GetJson(JsonManager::FileType::CAMERA)["MAX_LENGTH"];
+	this->minLength				= json.GetJson(JsonManager::FileType::CAMERA)["MIN_LENGTH"];
+	this->lerpValueForLength	= json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_LENGTH"];
+	this->titlePositionOffset	= json.GetJson(JsonManager::FileType::CAMERA)["TITLE_POSITION_OFFSET"];
+	this->positionOffset		= Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["POSITION_OFFSET"]);
+	this->lerpValueForVelocity	= Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_VELOCITY"]);
 }
 
 /// <summary>
@@ -52,37 +78,27 @@ Camera::~Camera()
 void Camera::Initialize()
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& json   = Singleton<JsonManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& enemy	 = Singleton<EnemyManager>::GetInstance();
 
-	/*使用するjsonデータを定数型に代入*/
-	const  float  NEAR_CLIP		  = json.GetJson(JsonManager::FileType::CAMERA)["NEAR"];				  //手前クリップ距離
-	const  float  FAR_CLIP		  = json.GetJson(JsonManager::FileType::CAMERA)["FAR"];					  //奥クリップ距離
-	const  float  FOV			  = json.GetJson(JsonManager::FileType::CAMERA)["FOV"];					  //field of view
-	const  float  FIRST_LENGTH	  = json.GetJson(JsonManager::FileType::CAMERA)["FIRST_LENGTH"];					  //奥クリップ距離
-	const  float  FIRST_ANGLE	  = json.GetJson(JsonManager::FileType::CAMERA)["FIRST_ANGLE"];//カメラ座標オフセット
-	vector<float> FIRST_DIRECTION = json.GetJson(JsonManager::FileType::CAMERA)["FIRST_DIRECTION"];//カメラ座標オフセット
-	vector<float> TARGET_OFFSET   = json.GetJson(JsonManager::FileType::CAMERA)["TARGET_OFFSET"];//カメラ座標オフセット
-	vector<float> FIRST_POSITION  = json.GetJson(JsonManager::FileType::CAMERA)["FIRST_POSITION"];//カメラ座標オフセット
-
-
 	/*メンバ変数の初期化*/
-	this->nowTarget			 = enemy.GetRigidbody().GetPosition() + Gori::Convert(TARGET_OFFSET);	//注視点
-	this->nextTarget		 = this->nowTarget;												//注視点
-	this->direction			 = Gori::Convert(FIRST_DIRECTION);									//カメラの向き
-	this->length			 = FIRST_LENGTH;												//注視点からの距離
-	this->fov				 = FOV;															//field of view
-	this->yow				 = 0.0f;														//ヨー
-	this->pitch				 = 0.0f;														//ピッチ
+	this->nowTarget			 = enemy.GetRigidbody().GetPosition() + this->targetOffset;			//注視点
+	this->nextTarget		 = this->nowTarget;													//注視点
+	this->direction			 = this->firstDirection;											//カメラの向き
+	this->length			 = this->firstLength;												//注視点からの距離
+	this->yow				 = 0.0f;															//ヨー
+	this->pitch				 = 0.0f;															//ピッチ
 	this->collider->rigidbody.SetPosition(this->nowTarget + (this->direction * this->length));	//カメラ座標
-	this->collider->rigidbody.SetPosition(Gori::Convert(FIRST_POSITION));
+	this->collider->rigidbody.SetPosition(this->firstPosition);
 
 	/*カメラの手前クリップ距離と奥クリップ距離を設定する*/
-	SetCameraNearFar(NEAR_CLIP, FAR_CLIP);
+	SetCameraNearFar(this->nearClip, this->farClip);
 
 	/*fovを設定する*/
 	SetupCamera_Perspective(DegToRad(this->fov));
+}
+
+void Camera::InitializeStaticConst()
+{
 }
 
 /// <summary>
@@ -90,10 +106,6 @@ void Camera::Initialize()
 /// </summary>
 void Camera::Update()
 {
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& json	 = Singleton<JsonManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
-
 	/*注視点の更新*/
 	UpdateTarget();
 
@@ -135,7 +147,6 @@ const void Camera::Draw()const
 void Camera::UpdateTarget()
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& sceneChanger = Singleton<SceneChanger>::GetInstance();
@@ -144,14 +155,13 @@ void Camera::UpdateTarget()
 	switch (sceneChanger.GetNowSceneType())
 	{
 	case SceneChanger::SceneType::TITLE:
-		this->nextTarget = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
+		this->nextTarget = this->titleTarget;
 		break;
 	case SceneChanger::SceneType::GAME:
 		if (player.GetHP() < 0 || !player.GetIsLockOn())
 		{
 			//注視点オフセット
-			const VECTOR TARGET_OFFSET = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["TARGET_OFFSET"]);
-			this->nextTarget = VAdd(player.GetRigidbody().GetPosition(), TARGET_OFFSET);
+			this->nextTarget = VAdd(player.GetRigidbody().GetPosition(), this->targetOffset);
 		}
 		else
 		{
@@ -159,16 +169,15 @@ void Camera::UpdateTarget()
 		}
 		break;
 	case SceneChanger::SceneType::GAME_OVER:
-		this->nextTarget = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
+		this->nextTarget = this->titleTarget;
 		break;
 	case SceneChanger::SceneType::GAME_CLEAR:
-		this->nextTarget = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["TITLE_TARGET"]);
+		this->nextTarget = this->titleTarget;
 		break;
 	}
 
 	/*現在の注視点を出す*/
-	const VECTOR LERP_PERCENT = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_TARGET"]);	//線形補完のパーセント
-	this->nowTarget = Lerp(this->nowTarget, this->nextTarget, LERP_PERCENT);
+	this->nowTarget = Lerp(this->nowTarget, this->nextTarget, this->lerpValueForTarget);
 }
 
 /// <summary>
@@ -178,17 +187,10 @@ void Camera::UpdateAngle()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& input  = Singleton<InputManager>	::GetInstance();//インプットマネージャー
-	auto& json   = Singleton<JsonManager>	::GetInstance();//json
-	auto& player = Singleton<PlayerManager>::GetInstance();//json
 
 	/*変数の準備*/
 	const int	X_BUF		= input.GetRStickState().XBuf;								//右スティック入力
 	const int	Y_BUF		= input.GetRStickState().YBuf;								//右スティック入力
-	const float ADD_ANGLE	= json.GetJson(JsonManager::FileType::CAMERA)["ADD_ANGLE"];	//アングル増加量
-	const float MAX_YOW		= json.GetJson(JsonManager::FileType::CAMERA)["MAX_YOW"];	//アングル増加量
-	const float MIN_YOW		= json.GetJson(JsonManager::FileType::CAMERA)["MIN_YOW"];	//アングル増加量
-	const float MAX_PITCH	= json.GetJson(JsonManager::FileType::CAMERA)["MAX_PITCH"];	//アングル増加量
-	const float MIN_PITCH	= json.GetJson(JsonManager::FileType::CAMERA)["MIN_PITCH"];	//アングル増加量
 
 	/*アングルの更新 Y+:down Y-:up X+:right X-:left*/
 	//スティック入力もキー入力もなければ
@@ -199,11 +201,11 @@ void Camera::UpdateAngle()
 		{
 			if (X_BUF < 0)
 			{
-				this->yow += ADD_ANGLE;
+				this->yow += this->addAngle;
 			}
 			else if (X_BUF > 0)
 			{
-				this->yow -= ADD_ANGLE;
+				this->yow -= this->addAngle;
 			}
 		}
 		//上下のスティック入力があれば
@@ -211,32 +213,31 @@ void Camera::UpdateAngle()
 		{
 			if (Y_BUF < 0)
 			{
-				this->pitch -= ADD_ANGLE;
+				this->pitch -= this->addAngle;
 			}
 			else if (Y_BUF > 0)
 			{
-				this->pitch += ADD_ANGLE;
+				this->pitch += this->addAngle;
 			}
 		}
 	}
 	
 	/*アングルが範囲を出ないようにする*/
-	if (this->pitch < MIN_PITCH)
+	if (this->pitch < this->minPitch)
 	{
-		this->pitch = MIN_PITCH;
+		this->pitch = this->minPitch;
 	}
-	else if (this->pitch > MAX_PITCH)
+	else if (this->pitch > this->maxPitch)
 	{
-		this->pitch = MAX_PITCH;
+		this->pitch = this->maxPitch;
 	}
-
-	if (this->yow < MIN_YOW)
+	if (this->yow < this->minYow)
 	{
-		this->yow += MAX_YOW;
+		this->yow += this->maxYow;
 	}
-	else if (this->yow > MAX_YOW)
+	else if (this->yow > this->maxYow)
 	{
-		this->yow -= MIN_YOW;
+		this->yow -= this->maxYow;
 	}
 }
 
@@ -246,7 +247,6 @@ void Camera::UpdateAngle()
 void Camera::UpdateLength()
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& json			= Singleton<JsonManager>::GetInstance();
 	auto& player		= Singleton<PlayerManager>::GetInstance();
 	auto& enemy			= Singleton<EnemyManager>::GetInstance();
 	auto& sceneChanger	= Singleton<SceneChanger>::GetInstance();
@@ -258,36 +258,35 @@ void Camera::UpdateLength()
 	switch (sceneChanger.GetNowSceneType())
 	{
 	case SceneChanger::SceneType::TITLE:
-		maxLength = json.GetJson(JsonManager::FileType::CAMERA)["TITLE_MAX_LENGTH"];
-		minLength = json.GetJson(JsonManager::FileType::CAMERA)["TITLE_MIN_LENGTH"];
+		maxLength = this->titleMaxLength;
+		minLength = this->titleMinLength;
 		break;
 	case SceneChanger::SceneType::GAME:
 		if (player.GetHP() < 0 || enemy.GetHP() < 0)
 		{
-			maxLength = json.GetJson(JsonManager::FileType::CAMERA)["DEATH_MAX_LENGTH"];
-			minLength = json.GetJson(JsonManager::FileType::CAMERA)["DEATH_MIN_LENGTH"];
+			maxLength = this->deathMaxLength;
+			minLength = this->deathMinLength;
 		}
 		else
 		{
-			maxLength = json.GetJson(JsonManager::FileType::CAMERA)["MAX_LENGTH"];
-			minLength = json.GetJson(JsonManager::FileType::CAMERA)["MIN_LENGTH"];
+			maxLength = this->maxLength;
+			minLength = this->minLength;
 		}
 		break;
 	default:
-		maxLength = json.GetJson(JsonManager::FileType::CAMERA)["MAX_LENGTH"];
-		minLength = json.GetJson(JsonManager::FileType::CAMERA)["MIN_LENGTH"];
+		maxLength = this->maxLength;
+		minLength = this->minLength;
 		break;
 	}
-	const float LERP_VALUE = json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_LENGTH"];
 
 	/*距離の補正*/
 	if (this->length >= maxLength)
 	{
-		this->length = Lerp(this->length, maxLength, LERP_VALUE);
+		this->length = Lerp(this->length, maxLength, this->lerpValueForLength);
 	}
 	else if (this->length <= minLength)
 	{
-		this->length = Lerp(this->length, minLength, LERP_VALUE);
+		this->length = Lerp(this->length, minLength, this->lerpValueForLength);
 	}
 }
 
@@ -296,8 +295,6 @@ void Camera::UpdateLength()
 /// </summary>
 void Camera::UpdateVelocity()
 {
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& json			= Singleton<JsonManager>::GetInstance();
 	auto& player		= Singleton<PlayerManager>::GetInstance();
 	auto& enemy			= Singleton<EnemyManager>::GetInstance();
 	auto& sceneChanger	= Singleton<SceneChanger>::GetInstance();
@@ -314,24 +311,21 @@ void Camera::UpdateVelocity()
 		const VECTOR MOVE_VELOCITY = VNorm(VCross(CAMERA_TO_TARGET, Gori::UP_VEC));
 		nextPosition = VNorm(VAdd(NOW_POSITION, MOVE_VELOCITY));
 		nextPosition = VScale(nextPosition, this->length);
-		nextPosition.y = json.GetJson(JsonManager::FileType::CAMERA)["TITLE_POSITION_OFFSET"];
-
+		nextPosition.y = this->titlePositionOffset;
 		break;
 	case SceneChanger::SceneType::GAME:
 		if (player.GetIsLockOn())
 		{
 			const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));
-			const VECTOR POSITION_OFFSET = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["POSITION_OFFSET"]);
 			nextPosition = VScale(ENEMY_TO_PLAYER, this->length);
 			nextPosition = VAdd(player.GetRigidbody().GetPosition(), nextPosition);
-			nextPosition = VAdd(nextPosition, POSITION_OFFSET);
+			nextPosition = VAdd(nextPosition, this->positionOffset);
 		}
 		else
 		{
 			/*アングルの更新*/
 			UpdateAngle();
-			const VECTOR FIRST_DIRECTION = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["FIRST_DIRECTION"]);
-			VECTOR direction = VTransform(FIRST_DIRECTION, MGetRotY(this->yow));
+			VECTOR direction = VTransform(this->firstDirection, MGetRotY(this->yow));
 			VECTOR axis = VCross(direction, Gori::UP_VEC);
 			direction = VTransform(direction, MGetRotAxis(axis, this->pitch));
 			nextPosition = VAdd(player.GetRigidbody().GetPosition(), VScale(direction, this->length));
@@ -339,18 +333,14 @@ void Camera::UpdateVelocity()
 		break;
 	default:
 		const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));
-		const VECTOR POSITION_OFFSET = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["POSITION_OFFSET"]);
 		nextPosition = VScale(ENEMY_TO_PLAYER, this->length);
 		nextPosition = VAdd(player.GetRigidbody().GetPosition(), nextPosition);
-		nextPosition = VAdd(nextPosition, POSITION_OFFSET);
+		nextPosition = VAdd(nextPosition, this->positionOffset);
 		break;
 	}
 
-	/*補正値*/
-	const VECTOR LERP_VALUE = Gori::Convert(json.GetJson(JsonManager::FileType::CAMERA)["LERP_VALUE_VELOCITY"]);
-
 	/*次の座標と今の座標の差を移動ベクトルにする*/
-	VECTOR newPosition = Lerp(this->collider->rigidbody.GetPosition(), nextPosition, LERP_VALUE);
+	VECTOR newPosition = Lerp(this->collider->rigidbody.GetPosition(), nextPosition, this->lerpValueForVelocity);
 	VECTOR newVelocity = VSub(newPosition,this->collider->rigidbody.GetPosition());
 
 	this->collider->rigidbody.SetVelocity(newVelocity);
@@ -375,23 +365,23 @@ void Camera::UpdateDirection()
 void Camera::UpdateFoV()
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();//json
-	auto& player = Singleton<PlayerManager>::GetInstance();//player
+	//auto& json = Singleton<JsonManager>::GetInstance();//json
+	//auto& player = Singleton<PlayerManager>::GetInstance();//player
 
-	/*定数型に代入*/
-	const float FOV		  = json.GetJson(JsonManager::FileType::CAMERA)["FOV"];
-	const float MOVED_FOV = json.GetJson(JsonManager::FileType::CAMERA)["MOVED_FOV"];
-	const float PERCENT   = json.GetJson(JsonManager::FileType::CAMERA)["FOV_PERCENT"];
+	///*定数型に代入*/
+	//const float FOV		  = json.GetJson(JsonManager::FileType::CAMERA)["FOV"];
+	//const float MOVED_FOV = json.GetJson(JsonManager::FileType::CAMERA)["MOVED_FOV"];
+	//const float PERCENT   = json.GetJson(JsonManager::FileType::CAMERA)["FOV_PERCENT"];
 
-	/*プレイヤーが移動状態だったら*/
-	//if (player.IsRun())
-	//{
-	//	this->fov = Lerp(this->fov, MOVED_FOV, PERCENT);
-	//}
-	///*移動していなかったら*/
-	//else
-	//{
-		this->fov = Lerp(this->fov, FOV, PERCENT);
+	///*プレイヤーが移動状態だったら*/
+	////if (player.IsRun())
+	////{
+	////	this->fov = Lerp(this->fov, MOVED_FOV, PERCENT);
+	////}
+	/////*移動していなかったら*/
+	////else
+	////{
+	//	this->fov = Lerp(this->fov, FOV, PERCENT);
 	//}
 
 	float fov = this->fov * (DX_PI_F / 180.0f);

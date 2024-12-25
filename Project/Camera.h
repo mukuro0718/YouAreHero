@@ -14,6 +14,7 @@ public:
 		  void Initialize();		//初期化
 		  void Update	 ();		//更新
 	const void Draw		 ()const;	//描画
+	static void InitializeStaticConst();
 
 	/*getter*/
 	const VECTOR GetNowPosition	()const;						//現在の座標（使用していない）
@@ -32,13 +33,37 @@ private:
 	float  DegToRad			(const float _deg) { return _deg * (DX_PI_F / 180.0f); }		//度数をラジアンに変換
 
 	/*メンバ変数*/
-	ColliderData*	collider;		//コライダー
-	VECTOR			nextTarget;		//次の注視点
-	VECTOR			nowTarget;		//今の注視点
-	VECTOR			direction;		//カメラから注視点の方向
-	float			fov;			//field of view
-	float			length;			//長さ
-	float			yow;			//ヨー
-	float			pitch;			//ピッチ
+	ColliderData*	collider;				//コライダー
+	VECTOR			nextTarget;				//次の注視点
+	VECTOR			nowTarget;				//今の注視点
+	VECTOR			direction;				//カメラから注視点の方向
+	float			fov;					//field of view
+	float			length;					//長さ
+	float			yow;					//ヨー（横回転）
+	float			pitch;					//ピッチ（縦回転）
+	float			nearClip;				//手前クリップ距離
+	float			farClip;				//奥クリップ距離
+	float			firstLength;			//
+	float			firstAngle;				//
+	VECTOR			firstDirection;			//
+	VECTOR			targetOffset;			//
+	VECTOR			firstPosition;			//
+	VECTOR			titleTarget;			//
+	VECTOR			lerpValueForTarget;		//
+	VECTOR			lerpValueForVelocity;	//
+	float			addAngle;				//
+	float			maxYow;					//
+	float			minYow;					//
+	float			maxPitch;				//
+	float			minPitch;				//
+	float			titleMaxLength;			//
+	float			titleMinLength;			//
+	float			deathMaxLength;			//	
+	float			deathMinLength;			//
+	float			maxLength;				//
+	float			minLength;				//
+	float			lerpValueForLength;		//
+	float			titlePositionOffset;	//
+	VECTOR			positionOffset;			//
 	//HACK:注視点からlength分だけ離した位置にカメラの座標を設定するため、初期directionを反転させた値を保持する
 };
