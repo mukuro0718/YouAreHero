@@ -23,6 +23,8 @@ BossRoarAction::BossRoarAction()
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->maxDesireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 	this->checkedState = static_cast<int>(Boss::BossState::ANGRY);
+	this->nextAnimation = static_cast<int>(Boss::AnimationType::ROAR);
+	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 }
 
 /// <summary>
@@ -46,7 +48,6 @@ void BossRoarAction::Initialize()
 	this->parameter->interval	 = 0;
 	this->prevState				 = 1;
 	this->frameTime				 = 0;
-	this->nextAnimation = static_cast<int>(Boss::AnimationType::ROAR);
 }
 
 /// <summary>
@@ -101,7 +102,7 @@ void BossRoarAction::Update(Boss& _boss)
 		//アニメーションの設定
 		_boss.SetNowAnimation(this->nextAnimation);
 		//アニメーション再生時間の設定
-		_boss.SetAnimationPlayTime(_boss.GetAnimationPlayTime());
+		_boss.SetAnimationPlayTime(this->animationPlayTime);
 		//スピードを０にする
 		float speed = 0.0f;
 		_boss.SetSpeed(speed);

@@ -43,7 +43,7 @@ void PlayerAvoid::Initialize()
 	this->isChangeAction = false;
 	this->isEndAction = false;
 	this->frameCount = 0;
-	this->isRotate = true;
+	this->isRotate = false;
 
 }
 
@@ -76,14 +76,14 @@ void PlayerAvoid::Update(Player& _player)
 	}
 
 	/*フレームの計測*/
-	if (this->frameCount < this->rotatableFrame)
+	if (!this->isRotate)
 	{
 		//フレームカウントの増加
 		this->frameCount++;
 		//アクションキャンセルが可能だったら
-		if (this->isRotate && (this->frameCount >= this->rotatableFrame))
+		if (!this->isRotate && (this->frameCount >= this->rotatableFrame))
 		{
-			this->isRotate = false;
+			this->isRotate = true;
 		}
 		//無敵時間
 		if (this->frameCount >= this->justAvoidFrame)
@@ -91,9 +91,10 @@ void PlayerAvoid::Update(Player& _player)
 			_player.GetPlayerData().isInvinvible = false;
 		}
 	}
-	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/
+
+	/*移動処理*/
 	MoveData data;
-	data.Set(_player.GetNextRotation(), 0.0f, isRotate, false);
+	data.Set(_player.GetNextRotation(), 0.0f, this->isRotate, false);
 	Move(_player, data);
 
 	/*アニメーションの再生*/

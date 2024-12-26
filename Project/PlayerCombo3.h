@@ -23,5 +23,9 @@ private:
 	float					  positionOffset;	 //座標オフセット
 	float					  yOffset;			 //Yオフセット
 	VECTOR					  firstDirection;	 //最初の向き
+	float					  hitStopTime;		 //ヒットストップ時間
+	int						  hitStopDelay;		 //ヒットストップディレイ
+	int						  hitStopType;		 //ヒットストップの種類
+	float					  slowFactor;		 //スロー係数
 };
 

@@ -12,6 +12,7 @@
 #include "PlayerAction.h"
 #include "PlayerCombo3.h"
 #include "EffectManager.h"
+#include "HitStop.h"
 
 /// <summary>
 /// コンストラクタ
@@ -24,6 +25,10 @@ PlayerCombo3::PlayerCombo3()
 
 	/*初期化*/
 	auto& json						  = Singleton<JsonManager>::GetInstance();
+	this->hitStopTime				  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_HIT_STOP_TIME"];
+	this->hitStopType				  = static_cast<int>(HitStop::Type::SLOW);
+	this->hitStopDelay				  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_HIT_STOP_DELAY"];
+	this->slowFactor				  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_HIT_STOP_FACTOR"];
 	this->collider->radius			  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_ATTACK_RADIUS"];						//半径
 	this->collider->data->hitStopTime = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_HIT_STOP_TIME"];						//ヒットストップ時間
 	this->collider->data->damage	  = json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"][2];							//ダメージ
@@ -119,6 +124,7 @@ void PlayerCombo3::Update(Player& _player)
 		effect.OnIsEffect(EffectManager::EffectType::PLAYER_IMPACT);
 		effect.SetPosition(EffectManager::EffectType::PLAYER_IMPACT, this->collider->rigidbody.GetPosition());
 		this->collider->data->isHitAttack = false;
+		_player.SetHitStop(this->hitStopTime, this->hitStopType, this->hitStopDelay, this->slowFactor);
 	}
 
 	/*当たり判定許可フラグが立っていなかったら早期リターン*/

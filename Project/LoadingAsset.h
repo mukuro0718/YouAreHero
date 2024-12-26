@@ -90,7 +90,9 @@ public:
 	//音のタイプ
 	enum class SoundType
 	{
-
+		SWORD_SLASH_1,//combo1,2
+		SWORD_SLASH_2,//combo3
+		SWORD_SLASH_3,//skill
 	};
 	//エフェクト
 	enum class EffectType

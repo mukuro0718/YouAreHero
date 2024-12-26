@@ -81,7 +81,7 @@ private:
 	~BeastBehaviorTree();//デストラクタ
 
 	/*メンバ変数*/
-	BehaviorTreeNode* root;		//ツリー
+	BehaviorTreeNode* Selector_DeathOrReactionOrBreakOrBattle;		//ビヘイビアツリーのrootノード
 	BeastState		  state;	//ボスの状態
 	int				  downValue;//ダウン値
 	std::array<int, static_cast<int>(ActionType::COMBO_ATTACK_2) + 1> intervalSet;//インターバル
@@ -90,11 +90,3 @@ private:
 	int level;
 	float toTargetDistance;//目標までの距離
 };
-
-/*
-root--DyingNode
-	|-ActionNode--Transition
-				|-Recovering
-				|-Serch
-				|-Battle
-*/

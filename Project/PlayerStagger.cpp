@@ -54,13 +54,6 @@ void PlayerStagger::Finalize()
 /// </summary>
 void PlayerStagger::Update(Player& _player)
 {
-	/*移動速度が０以上の時処理を行う*/
-	if (_player.GetSpeed() != 0)
-	{
-		MoveData data;
-		data.Set(_player.GetNextRotation(), 0.0f, true, false);
-		Move(_player, data);
-	}
 
 	/*処理の開始時に一度だけ行う処理*/
 	if (this->frameCount == 0)
@@ -70,11 +63,26 @@ void PlayerStagger::Update(Player& _player)
 		effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
 		//スピードの設定
 		const CharacterData& data = _player.GetCharacterData();
-		_player.SetSpeed(this->maxSpeed);
 		//ヒットストップの設定
 		_player.SetHitStop(data.hitStopTime, data.hitStopType, data.hitStopDelay, data.slowFactor);
 		//ヒットフラグを下す
 		_player.GetPlayerData().isHit = false;
+	}
+	/*移動速度が０以上の時処理を行う*/
+	if (_player.GetSpeed() != 0)
+	{
+		VECTOR nowRotation = _player.GetRigidbody().GetRotation();
+		VECTOR nextRotation = _player.GetNextRotation();
+		UpdateRotation(true, nextRotation, nowRotation);
+		_player.SetRotation(nowRotation, nextRotation);
+
+		/*移動速度の更新*/
+		_player.SetSpeed(0.0f);
+
+		/*移動ベクトルを出す*/
+		VECTOR nowVelocity = _player.GetRigidbody().GetVelocity();
+		VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelocity, 0.0f, false);
+		_player.SetVelocity(newVelocity);
 	}
 
 	/*フレーム計測*/

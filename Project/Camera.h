@@ -41,6 +41,7 @@ private:
 	float			length;					//長さ
 	float			yow;					//ヨー（横回転）
 	float			pitch;					//ピッチ（縦回転）
+	//TODO:以下の変数はJsonのデータを格納する変数であり、出来れば定数にすべきものである
 	float			nearClip;				//手前クリップ距離
 	float			farClip;				//奥クリップ距離
 	float			firstLength;			//

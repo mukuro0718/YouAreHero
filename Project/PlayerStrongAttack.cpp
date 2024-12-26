@@ -13,6 +13,7 @@
 #include "PlayerStrongAttack.h"
 #include "InputManager.h"
 #include "EffectManager.h"
+#include "HitStop.h"
 
 /// <summary>
 /// コンストラクタ
@@ -25,6 +26,10 @@ PlayerStrongAttack::PlayerStrongAttack()
 	
 	/*初期化*/
 	auto& json						  = Singleton<JsonManager>::GetInstance();
+	this->hitStopTime				  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_TIME"];
+	this->hitStopType				  = static_cast<int>(HitStop::Type::SLOW);
+	this->hitStopDelay				  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_DELAY"];
+	this->slowFactor				  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_FACTOR"];
 	this->collider->radius			  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_ATTACK_RADIUS"];					//半径
 	this->collider->data->hitStopTime = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_TIME"];					//ヒットストップ時間
 	this->collider->data->damage	  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_DAMAGE"];							//ダメージ
@@ -121,6 +126,7 @@ void PlayerStrongAttack::Update(Player& _player)
 		effect.OnIsEffect(EffectManager::EffectType::PLAYER_IMPACT);
 		effect.SetPosition(EffectManager::EffectType::PLAYER_IMPACT, this->collider->rigidbody.GetPosition());
 		this->collider->data->isHitAttack = false;
+		_player.SetHitStop(this->hitStopTime, this->hitStopType, this->hitStopDelay, this->slowFactor);
 	}
 
 	/*当たり判定許可フラグが立っていなかったら早期リターン*/

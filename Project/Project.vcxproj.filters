@@ -547,6 +547,9 @@
     <Filter Include="Object\Character\Player\PlayerAction\Q_DrawSword1">
       <UniqueIdentifier>{3c8d8e2f-74a6-48d5-8fe3-67905cfffec6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sound">
+      <UniqueIdentifier>{34f65a54-1206-4c7c-ac7f-7dec710cf4b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -1053,6 +1056,9 @@
     </ClCompile>
     <ClCompile Include="PlayerDrawSword2.cpp">
       <Filter>Object\Character\Player\PlayerAction\R_DrawSword2</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1592,6 +1598,9 @@
     </ClInclude>
     <ClInclude Include="PlayerDrawSword2.h">
       <Filter>Object\Character\Player\PlayerAction\R_DrawSword2</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>Sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

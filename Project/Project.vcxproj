@@ -281,6 +281,7 @@
     <ClCompile Include="SelectorNode.cpp" />
     <ClCompile Include="SequencerNode.cpp" />
     <ClCompile Include="Shadow.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="SphereColliderData.cpp" />
     <ClCompile Include="CharacterData.cpp" />
     <ClCompile Include="Effect.cpp" />
@@ -456,6 +457,7 @@
     <ClInclude Include="SelectorNode.h" />
     <ClInclude Include="SequencerNode.h" />
     <ClInclude Include="Shadow.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="SphereColliderData.h" />
     <ClInclude Include="CharacterData.h" />
     <ClInclude Include="Effect.h" />

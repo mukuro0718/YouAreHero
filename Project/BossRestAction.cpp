@@ -30,6 +30,7 @@ BossRestAction::BossRestAction()
 	this->maxDesireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 	this->maxFrameCount = json.GetJson(JsonManager::FileType::ENEMY)["REST_ACTION_MAX_FRAME"];
 	this->checkedState = static_cast<int>(Boss::BossState::TIRED);
+	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 }
 
 /// <summary>

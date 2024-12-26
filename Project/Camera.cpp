@@ -78,7 +78,8 @@ Camera::~Camera()
 void Camera::Initialize()
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& enemy	 = Singleton<EnemyManager>::GetInstance();
+	auto& player	= Singleton<PlayerManager>::GetInstance();
+	auto& enemy		= Singleton<EnemyManager>::GetInstance();
 
 	/*メンバ変数の初期化*/
 	this->nowTarget			 = enemy.GetRigidbody().GetPosition() + this->targetOffset;			//注視点
@@ -138,6 +139,8 @@ const void Camera::Draw()const
 		printfDx("CAMERA_TARGET X:%f,Y:%f,Z:%f\n", this->nowTarget.x, this->nowTarget.y, this->nowTarget.z);
 		printfDx("CAMERA_DIRECTION X:%f,Y:%f,Z:%f\n", this->direction.x, this->direction.y, this->direction.z);
 		printfDx("CAMERA_LENGTH:%f\n", this->length);
+		printfDx("CAMERA_YOW:%f\n", this->yow);
+		printfDx("CAMERA_PITCH:%f\n", this->pitch);
 	}
 }
 
@@ -231,14 +234,14 @@ void Camera::UpdateAngle()
 	{
 		this->pitch = this->maxPitch;
 	}
-	if (this->yow < this->minYow)
-	{
-		this->yow += this->maxYow;
-	}
-	else if (this->yow > this->maxYow)
-	{
-		this->yow -= this->maxYow;
-	}
+	//if (this->yow < this->minYow)
+	//{
+	//	this->yow += this->maxYow;
+	//}
+	//else if (this->yow > this->maxYow)
+	//{
+	//	this->yow -= this->maxYow;
+	//}
 }
 
 /// <summary>

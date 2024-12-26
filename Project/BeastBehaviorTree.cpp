@@ -6,7 +6,7 @@
 /// コンストラクタ
 /// </summary>
 BeastBehaviorTree::BeastBehaviorTree()
-	: root(nullptr)
+	: Selector_DeathOrReactionOrBreakOrBattle(nullptr)
 	, state(BeastState::NORMAL)
 	, downValue(0)
 	, prevHp(0)
@@ -17,18 +17,22 @@ BeastBehaviorTree::BeastBehaviorTree()
 	this->intervalSet = { 0 };
 
 	/*大元のツリーの作成*/
-	this->root = new SelectorNode();
+	this->Selector_DeathOrReactionOrBreakOrBattle = new SelectorNode();
 
-	
+	/*HPがないときのアクション*/
+	{
+		//デス判定ノード
+		BehaviorTreeNode* Sequencer_DeathIfHpIsLessThanZero = new SequencerNode();
+		Sequencer_DeathIfHpIsLessThanZero->AddChild(new CheckDyingCondition());
+		Sequencer_DeathIfHpIsLessThanZero->AddChild(new Beast_Dying());
+	}
+
+
 	/*状態偏移用ツリーの作成*/
 	BehaviorTreeNode* stateTransitionTree = new SelectorNode();
 	{
 		//状態偏移ノードの作成
 		BehaviorTreeNode* stateTransitionNode = new SelectorNode();
-		//デス判定ノード
-		BehaviorTreeNode* changeDeathNode = new SequencerNode();
-		changeDeathNode->AddChild(new CheckDyingCondition());
-		changeDeathNode->AddChild(new Beast_Dying());
 		//怒りへの偏移
 		BehaviorTreeNode* changeAngryNode = new SequencerNode();
 		changeAngryNode->AddChild(new CheckAngryCondition());

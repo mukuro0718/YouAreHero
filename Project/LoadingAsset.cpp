@@ -18,6 +18,7 @@ LoadingAsset::LoadingAsset()
 	vector<string> modelPath  = json.GetJson(JsonManager::FileType::MODEL_PATH)["PATH"];
 	vector<string> imagePath  = json.GetJson(JsonManager::FileType::IMAGE_PATH)["PATH"];
 	vector<string> effectPath = json.GetJson(JsonManager::FileType::EFFECT_PATH)["PATH"];
+	vector<string> soundPath = json.GetJson(JsonManager::FileType::SOUND_PATH)["PATH"];
 
 	vector<string> fontPath = json.GetJson(JsonManager::FileType::FONT_PATH )["PATH"];
 	vector<string> fontName = json.GetJson(JsonManager::FileType::FONT_PATH)["NAME"];
@@ -58,6 +59,11 @@ LoadingAsset::LoadingAsset()
 	for (int i = 0; i < effectPath.size(); i++)
 	{
 		this->effectHandle.emplace_back(LoadEffekseerEffect(effectPath[i].c_str(), 1.0f));
+	}
+	/*エフェクトのロード*/
+	for (int i = 0; i < soundPath.size(); i++)
+	{
+		this->soundHandle.emplace_back(LoadSoundMem(soundPath[i].c_str()));
 	}
 	//フラグを立てることで非同期ロードが可能になる
 	SetUseASyncLoadFlag(TRUE);
