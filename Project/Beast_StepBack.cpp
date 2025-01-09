@@ -15,7 +15,13 @@
 /// </summary>
 Beast_StepBack::Beast_StepBack()
 {
-
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->animationType		= static_cast<int>(Beast::AnimationType::STEP_BACK);
+	this->animationPlayTime = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->animationType];
+	this->actionType		= static_cast<short>(BeastBehaviorTree::ActionType::STEP_BACK);
+	this->maxSpeed			= json.GetJson(JsonManager::FileType::BEAST)["STEP_BACK_SPEED"];
+	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
+	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
 }
 
 /// <summary>
@@ -31,34 +37,34 @@ Beast_StepBack::~Beast_StepBack()
 /// </summary>
 Beast_StepBack::NodeState Beast_StepBack::Update()
 {
-	/*アニメーション*/
-	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
 	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
+
+	/*登録されているアクションと実際のアクションが異なっていたら*/
+	if (rootNode.GetNowSelectAction() != this->actionType)
 	{
 		//アニメーションの種類を設定
-		int animationType = static_cast<int>(Beast::AnimationType::STEP_BACK);
-		enemy.SetNowAnimation(animationType);
+		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
-		enemy.SetAnimationPlayTime(json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][animationType]);
-		//アニメーションの再生
-		enemy.PlayAnimation();
+		enemy.SetAnimationPlayTime(this->animationPlayTime);
+		//アクションの設定
+		rootNode.SetSelectAction(this->actionType);
 	}
 
+	/*アニメーションの再生*/
+	enemy.PlayAnimation();
+
 	/*移動*/
-	float maxSpeed = json.GetJson(JsonManager::FileType::BEAST)["STEP_BACK_SPEED"];
-	float accel = json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
-	float decel = json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
-	//移動速度の更新
-	enemy.UpdateSpeed(maxSpeed, decel, accel);
-	//移動ベクトルを出す
-	enemy.UpdateVelocity(false);
+	enemy.Move(this->maxSpeed, this->accel, this->decel, false);
 
 	/*状態を返す*/
 	{
 		//アニメーションが終了していたら
 		if (enemy.GetIsChangeAnimation())
 		{
+			//インターバルの設定
+			rootNode.SetInterval(this->actionType, this->interval);
 			return ActionNode::NodeState::SUCCESS;
 		}
 		//それ以外は実行中を返す

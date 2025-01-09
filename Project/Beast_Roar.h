@@ -12,5 +12,7 @@ public:
 	~Beast_Roar();//デストラクタ
 
 	NodeState Update()override;//更新
+private:
+	bool  isInitialize;		//初期化したか
 };
 

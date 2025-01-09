@@ -74,6 +74,14 @@ LoadingAsset::LoadingAsset()
 /// </summary>
 LoadingAsset::~LoadingAsset()
 {
+	/*フォントのアンロード*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+	vector<string> fontPath = json.GetJson(JsonManager::FileType::FONT_PATH)["PATH"];
+	for (int i = 0; i < fontPath.size(); i++)
+	{
+		RemoveFontResourceExA(fontPath[i].c_str(), FR_PRIVATE, NULL);
+	}
+
 	/*アセットハンドルの解放*/
 	for (int i = 0; i < this->modelHandle.size(); i++)
 	{

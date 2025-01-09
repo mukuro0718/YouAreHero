@@ -11,10 +11,13 @@
 /// コンストラクタ
 /// </summary>
 CharacterColliderData::CharacterColliderData(const ColliderData::Priority _priority, const GameObjectTag _tag, CharacterData* _data)
-	: ColliderData	(ColliderData::Kind::CHARACTER_CAPSULE, _priority, _tag)
-	, radius		(0.0f)
-	, topPositon	(VGet(0.0f, 0.0f, 0.0f))
-	, data			(_data)
+	: ColliderData		 (ColliderData::Kind::CHARACTER_CAPSULE, _priority, _tag)
+	, radius			 (0.0f)
+	, topPositon		 (VGet(0.0f, 0.0f, 0.0f))
+	, data				 (_data)
+	, isUseCollWithChara (true)
+	, isUseCollWithGround(true)
+	, isSetTopPosition	 (false)
 {
 	//処理なし
 }

@@ -106,12 +106,12 @@ void CollisionManager::Update()
 		}
 		else if (kind == ColliderData::Kind::CHARACTER_CAPSULE)
 		{
-			//CharacterColliderData& capsuleData = dynamic_cast<CharacterColliderData&>(*item);
-			//float radius = capsuleData.radius;
-			//VECTOR topPositionOffset = capsuleData.topPositon;
+			CharacterColliderData& capsuleData = dynamic_cast<CharacterColliderData&>(*item);
+			float radius = capsuleData.radius;
+			VECTOR topPositionOffset = capsuleData.topPositon;
 
-			//DrawCapsule3D(position, VAdd(position, topPositionOffset), radius, this->DIV_NUM, this->BEFORE_FIX_INFO_COLOR, this->BEFORE_FIX_INFO_COLOR, FALSE);
-			//DrawCapsule3D(nextPosition, VAdd(nextPosition, topPositionOffset), radius, this->DIV_NUM, this->AIM_INFO_COLOR, this->AIM_INFO_COLOR, FALSE);
+			DrawCapsule3D(position, VAdd(position, topPositionOffset), radius, this->DIV_NUM, this->BEFORE_FIX_INFO_COLOR, this->BEFORE_FIX_INFO_COLOR, FALSE);
+			DrawCapsule3D(nextPosition, VAdd(nextPosition, topPositionOffset), radius, this->DIV_NUM, this->AIM_INFO_COLOR, this->AIM_INFO_COLOR, FALSE);
 		}
 #endif
 		//予定ポジション設定
@@ -219,21 +219,28 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 	/*カプセルとカプセル*/
 	else if (aKind == ColliderData::Kind::CHARACTER_CAPSULE && bKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
-		//aのほうを補正するようにするので、aが移動していた時のみ以下の処理を行う
-		VECTOR moveVelocity = _objectA.rigidbody.GetVelocity();
-		auto aTob = VSub(_objectB.GetNextPosition(), _objectA.GetNextPosition());
-		auto aTobLength = VSize(aTob);
+		if (_objectA.GetTag() != _objectB.GetTag())
+		{
+			//aのほうを補正するようにするので、aが移動していた時のみ以下の処理を行う
+			VECTOR moveVelocity = _objectA.rigidbody.GetVelocity();
+			auto aTob = VSub(_objectB.GetNextPosition(), _objectA.GetNextPosition());
+			auto aTobLength = VSize(aTob);
 
-		/*互いの距離が、それぞれの半径の合計よりも小さければ当たる*/
-		auto& objectAColliderData = dynamic_cast<CharacterColliderData&>(_objectA);
-		auto& objectBColliderData = dynamic_cast<CharacterColliderData&>(_objectB);
-		isHit = (aTobLength < objectAColliderData.radius + objectBColliderData.radius);
+			/*互いの距離が、それぞれの半径の合計よりも小さければ当たる*/
+			auto& objectAColliderData = dynamic_cast<CharacterColliderData&>(_objectA);
+			auto& objectBColliderData = dynamic_cast<CharacterColliderData&>(_objectB);
+			if (objectAColliderData.isUseCollWithChara && objectBColliderData.isUseCollWithChara)
+			{
+				isHit = (aTobLength < objectAColliderData.radius + objectBColliderData.radius);
+			}
+		}
 	}
 
 	/*球とカプセル*/
 	else if ((aKind == ColliderData::Kind::ATTACK_SPHERE && bKind == ColliderData::Kind::CHARACTER_CAPSULE) ||
 		(aKind == ColliderData::Kind::CHARACTER_CAPSULE && bKind == ColliderData::Kind::ATTACK_SPHERE))
 	{
+		//攻撃の主と攻撃を受ける側が異なっていたら
 		auto aTag = _objectA.GetTag();
 		auto bTag = _objectB.GetTag();
 		if ((aTag == GameObjectTag::BOSS && bTag == GameObjectTag::PLAYER_ATTACK) ||
@@ -241,6 +248,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			(aTag == GameObjectTag::BOSS_ATTACK && bTag == GameObjectTag::PLAYER) ||
 			(aTag == GameObjectTag::PLAYER_ATTACK && bTag == GameObjectTag::BOSS))
 		{
+			//攻撃側と受ける側を判別する
 			ColliderData* attackDataBase = &_objectA;
 			VECTOR attackSphereCenter = _objectA.GetNextPosition();
 			ColliderData* characterDataBase = &_objectB;
@@ -252,15 +260,29 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 				characterDataBase = &_objectA;
 				characterCapsuleUnder = _objectA.GetNextPosition();
 			}
+			//コライダーをキャスト
 			auto& attackColliderData = dynamic_cast<AttackSphereColliderData&>(*attackDataBase);
 			auto& characterColliderData = dynamic_cast<CharacterColliderData&>(*characterDataBase);
-			if (attackColliderData.data->isDoHitCheck && !characterColliderData.data->isInvinvible)
+			//キャラクターとの当たり判定を行うなら
+			if (characterColliderData.isUseCollWithChara)
 			{
-				VECTOR characterCapsuleTop = VAdd(characterCapsuleUnder, characterColliderData.topPositon);
-				if (HitCheck_Sphere_Capsule(attackSphereCenter, attackColliderData.radius, characterCapsuleUnder, characterCapsuleTop, characterColliderData.radius))
+				//当たり判定を取れる状況なら
+				if (attackColliderData.data->isDoHitCheck && !characterColliderData.data->isInvinvible)
 				{
-					attackColliderData.OnHit(*characterColliderData.data);
-					characterColliderData.OnHit(*attackColliderData.data, characterColliderData.GetNextPosition());
+					VECTOR characterCapsuleTop;
+					if (characterColliderData.isSetTopPosition)
+					{
+						characterCapsuleTop = characterColliderData.topPositon;
+					}
+					else
+					{
+						characterCapsuleTop = VAdd(characterCapsuleUnder, characterColliderData.topPositon);
+					}
+					if (HitCheck_Sphere_Capsule(attackSphereCenter, attackColliderData.radius, characterCapsuleUnder, characterCapsuleTop, characterColliderData.radius))
+					{
+						attackColliderData.OnHit(*characterColliderData.data);
+						characterColliderData.OnHit(*attackColliderData.data, characterColliderData.GetNextPosition());
+					}
 				}
 			}
 		}
@@ -270,6 +292,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 	else if ((aKind == ColliderData::Kind::ATTACK_CAPSULE && bKind == ColliderData::Kind::CHARACTER_CAPSULE) ||
 		(aKind == ColliderData::Kind::CHARACTER_CAPSULE && bKind == ColliderData::Kind::ATTACK_CAPSULE))
 	{
+		//攻撃の主と攻撃を受ける側が異なっていたら
 		auto aTag = _objectA.GetTag();
 		auto bTag = _objectB.GetTag();
 		if ((aTag == GameObjectTag::BOSS && bTag == GameObjectTag::PLAYER_ATTACK) ||
@@ -277,6 +300,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			(aTag == GameObjectTag::BOSS_ATTACK && bTag == GameObjectTag::PLAYER) ||
 			(aTag == GameObjectTag::PLAYER_ATTACK && bTag == GameObjectTag::BOSS))
 		{
+			//攻撃側と受ける側を判別する
 			ColliderData* attackDataBase = &_objectA;
 			VECTOR attackCapsuleUnder = _objectA.GetNextPosition();
 			ColliderData* characterDataBase = &_objectB;
@@ -288,16 +312,30 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 				characterDataBase = &_objectA;
 				characterCapsuleUnder = _objectA.GetNextPosition();
 			}
+			//コライダーをキャスト
 			auto& attackColliderData = dynamic_cast<AttackCapsuleColliderData&>(*attackDataBase);
 			auto& characterColliderData = dynamic_cast<CharacterColliderData&>(*characterDataBase);
-			if (attackColliderData.data->isDoHitCheck && !characterColliderData.data->isInvinvible)
+			//キャラクターとの当たり判定を用意していれば
+			if (characterColliderData.isUseCollWithChara)
 			{
-				VECTOR attackCapsuleTop = attackColliderData.topPositon;
-				VECTOR characterCapsuleTop = VAdd(characterCapsuleUnder, characterColliderData.topPositon);
-				if (HitCheck_Capsule_Capsule(attackCapsuleUnder, attackCapsuleTop, attackColliderData.radius, characterCapsuleUnder, characterCapsuleTop, characterColliderData.radius))
+				//当たり判定を取れる状況なら
+				if (attackColliderData.data->isDoHitCheck && !characterColliderData.data->isInvinvible)
 				{
-					attackColliderData.OnHit(*characterColliderData.data);
-					characterColliderData.OnHit(*attackColliderData.data, attackColliderData.GetNextPosition());
+					VECTOR attackCapsuleTop = attackColliderData.topPositon;
+					VECTOR characterCapsuleTop;
+					if (characterColliderData.isSetTopPosition)
+					{
+						characterCapsuleTop = characterColliderData.topPositon;
+					}
+					else
+					{
+						characterCapsuleTop = VAdd(characterCapsuleUnder, characterColliderData.topPositon);
+					}
+					if (HitCheck_Capsule_Capsule(attackCapsuleUnder, attackCapsuleTop, attackColliderData.radius, characterCapsuleUnder, characterCapsuleTop, characterColliderData.radius))
+					{
+						attackColliderData.OnHit(*characterColliderData.data);
+						characterColliderData.OnHit(*attackColliderData.data, attackColliderData.GetNextPosition());
+					}
 				}
 			}
 		}
@@ -307,6 +345,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 	else if ((aKind == ColliderData::Kind::CHARACTER_CAPSULE && bKind == ColliderData::Kind::PLANE) ||
 		(aKind == ColliderData::Kind::PLANE && bKind == ColliderData::Kind::CHARACTER_CAPSULE))
 	{
+		//地面とキャラクターを判別する
 		ColliderData* planeDataBase = &_objectA;
 		VECTOR planeCenter = _objectA.rigidbody.GetPosition();
 		VECTOR capsuleUnder = _objectB.GetNextPosition();
@@ -316,8 +355,8 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			planeCenter = _objectB.GetNextPosition();
 			capsuleUnder = _objectA.GetNextPosition();
 		}
+		//コライダーをキャスト
 		auto& planeColliderData = dynamic_cast<PlaneColliderData&>(*planeDataBase);
-
 		if (bKind == ColliderData::Kind::CHARACTER_CAPSULE)
 		{
 			capsuleUnder = _objectB.GetNextPosition();

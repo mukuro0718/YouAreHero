@@ -16,12 +16,18 @@ public:
 	//エフェクトの種類
 	enum class EffectType
 	{
-		BOSS_IMPACT		 = 0,//ボスの攻撃が当たった時のエフェクト
-		BOSS_ROAR		 = 1,//ボスの攻撃が当たった時のエフェクト
-		PLAYER_GUARD_HIT = 2,//プレイヤーのガードが成功したときのエフェクト
-		PLAYER_HEAL		 = 3,//プレイヤーが回復したときのエフェクト
-		PLAYER_IMPACT	 = 4,//プレイヤーの攻撃が当たった時のエフェクト
-		PLAYER_CHARGE	 = 5,//プレイヤーの溜め攻撃エフェクト
+		BOSS_IMPACT			 = 0, //ボスの攻撃が当たった時のエフェクト
+		BOSS_ROAR			 = 1, //ボスの攻撃が当たった時のエフェクト
+		PLAYER_GUARD_HIT	 = 2, //プレイヤーのガードが成功したときのエフェクト
+		PLAYER_HEAL			 = 3, //プレイヤーが回復したときのエフェクト
+		PLAYER_IMPACT		 = 4, //プレイヤーの攻撃が当たった時のエフェクト
+		BEAST_BREATH		 = 5, //獣ボスブレスエフェクト
+		BEAST_BACKING_BREATH = 6, //獣ボス後退ブレスエフェクト
+		BEAST_WEAK_BREATH	 = 7, //獣ボス弱ブレスエフェクト
+		BEAST_EXPLOSION		 = 8, //獣ボス爆発エフェクト
+		BEAST_SUPER_NOVA	 = 9, //獣ボス大爆発エフェクト
+		BEAST_RAISE_LEVEL	 = 10,//獣ボスレベル上昇エフェクト
+		BEAST_EXPLOSION_RANGE= 11,//獣ボス爆発範囲エフェクト
 	};
 
 		  void Initialize();	 //初期化

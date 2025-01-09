@@ -11,5 +11,8 @@ public:
 	~Beast_RaiseLevel();//デストラクタ
 
 	NodeState Update()override;//更新
+private:
+	short effectStartCount;	//エフェクト再生開始フレーム
+	short frameCount;		//フレームカウント
 };
 

@@ -21,7 +21,8 @@ public:
 	virtual ~BehaviorTreeNode(){}//デストラクタ
 	virtual void	  Initialize(){}						//初期化
 	virtual NodeState Update	() abstract;				//更新、ノードの状態を返す
-	virtual void	  AddChild	(BehaviorTreeNode* _child){}//子供の追加（通常は処理なし）
+	virtual const void Draw()const {}//描画
+	virtual void	  AddChild	(BehaviorTreeNode& _child){}//子供の追加（通常は処理なし）
 protected:
 	/*メンバ変数*/
 	NodeState state;//ノードの状態

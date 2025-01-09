@@ -8,13 +8,20 @@
 #include "Enemy.h"
 #include "Beast.h"
 #include "EnemyManager.h"
+#include "BeastBehaviorTree.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 Beast_Idle::Beast_Idle()
 {
-
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->animationType		= static_cast<int>(Beast::AnimationType::IDLE);
+	this->animationPlayTime	= json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->animationType];
+	this->actionType		= static_cast<short>(BeastBehaviorTree::ActionType::IDLE);
+	this->maxSpeed			= 0.0f;
+	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
+	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
 }
 
 /// <summary>
@@ -31,21 +38,30 @@ Beast_Idle::~Beast_Idle()
 Beast_Idle::NodeState Beast_Idle::Update()
 {
 	/*アニメーション*/
-	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
 	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
+	/*アクションの状態をセット*/
+	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
+	if (rootNode.GetNowSelectAction() != this->actionType)
 	{
+		rootNode.SetSelectAction(this->actionType);
 		//アニメーションの種類を設定
-		int animationType = static_cast<int>(Beast::AnimationType::IDLE);
-		enemy.SetNowAnimation(animationType);
+		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
-		enemy.SetAnimationPlayTime(json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][animationType]);
-		//アニメーションの再生
-		enemy.PlayAnimation();
+		enemy.SetAnimationPlayTime(this->animationPlayTime);
+	}
+
+	/*アニメーションの再生*/
+	enemy.PlayAnimation();
+
+	/*移動*/
+	if (enemy.GetSpeed() != 0.0f)
+	{
+		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
+		enemy.UpdateVelocity(false);
+
 	}
 
 	/*状態を返す*/
-	{
-		return ActionNode::NodeState::SUCCESS;
-	}
+	return ActionNode::NodeState::SUCCESS;
 }

@@ -6,6 +6,8 @@
 class Character;
 class Enemy;
 class BeastBehaviorTree;
+class CharacterData;
+class CharacterColliderData;
 class Beast : public Enemy
 {
 public:
@@ -30,37 +32,47 @@ public:
 		TURN_LEFT					= 5, //左を向く(119)
 		TURN_RIGHT					= 6, //右を向く(120)
 		DOWN						= 7, //ダウン(4)
-		LONG_FRIGHT_START			= 8, //長い怯み(開始103)
+		LONG_FRIGHT_START			= 8, //長い怯み(開始104)
 		LONG_FRIGHT_LOOP			= 9, //長い怯み(途中102)
 		LONG_FRIGHT_END				= 10,//長い怯み(終了100)
-		SHORT_FRIGHT_START			= 11,//短い怯み(開始48)
-		SHORT_FRIGHT_END			= 12,//短い怯み(終了49)
-		REST_START					= 13,//休憩(開始89)
-		REST_LOOP					= 14,//休憩(途中90)
-		REST_END					= 15,//休憩(終了91)
-		STEP_BACK					= 16,//飛び下がる(8)
-		RAISE_LEVEL					= 17,//チャージレベルの上昇(14)
-		BACKING_BREATH				= 18,//下がりながらブレス(10)
-		RUSH_START					= 19,//突進(開始75)
-		RUSH_LOOP					= 20,//突進(途中76)
-		RUSH_NORMAL_END				= 21,//突進(普通に止まる77)
-		RUSH_ROTATE_END				= 22,//突進(回転して止まる78)
-		CHARGE_RIGHT_ATTACK			= 23,//右前足溜め攻撃(52)
-		CHARGE_BOTH_ATTACK_START	= 24,//両前足溜め攻撃(開始50)
-		CHARGE_BOTH_ATTACK_END		= 24,//両前足溜め攻撃(終了51)
-		BREATH_START				= 25,//ブレス(開始45)
-		BREATH_LOOP					= 26,//ブレス(途中46)
-		BREATH_END					= 27,//ブレス(終了47)
-		SUPER_NOVA_START			= 28,//スーパーノヴァ(開始27)
-		SUPER_NOVA_LOOP				= 29,//スーパーノヴァ(途中28)
-		SUPER_NOVA_END				= 30,//スーパーノヴァ(終了29)
-		WEAK_BREATH					= 31,//弱ブレス(80)
-		SMALL_EXPLOSION				= 32,//小爆発(9)
-		RIGHT_FOOT_ATTACK			= 33,//右足攻撃(40)
-		COMBO_ATTACK_1				= 34,//右足で攻撃した後回転攻撃(21)
-		COMBO_ATTACK_2				= 35,//3連足攻撃(22)
+		SHORT_FRIGHT_START			= 11,//短い怯み(開始107)
+		SHORT_FRIGHT_LOOP			= 12,//短い怯み(開始106)
+		SHORT_FRIGHT_END			= 13,//短い怯み(終了105)
+		REST_START					= 14,//休憩(開始89)
+		REST_LOOP					= 15,//休憩(途中90)
+		REST_END					= 16,//休憩(終了91)
+		STEP_BACK					= 17,//飛び下がる(8)
+		RAISE_LEVEL					= 18,//チャージレベルの上昇(14)
+		BACKING_BREATH				= 19,//下がりながらブレス(10)
+		RUSH_START					= 20,//突進(開始75)
+		RUSH_LOOP					= 21,//突進(途中76)
+		RUSH_ROTATE_END				= 22,//突進(回転して止まる77)
+		RUSH_NORMAL_END				= 23,//突進(普通に止まる78)
+		CHARGE_RIGHT_ATTACK			= 24,//右前足溜め攻撃(52)
+		CHARGE_BOTH_ATTACK_START	= 25,//両前足溜め攻撃(開始50)
+		CHARGE_BOTH_ATTACK_END		= 26,//両前足溜め攻撃(終了51)
+		BREATH_START				= 27,//ブレス(開始45)
+		BREATH_LOOP					= 28,//ブレス(途中46)
+		BREATH_END					= 29,//ブレス(終了47)
+		SUPER_NOVA_START			= 30,//スーパーノヴァ(開始27)
+		SUPER_NOVA_LOOP				= 31,//スーパーノヴァ(途中28)
+		SUPER_NOVA_END				= 32,//スーパーノヴァ(終了29)
+		WEAK_BREATH					= 33,//弱ブレス(80)
+		SMALL_EXPLOSION				= 34,//小爆発(9)
+		RIGHT_FOOT_ATTACK			= 35,//右足攻撃(40)
+		EXPLOSION					= 36,//爆発攻撃（スーパーノヴァよりも小さい）(65)
+		COMBO_ATTACK				= 37,//右足で攻撃した後回転攻撃(22)
 	};
-	
+	enum class Parts
+	{
+		HEAD,
+		BODY,
+		LEFT_HAND,
+		RIGHT_HAND,
+		LEFT_FOOT,
+		RIGHT_FOOT,
+	};
+
 	/*getter/setter*/
 	const bool		 GetIsAttack			()const override;													//コウゲキしたか
 		  void		 SetRotation			(const VECTOR _rotation);											//回転率の設定
@@ -77,8 +89,15 @@ private:
 	static constexpr float SHADOW_SIZE	 = 8.0f; //影のサイズ
 	
 	/*メンバ変数*/
-	VECTOR				moveTarget;				//移動目標
-	float				animationPlayTime;		//アニメーション再生時間
-	int					nowAnimation;			//現在のアニメーション
+	vector<CharacterColliderData*>  partsCollider;				//部位ごとのコライダー
+	short							maxPartsColliderNum;		//コライダーの数
+	VECTOR							moveTarget;					//移動目標
+	float							animationPlayTime;			//アニメーション再生時間
+	int								nowAnimation;				//現在のアニメーション
+	vector<vector<short>>			frameIndexUsePartsColider;	//部位ごとのコライダーの指定に使用するフレーム番号
+	vector<VECTOR>					pos1;						//部位ごとのコライダーの座標を入れている
+	vector<VECTOR>					pos2;						//HACK:なぜかいったん代入しないとうまく入らない、なぜ
+	vector<float>					prevPartsHp;				//前の部位ごとのHP
+	float							maxHp;						//部位の最大HP
 };
 

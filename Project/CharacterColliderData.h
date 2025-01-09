@@ -22,5 +22,7 @@ public:
 	CharacterData*	data;		//キャラクターデータ
 	float			radius;		//半径
 	VECTOR			topPositon;	//カプセル上座標
-	bool			isUseCollWithGround;
+	bool			isUseCollWithGround;//地面との当たり判定を行うか
+	bool			isUseCollWithChara;//キャラクターとの当たり判定を行うか
+	bool			isSetTopPosition;//カプセル上座標を設定しているか（falseならyにheightのみ入っている）
 };

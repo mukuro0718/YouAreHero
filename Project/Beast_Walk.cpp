@@ -8,13 +8,20 @@
 #include "Enemy.h"
 #include "Beast.h"
 #include "EnemyManager.h"
+#include "BeastBehaviorTree.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 Beast_Walk::Beast_Walk()
 {
-
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->animationType		= static_cast<int>(Beast::AnimationType::WALK);
+	this->animationPlayTime = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->animationType];
+	this->maxSpeed			= json.GetJson(JsonManager::FileType::BEAST)["WALK_SPEED"];
+	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
+	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
+	this->actionType		= static_cast<short>(BeastBehaviorTree::ActionType::WALK);
 }
 
 /// <summary>
@@ -30,25 +37,26 @@ Beast_Walk::~Beast_Walk()
 /// </summary>
 Beast_Walk::NodeState Beast_Walk::Update()
 {
-	/*アニメーション*/
-	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
 	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
+
+	/*登録されているアクションと実際のアクションが異なっていたら*/
+	if (rootNode.GetNowSelectAction() != this->actionType)
 	{
 		//アニメーションの種類を設定
-		int animationType = static_cast<int>(Beast::AnimationType::WALK);
-		enemy.SetNowAnimation(animationType);
+		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
-		enemy.SetAnimationPlayTime(json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][animationType]);
-		//アニメーションの再生
-		enemy.PlayAnimation();
+		enemy.SetAnimationPlayTime(this->animationPlayTime);
+		//アクションの設定
+		rootNode.SetSelectAction(this->actionType);
 	}
 
+	/*アニメーションの再生*/
+	enemy.PlayAnimation();
+
 	/*移動*/
-	float maxSpeed = json.GetJson(JsonManager::FileType::BEAST)["WALK_SPEED"];
-	float accel = json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
-	float decel = json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
-	enemy.Move(maxSpeed, accel, decel, false);
+	enemy.Move(this->maxSpeed, this->accel, this->decel, false);
 
 	/*状態を返す*/
 	{

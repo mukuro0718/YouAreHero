@@ -1,3 +1,4 @@
+#include <DxLib.h>
 #include "UseSTL.h"
 #include "BehaviorTreeNode.h"
 #include "CompositeNode.h"
@@ -24,14 +25,24 @@ SequencerNode::~SequencerNode()
 /// </summary>
 SequencerNode::NodeState SequencerNode::Update()
 {
+
 	/*éqÇé¿çs*/
 	for (auto& child : this->children)
 	{
 		NodeState state = child->Update();
 		//é∏îsÇµÇƒÇ¢ÇΩÇÁèÛë‘Çï‘Ç∑
-		if (state == NodeState::FAILURE) return NodeState::FAILURE;
+		if (state == NodeState::FAILURE)
+		{
+			printfDx("SEQUENCER_FAILURE\n");
+			return NodeState::FAILURE;
+		}
 		//é¿çsíÜÇ»ÇÁèÛë‘Çï‘Ç∑
-		if (state == NodeState::RUNNING) return NodeState::RUNNING;
+		if (state == NodeState::RUNNING)
+		{
+			printfDx("SEQUENCER_RUNNING\n");
+			return NodeState::RUNNING;
+		}
+		printfDx("SEQUENCER_SUCCESS\n");
 	}
 	return NodeState::SUCCESS;
 }

@@ -1,3 +1,4 @@
+#include <DxLib.h>
 #include "UseSTL.h"
 #include "BehaviorTreeNode.h"
 #include "CompositeNode.h"
@@ -24,9 +25,18 @@ SelectorNode::NodeState SelectorNode::Update()
 	{
 		NodeState state = child->Update();
 		//状態が成功なら成功を返し終了
-		if (state == NodeState::SUCCESS) return NodeState::SUCCESS;
+		if (state == NodeState::SUCCESS)
+		{
+			printfDx("SELECTOR_SUCCESS\n");
+			return NodeState::SUCCESS;
+		}
 		//状態が実行中なら実行中を返し終了
-		if (state == NodeState::RUNNING) return NodeState::RUNNING;
+		if (state == NodeState::RUNNING)
+		{
+			printfDx("SELECTOR_RUNNING\n");
+			return NodeState::RUNNING;
+		}
+		printfDx("SELECTOR_FAILURE\n");
 	}
 	return NodeState::FAILURE;
 }

@@ -17,6 +17,7 @@ private:
 	enum class AnimationStage
 	{
 		START,
+		LOOP,
 		END,
 	};
 

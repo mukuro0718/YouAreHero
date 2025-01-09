@@ -11,5 +11,8 @@ public:
 	~Beast_TurnLeft();//デストラクタ
 
 	NodeState Update()override;//更新
+private:
+	short maxFrameCount;
+	short frameCount;
 };
 

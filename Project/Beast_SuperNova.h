@@ -4,13 +4,15 @@
 #pragma once
 
 class ActionNode;
+class AttackSphereColliderData;
 class Beast_SuperNova : public ActionNode
 {
 public:
 	 Beast_SuperNova();//コンストラクタ
 	~Beast_SuperNova();//デストラクタ
 
-	NodeState Update()override;//更新
+	NodeState  Update()override;//更新
+	const void Draw  ()const;	//描画
 private:
 	/*構造体*/
 	//アニメーションの段階
@@ -22,9 +24,14 @@ private:
 	};
 
 	/*メンバ変数*/
-	AnimationStage stage;
-	std::map<AnimationStage, int>			 animationSet;//アニメーションのセット
-	std::map<AnimationStage, AnimationStage> nextStageSet;//次のステージのセット
-
+	AnimationStage							 stage;							//アニメーションの段階
+	std::map<AnimationStage, int>			 animationSet;					//アニメーションのセット
+	std::map<AnimationStage, AnimationStage> nextStageSet;					//次のステージのセット
+	short									 effectStartCount;				//攻撃開始フレーム
+	short									 attackStartCount;				//攻撃開始フレーム
+	short									 attackEndCount;				//攻撃開始フレーム
+	short									 frameCount;					//フレームカウント
+	short									 frameIndexUsedSpherePosition;	//開く初の中心を決めるためのフレーム番号
+	AttackSphereColliderData*				 collider;						//攻撃コライダー
 };
 

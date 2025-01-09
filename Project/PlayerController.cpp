@@ -26,6 +26,7 @@ PlayerController::PlayerController()
 	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::STRONG_ATTACK));
 	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::DRAW_SWORD_1));
 	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::DRAW_SWORD_2));
+	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::KNOCK_UP));
 }
 
 /// <summary>

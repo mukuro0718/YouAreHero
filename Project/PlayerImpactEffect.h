@@ -10,7 +10,8 @@ public:
 	PlayerImpactEffect(const int _effectResourceHandle);//コンストラクタ
 	~PlayerImpactEffect() {}//デストラクタ
 
-	void SetInfoToPlayTheEffect() override;
+	void Update() override;//更新
 private:
+	VECTOR	scale;				//拡大率
+	int		playingEffectHandle;//再生エフェクトハンドル};
 };
-

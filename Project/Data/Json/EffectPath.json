@@ -7,7 +7,13 @@
     "Asset/Effect/Player/healEffect.efkefc",
     "Asset/Effect/Player/ImpactEffect.efkefc",
     "Asset/Effect/Player/JustGuardEffect.efkefc",
-    "Asset/Effect/Player/ChargeAttackEffect.efkefc",
-    "Asset/Effect/Player/healEffect.efkefc"
+    "Asset/Effect/Beast/BackingBreath.efkefc",
+    "Asset/Effect/Beast/Breath.efkefc",
+    "Asset/Effect/Beast/Explosion.efkefc",
+    "Asset/Effect/Beast/PartsFire.efkefc",
+    "Asset/Effect/Beast/RaiseLevel.efkefc",
+    "Asset/Effect/Beast/SuperNova.efkefc",
+    "Asset/Effect/Beast/WeakBreath.efkefc",
+    "Asset/Effect/Beast/ExplosionRange.efkefc"
   ]
 }

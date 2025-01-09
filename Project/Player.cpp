@@ -124,7 +124,8 @@ void Player::Initialize()
 	float height				 = json.GetJson(JsonManager::FileType::PLAYER)["HIT_HEIGHT"];					//カプセルの高さ
 	this->collider->topPositon			 = /*VAdd(this->collider->rigidbody.GetPosition(), */VGet(0.0f, height, 0.0f)/*)*/;	//カプセルの上座標
 	this->collider->radius				 = json.GetJson(JsonManager::FileType::PLAYER)["RADIUS"];						//カプセルの半径
-	this->collider->isUseCollWithGround = true;																			//地面との当たり判定をとるか
+	this->collider->isUseCollWithGround  = true;																			//地面との当たり判定をとるか
+	this->collider->isUseCollWithChara	 = true;																			//地面との当たり判定をとるか
 	this->collider->data->hp			 = json.GetJson(JsonManager::FileType::PLAYER)["HP"];							//HP
 	this->collider->data->stamina		 = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];						//スタミナ
 	this->collider->data->isInvinvible	 = false;																			//ダメージをカットするか

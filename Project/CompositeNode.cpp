@@ -21,7 +21,7 @@ CompositeNode::~CompositeNode()
 /// <summary>
 /// Žq‹Ÿ‚Ì’Ç‰Á
 /// </summary>
-void CompositeNode::AddChild(BehaviorTreeNode* _child)
+void CompositeNode::AddChild(BehaviorTreeNode& _child)
 {
-	this->children.emplace_back(_child);
+	this->children.emplace_back(&_child);
 }

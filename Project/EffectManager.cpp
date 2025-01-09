@@ -10,7 +10,13 @@
 #include "PlayerGuardHitEffect.h"
 #include "PlayerHealEffect.h"
 #include "PlayerImpactEffect.h"
-#include "PlayerChargeAttackEffect.h"
+#include "BeastBreathEffect.h"
+#include "BeastWeakBreathEffect.h"
+#include "BeastBackingBreathEffect.h"
+#include "BeastExplosionEffect.h"
+#include "BeastSuperNovaEffect.h"
+#include "BeastRaiseLevelEffect.h"
+#include "BeastExplosionRangeEffect.h"
 #include "EffectManager.h"
 #include "EnemyManager.h"
 #include "PlayerManager.h"
@@ -26,12 +32,18 @@ EffectManager::EffectManager()
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 	auto& json = Singleton<JsonManager>::GetInstance();
 
-	this->effect.emplace_back(new BossImpactEffect		(asset.GetEffect(LoadingAsset::EffectType::BOSS_IMPACT)));
-	this->effect.emplace_back(new BossRoarEffect		(asset.GetEffect(LoadingAsset::EffectType::BOSS_ROAR)));
-	this->effect.emplace_back(new PlayerGuardHitEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_GUARD_HIT)));
-	this->effect.emplace_back(new PlayerHealEffect		(asset.GetEffect(LoadingAsset::EffectType::TMP_EFFECT)));
-	this->effect.emplace_back(new PlayerImpactEffect	(asset.GetEffect(LoadingAsset::EffectType::PLAYER_IMPACT)));
-	this->effect.emplace_back(new PlayerChargeAttackEffect(asset.GetEffect(LoadingAsset::EffectType::PLAYER_CHARGE_ATTACK)));
+	this->effect.emplace_back(new BossImpactEffect			(asset.GetEffect(LoadingAsset::EffectType::BOSS_IMPACT)));
+	this->effect.emplace_back(new BossRoarEffect			(asset.GetEffect(LoadingAsset::EffectType::BOSS_ROAR)));
+	this->effect.emplace_back(new PlayerGuardHitEffect		(asset.GetEffect(LoadingAsset::EffectType::PLAYER_GUARD_HIT)));
+	this->effect.emplace_back(new PlayerHealEffect			(asset.GetEffect(LoadingAsset::EffectType::PLAYER_HEAL)));
+	this->effect.emplace_back(new PlayerImpactEffect		(asset.GetEffect(LoadingAsset::EffectType::PLAYER_IMPACT)));
+	this->effect.emplace_back(new BeastBreathEffect			(asset.GetEffect(LoadingAsset::EffectType::BEAST_PARTS_FIRE)));
+	this->effect.emplace_back(new BeastBackingBreathEffect	(asset.GetEffect(LoadingAsset::EffectType::BEAST_PARTS_FIRE)));
+	this->effect.emplace_back(new BeastWeakBreathEffect		(asset.GetEffect(LoadingAsset::EffectType::BEAST_PARTS_FIRE)));
+	this->effect.emplace_back(new BeastExplosionEffect		(asset.GetEffect(LoadingAsset::EffectType::BEAST_EXPLOSION)));
+	this->effect.emplace_back(new BeastSuperNovaEffect		(asset.GetEffect(LoadingAsset::EffectType::BEAST_SUPER_NOVA)));
+	this->effect.emplace_back(new BeastRaiseLevelEffect		(asset.GetEffect(LoadingAsset::EffectType::BOSS_ROAR)));
+	this->effect.emplace_back(new BeastExplosionRangeEffect (asset.GetEffect(LoadingAsset::EffectType::BEAST_EXPLOSION_RANGE)));
 }
 
 /// <summary>
@@ -55,6 +67,7 @@ void EffectManager::Initialize()
 	{
 		this->effect[i]->Initialize();
 	}
+	SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
 }
 
 /// <summary>
@@ -69,7 +82,6 @@ void EffectManager::Update()
 	{
 		this->effect[i]->Update();
 	}
-	//this->bossFlame->Update();
 	//int endTime = GetNowCount();
 	//this->frameTime = endTime - startTime;
 }

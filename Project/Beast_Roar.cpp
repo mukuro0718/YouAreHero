@@ -14,7 +14,15 @@
 /// コンストラクタ
 /// </summary>
 Beast_Roar::Beast_Roar()
+	: isInitialize(false)
 {
+	auto& json = Singleton<JsonManager>::GetInstance();
+	this->animationType		= static_cast<int>(Beast::AnimationType::ROAR);
+	this->animationPlayTime = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->animationType];
+	this->actionType		= static_cast<short>(BeastBehaviorTree::ActionType::ROAR);
+	this->maxSpeed			= 0.0f;
+	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
+	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
 
 }
 
@@ -32,17 +40,28 @@ Beast_Roar::~Beast_Roar()
 Beast_Roar::NodeState Beast_Roar::Update()
 {
 	/*アニメーション*/
-	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
 	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
+	//初期化されていなければ
+	if (!this->isInitialize)
 	{
 		//アニメーションの種類を設定
-		int animationType = static_cast<int>(Beast::AnimationType::ROAR);
-		enemy.SetNowAnimation(animationType);
+		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
-		enemy.SetAnimationPlayTime(json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][animationType]);
-		//アニメーションの再生
-		enemy.PlayAnimation();
+		enemy.SetAnimationPlayTime(this->animationPlayTime);
+		//アクションの状態をセット
+		auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
+		rootNode.SetSelectAction(this->actionType);
+		this->isInitialize = true;
+	}
+	//アニメーションの再生
+	enemy.PlayAnimation();
+
+	/*移動*/
+	if (enemy.GetSpeed() != 0.0f)
+	{
+		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
+		enemy.UpdateVelocity(false);
 	}
 
 	/*状態を返す*/
@@ -52,6 +71,7 @@ Beast_Roar::NodeState Beast_Roar::Update()
 		{
 			auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 			rootNode.SetBeastState(BeastBehaviorTree::BeastState::ANGRY);
+			this->isInitialize = false;
 			return ActionNode::NodeState::SUCCESS;
 		}
 		//それ以外は実行中を返す

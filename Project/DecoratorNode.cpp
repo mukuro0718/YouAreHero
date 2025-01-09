@@ -21,7 +21,7 @@ DecoratorNode::~DecoratorNode()
 /// <summary>
 /// Žq‹Ÿ‚Ì’Ç‰Á
 /// </summary>
-void DecoratorNode::AddChild(BehaviorTreeNode* _child)
+void DecoratorNode::AddChild(BehaviorTreeNode& _child)
 {
-	this->child = _child;
+	this->child = &_child;
 }

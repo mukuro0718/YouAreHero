@@ -14,7 +14,7 @@ public:
 	virtual ~DecoratorNode();//デストラクタ
 
 	virtual NodeState Update()abstract;//更新
-	void AddChild(BehaviorTreeNode* _child) override;//子供の追加
+	void AddChild(BehaviorTreeNode& _child) override;//子供の追加
 protected:
 	BehaviorTreeNode* child;
 };

@@ -13,5 +13,6 @@ public:
 	void Finalize	() override;				//Œãˆ—
 	void Update		(Player& _player) override;	//XV
 private:
+	int canselFrame;
 };
 

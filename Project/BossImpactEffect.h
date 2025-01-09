@@ -7,10 +7,12 @@ class Effect;
 class BossImpactEffect : public Effect
 {
 public:
-	BossImpactEffect(const int _effectResourceHandle);//コンストラクタ
-	~BossImpactEffect() {}//デストラクタ
+	BossImpactEffect(const int _effectResourceHandle); //コンストラクタ
+	~BossImpactEffect() {}								//デストラクタ
 
-	void SetInfoToPlayTheEffect() override;
+	void Update() override;//更新
 private:
+	float	yOffset;			//Yオフセット
+	VECTOR	scale;				//拡大率
+	int		playingEffectHandle;//再生エフェクトハンドル
 };
-

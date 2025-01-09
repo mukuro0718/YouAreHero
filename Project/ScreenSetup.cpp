@@ -53,7 +53,7 @@ int ScreenSetup::Initialize()
         return -1;
     }
     // ＤＸライブラリの初期化
-    if (Effekseer_Init(8000) == -1)
+    if (Effekseer_Init(5000) == -1)
     {
         // エラーが発生したら直ちに終了
         return -1;
