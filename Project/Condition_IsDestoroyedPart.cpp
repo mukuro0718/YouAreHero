@@ -33,9 +33,9 @@ Condition_IsDestoroyedPart::NodeState Condition_IsDestoroyedPart::Update()
 	if (rootNode.GetIsDestroyedPart())
 	{
 		rootNode.SetIsDestroyedPart(false);
-		printfDx("CONDITION_DESTROY_SUCCESS\n");
+		//printfDx("CONDITION_DESTROY_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}
-	printfDx("CONDITION_DESTROY_FAILURE\n");
+	//printfDx("CONDITION_DESTROY_FAILURE\n");
 	return NodeState::FAILURE;
 }

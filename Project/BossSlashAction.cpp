@@ -197,7 +197,7 @@ void BossSlashAction::Update(Boss& _boss)
 	}
 
 	/*UŒ‚ˆ—*/
-	this->attack->Update();
+	this->attack->Update(0.0f);
 
 	/*I—¹”»’è*/
 	{

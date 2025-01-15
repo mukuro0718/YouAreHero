@@ -33,16 +33,16 @@ BossJumpAttackAction::BossJumpAttackAction()
 	this->rotateLerpValue	= Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]);
 	this->targetOffset		= json.GetJson(JsonManager::FileType::ENEMY)["SLASH_TARGET_OFFSET"];
 	this->rotateFixFrame	= json.GetJson(JsonManager::FileType::ENEMY)["ROTATION_FIX_COUNT"];
-	this->moveFrame = json.GetJson(JsonManager::FileType::ENEMY)["JUMP_ATTAC_MOVE_FRAME"];
-	this->rotateFrame = json.GetJson(JsonManager::FileType::ENEMY)["JUMP_ATTAC_ROTATE_FRAME"];
-	this->stopDistance = json.GetJson(JsonManager::FileType::ENEMY)["JUMP_ATTACK_STOP_FRAME"];
-	this->speed = json.GetJson(JsonManager::FileType::ENEMY)["JUMP_ATTACK_MOVE_SPEED"];
-	this->nextAnimation = static_cast<int>(Boss::AnimationType::SLASH_2);
+	this->moveFrame			= json.GetJson(JsonManager::FileType::ENEMY)["JUMP_ATTAC_MOVE_FRAME"];
+	this->rotateFrame		= json.GetJson(JsonManager::FileType::ENEMY)["JUMP_ATTAC_ROTATE_FRAME"];
+	this->stopDistance		= json.GetJson(JsonManager::FileType::ENEMY)["JUMP_ATTACK_STOP_FRAME"];
+	this->speed				= json.GetJson(JsonManager::FileType::ENEMY)["JUMP_ATTACK_MOVE_SPEED"];
+	this->nextAnimation		= static_cast<int>(Boss::AnimationType::SLASH_2);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nextAnimation];
-	this->maxInterval = json.GetJson(JsonManager::FileType::ENEMY)["JUMP_ATTACK_INTERVAL"];
-	this->checkState = static_cast<int>(Boss::BossState::NORMAL);
-	this->actionDistance = json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][ATTACK_TYPE];
-	this->maxDesireValue = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DESIRE_VALUE"];
+	this->maxInterval		= json.GetJson(JsonManager::FileType::ENEMY)["JUMP_ATTACK_INTERVAL"];
+	this->checkState		= static_cast<int>(Boss::BossState::NORMAL);
+	this->actionDistance	= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][ATTACK_TYPE];
+	this->maxDesireValue	= json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DESIRE_VALUE"];
 
 }
 
@@ -202,7 +202,7 @@ void BossJumpAttackAction::Update(Boss& _boss)
 	}
 
 	/*çUåÇîªíËÇÃçXêV*/
-	this->attack->Update();
+	this->attack->Update(0.0f);
 
 	/*èIóπîªíË*/
 	if (_boss.GetIsChangeAnimation())

@@ -56,7 +56,6 @@ void BossRestAction::Initialize()
 	this->frameCount			 = 0;
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
-	this->maxFrameCount			 = 0;
 	this->prevState = 1;
 	this->nowAnimationType		 = -1;
 }
@@ -181,14 +180,10 @@ void BossRestAction::CalcParameter(const Boss& _boss)
 	/*AngryState‚ªTIRED‚Ì‚É*/
 	if (nowState == this->checkedState)
 	{
-		//•Û‘¶‚µ‚Ä‚¢‚éó‘Ô‚ÆˆÙ‚È‚Á‚Ä‚¢‚½‚ç
-		if (nowState != this->prevState)
-		{
-			this->parameter->desireValue = this->maxDesireValue;
-			this->isPriority			 = true;
-			this->isChangeColorScale	 = true;
-			this->isInitializeColorScale = false;
-		}
+		this->parameter->desireValue = this->maxDesireValue;
+		this->isPriority = true;
+		this->isChangeColorScale = true;
+		this->isInitializeColorScale = false;
 	}
 
 	/*ˆá‚¤ó‘Ô‚È‚çŒ»İ‚Ìó‘Ô‚ğ•Û‘¶‚·‚é*/

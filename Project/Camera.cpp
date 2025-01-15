@@ -168,7 +168,7 @@ void Camera::UpdateTarget()
 		}
 		else
 		{
-			this->nextTarget = enemy.GetRigidbody().GetPosition();
+			this->nextTarget = VAdd(enemy.GetRigidbody().GetPosition(), this->targetOffset);
 		}
 		break;
 	case SceneChanger::SceneType::GAME_OVER:

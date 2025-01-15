@@ -108,7 +108,7 @@ Beast_RightFootAttack::NodeState Beast_RightFootAttack::Update()
 		this->collider->rigidbody.SetPosition(position1);
 		this->collider->topPositon = position2;
 	}
-	//当たっていたらヒットストップを設定する
+	//当たっていたら
 	if (this->collider->data->isHitAttack)
 	{
 		//攻撃ヒットフラグを下す

@@ -68,22 +68,19 @@ void PlayerStagger::Update(Player& _player)
 		//ヒットフラグを下す
 		_player.GetPlayerData().isHit = false;
 	}
-	/*移動速度が０以上の時処理を行う*/
-	if (_player.GetSpeed() != 0)
-	{
-		VECTOR nowRotation = _player.GetRigidbody().GetRotation();
-		VECTOR nextRotation = _player.GetNextRotation();
-		UpdateRotation(true, nextRotation, nowRotation);
-		_player.SetRotation(nowRotation, nextRotation);
+	/*回転の更新*/
+	VECTOR nowRotation = _player.GetRigidbody().GetRotation();
+	VECTOR nextRotation = _player.GetNextRotation();
+	UpdateRotation(true, nextRotation, nowRotation);
+	_player.SetRotation(nowRotation, nextRotation);
 
-		/*移動速度の更新*/
-		_player.SetSpeed(0.0f);
+	/*移動速度の更新*/
+	_player.SetSpeed(0.0f);
 
-		/*移動ベクトルを出す*/
-		VECTOR nowVelocity = _player.GetRigidbody().GetVelocity();
-		VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelocity, 0.0f, false);
-		_player.SetVelocity(newVelocity);
-	}
+	/*移動ベクトルを出す*/
+	VECTOR nowVelocity = _player.GetRigidbody().GetVelocity();
+	VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelocity, 0.0f, false);
+	_player.SetVelocity(newVelocity);
 
 	/*フレーム計測*/
 	if (!this->isChangeAction)

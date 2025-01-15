@@ -34,9 +34,9 @@ Condition_IsDragonActionIntervalIsOver::NodeState Condition_IsDragonActionInterv
 	/*スタミナが０より多ければSUCCESSを返す*/
 	if (rootNode.GetInterval(this->ACTION_INDEX) > 0)
 	{
-		printfDx("CONDITION_STAMINA_SUCCESS\n");
+		//printfDx("CONDITION_STAMINA_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}
-	printfDx("CONDITION_STAMINA_FAILURE\n");
+	//printfDx("CONDITION_STAMINA_FAILURE\n");
 	return NodeState::FAILURE;
 }

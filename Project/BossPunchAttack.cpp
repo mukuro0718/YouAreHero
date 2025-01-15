@@ -80,7 +80,7 @@ void BossPunchAttack::Initialize()
 /// <summary>
 /// 更新
 /// </summary>
-void BossPunchAttack::Update()
+void BossPunchAttack::Update(const float _playTime)
 {
 	/*当たり判定の確認が開始している*/
 	if (this->isStartHitCheck)

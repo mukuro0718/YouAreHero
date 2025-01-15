@@ -55,9 +55,9 @@ Beast::Beast()
 	this->animation->Attach(&this->modelHandle);
 
 	/*コライダーデータの作成*/
-	this->maxHp = json.GetJson(JsonManager::FileType::BEAST)["HP"];
-	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
-	this->maxPartsColliderNum = json.GetJson(JsonManager::FileType::BEAST)["COLLIDER_NUM"];
+	this->maxHp						= json.GetJson(JsonManager::FileType::BEAST)["HP"];
+	this->collider					= new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
+	this->maxPartsColliderNum		= json.GetJson(JsonManager::FileType::BEAST)["COLLIDER_NUM"];
 	this->frameIndexUsePartsColider = json.GetJson(JsonManager::FileType::BEAST)["FRAME_INDEX_USE_PARTS_COLLIDER"];
 	for (int i = 0; i < this->maxPartsColliderNum; i++)
 	{
@@ -167,6 +167,12 @@ void Beast::Update()
 		}
 	}
 
+	/*ステージ外に出たらデス*/
+	if (this->collider->rigidbody.GetPosition().y < -30.0f)
+	{
+		DyingIfOutOfStage();
+	}
+
 	/*ビヘイビアツリーの更新*/
 	auto& tree = Singleton<BeastBehaviorTree>::GetInstance();
 	tree.Update();
@@ -194,10 +200,11 @@ const void Beast::DrawCharacterInfo()const
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& shadow = Singleton<Shadow>::GetInstance();
 	auto& map = Singleton<MapManager>::GetInstance();
+
+#ifdef _DEBUG
 	auto& debug = Singleton<Debug>::GetInstance();
 	auto& tree = Singleton<BeastBehaviorTree>::GetInstance();
 	tree.Draw();
-	
 	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
 	{
 		//VECTOR position = this->collider->rigidbody.GetPosition();
@@ -215,6 +222,7 @@ const void Beast::DrawCharacterInfo()const
 		VECTOR topPos = this->partsCollider[i]->topPositon;
 		DrawCapsule3D(underPos, topPos, this->partsCollider[i]->radius, 16, GetColor(0, 255, 0), GetColor(0, 255, 0), FALSE);
 	}
+#endif // _DEBUG
 
 	if (this->isDraw)
 	{

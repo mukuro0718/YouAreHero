@@ -30,9 +30,9 @@ Condition_IsDownValueGreaterThanConstant::NodeState Condition_IsDownValueGreater
 	if (rootNode.GetDownValue() >= this->SPECIFIED_DOWN_VALUE)
 	{
 		rootNode.SetDownValue(0);
-		printfDx("CONDITION_DOWN_SUCCESS\n");
+		//printfDx("CONDITION_DOWN_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}
-	printfDx("CONDITION_DOWN_FAILURE\n");
+	//printfDx("CONDITION_DOWN_FAILURE\n");
 	return NodeState::FAILURE;
 }

@@ -34,9 +34,9 @@ Condition_IsNowLevelIsSameAsTheSpecifiedLevel::NodeState Condition_IsNowLevelIsS
 	/*インターバルが終了していなければFAILUREを返す*/
 	if (rootNode.GetLevel() != this->SPECIFIED_LEVEL)
 	{
-		printfDx("CONDITION_LEVEL_FAILURE\n");
+		//printfDx("CONDITION_LEVEL_FAILURE\n");
 		return NodeState::FAILURE;
 	}
-	printfDx("CONDITION_LEVEL_SUCCESS\n");
+	//printfDx("CONDITION_LEVEL_SUCCESS\n");
 	return NodeState::SUCCESS;
 }

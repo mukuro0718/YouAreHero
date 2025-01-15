@@ -33,14 +33,25 @@ private:
 	void SetType();
 
 	/*メンバ変数*/
-	HPUI* hp;
-	ButtonUI* button;
-	BossNameUI* bossName;
-	int imageHandle;
-	bool isEnd;
-	int alpha;
-	int fontHandle;
-	int frameCount;
-	int type;
+	HPUI*		hp;			//バーUI
+	ButtonUI*	button;		//ボタンUI
+	BossNameUI* bossName;	//ボスの名前UI
+	int			imageHandle;//画像ハンドル
+	bool		isEnd;		//終了フラグ
+	int			alpha;		//アルファ値
+	int			fontHandle;	//フォントハンドル
+	int			pauseFontHandle;//中断用フォントハンドル
+	int			frameCount;	//フレームカウント
+	int			type;		//ロゴの種類
+	bool		isPause;	//中断フラグ
+
+	short maxAlpha;//最大アルファ
+	short addAlpha;//増加アルファ
+	short logoDrawTime;//ロゴ描画時間
+	vector<int> tableDrawRect;//テーブル描画範囲
+	vector<int> pauseTableDrawRect;//中断テーブル描画範囲
+	vector<int> pauseTextPosition;//中断文字座標
+	vector<int> destroyTextPosition;//討伐文字座標
+	vector<int> resultTextPosition;//結果文字座標
 };
 

@@ -17,17 +17,17 @@
 /// </summary>
 BossIdleAction::BossIdleAction()
 	: maxFrameCount(0)
+	, NORMAL_MAX_ANGRY_FRAME_COUNT(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["NORMAL_IDLE_ACTION_MAX_FRAME"])
+	, ANGRY_MAX_ANGRY_FRAME_COUNT(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["ANGRY_IDLE_ACTION_MAX_FRAME"])
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->speed = json.GetJson(JsonManager::FileType::ENEMY)["SIDE_WALK_SPEED"];
-	this->rotateLerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATE_LERP_VALUE"]);
-	this->nextAnimation = static_cast<int>(Boss::AnimationType::WALK_RIGHT);
-	this->nextAnimation2 = static_cast<int>(Boss::AnimationType::WALK_LEFT);
-	this->maxInterval = json.GetJson(JsonManager::FileType::ENEMY)["REST_INTERVAL"];
+	this->speed				= 0;
+	this->rotateLerpValue	= Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["ROTATE_LERP_VALUE"]);
+	this->nextAnimation		= static_cast<int>(Boss::AnimationType::IDLE);
+	this->maxInterval		= json.GetJson(JsonManager::FileType::ENEMY)["REST_INTERVAL"];
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nextAnimation];
-	this->maxDesireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
-	this->checkedState = static_cast<int>(Boss::BossState::NORMAL);
-	this->maxFrameCount = json.GetJson(JsonManager::FileType::ENEMY)["IDLE_ACTION_MAX_FRAME"];
+	this->maxDesireValue	= json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+	this->checkedState		= static_cast<int>(Boss::BossState::NORMAL);
 }
 
 /// <summary>
@@ -51,7 +51,6 @@ void BossIdleAction::Initialize()
 	this->frameCount			 = 0;
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
-	this->maxFrameCount			 = 0;
 	this->prevState				 = 1;
 }
 
@@ -62,25 +61,6 @@ void BossIdleAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
 	if (_boss.GetHP() < 0 ) { OffIsSelect(this->maxFrameCount); return; }
-
-	/*移動する方向が設定されていなければ*/
-	if (!this->isSetMoveDirection)
-	{
-		this->parameter->desireValue = 0;							//欲求値を０にする
-		this->directionType			 = GetRand(this->RIGHT);	//移動方向の設定（RIGHT=1）
-		this->isSetMoveDirection	 = true;						//フラグを立てる
-		this->prevState				 = _boss.GetAngryState();		//ボスの状態を取得
-		_boss.SetSpeed(this->speed);							//スピード処理
-		_boss.SetAnimationPlayTime(this->animationPlayTime);//アニメーションの再生時間の設定
-		if (this->directionType == this->RIGHT)
-		{
-			_boss.SetNowAnimation(this->nextAnimation);
-		}
-		else
-		{
-			_boss.SetNowAnimation(this->nextAnimation2);
-		}
-	}
 
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
@@ -119,47 +99,16 @@ void BossIdleAction::Update(Boss& _boss)
 	//	}
 	//}
 
-	/*使用する値の準備*/
-	const VECTOR MOVE_TARGET			= player.GetRigidbody().GetPosition();
-	const VECTOR POSITION				= _boss.GetRigidbody().GetPosition();
-		  VECTOR velocity				= Gori::ORIGIN;							
-		  VECTOR nowRotation			= _boss.GetRigidbody().GetRotation();
-		  VECTOR nextRotation			= Gori::ORIGIN;							
-		  VECTOR positionToTargetVector	= VSub(POSITION,MOVE_TARGET);		
-
-	/*回転処理*/
-	{
-		//移動目標の設定
-		_boss.SetNowMoveTarget(MOVE_TARGET);
-		//回転率を保管する
-		nowRotation = GetLerpRotation(_boss, positionToTargetVector, nowRotation, this->rotateLerpValue);
-		//回転率を設定
-		_boss.SetRotation(nowRotation);
-	}
-	
-	/*移動処理*/
-	//回転率をもとに、移動する向きを出す
-	if (this->directionType == this->RIGHT)
-	{
-		velocity = VCross(positionToTargetVector, Gori::UP_VEC);
-		_boss.SetNowAnimation(this->nextAnimation);
-	}
-	else
-	{
-		velocity = VCross(positionToTargetVector, Gori::UP_VEC);
-		velocity = VScale(velocity, -1.0f);
-		_boss.SetNowAnimation(this->nextAnimation2);
-	}
-	//向きベクトルを正規化
-	velocity = VNorm(velocity);
 	//移動ベクトルを出す（重力を加算するため、Yベクトルのみ前のベクトルを使用する）
-	VECTOR aimVelocity  = VScale(velocity, this->speed);					//算出された移動ベクトル
+	VECTOR aimVelocity  = VScale(Gori::ORIGIN, this->speed);						//算出された移動ベクトル
 	VECTOR prevVelocity = _boss.GetRigidbody().GetVelocity();					//前の移動ベクトル
 	VECTOR newVelocity  = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);	//新しい移動ベクトル
 	//移動ベクトルの設定
 	_boss.SetVelocity(newVelocity);
 
 	/*アニメーションの再生*/
+	_boss.SetNowAnimation(this->nextAnimation);
+	_boss.SetAnimationPlayTime(this->animationPlayTime);
 	_boss.PlayAnimation();
 
 	//フレーム計測
@@ -184,32 +133,24 @@ void BossIdleAction::CalcParameter(const Boss& _boss)
 	/*もしHPが０以下だったら欲求値を０にして優先フラグを下す*/
 	if (_boss.GetHP() <= 0)return;
 
-	/*ボスのAngryTypeを取得*/
-	int nowAngryState = _boss.GetAngryState();
-
-	/*AngryStateがNORMALの時に攻撃コンボが残っていなかったら*/
-	if (nowAngryState == this->checkedState)
+	/*攻撃コンボがなければ*/
+	if (_boss.GetAttackComboCount() == 0)
 	{
-		if (nowAngryState != this->prevState)
-		{
-			this->parameter->desireValue = this->maxDesireValue;
-			this->isPriority			 = true;
-			this->isChangeColorScale	 = true;
-			this->isInitializeColorScale = false;
-		}
-		//ボスの攻撃が０だったら
-		else if (_boss.GetAttackComboCount() == 0)
+		int nowAngryState = _boss.GetAngryState();
+		if (nowAngryState != static_cast<int>(Boss::BossState::TIRED))
 		{
 			this->parameter->desireValue = this->maxDesireValue;
 			this->isPriority = true;
 			this->isChangeColorScale = true;
 			this->isInitializeColorScale = false;
+			if (nowAngryState == static_cast<int>(Boss::BossState::ANGRY))
+			{
+				this->maxFrameCount = this->ANGRY_MAX_ANGRY_FRAME_COUNT;
+			}
+			else if (nowAngryState == static_cast<int>(Boss::BossState::NORMAL))
+			{
+				this->maxFrameCount = this->NORMAL_MAX_ANGRY_FRAME_COUNT;
+			}
 		}
-	}
-
-	/*違う状態なら現在の状態を保存する*/
-	else
-	{
-		this->prevState = _boss.GetAngryState();
 	}
 }

@@ -33,9 +33,9 @@ Condition_IsDragonHpIsLessThanZero::NodeState Condition_IsDragonHpIsLessThanZero
 	/*HP‚ª‚OˆÈ‰º‚È‚çSUCCESS‚ð•Ô‚·*/
 	if (enemy.GetHP() <= 0)
 	{
-		printfDx("CONDITION_HP_SUCCESS\n");
+		//printfDx("CONDITION_HP_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}
-	printfDx("CONDITION_HP_FAILURE\n");
+	//printfDx("CONDITION_HP_FAILURE\n");
 	return NodeState::FAILURE;
 }

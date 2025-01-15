@@ -16,11 +16,11 @@ PlayerRun::PlayerRun()
 	: PlayerAction()
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["RUN_SPEED"];
-	this->staminaRecoveryValue = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"];
-	this->maxStamina = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
-	this->nextAnimation = static_cast<int>(Player::AnimationType::RUN_FRONT);
-	this->playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
+	this->maxSpeed				= json.GetJson(JsonManager::FileType::PLAYER)["RUN_SPEED"];
+	this->staminaRecoveryValue	= json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"];
+	this->maxStamina			= json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
+	this->nextAnimation			= static_cast<int>(Player::AnimationType::RUN_FRONT);
+	this->playTime				= json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 
 }
 

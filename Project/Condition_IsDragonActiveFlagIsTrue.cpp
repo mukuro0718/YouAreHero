@@ -33,9 +33,9 @@ Condition_IsDragonActiveFlagIsTrue::NodeState Condition_IsDragonActiveFlagIsTrue
 	/*スタミナが０より多ければSUCCESSを返す*/
 	if (rootNode.GetIsActive())
 	{
-		printfDx("CONDITION_ACTIVE_SUCCESS\n");
+		//printfDx("CONDITION_ACTIVE_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}
-	printfDx("CONDITION_ACTIVE_FAILURE\n");
+	//printfDx("CONDITION_ACTIVE_FAILURE\n");
 	return NodeState::FAILURE;
 }

@@ -27,6 +27,10 @@ PlayerController::PlayerController()
 	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::DRAW_SWORD_1));
 	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::DRAW_SWORD_2));
 	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::KNOCK_UP));
+
+	this->blockStaminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"];
+	this->avoidStaminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["AVOID_STAMINA_CONSUMPTION"];
+	this->runStaminaConsumption	  = json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"];
 }
 
 /// <summary>
@@ -53,8 +57,9 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 {
 	PlayerState nextState;
 
-	auto& json = Singleton<JsonManager>  ::GetInstance();
+	//auto& json = Singleton<JsonManager>  ::GetInstance();
 	auto& input = Singleton<InputManager>  ::GetInstance();
+	int nowPadState = input.GetNowPadState();
 
 	/*HPが0以下なら状態をDEATHにする*/
 	if (_data.hp <= 0 )
@@ -101,7 +106,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	}
 	/*ガード*/
 	//スタミナは足りているか
-	else if (CanAction(_data.stamina, json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"]) && input.GetNowPadState() & InputManager::PAD_RT)
+	else if (CanAction(_data.stamina, this->blockStaminaConsumption) && nowPadState & InputManager::PAD_RT)
 	{
 		if (_isDrawSword)
 		{
@@ -114,7 +119,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	}
 
 	/*弱攻撃*/
-	else if (input.GetNowPadState() & InputManager::PAD_B)
+	else if (nowPadState & InputManager::PAD_B)
 	{
 		if (_isDrawSword)
 		{
@@ -138,7 +143,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	}
 
 	/*強攻撃*/
-	else if (input.GetNowPadState() & InputManager::PAD_Y)
+	else if (nowPadState & InputManager::PAD_Y)
 	{
 		if (_isDrawSword)
 		{
@@ -151,13 +156,13 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	}
 
 	/*回避*/
-	else if (CanAction(_data.stamina, json.GetJson(JsonManager::FileType::PLAYER)["AVOID_STAMINA_CONSUMPTION"]) && input.GetNowPadState() & InputManager::PAD_A)
+	else if (CanAction(_data.stamina, this->avoidStaminaConsumption) && nowPadState & InputManager::PAD_A)
 	{
 		nextState = PlayerState::AVOID;
 	}
 
 	/*回復*/
-	else if (input.GetNowPadState() & InputManager::PAD_X)
+	else if (nowPadState & InputManager::PAD_X)
 	{
 		nextState = PlayerState::HEAL;
 	}
@@ -165,12 +170,12 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	/*移動*/
 	else if (input.GetLStickState().XBuf != 0 || input.GetLStickState().YBuf != 0)
 	{
-		if (input.GetNowPadState() & InputManager::PAD_RB)
+		if (nowPadState & InputManager::PAD_RB)
 		{
 			if (!_isDrawSword)
 			{
 				//ダッシュ
-				if (CanAction(_data.stamina, json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"]))
+				if (CanAction(_data.stamina, this->runStaminaConsumption))
 				{
 					nextState = PlayerState::RUN;
 				}
@@ -209,13 +214,17 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	/*キャンセルフラグが立っているかつキャンセルできるアクション*/
 	else if (_isCancelAction)
 	{
-		for (int state : this->stateTheIsCancel)
+		//現在選択中のアクションと異なっていたら
+		if (this->nowState != newState)
 		{
-			if (state == newState)
+			for (int state : this->stateTheIsCancel)
 			{
-				this->prevState = this->nowState;
-				this->nowState = newState;
-				return true;
+				if (state == newState)
+				{
+					this->prevState = this->nowState;
+					this->nowState = newState;
+					return true;
+				}
 			}
 		}
 	}

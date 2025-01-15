@@ -62,6 +62,7 @@ protected:
 	short nextAnimation;
 	float animationPlayTime;
 	short maxDesireValue;		 //Å‘å—~‹’l
+	float nowTotalAnimPlayTime;
 
 };
 

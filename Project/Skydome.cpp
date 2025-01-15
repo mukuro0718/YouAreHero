@@ -12,8 +12,10 @@ Skydome::Skydome()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
 
-	this->model = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::SKYDOME));
+	this->model		= MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::SKYDOME));
+	this->addRotate = static_cast<float>(json.GetJson(JsonManager::FileType::MAP)["ADD_SKYDOME_ROTATE"]);
 }
 
 /// <summary>
@@ -33,16 +35,18 @@ void Skydome::Initialize()
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*jsonデータを各定数型に代入*/
-	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_POSITION"]);
-	const VECTOR SCALE = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_SCALE"]);
-		  VECTOR rotation = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_ROTATION"]);
-	rotation.y = rotation.y * (DX_PI_F / 180.0f);
-
+	const VECTOR POSITION	= Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_POSITION"]);
+	const VECTOR SCALE		= Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_SCALE"]);
+		  VECTOR rotation	= Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["SKYDOME_ROTATION"]);
+				 rotation.y = rotation.y * (DX_PI_F / 180.0f);
 
 	/*モデルのトランスフォームの設定*/
 	this->position	= POSITION;
 	this->rotation	= rotation;
 	this->scale		= SCALE;
+	MV1SetPosition(this->model, this->position);
+	MV1SetRotationXYZ(this->model, this->rotation);
+	MV1SetScale(this->model, this->scale);
 }
 
 /// <summary>
@@ -50,11 +54,9 @@ void Skydome::Initialize()
 /// </summary>
 void Skydome::Update()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
 	/*回転*/
-	this->rotation.y += static_cast<float>(json.GetJson(JsonManager::FileType::MAP)["ADD_SKYDOME_ROTATE"]);
+	this->rotation.y += this->addRotate;
+	MV1SetRotationXYZ(this->model,this->rotation);
 }
 
 /// <summary>
@@ -62,8 +64,5 @@ void Skydome::Update()
 /// </summary>
 const void Skydome::Draw()const
 {
-	MV1SetPosition(this->model,this->position);
-	MV1SetRotationXYZ(this->model,this->rotation);
-	MV1SetScale(this->model,this->scale);
 	MV1DrawModel(this->model);
 }

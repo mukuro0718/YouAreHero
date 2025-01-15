@@ -30,5 +30,7 @@ private:
 	short	checkState;			//どの状態で確認するか
 	float	actionDistance;		//アクションが可能になる距離
 	short	normalDesireValue;	//通常の欲求値
+	float	slowLimitTime;		//スローのリミット時間
+	float	slowPlayTime;		//スローのリミット時間
 };
 

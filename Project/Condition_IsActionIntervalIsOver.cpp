@@ -34,9 +34,9 @@ Condition_IsActionIntervalIsOver::NodeState Condition_IsActionIntervalIsOver::Up
 	/*インターバルが終了していなければFAILUREを返す*/
 	if (rootNode.GetInterval(this->ACTION_INDEX) > 0)
 	{
-		printfDx("CONDITION_INTERVAL_FAILURE\n");
+		//printfDx("CONDITION_INTERVAL_FAILURE\n");
 		return NodeState::FAILURE;
 	}
-	printfDx("CONDITION_INTERVAL_SUCCESS\n");
+	//printfDx("CONDITION_INTERVAL_SUCCESS\n");
 	return NodeState::SUCCESS;
 }

@@ -55,6 +55,10 @@
     "Asset/Image/UI/Operation/rotaryCutter.png",
     "Asset/Image/UI/Operation/useItem.png",
     "Asset/Image/UI/Operation/swordDelivery.png",
-    "Asset/Image/UI/Operation/swordDrawing.png"
+    "Asset/Image/UI/Operation/swordDrawing.png",
+
+    "Asset/Texture/Character/Boss.fbm/Mutant_diffuse.png",
+    "Asset/Texture/Character/Boss.fbm/Mutant_diffuse_2.png",
+    "Asset/Texture/Character/Boss.fbm/Mutant_diffuse_3.png"
   ]
 }

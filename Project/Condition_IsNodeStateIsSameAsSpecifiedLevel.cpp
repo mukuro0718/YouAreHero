@@ -34,9 +34,9 @@ Condition_IsNodeStateIsSameAsSpecifiedLevel::NodeState Condition_IsNodeStateIsSa
 	/*インターバルが終了していなければFAILUREを返す*/
 	if (rootNode.GetNodeState() == this->SPECIFIED_STATE)
 	{
-		printfDx("CONDITION_NODESTATE_SUCCESS\n");
+		//printfDx("CONDITION_NODESTATE_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}
-	printfDx("CONDITION_NODESTATE_FAILURE\n");
+	//printfDx("CONDITION_NODESTATE_FAILURE\n");
 	return NodeState::FAILURE;
 }

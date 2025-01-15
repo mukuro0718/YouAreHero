@@ -76,30 +76,23 @@ void GameOverScene::Finalize()
 void GameOverScene::Update()
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& camera = Singleton<CameraManager>	::GetInstance();
+	/*auto& camera = Singleton<CameraManager>	::GetInstance();
 	auto& map = Singleton<MapManager>		::GetInstance();
-	auto& ui = Singleton<UIManager>		::GetInstance();
+	auto& ui = Singleton<UIManager>		::GetInstance();*/
 	auto& sceneChanger = Singleton<SceneChanger>	::GetInstance();
-	auto& input = Singleton<InputManager>::GetInstance();
+	//auto& input = Singleton<InputManager>::GetInstance();
 
-	/*更新処理*/
-	input.Update();
-	camera.Update();
-	map.Update();
-	ui.Update();
+	///*更新処理*/
+	//input.Update();
+	//camera.Update();
+	//map.Update();
+	//ui.Update();
 
-	/*シーンの終了処理*/
-	if (this->IsEnd())
-	{
-		if (ui.IsContinue())
-		{
-			sceneChanger.ChangeScene(SceneChanger::SceneType::GAME);
-		}
-		else
-		{
-			sceneChanger.ChangeScene(SceneChanger::SceneType::TITLE);
-		}
-	}
+	///*シーンの終了処理*/
+	//if (this->IsEnd())
+	//{
+		sceneChanger.ChangeScene(SceneChanger::SceneType::SELECT);
+	//}
 }
 
 /// <summary>

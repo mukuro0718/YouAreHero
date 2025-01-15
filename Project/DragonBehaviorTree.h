@@ -48,9 +48,13 @@ public:
 	const float GetInnerProduct		()const					{ return this->innerProductOfDirectionToTarget; }//目標へのベクトルの内積を取得
 	const int	GetCurrentAction	()const					{ return this->currentAction; }					 //現在のアクションを取得
 	const bool  GetIsActive			()const					{ return this->isActive; }
+	const bool	GetIsSelectedBattleAction()const			{ return this->isSelectedBattleAction; }		 //部位破壊されているか
 	void SetCurrentAction(const int _action)					{ this->currentAction = _action; }		//現在のアクションの設定
 	void SetInterval	 (const int _index, const int _set = 0) { this->intervalSet[_index] = _set; }	//インターバルの設定
 	void CalcStamina	 (const int _value)						{ this->stamina += _value; }			//スタミナの計算
+	void EntryCurrentBattleAction(BehaviorTreeNode& _action);	//バトルアクションの登録
+	void ExitCurrentBattleAction();								//バトルアクションの解除
+	BehaviorTreeNode& GetBattleAction() { return *this->currentBattleAction; }
 private:
 	/*内部処理関数*/
 		  DragonBehaviorTree	();//コンストラクタ
@@ -61,11 +65,13 @@ private:
 	std::array<int, static_cast<int>(ActionType::ROTATE_SWEEP_BREATH_SMASH) + 1>	intervalSet;					//インターバル
 	BehaviorTreeNode*																Selector_DyingOrBattleOrIdle;	//ビヘイビアツリーのrootノード
 	BehaviorTreeNode*																debugActionNode;				//デバック用のアクションノード(TODO:マスタ版では消す)
+	BehaviorTreeNode*																currentBattleAction;			//現在のバトルアクション
 	DragonState																		state;							//ボスの状態
+	BehaviorTreeNode::NodeState														prevNodeState;					//前のノードから帰ってきた状態
 	float																			toTargetDistance;				//目標までの距離
 	float																			innerProductOfDirectionToTarget;//向きベクトルと目標ベクトルの内積
 	int																				currentAction;					//現在のアクション
 	int																				stamina;						//スタミナ
 	bool																			isActive;						//アクティブ状態か（スタミナが切れたら最大値になるまでfalse:ノンアクティブ状態になる。）
-	BehaviorTreeNode::NodeState														prevNodeState;					//前のノードから帰ってきた状態
+	bool																			isSelectedBattleAction;			//リアクションが選択されているか
 };

@@ -32,9 +32,9 @@ Condition_IsSelectedReaction::NodeState Condition_IsSelectedReaction::Update()
 	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 	if (rootNode.GetIsSelectedReaction())
 	{
-		printfDx("CONDITION_SELECTED_REACTION_SUCCESS\n");
+		//printfDx("CONDITION_SELECTED_REACTION_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}
-	printfDx("CONDITION_SELECTED_REACTION_FAILURE\n");
+	//printfDx("CONDITION_SELECTED_REACTION_FAILURE\n");
 	return NodeState::FAILURE;
 }

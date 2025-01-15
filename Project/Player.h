@@ -33,7 +33,7 @@ public:
 		  void		SetHealCount		(const int _count) { this->healCount = _count; }								//回復回数の設定
 		  void		SetHitStop			(const float _time, const int _type, const float _delay, const float _factor);	//ヒットストップの設定
 		  void		SetIsDrawSword		(const bool _set) { this->isDrawSword = _set; }									//抜刀フラグの設定
-
+	const bool		GetIsLock			() { return this->isLock; }//ロックオンフラグ
 	//アニメーションの種類
 	enum class AnimationType
 	{
@@ -69,11 +69,13 @@ private:
 	static constexpr float	SHADOW_SIZE		= 6.0f;	//かげのサイズ
 	
 	/*メンバ変数*/
-	PlayerController*		controller;
-	vector<PlayerAction*>	action;
-	HitStop*				hitStop;			//ヒットストップ
-	int						healCount;		//回復オーブの数
-	bool isDrawSword;
-	int frameTime;//処理までにかかった時間
+	PlayerController*		controller;		//コントローラー
+	vector<PlayerAction*>	action;			//アクション
+	HitStop*				hitStop;		//ヒットストップ
+	int						healCount;		//回復可能数
+	bool					isDrawSword;	//剣を抜いているか
+	int						frameTime;		//処理までにかかった時間
+	bool isLock;
+	bool isPrevPushLS;
 };
 

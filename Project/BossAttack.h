@@ -12,7 +12,7 @@ public:
 
 	virtual void		Initialize () abstract;		//初期化
 	virtual void		Finalize   ();				//後処理
-	virtual void		Update	   () abstract;		//更新
+	virtual void		Update	   (const float _playTime) abstract;		//更新
 	virtual const void	Draw	   () const abstract;//描画
 
 	/*getter/setter*/
@@ -49,6 +49,7 @@ protected:
 	short		  endHitCheckFrame;
 	float		  positionOffset;
 	float		  yOffset;
-	float backBornSize;
-	float crowSize;
+	float		  backBornSize;
+	float		  crowSize;
+	float		  totalAnimPlayTime;
 };

@@ -81,7 +81,7 @@ void GameClearScene::Update()
 	/*ƒV[ƒ“‚ÌI—¹ˆ—*/
 	if (this->IsEnd())
 	{
-		sceneChanger.ChangeScene(SceneChanger::SceneType::TITLE);
+		sceneChanger.ChangeScene(SceneChanger::SceneType::SELECT);
 	}
 }
 

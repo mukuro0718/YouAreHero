@@ -177,3 +177,11 @@ void Character::SetVelocity(const VECTOR _velocity)
 {
 	this->collider->rigidbody.SetVelocity(_velocity);
 }
+
+/// <summary>
+/// ステージ外に出たらデス
+/// </summary>
+void Character::DyingIfOutOfStage()
+{
+	this->collider->data->hp = 0;
+}

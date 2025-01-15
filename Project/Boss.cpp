@@ -42,8 +42,10 @@ Boss::Boss()
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
 	/*メンバクラスのインスタンスの作成*/
-	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::ENEMY));
-
+	this->modelHandle	= MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::ENEMY));
+	this->normalTexture = asset.GetImage(LoadingAsset::ImageType::BOSS_NORMAL_TEXTURE);
+	this->angryTexture  = asset.GetImage(LoadingAsset::ImageType::BOSS_ANGRY_TEXTURE);
+	this->tiredTexture  = asset.GetImage(LoadingAsset::ImageType::BOSS_TIRED_TEXTURE);
 	/*アニメーションの設定*/
 	vector<int>	animationHandle	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_HANDLE"];
 	vector<int>		animationIndex	  = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_INDEX"];
@@ -155,11 +157,8 @@ void Boss::Initialize()
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
-	const COLOR_F BASE = { 1.0f,1.0f,1.0f,1.0f };
-	MV1SetDifColorScale(this->modelHandle, BASE);
-	MV1SetSpcColorScale(this->modelHandle, BASE);
-	MV1SetEmiColorScale(this->modelHandle, BASE);
-	MV1SetAmbColorScale(this->modelHandle, BASE);
+	MV1SetTextureGraphHandle(this->modelHandle, 0, this->normalTexture, FALSE);
+
 }
 
 /// <summary>
@@ -182,6 +181,12 @@ void Boss::Update()
 {
 	//int startTime = GetNowCount();
 	
+	/*ステージ外に出たらデス*/
+	if (this->collider->rigidbody.GetPosition().y < -30.0f)
+	{
+		DyingIfOutOfStage();
+	}
+
 	/*怒り状態の設定*/
 	SetAngryState();
 	/*状態の切り替え*/
@@ -318,32 +323,35 @@ const void Boss::DrawCharacterInfo()const
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& shadow = Singleton<Shadow>::GetInstance();
 	auto& map = Singleton<MapManager>::GetInstance();
+#ifdef _DEBUG
+
+
 	auto& debug = Singleton<Debug>::GetInstance();
-	
-	//if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
-	//{
-		//VECTOR position = this->collider->rigidbody.GetPosition();
-		//VECTOR rotation = this->collider->rigidbody.GetRotation();
-		//printfDx("Boss_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-		//printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
-		//printfDx("%d:DYING					\n", this->state->CheckFlag(this->DYING));
-		//printfDx("%d:IDLE						\n", this->state->CheckFlag(this->IDLE));
-		//printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
-		//printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
-		//printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
-		//printfDx("%d:SLASH_1					\n", this->state->CheckFlag(this->SLASH_1));
-		//printfDx("%d:SLASH_2					\n", this->state->CheckFlag(this->SLASH_2));
-		//printfDx("%d:STAB						\n", this->state->CheckFlag(this->STAB));
-		//printfDx("%d:ROTATE_SLASH				\n", this->state->CheckFlag(this->ROTATE_SLASH));
-		//printfDx("%d:PUNCH					\n", this->state->CheckFlag(this->PUNCH));
-		//printfDx("%d:SLASH_COMBO_1			\n", this->state->CheckFlag(this->SLASH_COMBO_1));
-		//printfDx("%d:SLASH_COMBO_2			\n", this->state->CheckFlag(this->SLASH_COMBO_2));
-		//printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
-		//printfDx("%d:STATE					\n", this->angryState);
+	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
+	{
+		VECTOR position = this->collider->rigidbody.GetPosition();
+		VECTOR rotation = this->collider->rigidbody.GetRotation();
+		printfDx("Boss_POSITION X:%f,Y:%f,Z:%f	\n", position.x, position.y, position.z);
+		printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f	\n", rotation.x, rotation.y, rotation.z);
+		printfDx("%d:DYING						\n", this->state->CheckFlag(this->DYING));
+		printfDx("%d:IDLE						\n", this->state->CheckFlag(this->IDLE));
+		printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
+		printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
+		printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
+		printfDx("%d:SLASH_1					\n", this->state->CheckFlag(this->SLASH_1));
+		printfDx("%d:SLASH_2					\n", this->state->CheckFlag(this->SLASH_2));
+		printfDx("%d:STAB						\n", this->state->CheckFlag(this->STAB));
+		printfDx("%d:ROTATE_SLASH				\n", this->state->CheckFlag(this->ROTATE_SLASH));
+		printfDx("%d:PUNCH						\n", this->state->CheckFlag(this->PUNCH));
+		printfDx("%d:SLASH_COMBO_1				\n", this->state->CheckFlag(this->SLASH_COMBO_1));
+		printfDx("%d:SLASH_COMBO_2				\n", this->state->CheckFlag(this->SLASH_COMBO_2));
+		printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
+		printfDx("%d:STATE						\n", this->angryState);
 		/*各アクションの当たり判定図形の描画*/
 		this->parameters[this->nowAction]->Draw();
-	//}
+	}
 
+#endif // _DEBUG
 	if (this->isDraw)
 	{
 		/*かげの描画*/
@@ -377,6 +385,7 @@ void Boss::SetAngryState()
 		{
 			this->angryState = static_cast<int>(BossState::TIRED);
 			this->angryValue = 0;
+			MV1SetTextureGraphHandle(this->modelHandle, 0, this->tiredTexture, FALSE);
 		}
 		break;
 		//通常
@@ -392,6 +401,7 @@ void Boss::SetAngryState()
 		if (this->angryValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"])
 		{
 			this->angryState = static_cast<int>(BossState::ANGRY);
+			MV1SetTextureGraphHandle(this->modelHandle, 0, this->angryTexture, FALSE);
 		}
 		break;
 	//疲れ
@@ -402,6 +412,7 @@ void Boss::SetAngryState()
 		if (this->tiredInterval >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_INTERVAL"])
 		{
 			this->angryState = static_cast<int>(BossState::NORMAL);
+			MV1SetTextureGraphHandle(this->modelHandle, 0, this->normalTexture, FALSE);
 			this->tiredInterval = 0;
 		}
 		break;

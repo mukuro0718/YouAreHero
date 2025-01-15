@@ -85,7 +85,7 @@ void BossSlashCombo2Attack::Initialize()
 /// <summary>
 /// 更新
 /// </summary>
-void BossSlashCombo2Attack::Update()
+void BossSlashCombo2Attack::Update(const float _playTime)
 {
 
 	/*当たり判定の確認が開始している*/

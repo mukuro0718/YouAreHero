@@ -37,7 +37,7 @@ public:
 	void ReloadingJsonFile(const FileType _type);
 
 	/*getter*/
-	const nlohmann::json GetJson(const FileType _index) { return json[static_cast<int>(_index)]; }//jsonデータのgetter
+	const nlohmann::json& GetJson(const FileType _index)const { return json[static_cast<int>(_index)]; }//jsonデータのgetter
 protected:
 	/*内部処理関数*/
 			 JsonManager();//コンストラクタ

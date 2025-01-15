@@ -106,7 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>Dxlib.h</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Dxlib.h</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -114,7 +114,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>Dxlib.h</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../Dxlib.h</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -142,7 +142,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>Dxlib.h</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Dxlib.h</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -150,7 +150,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>Dxlib.h</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../Dxlib.h</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -225,6 +225,7 @@
     <ClCompile Include="Condition_IsDragonActiveFlagIsTrue.cpp" />
     <ClCompile Include="Condition_IsNodeStateIsSameAsSpecifiedLevel.cpp" />
     <ClCompile Include="Condition_IsSelectedBattleAction.cpp" />
+    <ClCompile Include="Condition_IsSelectedDragonBattleAction.cpp" />
     <ClCompile Include="Condition_IsSelectedReaction.cpp" />
     <ClCompile Include="Condition_IsTargetOutOfRangeOfRay.cpp" />
     <ClCompile Include="Condition_IsToTargetDistanceGreaterThanConstant.cpp" />
@@ -250,6 +251,7 @@
     <ClCompile Include="Dragon_BreathSmashSweepRotate.cpp" />
     <ClCompile Include="Dragon_Dying.cpp" />
     <ClCompile Include="Dragon_Idle.cpp" />
+    <ClCompile Include="Dragon_PlayCurrentBattleAction.cpp" />
     <ClCompile Include="Dragon_Roar.cpp" />
     <ClCompile Include="Dragon_RotateSweep.cpp" />
     <ClCompile Include="Dragon_RotateSweepBreathSmash.cpp" />
@@ -303,6 +305,7 @@
     <ClCompile Include="PlayerStrongAttack.cpp" />
     <ClCompile Include="PlayerWalk.cpp" />
     <ClCompile Include="PlayerCombo1.cpp" />
+    <ClCompile Include="RandomSelector.cpp" />
     <ClCompile Include="SelectorNode.cpp" />
     <ClCompile Include="SequencerNode.cpp" />
     <ClCompile Include="Shadow.cpp" />
@@ -423,6 +426,7 @@
     <ClInclude Include="Condition_IsDragonActiveFlagIsTrue.h" />
     <ClInclude Include="Condition_IsNodeStateIsSameAsSpecifiedLevel.h" />
     <ClInclude Include="Condition_IsSelectedBattleAction.h" />
+    <ClInclude Include="Condition_IsSelectedDragonBattleAction.h" />
     <ClInclude Include="Condition_IsSelectedReaction.h" />
     <ClInclude Include="Condition_IsTargetOutOfRangeOfRay.h" />
     <ClInclude Include="Condition_IsToTargetDistanceGreaterThanConstant.h" />
@@ -450,6 +454,7 @@
     <ClInclude Include="Dragon_BreathSmashSweepRotate.h" />
     <ClInclude Include="Dragon_Dying.h" />
     <ClInclude Include="Dragon_Idle.h" />
+    <ClInclude Include="Dragon_PlayCurrentBattleAction.h" />
     <ClInclude Include="Dragon_Roar.h" />
     <ClInclude Include="Dragon_RotateSweep.h" />
     <ClInclude Include="Dragon_RotateSweepBreathSmash.h" />
@@ -503,6 +508,7 @@
     <ClInclude Include="PlayerStrongAttack.h" />
     <ClInclude Include="PlayerWalk.h" />
     <ClInclude Include="PlayerCombo1.h" />
+    <ClInclude Include="RandomSelector.h" />
     <ClInclude Include="ReactionType.h" />
     <ClInclude Include="BossSlashCombo2Attack.h" />
     <ClInclude Include="SelectorNode.h" />

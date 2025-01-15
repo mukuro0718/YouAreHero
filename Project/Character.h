@@ -19,6 +19,7 @@ public:
 	virtual void		Update			 () abstract;//XV
 	virtual const void	DrawCharacterInfo() const abstract;
 	const void			Draw			 () const;//•`‰æ
+	void DyingIfOutOfStage();
 
 	/*getter/setter*/
 	virtual const bool			 GetIsAttack		 ()const abstract;

@@ -113,6 +113,7 @@ private:
 		ROAR			= 2,//咆哮
 		WALK			= 3,//歩き
 		REST			= 4,//休憩
+
 		SLASH_1			= 5,//スラッシュ
 		SLASH_2			= 6,//スラッシュ
 		STAB			= 7,//突き刺し攻撃
@@ -136,6 +137,9 @@ private:
 	int							angryState;				//怒り状態
 	int							tiredInterval;			//疲労インターバル
 	int							attackComboCount;		//攻撃コンボ数
-	int frameTime;
+	int							frameTime;
+	int							normalTexture;
+	int							angryTexture;
+	int							tiredTexture;
 };
 

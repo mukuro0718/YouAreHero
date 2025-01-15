@@ -62,4 +62,6 @@ void PlayerRunOutOfStamina::Update(Player& _player)
 	
 	/*アニメーションの再生*/
 	_player.PlayAnimation(this->nextAnimation, this->playTime);
+
+	this->isEndAction = true;
 }

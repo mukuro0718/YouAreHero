@@ -6,7 +6,7 @@
 /// コンストラクタ
 /// </summary>
 EnemyChanger::EnemyChanger()
-	: enemyType				(0)
+	: enemyType			(0)
 	, inputInterval		(0)
 	, isProvDecide		(false)
 	, isFinalDecide		(false)
@@ -27,8 +27,11 @@ EnemyChanger::~EnemyChanger()
 /// </summary>
 void EnemyChanger::Initialize()
 {
-	this->enemyType = static_cast<int>(EnemyType::GOLEM);
+	this->enemyType		= 0;
+	this->selectType	= 0;
 	this->inputInterval = 0;
+	this->isProvDecide	= false;
+	this->isFinalDecide = false;
 }
 
 /// <summary>
@@ -56,7 +59,7 @@ void EnemyChanger::Update()
 		else if ((input.GetLStickState().YBuf > 0) || CheckHitKey(KEY_INPUT_DOWN))
 		{
 			this->enemyType++;
-			int max = static_cast<int>(EnemyType::TUTORIAL);
+			int max = static_cast<int>(EnemyType::DRAGON);
 			if (this->enemyType > max)
 			{
 				this->enemyType = max;

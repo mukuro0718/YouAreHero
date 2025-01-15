@@ -16,12 +16,7 @@ public:
 	const void	Draw		() const override;	//•`‰æ
 
 private:
-
 	/*“à•”ˆ—ŠÖ”*/
 	bool IsEnd();
-
-	/*ƒƒ“ƒo•Ï”*/
-	bool isPrevPressAnyButton;//‰½‚©ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚©
-	int pressButtonCount;
 };
 

@@ -11,6 +11,7 @@ class SelectorNode : public CompositeNode
 public:
 	 SelectorNode();//コンストラクタ
 	~SelectorNode();//デストラクタ
-	NodeState Update() override;
+
+	NodeState Update() override;//更新
 };
 

@@ -54,13 +54,19 @@ void PlayerDrawSword2::Finalize()
 /// </summary>
 void PlayerDrawSword2::Update(Player& _player)
 {
-	/*移動速度が０以上の時処理を行う*/
-	if (_player.GetSpeed() != 0)
-	{
-		MoveData data;
-		data.Set(_player.GetNextRotation(), 0.0f, true, false);
-		Move(_player, data);
-	}
+	/*回転の更新*/
+	VECTOR nowRotation = _player.GetRigidbody().GetRotation();
+	VECTOR nextRotation = _player.GetNextRotation();
+	UpdateRotation(true, nextRotation, nowRotation);
+	_player.SetRotation(nowRotation, nextRotation);
+
+	/*移動速度の更新*/
+	_player.SetSpeed(0.0f);
+
+	/*移動ベクトルを出す*/
+	VECTOR nowVelocity = _player.GetRigidbody().GetVelocity();
+	VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelocity, 0.0f, false);
+	_player.SetVelocity(newVelocity);
 
 	/*アニメーションの再生*/
 	_player.PlayAnimation(this->nextAnimation, this->playTime);

@@ -79,7 +79,7 @@ void BossStabAttack::Initialize()
 /// <summary>
 /// 更新
 /// </summary>
-void BossStabAttack::Update()
+void BossStabAttack::Update(const float _playTime)
 {
 
 	/*当たり判定の確認が開始している*/

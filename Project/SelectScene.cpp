@@ -51,7 +51,7 @@ void SelectScene::Update()
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& ui			= Singleton<UIManager>		::GetInstance();
 	auto& sceneChanger  = Singleton<SceneChanger>	::GetInstance();
-	auto& input = Singleton<InputManager>::GetInstance();
+	auto& input			= Singleton<InputManager>::GetInstance();
 
 	/*更新処理*/
 	input.Update();

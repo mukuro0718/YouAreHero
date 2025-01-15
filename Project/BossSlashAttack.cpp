@@ -79,7 +79,7 @@ void BossSlashAttack::Initialize()
 /// <summary>
 /// 更新
 /// </summary>
-void BossSlashAttack::Update()
+void BossSlashAttack::Update(const float _playTime)
 {
 	/*当たり判定の確認が開始している*/
 	if (this->isStartHitCheck)

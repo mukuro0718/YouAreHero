@@ -26,8 +26,8 @@
 
   "ACCEL": 0.05,
   "DECEL": -0.05,
-  "WALK_SPEED": 0.3,
-  "RUN_SPEED": 0.5,
+  "WALK_SPEED": 0.5,
+  "RUN_SPEED": 0.7,
   "STEP_BACK_SPEED": -0.5,
   "BACKING_BREATH_SPEED": -0.3,
   "ATTACKING_SPEED": 0.1,

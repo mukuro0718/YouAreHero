@@ -36,7 +36,9 @@ public:
 	static constexpr unsigned int PAD_LB = PAD_INPUT_5;
 	static constexpr unsigned int PAD_RB = PAD_INPUT_6;
 	static constexpr unsigned int PAD_LT = PAD_INPUT_7;
+	static constexpr unsigned int PAD_LS = PAD_INPUT_10;
 	static constexpr unsigned int PAD_RT = PAD_INPUT_8;
+	static constexpr unsigned int PAD_START = PAD_INPUT_12;
 	//キーボード
 	static constexpr unsigned int KEY_ENTER = KEY_INPUT_RETURN;
 	static constexpr unsigned int KEY_E = KEY_INPUT_E;

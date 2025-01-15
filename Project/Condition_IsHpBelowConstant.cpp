@@ -34,9 +34,9 @@ Condition_IsHpBelowConstant::NodeState Condition_IsHpBelowConstant::Update()
 	/*HPÇ™íËêîà»â∫Ç»ÇÁê¨å˜*/
 	if (rootNode.GetPrevHp() <= this->SPECIFIED_HP)
 	{
-		printfDx("CONDITION_HP_SUCCESS\n");
+		//printfDx("CONDITION_HP_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}
-	printfDx("CONDITION_HP_FAILURE\n");
+	//printfDx("CONDITION_HP_FAILURE\n");
 	return NodeState::FAILURE;
 }

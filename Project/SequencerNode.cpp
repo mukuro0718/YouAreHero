@@ -33,16 +33,16 @@ SequencerNode::NodeState SequencerNode::Update()
 		//é∏îsÇµÇƒÇ¢ÇΩÇÁèÛë‘Çï‘Ç∑
 		if (state == NodeState::FAILURE)
 		{
-			printfDx("SEQUENCER_FAILURE\n");
+			//printfDx("SEQUENCER_FAILURE\n");
 			return NodeState::FAILURE;
 		}
 		//é¿çsíÜÇ»ÇÁèÛë‘Çï‘Ç∑
 		if (state == NodeState::RUNNING)
 		{
-			printfDx("SEQUENCER_RUNNING\n");
+			//printfDx("SEQUENCER_RUNNING\n");
 			return NodeState::RUNNING;
 		}
-		printfDx("SEQUENCER_SUCCESS\n");
+		//printfDx("SEQUENCER_SUCCESS\n");
 	}
 	return NodeState::SUCCESS;
 }

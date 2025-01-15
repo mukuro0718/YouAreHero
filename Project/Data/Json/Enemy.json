@@ -9,11 +9,12 @@
   "MAX_ANGRY_VALUE": 1500,
   "MAX_TIRED_INTERVAL": 300,
 
-  "IDLE_ACTION_MAX_FRAME": 120,
+  "NORMAL_IDLE_ACTION_MAX_FRAME": 240,
+  "ANGRY_IDLE_ACTION_MAX_FRAME": 120,
   "REST_ACTION_MAX_FRAME": 300,
   "REST_ACTION_MAX_DESIRE_VALUE": [ 300, 400, 250 ],
 
-  "ATTACK_COMBO_COUNT": [ 2, 3, 5 ],
+  "ATTACK_COMBO_COUNT": [ 0, 2, 3 ],
 
   "COLOR_SCALE_NUM": 4,
   "ROAR_TARGET_COLOR_SCALE": [ 1.0, 0.5, 0.5, 1.0 ],
@@ -77,6 +78,7 @@
     2,
     3,
     4,
+
     10,
     5,
     11,
@@ -96,13 +98,13 @@
     0.5,
     0.5,
 
-    0.9,
-    0.9,
-    0.9,
-    0.9,
     0.7,
-    0.8,
-    0.8,
+    0.7,
+    0.7,
+    0.7,
+    0.7,
+    0.7,
+    0.7,
     1.0,
     1.0,
     1.0
@@ -159,9 +161,19 @@
     30,
     30
   ],
+  "TOTAL_ANIMATION_PLAY_TIME": [
+    80,
+    72,
+    53,
+    75,
+    33,
+    82,
+    126,
+    114
+  ],
   "START_HIT_CHECK_FRAME": [
     42,
-    30,
+    24,
     55,
     32,
     10,
@@ -173,7 +185,7 @@
 
   "END_HIT_CHECK_FRAME": [
     50,
-    33,
+    31,
     75,
     35,
     15,
@@ -297,7 +309,8 @@
   "SLASH_2_ROTATE_FRAME": 40,
   "SLASH_2_HOMING_FRAME": 35,
   "SLASH_2_INTERVAL": 60,
-  "SLASH_2_SLOW_PLAY_TIME": 0.5,
+  "SLASH_2_SLOW_PLAY_TIME": 0.3,
+  "SLASH_2_SLOW_LIMIT_TIME": 15,
   "SLASH_2_STOP_MOVE_DISTANCE": 15.0,
   "SLASH_2_MOVE_SPEED": 2.5,
   "STAB_SLOW_PLAY_TIME": 0.08,
@@ -351,6 +364,6 @@
   "JUMP_ATTACK_INTERVAL": 120,
 
   "STAB_SLOW_FRAME_COUNT": 45
-  
+
 
 }

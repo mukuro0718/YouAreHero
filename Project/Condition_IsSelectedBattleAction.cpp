@@ -32,9 +32,9 @@ Condition_IsSelectedBattleAction::NodeState Condition_IsSelectedBattleAction::Up
 	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 	if (rootNode.GetIsSelectedBattleAction())
 	{
-		printfDx("CONDITION_SELECTED_BATTLE_SUCCESS\n");
+		//printfDx("CONDITION_SELECTED_BATTLE_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}
-	printfDx("CONDITION_SELECTED_BATTLE_FAILURE\n");
+	//printfDx("CONDITION_SELECTED_BATTLE_FAILURE\n");
 	return NodeState::FAILURE;
 }

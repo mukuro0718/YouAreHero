@@ -33,8 +33,8 @@ private:
 	static constexpr int MAX_INPUT_INTERBVAL = 10;//最大入力インターバル
 
 	/*メンバ変数*/
-	int	enemyType;				//タイプ
-	int selectType;
+	int	enemyType;			//タイプ
+	int selectType;			//選択中の種類
 	int	inputInterval;		//入力インターバル
 	bool isProvDecide;		//仮の決定
 	bool isFinalDecide;		//最終決定

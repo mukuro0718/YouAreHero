@@ -121,7 +121,7 @@ const void GameClearUI::Draw()const
 	}
 
 	vector<int> position = json.GetJson(JsonManager::FileType::UI)["GAME_CLEAR_BACK_TITLE_POSITION"];
-	DrawStringToHandle(position[0], position[1], "Bでタイトルに戻る", this->TEXT_COLOR, this->fontHandle);
+	DrawStringToHandle(position[0], position[1], "Bで選択画面に戻る", this->TEXT_COLOR, this->fontHandle);
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"]);
 

@@ -17,15 +17,14 @@ public:
 	const bool IsEnd	 ()const override;
 private:
 	/*メンバ変数*/
-	int background;
-	int logo;
-	int iconFrame;
-	int provDecide;
-	vector<int>	icon;//画像ハンドル
-	vector<int>	summary;//画像ハンドル
-	vector<int> image;
-
-	int nowSelectEnemy;//現在選択されている敵
-	bool		isEnd;				//終了するか
+	vector<int>	icon;			//画像ハンドル
+	vector<int>	summary;		//画像ハンドル
+	vector<int> image;			//画像ハンドル
+	int			background;		//背景
+	int			logo;			//ロゴ
+	int			iconFrame;		//アイコンのフレーム
+	int			provDecide;		//決定アイコン
+	int			nowSelectEnemy;	//現在選択されている敵
+	bool		isEnd;			//終了するか
 };
 

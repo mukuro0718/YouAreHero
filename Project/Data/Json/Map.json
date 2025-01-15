@@ -1,7 +1,7 @@
 {
   "MAP_NORM": [ 0.0, 1.0, 0.0 ],
   "MAP_SCALE": 120.0,
-  "FINALY_BOSS_MAP_SCALE": [ 0.01, 0.01, 0.01 ],
+  "FINALY_BOSS_MAP_SCALE": [ 0.3, 0.3, 0.3 ],
   "FINALY_BOSS_MAP_ROTATION": [ 0.0, 0.0, 0.0 ],
   "FINALY_BOSS_MAP_POSITION": [ 0.0, -15.0, 0.0 ],
   "SKYDOME_POSITION": [ 0.0, -80.0, 0.0 ],

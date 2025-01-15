@@ -30,9 +30,9 @@ Condition_IsFrighteningValueGreaterThanConstant::NodeState Condition_IsFrighteni
 	if (rootNode.GetDamage() >= this->SPECIFIED_FRIGHTENING_VALUE)
 	{
 		rootNode.SetDamage(0);
-		printfDx("CONDITION_FRIGHT_SUCCESS\n");
+		//printfDx("CONDITION_FRIGHT_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}
-	printfDx("CONDITION_FRIGHT_FAILURE\n");
+	//printfDx("CONDITION_FRIGHT_FAILURE\n");
 	return NodeState::FAILURE;
 }

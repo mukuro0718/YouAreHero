@@ -168,8 +168,6 @@ void GameScene::Update()
 		printfDx("PLAYER:%d\n", frameTime);
 	}
 
-	//playerAttack.Update();
-
 	{
 		int startTime = GetNowCount();
 		effect.Update();
@@ -195,9 +193,9 @@ void GameScene::Update()
 	}
 
 	/*シーンの終了処理*/
-	if (this->IsEnd())
+	if (IsEnd())
 	{
-		if (player.GetHP() < 0)
+		if (enemy.GetHP() > 0)
 		{
 			sceneChanger.ChangeScene(SceneChanger::SceneType::GAME_OVER);
 		}
@@ -243,7 +241,7 @@ bool GameScene::IsEnd()
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& ui = Singleton<UIManager>::GetInstance();
 
-	/*タイトルシーンが終了可能だったらtrueを返す*/
+	/*ゲームシーンが終了可能だったらtrueを返す*/
 	if (ui.IsDraw())
 	{
 		return true;

@@ -76,7 +76,7 @@ void BossRotateSlashAttack::Initialize()
 /// <summary>
 /// 更新
 /// </summary>
-void BossRotateSlashAttack::Update()
+void BossRotateSlashAttack::Update(const float _playTime)
 {
 
 	/*当たり判定の確認が開始している*/

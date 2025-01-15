@@ -21,7 +21,7 @@ BossMap::BossMap()
 	/*ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹‚ÌŽæ“¾*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 	auto& modelColiderData = dynamic_cast<ModelColliderData&>(*this->collider);
-	modelColiderData.modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::COLL_ARENA));
+	modelColiderData.modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::FINALY_BOSS_STAGE));
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::FINALY_BOSS_STAGE));
 }
 
@@ -61,7 +61,7 @@ void BossMap::Initialize()
 	MV1SetPosition(this->modelHandle, this->collider->rigidbody.GetPosition());
 	MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());
 	MV1SetScale(this->modelHandle, this->collider->rigidbody.GetScale());
-	MV1SetFrameVisible(this->modelHandle, 125, false);
+	//MV1SetFrameVisible(this->modelHandle, 0, false);
 }
 
 /// <summary>

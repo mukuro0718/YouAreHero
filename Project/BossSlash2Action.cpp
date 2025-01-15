@@ -43,6 +43,8 @@ BossSlash2Action::BossSlash2Action()
 	this->actionDistance	= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][ATTACK_TYPE];
 	this->maxDesireValue	= json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 	this->normalDesireValue = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DESIRE_VALUE"];
+	this->slowLimitTime		= json.GetJson(JsonManager::FileType::ENEMY)["SLASH_2_SLOW_LIMIT_TIME"];
+	this->slowPlayTime		= json.GetJson(JsonManager::FileType::ENEMY)["SLASH_2_SLOW_PLAY_TIME"];
 }
 
 /// <summary>
@@ -64,6 +66,7 @@ void BossSlash2Action::Initialize()
 	this->frameCount			 = 0;
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
+	this->nowTotalAnimPlayTime	 = 0.0f;
 	this->attack->Initialize();
 	this->hitStop->Initialize();
 }
@@ -201,12 +204,23 @@ void BossSlash2Action::Update(Boss& _boss)
 
 	/*アニメーション処理*/
 	{
+		float playTime = 0.0f;
+		if (this->nowTotalAnimPlayTime <= this->slowLimitTime)
+		{
+			playTime = this->slowPlayTime;
+		}
+		else
+		{
+			playTime = this->animationPlayTime;
+		}
+		this->nowTotalAnimPlayTime += playTime;
+		_boss.SetAnimationPlayTime(playTime);
 		//アニメーションの再生
 		_boss.PlayAnimation();
 	}
 
 	/*攻撃判定の更新*/
-	this->attack->Update();
+	this->attack->Update(this->nowTotalAnimPlayTime);
 
 	/*終了判定*/
 	{
@@ -216,6 +230,7 @@ void BossSlash2Action::Update(Boss& _boss)
 			//各フラグを下す
 			this->isInitialize = false;
 			this->isClose = false;
+			this->nowTotalAnimPlayTime = 0.0f;
 			//その他変数の初期化とインターバルのセット
 			OffIsSelect(this->maxInterval);
 			//コンボ数を減らす

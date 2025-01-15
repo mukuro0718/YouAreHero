@@ -27,6 +27,7 @@ BossAction::BossAction()
 	, isPriority	(false)
 	, isAllowAction (false)
 	, frameCount	(0)
+	, nowTotalAnimPlayTime(0)
 {
 	/*インスタンスの作成*/
 	this->parameter = new ActionParameter();

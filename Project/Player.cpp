@@ -34,6 +34,8 @@ Player::Player()
 	: healCount	(0)
 	, hitStop	(nullptr)
 	, controller(nullptr)
+	, isLock	(false)
+	, isPrevPushLS(false)
 {
 	/*コントローラーの作成*/
 	this->controller = new PlayerController();
@@ -99,14 +101,17 @@ void Player::Initialize()
 	auto& asset		= Singleton<LoadingAsset>::GetInstance();
 
 	/*変数の初期化*/
-	this->isAlive			 = true;
-	this->isDraw			 = true;
-	this->isGround			 = false;
-	this->isInitialize		 = true;
-	this->speed				 = 0.0f;
-	this->entryInterval		 = 0;
-	this->nextRotation		 = Gori::ORIGIN;
-	this->healCount			 = json.GetJson(JsonManager::FileType::PLAYER)["MAX_HEAL_ORB_NUM"];	//最大回復オーブ数
+	this->isAlive			= true;
+	this->isDraw			= true;
+	this->isGround			= false;
+	this->isInitialize		= true;
+	this->speed				= 0.0f;
+	this->entryInterval		= 0;
+	this->nextRotation		= Gori::ORIGIN;
+	this->healCount			= json.GetJson(JsonManager::FileType::PLAYER)["MAX_HEAL_ORB_NUM"];
+	this->frameTime			= 0;
+	this->isDrawSword		= true;
+	this->isPrevPushLS = false;
 	
 	/*コライダーの初期化*/
 	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_POSITION"]);//座標
@@ -150,17 +155,41 @@ void Player::Update()
 {
 	//int startTime = GetNowCount();
 	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
+
+	if (this->collider->rigidbody.GetPosition().y < -30.0f)
+	{
+		DyingIfOutOfStage();
+	}
 
 	if (this->hitStop->IsHitStop()) return;
 
+	auto& input = Singleton<InputManager>::GetInstance();
+	if (input.GetNowPadState() & InputManager::PAD_LS)
+	{
+		if (!this->isPrevPushLS)
+		{
+			if (!this->isLock)
+			{
+				this->isLock = true;
+			}
+			else
+			{
+				this->isLock = false;
+			}
+			this->isPrevPushLS = true;
+		}
+	}
+	else
+	{
+		this->isPrevPushLS = false;
+	}
+
 	/*状態の変更(0~1m/s)*/
-	int  nowState		= this->controller->GetNowState();
-	bool isChancel		= this->action[nowState]->GetIsChangeAction();
-	bool isEndAction	= this->action[nowState]->GetIsEndAction();
-	bool isInitialize	= this->controller->StateChanger(isChancel, isEndAction, this->isDrawSword, GetCharacterData());
-		 nowState		= this->controller->GetNowState();
-	
+	int  nowState = this->controller->GetNowState();
+	bool isChancel = this->action[nowState]->GetIsChangeAction();
+	bool isEndAction = this->action[nowState]->GetIsEndAction();
+	bool isInitialize = this->controller->StateChanger(isChancel, isEndAction, this->isDrawSword, GetCharacterData());
+	nowState = this->controller->GetNowState();
 
 	/*状態が異なっていたらアクションを初期化する*/
 	if (isInitialize)
@@ -181,6 +210,7 @@ void Player::Update()
 	//this->frameTime = endTime - startTime;
 	/*無敵フラグが立っていたら最大HPから変えない*/
 #ifdef _DEBUG
+	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& debug = Singleton<Debug>			::GetInstance();
 	if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER) && json.GetJson(JsonManager::FileType::DEBUG)["PLAYER_INVINCIBLE"])
 	{

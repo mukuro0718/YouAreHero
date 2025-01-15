@@ -119,7 +119,7 @@ const bool PlayerManager::GetIsAlive()const
 /// </summary>
 const bool PlayerManager::GetIsLockOn()const
 {
-	return false;
+	return this->player->GetIsLock();
 }
 
 /// <summary>

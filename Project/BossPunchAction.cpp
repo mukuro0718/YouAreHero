@@ -165,7 +165,7 @@ void BossPunchAction::Update(Boss& _boss)
 
 
 	/*UŒ‚”»’è‚ÌXV*/
-	this->attack->Update();
+	this->attack->Update(0.0f);
 
 	/*I—¹”»’è*/
 	if (_boss.GetIsChangeAnimation())

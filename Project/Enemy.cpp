@@ -149,3 +149,4 @@ void Enemy::Move(const float _maxSpeed, const float _accel, const float _decel, 
 	/*移動ベクトルを出す*/
 	UpdateVelocity(_isLerp);
 }
+

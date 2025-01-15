@@ -32,8 +32,24 @@ GameUI::GameUI()
 
 	/*画像クラスインスタンスの作成*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
-	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
-	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_150_32);
+	this->imageHandle		= asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
+	this->fontHandle		= asset.GetFont(LoadingAsset::FontType::MINTYO_150_32);
+	this->pauseFontHandle	= asset.GetFont(LoadingAsset::FontType::MINTYO_50_32);
+
+	auto& json = Singleton<JsonManager>	 ::GetInstance();
+	this->maxAlpha					= json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"];
+	this->addAlpha					= json.GetJson(JsonManager::FileType::UI)["GAME_ADD_ALPHA"];
+	this->logoDrawTime				= json.GetJson(JsonManager::FileType::UI)["GAME_LOGO_DRAW_TIME"];
+	vector<int> tableDrawRect		= json.GetJson(JsonManager::FileType::UI)["GAME_TABLE_DRAW_RECT"];
+	this->tableDrawRect				= tableDrawRect;
+	vector<int> destroyTextPosition = json.GetJson(JsonManager::FileType::UI)["GAME_TEXT_POSITION_1"];
+	this->destroyTextPosition		= destroyTextPosition;
+	vector<int> resultTextPosition	= json.GetJson(JsonManager::FileType::UI)["GAME_TEXT_POSITION_2"];
+	this->resultTextPosition		= resultTextPosition;
+	vector<int> pauseTableDrawRect = json.GetJson(JsonManager::FileType::UI)["GAME_PAUSE_TABLE_DRAW_RECT"];
+	this->pauseTableDrawRect = pauseTableDrawRect;
+	vector<int> pauseTextPosition = json.GetJson(JsonManager::FileType::UI)["GAME_PAUSE_TEXT_POSITION"];
+	this->pauseTextPosition = pauseTextPosition;
 	Initialize();
 }
 
@@ -58,7 +74,6 @@ void GameUI::Initialize()
 	this->bossName->Initialize();
 
 	/*変数の初期化*/
-	auto& json = Singleton<JsonManager>	 ::GetInstance();
 	this->alpha = 0;
 	this->isEnd = false;
 	this->type = -1;
@@ -71,13 +86,36 @@ void GameUI::Initialize()
 /// </summary>
 void GameUI::Update()
 {
+	/*中断UIをするかどうかの判定*/
+	auto& input = Singleton<InputManager>::GetInstance();
+	//中断フラグが立っていなければ
+	if (!this->isPause)
+	{
+		//PADのSTARTが立っていたら
+		if (input.GetNowPadState() & InputManager::PAD_START)
+		{
+			this->isPause = true;
+		}
+	}
+	//立っていたら
+	else
+	{
+		//Bが押されていたら
+		if (input.GetNowPadState() & InputManager::PAD_B)
+		{
+			this->type = static_cast<int>(Type::LOSE);
+			this->isPause = false;
+		}
+		//Aが押されていたら
+		else if (input.GetNowPadState() & InputManager::PAD_A)
+		{
+			this->isPause = false;
+		}
+	}
+
 	this->hp->Update();
 	this->button->Update();
 	this->bossName->Update();
-
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = Singleton<JsonManager>	::GetInstance();
-	auto& input = Singleton<InputManager>::GetInstance();
 
 	/*タイプの設定*/
 	SetType();
@@ -86,15 +124,15 @@ void GameUI::Update()
 	if (this->type == -1)return;
 
 	/*拡大が終了していなければ拡大して早期リターン*/
-	if (this->alpha < json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"])
+	if (this->alpha < this->maxAlpha)
 	{
-		this->alpha += json.GetJson(JsonManager::FileType::UI)["GAME_ADD_ALPHA"];
+		this->alpha += this->addAlpha;
 		return;
 	}
 
 	/*フレームカウントが定数以上だったら終了フラグを立てる*/
 	this->frameCount++;
-	if (this->frameCount >= json.GetJson(JsonManager::FileType::UI)["GAME_LOGO_DRAW_TIME"])
+	if (this->frameCount >= this->logoDrawTime)
 	{
 		this->isEnd = true;
 	}
@@ -109,27 +147,32 @@ const void GameUI::Draw()const
 	this->button->Draw();
 	this->bossName->Draw();
 
+	/*中断フラグが立っていたらUIを表示する*/
+	if (this->isPause)
+	{
+		DrawExtendGraph(this->pauseTableDrawRect[0], this->pauseTableDrawRect[1], this->pauseTableDrawRect[2], this->pauseTableDrawRect[3], this->imageHandle, TRUE);
+		DrawStringToHandle(this->pauseTextPosition[0], this->pauseTextPosition[1], "ゲームを中断しますか\nB:はい A:いいえ", this->TEXT_COLOR, this->pauseFontHandle);
+
+	}
+
 	/*まだゲームが終了していなければ早期リターン*/
 	if (this->type == -1)return;
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>	::GetInstance();
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->alpha);
-	vector<int> table = json.GetJson(JsonManager::FileType::UI)["GAME_TABLE_DRAW_RECT"];
-	DrawExtendGraph(table[0], table[1], table[2], table[3], this->imageHandle, TRUE);
-	vector<int> position1 = json.GetJson(JsonManager::FileType::UI)["GAME_TEXT_POSITION_1"];
-	vector<int> position2 = json.GetJson(JsonManager::FileType::UI)["GAME_TEXT_POSITION_2"];
+	DrawExtendGraph(this->tableDrawRect[0], this->tableDrawRect[1], this->tableDrawRect[2], this->tableDrawRect[3], this->imageHandle, TRUE);
 	if (this->type == static_cast<int>(Type::LOSE))
 	{
-		DrawStringToHandle(position1[0], position1[1], "討\n伐", this->TEXT_COLOR, this->fontHandle);
-		DrawStringToHandle(position2[0], position2[1], "失\n敗", this->TEXT_COLOR, this->fontHandle);
+		DrawStringToHandle(this->destroyTextPosition[0], this->destroyTextPosition[1], "討\n伐", this->TEXT_COLOR, this->fontHandle);
+		DrawStringToHandle(this->resultTextPosition[0], this->resultTextPosition[1], "失\n敗", this->TEXT_COLOR, this->fontHandle);
 	}
 	else
 	{
-		DrawStringToHandle(position1[0], position1[1], "討\n伐", this->TEXT_COLOR, this->fontHandle);
-		DrawStringToHandle(position2[0], position2[1], "完\n了", this->TEXT_COLOR, this->fontHandle);
+		DrawStringToHandle(this->destroyTextPosition[0], this->destroyTextPosition[1], "討\n伐", this->TEXT_COLOR, this->fontHandle);
+		DrawStringToHandle(this->resultTextPosition[0], this->resultTextPosition[1], "完\n了", this->TEXT_COLOR, this->fontHandle);
 	}
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"]);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, this->maxAlpha);
 }
 
 /// <summary>
@@ -152,12 +195,12 @@ void GameUI::SetType()
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 
 	/*プレイヤーのHPが０以下*/
-	if (player.GetHP() < 0 && !player.GetIsAlive())
+	if (player.GetHP() <= 0 && !player.GetIsAlive())
 	{
 		this->type = static_cast<int>(Type::LOSE);
 	}
 	/*ボスのHPが０以下*/
-	else if (enemy.GetHP() < 0 && !enemy.GetIsAlive())
+	else if (enemy.GetHP() <= 0 && !enemy.GetIsAlive())
 	{
 		this->type = static_cast<int>(Type::WIN);
 	}

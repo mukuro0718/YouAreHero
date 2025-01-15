@@ -21,11 +21,15 @@ private:
 		SMASH	= 2,//叩きつけ
 	};
 
+	/*静的定数*/
+	const short MAX_USE_ANIMATION;//使用するアニメーションの最大
+	const float NEAR_ATTACK_RANGE;//近接攻撃範囲
+	const float	SWEEP_CANCEL_PLAY_TIME;//なぎ払い攻撃キャンセルフレーム
+
 	/*メンバ変数*/
 	vector<short>	animationType;		//アニメーションの種類
 	vector<float>	animationPlayTime;	//アニメーション再生時間
+	float			totalPlayTime;		//総再生時間
 	short			useAnimationType;	//使用するアニメーションのタイプ
-	short			maxUseAnimation;	//使用するアニメーションの最大
-	float			nearAttackRange;	//近接攻撃範囲
 };
 

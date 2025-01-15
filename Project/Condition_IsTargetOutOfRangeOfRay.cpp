@@ -32,9 +32,9 @@ Condition_IsTargetOutOfRangeOfRay::NodeState Condition_IsTargetOutOfRangeOfRay::
 	float dot = root.GetDotOfDirAndToTarget();
 	if (this->MIN_TOLERANCE_RANGE <= dot && dot <= this->MAX_TOLERANCE_RANGE)
 	{
-		printfDx("CONDITION_DOT_FAILURE\n");
+		//printfDx("CONDITION_DOT_FAILURE\n");
 		return NodeState::FAILURE;
 	}
-	printfDx("CONDITION_DOT_SUCCESS\n");
+	//printfDx("CONDITION_DOT_SUCCESS\n");
 	return NodeState::SUCCESS;
 }

@@ -85,7 +85,7 @@ Beast_Explosion::NodeState Beast_Explosion::Update()
 
 	/*コライダーの更新*/
 	//指定フレームを超えていなければフレームの増加
-	if (this->frameCount < this->attackStartCount)
+	if (this->frameCount < this->attackEndCount)
 	{
 		this->frameCount++;
 		//指定フレームを超えていたら

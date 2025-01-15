@@ -77,7 +77,7 @@ void BossJumpAttack::Initialize()
 /// <summary>
 /// 更新
 /// </summary>
-void BossJumpAttack::Update()
+void BossJumpAttack::Update(const float _playTime)
 {
 	/*当たり判定の確認が開始している*/
 	if (this->isStartHitCheck)

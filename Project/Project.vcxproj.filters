@@ -616,9 +616,6 @@
     <Filter Include="Object\Character\Enemy\Action\DragonAction\11_SweepBreath">
       <UniqueIdentifier>{9461d7dd-26c6-425e-b97d-76406371365a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\DragonAction\12_Breath_Smash_Rotate">
-      <UniqueIdentifier>{a743a686-3dfa-4e67-932f-26b6bf4673b8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\DragonAction\13_RotateSweepSmash">
       <UniqueIdentifier>{0bee465d-2919-4d12-86a7-be13fb691ead}</UniqueIdentifier>
     </Filter>
@@ -633,6 +630,18 @@
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\DragonAction\17_RotateSweepBreathSmash">
       <UniqueIdentifier>{2b4561a3-fa42-4277-b662-2971669af614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\DragonAction\12_BreathSmashRotate">
+      <UniqueIdentifier>{a743a686-3dfa-4e67-932f-26b6bf4673b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\BehaviorTree\Decorator\RandomSelector">
+      <UniqueIdentifier>{367f1ad3-b9f0-4600-b423-8813a371d7b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\DragonAction\18_SelectedBattleAction">
+      <UniqueIdentifier>{ea6a605f-8d4e-44d3-8dcd-bcda1e9577fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction">
+      <UniqueIdentifier>{b3f2960f-ad0a-4820-bfac-863d747bc82a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1214,10 +1223,19 @@
       <Filter>Object\Character\Enemy\Action\DragonAction\15_BreathSmashSweepRotate</Filter>
     </ClCompile>
     <ClCompile Include="Dragon_BreathSmashRotate.cpp">
-      <Filter>Object\Character\Enemy\Action\DragonAction\12_Breath_Smash_Rotate</Filter>
+      <Filter>Object\Character\Enemy\Action\DragonAction\12_BreathSmashRotate</Filter>
     </ClCompile>
     <ClCompile Include="Dragon_BreathSmash.cpp">
       <Filter>Object\Character\Enemy\Action\DragonAction\7_BreathSmash</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomSelector.cpp">
+      <Filter>Data\BehaviorTree\Decorator\RandomSelector</Filter>
+    </ClCompile>
+    <ClCompile Include="Condition_IsSelectedDragonBattleAction.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction</Filter>
+    </ClCompile>
+    <ClCompile Include="Dragon_PlayCurrentBattleAction.cpp">
+      <Filter>Object\Character\Enemy\Action\DragonAction\18_SelectedBattleAction</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1834,10 +1852,19 @@
       <Filter>Object\Character\Enemy\Action\DragonAction\15_BreathSmashSweepRotate</Filter>
     </ClInclude>
     <ClInclude Include="Dragon_BreathSmashRotate.h">
-      <Filter>Object\Character\Enemy\Action\DragonAction\12_Breath_Smash_Rotate</Filter>
+      <Filter>Object\Character\Enemy\Action\DragonAction\12_BreathSmashRotate</Filter>
     </ClInclude>
     <ClInclude Include="Dragon_BreathSmash.h">
       <Filter>Object\Character\Enemy\Action\DragonAction\7_BreathSmash</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomSelector.h">
+      <Filter>Data\BehaviorTree\Decorator\RandomSelector</Filter>
+    </ClInclude>
+    <ClInclude Include="Condition_IsSelectedDragonBattleAction.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction</Filter>
+    </ClInclude>
+    <ClInclude Include="Dragon_PlayCurrentBattleAction.h">
+      <Filter>Object\Character\Enemy\Action\DragonAction\18_SelectedBattleAction</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

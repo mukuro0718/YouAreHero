@@ -16,12 +16,19 @@
 /// コンストラクタ
 /// </summary>
 SelectUI::SelectUI()
+	: background	(-1)
+	, logo			(-1)
+	, iconFrame		(-1)
+	, provDecide	(-1)
+	, nowSelectEnemy(0)
+	, isEnd			(false)
 {
 	/*画像ハンドルの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 	this->background = asset.GetImage(LoadingAsset::ImageType::SELECT_BACK);
-	this->logo = asset.GetImage(LoadingAsset::ImageType::SELECT_LOGO);
+	this->logo		 = asset.GetImage(LoadingAsset::ImageType::SELECT_LOGO);
 	this->provDecide = asset.GetImage(LoadingAsset::ImageType::SELECT_PROV_DECIDE);
+	this->iconFrame  = asset.GetImage(LoadingAsset::ImageType::SELECT_ICON_FRAME);
 	this->icon.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_ICON_1));
 	this->icon.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_ICON_2));
 	this->icon.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_ICON_3));
@@ -34,7 +41,6 @@ SelectUI::SelectUI()
 	this->summary.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_SUMMARY_2));
 	this->summary.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_SUMMARY_3));
 	this->summary.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_SUMMARY_4));
-	this->iconFrame = asset.GetImage(LoadingAsset::ImageType::SELECT_ICON_FRAME);
 }
 
 /// <summary>
@@ -55,6 +61,8 @@ void SelectUI::Initialize()
 	/*エネミーチェンジャーの初期化*/
 	auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
 	enemyChanger.Initialize();
+	this->nowSelectEnemy = 0;
+	this->isEnd = false;
 }
 
 

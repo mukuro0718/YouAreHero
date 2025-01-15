@@ -34,9 +34,9 @@ Condition_IsNowStateIsSameAsTheSpecifiedState::NodeState Condition_IsNowStateIsS
 	/*インターバルが終了していなければFAILUREを返す*/
 	if (rootNode.GetBeastState() != this->SPECIFIED_STATE)
 	{
-		printfDx("CONDITION_STATE_FAILURE\n");
+		//printfDx("CONDITION_STATE_FAILURE\n");
 		return NodeState::FAILURE;
 	}
-	printfDx("CONDITION_STATE_SUCCESS\n");
+	//printfDx("CONDITION_STATE_SUCCESS\n");
 	return NodeState::SUCCESS;
 }

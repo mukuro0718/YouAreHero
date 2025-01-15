@@ -72,6 +72,7 @@ void PlayerAvoid::Update(Player& _player)
 		if (_player.GetIsChangeAnimation())
 		{
 			this->isEndAction = true;
+			this->isRotate = false;
 		}
 	}
 
@@ -83,6 +84,7 @@ void PlayerAvoid::Update(Player& _player)
 		//アクションキャンセルが可能だったら
 		if (!this->isRotate && (this->frameCount >= this->rotatableFrame))
 		{
+			this->isChangeAction = true;
 			this->isRotate = true;
 		}
 		//無敵時間

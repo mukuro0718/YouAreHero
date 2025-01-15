@@ -30,9 +30,9 @@ Condition_IsToTargetDistanceGreaterThanConstant::NodeState Condition_IsToTargetD
 	auto& root = Singleton<BeastBehaviorTree>::GetInstance();
 	if (root.GetToTargetDistance() >= this->COMPARE_DISTANCE)
 	{
-		printfDx("CONDITION_DISTANCE_SUCCESS\n");
+		//printfDx("CONDITION_DISTANCE_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}
-	printfDx("CONDITION_DISTANCE_FAILURE\n");
+	//printfDx("CONDITION_DISTANCE_FAILURE\n");
 	return NodeState::FAILURE;
 }

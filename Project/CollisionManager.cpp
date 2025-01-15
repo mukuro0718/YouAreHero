@@ -65,13 +65,12 @@ void CollisionManager::Exit(ColliderData& _data)
 /// </summary>
 void CollisionManager::Update()
 {
-	//int startTime = GetNowCount();
 	/*移動*/
 	for (auto& item : this->collidables)
 	{
 		//ポジションに移動力を足す
-		auto position = item->rigidbody.GetPosition();
-		auto velocity = item->rigidbody.GetVelocity();
+		VECTOR position = item->rigidbody.GetPosition();
+		VECTOR velocity = item->rigidbody.GetVelocity();
 		//重力を利用する設定なら、重力を追加する
 		if (item->rigidbody.UseGravity())
 		{
@@ -83,39 +82,15 @@ void CollisionManager::Update()
 			}
 		}
 		//次の座標とVelocityを出す
-		auto nextPosition = VAdd(position, velocity);
+		VECTOR nextPosition = VAdd(position, velocity);
 		item->rigidbody.SetVelocity(velocity);
 		//もともとの情報、予定情報をデバッグ表示
-#if _DEBUG
-		auto kind = item->GetKind();
-		if (kind == ColliderData::Kind::ATTACK_SPHERE)
-		{
-			//AttackSphereColliderData& sphereData = dynamic_cast<AttackSphereColliderData&>(*item);
-			//float radius = sphereData.radius;
-			//DrawSphere3D(position, radius, this->DIV_NUM, this->BEFORE_FIX_INFO_COLOR, this->BEFORE_FIX_INFO_COLOR, FALSE);
-			//DrawSphere3D(nextPosition, radius, this->DIV_NUM, this->AIM_INFO_COLOR, this->AIM_INFO_COLOR, FALSE);
-		}
-		else if (kind == ColliderData::Kind::ATTACK_CAPSULE)
-		{
-			//AttackCapsuleColliderData& capsuleData = dynamic_cast<AttackCapsuleColliderData&>(*item);
-			//float radius = capsuleData.radius;
-			//VECTOR topPositionOffset = capsuleData.topPositon;
-
-			//DrawCapsule3D(position, VAdd(position, topPositionOffset), radius, this->DIV_NUM, this->BEFORE_FIX_INFO_COLOR, this->BEFORE_FIX_INFO_COLOR, FALSE);
-			//DrawCapsule3D(nextPosition, VAdd(nextPosition, topPositionOffset), radius, this->DIV_NUM, this->AIM_INFO_COLOR, this->AIM_INFO_COLOR, FALSE);
-		}
-		else if (kind == ColliderData::Kind::CHARACTER_CAPSULE)
-		{
-			CharacterColliderData& capsuleData = dynamic_cast<CharacterColliderData&>(*item);
-			float radius = capsuleData.radius;
-			VECTOR topPositionOffset = capsuleData.topPositon;
-
-			DrawCapsule3D(position, VAdd(position, topPositionOffset), radius, this->DIV_NUM, this->BEFORE_FIX_INFO_COLOR, this->BEFORE_FIX_INFO_COLOR, FALSE);
-			DrawCapsule3D(nextPosition, VAdd(nextPosition, topPositionOffset), radius, this->DIV_NUM, this->AIM_INFO_COLOR, this->AIM_INFO_COLOR, FALSE);
-		}
-#endif
+		LONGLONG startTime = GetNowHiPerformanceCount();
 		//予定ポジション設定
 		item->SetNextPosition(nextPosition);
+	LONGLONG endTime = GetNowHiPerformanceCount();
+	LONGLONG frameTime = endTime - startTime;
+	printfDx("COLL_FRAMETIME:%d\n", frameTime);
 	}
 
 	/*当たり判定チェック*/
@@ -123,9 +98,6 @@ void CollisionManager::Update()
 
 	/*位置確定*/
 	FixPosition();
-	//int endTime = GetNowCount();
-	//this->frameTime = endTime - startTime;
-	//printfDx("COLL_FRAMETIME:%d\n", this->frameTime);
 }
 
 /// <summary>
@@ -139,6 +111,7 @@ void CollisionManager::CheckColide()
 	/*当たっていたら*/
 	while (doCheck)
 	{
+
 		//フラグを下す
 		doCheck = false;
 		//チェック回数を増やす
@@ -182,6 +155,7 @@ void CollisionManager::CheckColide()
 				break;
 			}
 		}
+
 		//無限ループ避け
 		if (checkCount > this->MAX_CHECK_COUNT && doCheck)
 		{
@@ -312,6 +286,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 				characterDataBase = &_objectA;
 				characterCapsuleUnder = _objectA.GetNextPosition();
 			}
+
 			//コライダーをキャスト
 			auto& attackColliderData = dynamic_cast<AttackCapsuleColliderData&>(*attackDataBase);
 			auto& characterColliderData = dynamic_cast<CharacterColliderData&>(*characterDataBase);
@@ -438,19 +413,23 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 	//カプセル同士の位置補正
 	else if (primaryKind == ColliderData::Kind::CHARACTER_CAPSULE && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
+
 		VECTOR secondaryToPrimary = VSub( _primary.GetNextPosition(), _secondary.GetNextPosition());
 		float  secondaryToPrimarySize = VSize(secondaryToPrimary);
 		VECTOR secondaryToPrimaryNorm = VNorm(secondaryToPrimary);
 
 		auto& primaryColliderData = dynamic_cast<CharacterColliderData&> (_primary);
 		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
+		if (!primaryColliderData.isUseCollWithChara || !secondaryColliderData.isUseCollWithChara)return;
 
 		//そのままだとちょうど当たる位置になるので少し余分に離す
 		float awayDist = primaryColliderData.radius + secondaryColliderData.radius - secondaryToPrimarySize + 0.000001f;
 
 		VECTOR fixVector = VScale(secondaryToPrimaryNorm, awayDist);
+		fixVector.y = 0.0f;
 		VECTOR fixedPosition = VAdd(_primary.GetNextPosition(), fixVector);
 		_primary.SetNextPosition(fixedPosition);
+
 	}
 	//平面とカプセル(平面はSTATICなので、必ずprimaryがPLANEになる)
 	else if (primaryKind == ColliderData::Kind::PLANE && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
@@ -512,10 +491,10 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 	/*モデルとキャラクターカプセル（モデルはSTATICなので、必ずprimaryがCHARACTER_CAPSULEになる）*/
 	else if (primaryKind == ColliderData::Kind::MODEL && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
-		//フラグが立っていたら
-
 		auto& ModelCollision = dynamic_cast<ModelColliderData&>(_primary);
 		auto& charaCollision = dynamic_cast<CharacterColliderData&>(_secondary);
+		//フラグが立っていたら
+		if (!charaCollision.isUseCollWithGround)return;
 		//構築したコリジョン情報とカプセルとの当たり判定を取り、構造体に格納する
 		MV1_COLL_RESULT_POLY_DIM hitPolyDim = MV1CollCheck_Sphere(ModelCollision.modelHandle, ModelCollision.frameIndex, charaCollision.GetNextPosition(), charaCollision.radius);
 		//当たっていたら以下の処理を行う
