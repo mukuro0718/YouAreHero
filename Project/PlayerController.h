@@ -51,12 +51,12 @@ private:
 	const bool CanAction(const float _stamina, const float _staminaConsumed)const;//アクションができるか
 
 	/*メンバ変数*/
-	std::vector<int> priority;				 //アクションごとの優先順位
-	std::list<int>	 stateTheIsCancel;		 //キャンセルフラグの状態
-	int				 nowState;				 //現在の状態
-	int				 prevState;				 //前の状態
-	float			 blockStaminaConsumption;//防御時の消費スタミナ
-	float			 avoidStaminaConsumption;//回避時の消費スタミナ
-	float			 runStaminaConsumption;//ダッシュ時の消費スタミナ
+	vector<short>		priority;				 //アクションごとの優先順位
+	map<short,list<short>> stateTheIsCancel;	 //キャンセルフラグの状態
+	int					nowState;				 //現在の状態
+	int					prevState;				 //前の状態
+	float				blockStaminaConsumption; //防御時の消費スタミナ
+	float				avoidStaminaConsumption; //回避時の消費スタミナ
+	float				runStaminaConsumption;	 //ダッシュ時の消費スタミナ
 };
 

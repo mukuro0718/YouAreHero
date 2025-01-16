@@ -73,6 +73,7 @@ public:
 		BOSS_ANGRY_TEXTURE		= 44,
 		BOSS_TIRED_TEXTURE		= 45,
 		LEFT_STICK_INPUT		= 46,
+		ICON_LOCK_ON			= 47,
 	};						  
 	//フォントのタイプ
 	enum class FontType

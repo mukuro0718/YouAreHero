@@ -10,9 +10,9 @@ public:
 	Effect(const int _effectResourceHandle);//コンストラクタ
 	virtual ~Effect();//デストラクタ
 
-			void Initialize	();			//初期化
-	virtual void Update		() abstract;//更新
-	const   void Draw		() const;	//描画
+			void		Initialize	();			//初期化
+	virtual void		Update		() abstract;//更新
+	virtual const void	Draw		() const;	//描画
 	
 	/*setter*/
 	void OnIsPlayEffect	() { this->isPlayEffect = true; }	//再生フラグを立てる

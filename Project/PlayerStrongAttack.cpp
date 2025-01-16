@@ -19,31 +19,35 @@
 /// コンストラクタ
 /// </summary>
 PlayerStrongAttack::PlayerStrongAttack()
-	: PlayerAction()
+	: PlayerAction				()
+	, FIRST_PLAY_TIME			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_START_ANIM_PLAY_TIME"])
+	, CANCELABLE_PLAY_TIME		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_CANCEL_PLAY_TIME"])
+	, START_HIT_CHECK_PLAY_TIME	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_START_HIT_CHECK_PLAY_TIME"])
+	, END_HIT_CHECK_PLAY_TIME	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_END_HIT_CHECK_PLAY_TIME"])
+	, POSITION_OFFSET			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET"])
+	, Y_OFFSET					(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"])
+	, HIT_STOP_TIME				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_TIME"])
+	, HIT_STOP_DELAY			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_DELAY"])
+	, HIT_STOP_TYPE				(static_cast<int>(HitStop::Type::SLOW))
+	, SLOW_FACTOR				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_FACTOR"])
+	, STAMINA_CONSUMPTION		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_STAMINA_CONSUMPTION"])
+	, firstDirection			(Gori::ORIGIN)
+	, isStartHitCheck			(false)
+	, collider					(nullptr)
 {
 	/*コライダーデータの作成*/
 	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER_ATTACK, new AttackData());
 	
 	/*初期化*/
-	auto& json						  = Singleton<JsonManager>::GetInstance();
-	this->hitStopTime				  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_TIME"];
-	this->hitStopType				  = static_cast<int>(HitStop::Type::SLOW);
-	this->hitStopDelay				  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_DELAY"];
-	this->slowFactor				  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_FACTOR"];
-	this->collider->radius			  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_ATTACK_RADIUS"];					//半径
-	this->collider->data->hitStopTime = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_TIME"];					//ヒットストップ時間
-	this->collider->data->damage	  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_DAMAGE"];							//ダメージ
-	this->nextAnimation				  = static_cast<int>(Player::AnimationType::SKILL);											//次のアニメーション
-	this->playTime					  = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];//アニメーション再生時間
-	this->firstPlayTime				  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_START_ANIM_PLAY_TIME"];			//アニメーションの初期再生時間
-	this->cancelableFrame			  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO1_CANCEL_FRAME"];						//キャンセル可能フレーム
-	this->startHitCheckFrame		  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_START_HIT_CHECK_FRAME"];			//当たり判定開始フレーム
-	this->endHitCheckFrame			  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_END_HIT_CHECK_FRAME"];			//当たり判定終了フレーム
-	this->positionOffset			  = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET"];							//座標オフセット値フレーム
-	this->yOffset					  = json.GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"];							//Yオフセット値フレーム
-	this->firstDirection			  = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);			//最初の向き
-
-
+	auto& json			  = Singleton<JsonManager>::GetInstance();
+	this->collider->radius			  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_ATTACK_RADIUS"];
+	this->collider->data->hitStopTime = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_TIME"];
+	this->collider->data->damage	  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_DAMAGE"];
+	this->nextAnimation				  = static_cast<int>(Player::AnimationType::SKILL);
+	this->playTime					  = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
+	this->firstDirection			  = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);
+	this->totalPlayTime				  = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_TOTAL_PLAY_TIME"][this->nextAnimation];
+	this->maxStamina				  = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
 }
 
 /// <summary>
@@ -59,12 +63,12 @@ PlayerStrongAttack::~PlayerStrongAttack()
 /// </summary>
 void PlayerStrongAttack::Initialize()
 {
-	this->isChangeAction = false;
-	this->isEndAction	 = false;
-	this->frameCount	 = 0;
+	this->isChangeAction	= false;
+	this->isEndAction		= false;
+	this->frameCount		= 0;
+	this->nowTotalPlayTime	= 0;
 	this->collider->rigidbody.Initialize(false);
 	this->collider->rigidbody.SetPosition(VGet(0.0f, 500.0f, 0.0f));
-
 }
 
 /// <summary>
@@ -96,16 +100,20 @@ void PlayerStrongAttack::Update(Player& _player)
 
 	/*アニメーションの再生*/
 	float playTime = this->playTime;
-	if (this->frameCount == 0) playTime = this->firstPlayTime;
+	if (this->nowTotalPlayTime == 0)
+	{
+		_player.CalcStamina(this->STAMINA_CONSUMPTION, this->maxStamina);
+		playTime = this->FIRST_PLAY_TIME;
+	}	this->nowTotalPlayTime += playTime;
 	_player.PlayAnimation(this->nextAnimation, playTime);
 
 	/*キャンセルフラグが立っていなったら*/
-	this->frameCount++;
 	if (!this->isChangeAction)
 	{
-		if (this->frameCount >= this->cancelableFrame)
+		if (this->nowTotalPlayTime >= this->CANCELABLE_PLAY_TIME)
 		{
 			this->isChangeAction = true;
+			this->isStartHitCheck = false;
 		}
 	}
 
@@ -115,13 +123,14 @@ void PlayerStrongAttack::Update(Player& _player)
 		this->isEndAction = true;
 	}
 
-	/*当たり判定が開始していなければ早期リターン*/
-	if (this->frameCount < this->startHitCheckFrame) return;
+	/*当たり判定開始以上かつ終了未満内までアニメーションが進んでいなければ早期リターン*/
+	if (this->nowTotalPlayTime < this->START_HIT_CHECK_PLAY_TIME || this->nowTotalPlayTime > this->END_HIT_CHECK_PLAY_TIME) return;
 
-	/*当たり判定が開始したタイミングで1度だけ呼ばれる*/
-	if (this->frameCount == this->startHitCheckFrame)
+	/*あたり判定が開始しているときに、当たり判定フラグが一度もたっていなかったらフラグを立てる*/
+	if (!this->isStartHitCheck)
 	{
 		this->collider->data->isDoHitCheck = true;
+		this->isStartHitCheck = true;
 	}
 
 
@@ -132,21 +141,21 @@ void PlayerStrongAttack::Update(Player& _player)
 		effect.OnIsEffect(EffectManager::EffectType::PLAYER_IMPACT);
 		effect.SetPosition(EffectManager::EffectType::PLAYER_IMPACT, this->collider->rigidbody.GetPosition());
 		this->collider->data->isHitAttack = false;
-		_player.SetHitStop(this->hitStopTime, this->hitStopType, this->hitStopDelay, this->slowFactor);
+		_player.SetHitStop(this->HIT_STOP_TIME, this->HIT_STOP_TYPE, this->HIT_STOP_DELAY, this->SLOW_FACTOR);
 	}
 
 	/*当たり判定許可フラグが立っていなかったら早期リターン*/
 	if (!this->collider->data->isDoHitCheck) return;
 
 	/*当たり判定座標の更新*/
-	VECTOR direction = VTransform(this->firstDirection, MGetRotY(_player.GetRigidbody().GetRotation().y));	//向きの設定
-	VECTOR position = _player.GetRigidbody().GetPosition();																//プレイヤーの座標
-	position = VAdd(position, VScale(direction, this->positionOffset));								//プレイヤーの座標に、オフセット値を足す
-	position.y += this->yOffset;																						//Y座標オフセット値を足す
+	VECTOR	direction	= VTransform(this->firstDirection, MGetRotY(_player.GetRigidbody().GetRotation().y));	//向きの設定
+	VECTOR	position	= _player.GetRigidbody().GetPosition();													//プレイヤーの座標
+			position	= VAdd(position, VScale(direction, this->POSITION_OFFSET));								//プレイヤーの座標に、オフセット値を足す
+			position.y += this->Y_OFFSET;																		//Y座標オフセット値を足す
 	this->collider->rigidbody.SetPosition(position);
 
-	//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
-	if (this->frameCount > this->endHitCheckFrame)
+	//再生時間が定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
+	if (this->nowTotalPlayTime > this->END_HIT_CHECK_PLAY_TIME)
 	{
 		this->collider->data->isDoHitCheck = false;
 	}

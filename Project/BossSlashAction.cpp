@@ -23,26 +23,26 @@
 BossSlashAction::BossSlashAction()
 	: isClose(false)
 {
-	const int ATTACK_TYPE = static_cast<int>(Boss::AttackType::SLASH_1);
-	this->attack = new BossSlashAttack(static_cast<int>(BossAttack::AttackType::SLASH_1));
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->hitStopTime = json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][ATTACK_TYPE];
-	this->hitStopType = static_cast<int>(HitStop::Type::STOP);
-	this->hitStopDelay = json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][ATTACK_TYPE];
-	this->slowFactor = json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][ATTACK_TYPE];
-	this->targetOffset = json.GetJson(JsonManager::FileType::ENEMY)["SLASH_TARGET_OFFSET"];
-	this->rotateLerpValue = Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]);
-	this->rotateFixFrame = json.GetJson(JsonManager::FileType::ENEMY)["ROTATION_FIX_COUNT"];
-	this->moveFrame = json.GetJson(JsonManager::FileType::ENEMY)["SLASH_MOVE_FRAME"];
-	this->rotateFrame = json.GetJson(JsonManager::FileType::ENEMY)["SLASH_ROTATE_FRAME"];
-	this->stopDistance = json.GetJson(JsonManager::FileType::ENEMY)["SLASH_STOP_MOVE_DISTANCE"];
-	this->speed = json.GetJson(JsonManager::FileType::ENEMY)["SLASH_MOVE_SPEED"];
-	this->nextAnimation = static_cast<int>(Boss::AnimationType::SLASH_1);
+	const int ATTACK_TYPE	= static_cast<int>(Boss::AttackType::SLASH_1);
+	this->attack			= new BossSlashAttack(static_cast<int>(BossAttack::AttackType::SLASH_1));
+	this->hitStopTime		= json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][ATTACK_TYPE];
+	this->hitStopType		= static_cast<int>(HitStop::Type::STOP);
+	this->hitStopDelay		= json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][ATTACK_TYPE];
+	this->slowFactor		= json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][ATTACK_TYPE];
+	this->targetOffset		= json.GetJson(JsonManager::FileType::ENEMY)["SLASH_TARGET_OFFSET"];
+	this->rotateLerpValue	= Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]);
+	this->rotateFixFrame	= json.GetJson(JsonManager::FileType::ENEMY)["ROTATION_FIX_COUNT"];
+	this->moveFrame			= json.GetJson(JsonManager::FileType::ENEMY)["SLASH_MOVE_FRAME"];
+	this->rotateFrame		= json.GetJson(JsonManager::FileType::ENEMY)["SLASH_ROTATE_FRAME"];
+	this->stopDistance		= json.GetJson(JsonManager::FileType::ENEMY)["SLASH_STOP_MOVE_DISTANCE"];
+	this->speed				= json.GetJson(JsonManager::FileType::ENEMY)["SLASH_MOVE_SPEED"];
+	this->nextAnimation		= static_cast<int>(Boss::AnimationType::SLASH_1);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nextAnimation];
-	this->maxInterval = json.GetJson(JsonManager::FileType::ENEMY)["SLASH_INTERVAL"];
-	this->checkState = static_cast<int>(Boss::BossState::NORMAL);
-	this->actionDistance = json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][ATTACK_TYPE];
-	this->maxDesireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+	this->maxInterval		= json.GetJson(JsonManager::FileType::ENEMY)["SLASH_INTERVAL"];
+	this->checkState		= static_cast<int>(Boss::BossState::NORMAL);
+	this->actionDistance	= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][ATTACK_TYPE];
+	this->maxDesireValue	= json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 	this->normalDesireValue = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DESIRE_VALUE"];
 
 }

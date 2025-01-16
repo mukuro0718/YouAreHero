@@ -28,6 +28,8 @@ private:
 
 	/*静的定数*/
 	static constexpr int TEXT_COLOR = 0xffffff;
+	const float LOCK_ON_UI_OFFSET;
+	const float LOCK_ON_UI_SIZE;
 
 	/*内部処理関数*/
 	void SetType();
@@ -44,6 +46,7 @@ private:
 	int			frameCount;	//フレームカウント
 	int			type;		//ロゴの種類
 	bool		isPause;	//中断フラグ
+	int			lockOnImage;//ロックオンUI画像
 
 	short maxAlpha;//最大アルファ
 	short addAlpha;//増加アルファ

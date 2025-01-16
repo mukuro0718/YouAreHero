@@ -2,6 +2,7 @@
 #include "DeleteInstance.h"
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Rigidbody.h"
 #include "SceneBase.h"
 #include "Image.h"
 #include "HPUI.h"
@@ -24,6 +25,8 @@ GameUI::GameUI()
 	: hp(nullptr)
 	, button(nullptr)
 	, bossName(nullptr)
+	, LOCK_ON_UI_OFFSET(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_LOCK_ON_POSITION_OFFSET"])
+	, LOCK_ON_UI_SIZE(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_LOCK_ON_SIZE"])
 {
 	/*インスタンスの生成*/
 	this->hp = new HPUI();
@@ -35,6 +38,7 @@ GameUI::GameUI()
 	this->imageHandle		= asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
 	this->fontHandle		= asset.GetFont(LoadingAsset::FontType::MINTYO_150_32);
 	this->pauseFontHandle	= asset.GetFont(LoadingAsset::FontType::MINTYO_50_32);
+	this->lockOnImage		= asset.GetImage(LoadingAsset::ImageType::ICON_LOCK_ON);
 
 	auto& json = Singleton<JsonManager>	 ::GetInstance();
 	this->maxAlpha					= json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"];
@@ -153,6 +157,15 @@ const void GameUI::Draw()const
 		DrawExtendGraph(this->pauseTableDrawRect[0], this->pauseTableDrawRect[1], this->pauseTableDrawRect[2], this->pauseTableDrawRect[3], this->imageHandle, TRUE);
 		DrawStringToHandle(this->pauseTextPosition[0], this->pauseTextPosition[1], "ゲームを中断しますか\nB:はい A:いいえ", this->TEXT_COLOR, this->pauseFontHandle);
 
+	}
+
+	auto& player = Singleton<PlayerManager>::GetInstance();
+	if (player.GetIsLockOn())
+	{
+		auto& enemy = Singleton<EnemyManager>::GetInstance();
+		VECTOR position = enemy.GetRigidbody().GetPosition();
+		position.y += this->LOCK_ON_UI_OFFSET;
+		DrawBillboard3D(position, 0.5f, 0.5f, this->LOCK_ON_UI_SIZE, 0.0f, this->lockOnImage, TRUE);
 	}
 
 	/*まだゲームが終了していなければ早期リターン*/

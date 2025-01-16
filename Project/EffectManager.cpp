@@ -32,7 +32,7 @@ EffectManager::EffectManager()
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 	auto& json = Singleton<JsonManager>::GetInstance();
 
-	this->effect.emplace_back(new BossImpactEffect			(asset.GetEffect(LoadingAsset::EffectType::BOSS_IMPACT)));
+	this->effect.emplace_back(new BossImpactEffect			(asset.GetEffect(LoadingAsset::EffectType::PLAYER_IMPACT)));
 	this->effect.emplace_back(new BossRoarEffect			(asset.GetEffect(LoadingAsset::EffectType::BOSS_ROAR)));
 	this->effect.emplace_back(new PlayerGuardHitEffect		(asset.GetEffect(LoadingAsset::EffectType::PLAYER_GUARD_HIT)));
 	this->effect.emplace_back(new PlayerHealEffect			(asset.GetEffect(LoadingAsset::EffectType::PLAYER_HEAL)));

@@ -15,22 +15,47 @@ PlayerController::PlayerController()
 {
 	/*優先フラグを付ける*/
 	auto& json = Singleton<JsonManager>  ::GetInstance();
-	vector<int> priority = json.GetJson(JsonManager::FileType::PLAYER)["ACTION_PRIORITY"];
+	vector<short> priority = json.GetJson(JsonManager::FileType::PLAYER)["ACTION_PRIORITY"];
 	this->priority = priority;
 
 	/*キャンセルフラグが立っているときに行えるアクション群*/
-	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::AVOID));
-	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::COMBO_1));
-	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::COMBO_2));
-	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::COMBO_3));
-	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::STRONG_ATTACK));
-	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::DRAW_SWORD_1));
-	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::DRAW_SWORD_2));
-	this->stateTheIsCancel.emplace_back(static_cast<int>(PlayerState::KNOCK_UP));
+	//コンボ１
+	list<short> connectedActionsOfCombo1;
+	connectedActionsOfCombo1.emplace_back(static_cast<int>(PlayerState::AVOID));
+	connectedActionsOfCombo1.emplace_back(static_cast<int>(PlayerState::COMBO_2));
+	this->stateTheIsCancel.emplace(static_cast<int>(PlayerState::COMBO_1), connectedActionsOfCombo1);
+	//コンボ２
+	list<short> connectedActionsOfCombo2;
+	connectedActionsOfCombo2.emplace_back(static_cast<int>(PlayerState::AVOID));
+	connectedActionsOfCombo2.emplace_back(static_cast<int>(PlayerState::COMBO_3));
+	this->stateTheIsCancel.emplace(static_cast<int>(PlayerState::COMBO_2), connectedActionsOfCombo2);
+	//コンボ3
+	list<short> connectedActionsOfCombo3;
+	connectedActionsOfCombo3.emplace_back(static_cast<int>(PlayerState::AVOID));
+	connectedActionsOfCombo3.emplace_back(static_cast<int>(PlayerState::STRONG_ATTACK));
+	this->stateTheIsCancel.emplace(static_cast<int>(PlayerState::COMBO_3), connectedActionsOfCombo3);
+	//強攻撃
+	list<short> connectedActionsOfStrongAttack;
+	connectedActionsOfStrongAttack.emplace_back(static_cast<int>(PlayerState::COMBO_1));
+	this->stateTheIsCancel.emplace(static_cast<int>(PlayerState::STRONG_ATTACK), connectedActionsOfStrongAttack);
+	//納刀
+	list<short> connectedActionsOfDrawSword1;
+	connectedActionsOfDrawSword1.emplace_back(static_cast<int>(PlayerState::RUN));
+	connectedActionsOfDrawSword1.emplace_back(static_cast<int>(PlayerState::AVOID));
+	this->stateTheIsCancel.emplace(static_cast<int>(PlayerState::DRAW_SWORD_1), connectedActionsOfDrawSword1);
+	//抜刀
+	list<short> connectedActionsOfDrawSword2;
+	connectedActionsOfDrawSword2.emplace_back(static_cast<int>(PlayerState::COMBO_1));
+	this->stateTheIsCancel.emplace(static_cast<int>(PlayerState::DRAW_SWORD_2), connectedActionsOfDrawSword2);
+	//ノックダウン
+	list<short> connectedActionsOfKnockDown;
+	connectedActionsOfKnockDown.emplace_back(static_cast<int>(PlayerState::AVOID));
+	connectedActionsOfKnockDown.emplace_back(static_cast<int>(PlayerState::RUN));
+	this->stateTheIsCancel.emplace(static_cast<int>(PlayerState::KNOCK_UP), connectedActionsOfKnockDown);
 
 	this->blockStaminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"];
 	this->avoidStaminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["AVOID_STAMINA_CONSUMPTION"];
-	this->runStaminaConsumption	  = json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"];
+	this->runStaminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"];
 }
 
 /// <summary>
@@ -214,12 +239,17 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	/*キャンセルフラグが立っているかつキャンセルできるアクション*/
 	else if (_isCancelAction)
 	{
-		//現在選択中のアクションと異なっていたら
-		if (this->nowState != newState)
+		//現在選択中のアクション同じだったら早期リターン
+		if (this->nowState == newState) return false;
+		//map内に指定の状態がキーとして保持されていたら
+		auto it = this->stateTheIsCancel.find(this->nowState);
+		if (it != this->stateTheIsCancel.end())
 		{
-			for (int state : this->stateTheIsCancel)
+			const std::list<short>& targetList = it->second;
+			for (int action : targetList)
 			{
-				if (state == newState)
+				//キャンセル可能なアクションか調べる
+				if (action == newState)
 				{
 					this->prevState = this->nowState;
 					this->nowState = newState;

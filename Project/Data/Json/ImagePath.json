@@ -21,8 +21,8 @@
     "Asset/Image/UI/Button/button_set_1.png",
     "Asset/Image/UI/Button/button_set_2.png",
 
-    "Asset/Image/UI/Icon/hp_potion.png",
-    "Asset/Image/UI/Icon/Potion_table.png",
+    "Asset/Image/UI/Icon/hpPotion.png",
+    "Asset/Image/UI/Icon/PotionTable.png",
 
     "Asset/Image/UI/Other/BackGround.png",
 
@@ -55,6 +55,8 @@
     "Asset/Texture/Character/Boss.fbm/Mutant_diffuse_2.png",
     "Asset/Texture/Character/Boss.fbm/Mutant_diffuse_3.png",
 
-    "Asset/Image/UI/Button/Left_stick_input.png"
+    "Asset/Image/UI/Button/Left_stick_input.png",
+    "Asset/Image/UI/Icon/LockOn.png"
+
   ]
 }
