@@ -29,21 +29,15 @@
     "Asset/Image/Shadow/Shadow.tga",
 
     "Asset/Image/UI/Select/background.png",
-    "Asset/Image/UI/Select/logo.png",
-    "Asset/Image/UI/Select/quest_icon_1.png",
-    "Asset/Image/UI/Select/quest_icon_2.png",
-    "Asset/Image/UI/Select/quest_icon_3.png",
-    "Asset/Image/UI/Select/quest_icon_4.png",
+    "Asset/Image/UI/Select/SelectIconTable.png",
     "Asset/Image/UI/Select/quest_image_1.png",
     "Asset/Image/UI/Select/quest_image_2.png",
     "Asset/Image/UI/Select/quest_image_3.png",
     "Asset/Image/UI/Select/quest_image_4.png",
-    "Asset/Image/UI/Select/summary_1.png",
-    "Asset/Image/UI/Select/summary_2.png",
-    "Asset/Image/UI/Select/summary_3.png",
-    "Asset/Image/UI/Select/summary_4.png",
-    "Asset/Image/UI/Select/select_icon_frame.png",
+    "Asset/Image/UI/Select/SelectFrame.png",
     "Asset/Image/UI/Select/Prov.png",
+    "Asset/Image/UI/Select/SelectImageTable.png",
+    "Asset/Image/UI/Select/SelectDrawRectBackGround.png",
 
     "Asset/Image/UI/Operation/walk.png",
     "Asset/Image/UI/Operation/dash.png",
@@ -59,6 +53,8 @@
 
     "Asset/Texture/Character/Boss.fbm/Mutant_diffuse.png",
     "Asset/Texture/Character/Boss.fbm/Mutant_diffuse_2.png",
-    "Asset/Texture/Character/Boss.fbm/Mutant_diffuse_3.png"
+    "Asset/Texture/Character/Boss.fbm/Mutant_diffuse_3.png",
+
+    "Asset/Image/UI/Button/Left_stick_input.png"
   ]
 }

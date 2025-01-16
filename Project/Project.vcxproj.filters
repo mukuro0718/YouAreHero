@@ -418,9 +418,6 @@
     <Filter Include="Object\Character\Enemy\Action\BeastAction\8_Down">
       <UniqueIdentifier>{9240fa1e-577d-4987-8a5c-52e2a512b8ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BeastAction\9_LongFrightening">
-      <UniqueIdentifier>{f7b629fd-4980-4e34-aed2-e5ce935d80e0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\BeastAction\10_ShortFrightening">
       <UniqueIdentifier>{eefb592c-d70b-4e23-9b4f-97a7582d853a}</UniqueIdentifier>
     </Filter>
@@ -642,6 +639,9 @@
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction">
       <UniqueIdentifier>{b3f2960f-ad0a-4820-bfac-863d747bc82a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BeastAction\12_StepBack\9_LongFrightening">
+      <UniqueIdentifier>{f7b629fd-4980-4e34-aed2-e5ce935d80e0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1046,7 +1046,7 @@
       <Filter>Object\Character\Enemy\Action\BeastAction\8_Down</Filter>
     </ClCompile>
     <ClCompile Include="Beast_LongFrightening.cpp">
-      <Filter>Object\Character\Enemy\Action\BeastAction\9_LongFrightening</Filter>
+      <Filter>Object\Character\Enemy\Action\BeastAction\12_StepBack\9_LongFrightening</Filter>
     </ClCompile>
     <ClCompile Include="Beast_ShortFrightening.cpp">
       <Filter>Object\Character\Enemy\Action\BeastAction\10_ShortFrightening</Filter>
@@ -1672,7 +1672,7 @@
       <Filter>Object\Character\Enemy\Action\BeastAction\8_Down</Filter>
     </ClInclude>
     <ClInclude Include="Beast_LongFrightening.h">
-      <Filter>Object\Character\Enemy\Action\BeastAction\9_LongFrightening</Filter>
+      <Filter>Object\Character\Enemy\Action\BeastAction\12_StepBack\9_LongFrightening</Filter>
     </ClInclude>
     <ClInclude Include="Beast_ShortFrightening.h">
       <Filter>Object\Character\Enemy\Action\BeastAction\10_ShortFrightening</Filter>
