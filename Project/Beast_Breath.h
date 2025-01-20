@@ -11,8 +11,9 @@ public:
 	 Beast_Breath();//コンストラクタ
 	~Beast_Breath();//デストラクタ
 
-	NodeState  Update()override;//更新
-	const void Draw  ()const;	//描画
+	void		Initialize	();			//初期化
+	NodeState	Update		()override;	//更新
+	const void	Draw		()const;	//描画
 private:
 	/*構造体*/
 	//アニメーションの段階

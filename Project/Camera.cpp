@@ -27,6 +27,7 @@ Camera::Camera()
 	, length	(0.0f)
 	, yow		(0.0f)
 	, pitch		(0.0f)
+	, BOSS_HEAD_FRAME_INDEX(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::CAMERA)["BOSS_HEAD_FRAME_INDEX"])
 {
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -161,21 +162,32 @@ void Camera::UpdateTarget()
 		this->nextTarget = this->titleTarget;
 		break;
 	case SceneChanger::SceneType::GAME:
-		if (player.GetHP() < 0 || !player.GetIsLockOn())
+		int playerHP = player.GetHP();
+		int enemyHP = enemy.GetHP();
+		if (playerHP <= 0 ||  enemyHP <= 0)
 		{
-			//注視点オフセット
-			this->nextTarget = VAdd(player.GetRigidbody().GetPosition(), this->targetOffset);
+			if (playerHP <= 0)
+			{
+				//注視点オフセット
+				this->nextTarget = VAdd(player.GetRigidbody().GetPosition(), this->targetOffset);
+			}
+			else
+			{
+				this->nextTarget = VAdd(MV1GetFramePosition(enemy.GetModelHandle(), this->BOSS_HEAD_FRAME_INDEX), this->targetOffset);
+			}
 		}
 		else
 		{
-			this->nextTarget = VAdd(enemy.GetRigidbody().GetPosition(), this->targetOffset);
+			if (!player.GetIsLockOn())
+			{
+				//注視点オフセット
+				this->nextTarget = VAdd(player.GetRigidbody().GetPosition(), this->targetOffset);
+			}
+			else
+			{
+				this->nextTarget = VAdd(enemy.GetRigidbody().GetPosition(), this->targetOffset);
+			}
 		}
-		break;
-	case SceneChanger::SceneType::GAME_OVER:
-		this->nextTarget = this->titleTarget;
-		break;
-	case SceneChanger::SceneType::GAME_CLEAR:
-		this->nextTarget = this->titleTarget;
 		break;
 	}
 
@@ -192,8 +204,8 @@ void Camera::UpdateAngle()
 	auto& input  = Singleton<InputManager>	::GetInstance();//インプットマネージャー
 
 	/*変数の準備*/
-	const int	X_BUF		= input.GetRStickState().XBuf;								//右スティック入力
-	const int	Y_BUF		= input.GetRStickState().YBuf;								//右スティック入力
+	const int X_BUF = input.GetRStickState().XBuf;//右スティック入力
+	const int Y_BUF = input.GetRStickState().YBuf;//右スティック入力
 
 	/*アングルの更新 Y+:down Y-:up X+:right X-:left*/
 	//スティック入力もキー入力もなければ
@@ -265,7 +277,7 @@ void Camera::UpdateLength()
 		minLength = this->titleMinLength;
 		break;
 	case SceneChanger::SceneType::GAME:
-		if (player.GetHP() < 0 || enemy.GetHP() < 0)
+		if (player.GetHP() <= 0 || enemy.GetHP() <= 0)
 		{
 			maxLength = this->deathMaxLength;
 			minLength = this->deathMinLength;
@@ -309,15 +321,28 @@ void Camera::UpdateVelocity()
 	switch (sceneChanger.GetNowSceneType())
 	{
 	case SceneChanger::SceneType::TITLE:
-		const VECTOR NOW_POSITION = this->collider->rigidbody.GetPosition();
+		const VECTOR NOW_POSITION	  = this->collider->rigidbody.GetPosition();
 		const VECTOR CAMERA_TO_TARGET = VNorm(VSub(this->nowTarget, NOW_POSITION));
-		const VECTOR MOVE_VELOCITY = VNorm(VCross(CAMERA_TO_TARGET, Gori::UP_VEC));
+		const VECTOR MOVE_VELOCITY	  = VNorm(VCross(CAMERA_TO_TARGET, Gori::UP_VEC));
 		nextPosition = VNorm(VAdd(NOW_POSITION, MOVE_VELOCITY));
 		nextPosition = VScale(nextPosition, this->length);
 		nextPosition.y = this->titlePositionOffset;
 		break;
 	case SceneChanger::SceneType::GAME:
-		if (player.GetIsLockOn())
+		if (player.GetHP() <= 0 || enemy.GetHP() <= 0)
+		{
+				  VECTOR nowTarget				= this->nowTarget;
+						 nowTarget.y			= 0.0f;
+			const VECTOR NOW_POSITION			= this->collider->rigidbody.GetPosition();
+			const VECTOR TARGET_TO_POSITION		= VNorm(VSub(NOW_POSITION, this->nowTarget));
+				  VECTOR newPosition			= VAdd(VScale(TARGET_TO_POSITION, this->length), this->nowTarget);
+						 newPosition.y			= 0.0f;
+			const VECTOR NEW_POSITION_TO_TARGET = VNorm(VSub(nowTarget, newPosition));
+			const VECTOR MOVE_VELOCITY			= VNorm(VCross(NEW_POSITION_TO_TARGET, Gori::UP_VEC));
+						 nextPosition			= VAdd(newPosition, MOVE_VELOCITY);
+						 nextPosition			= VAdd(nextPosition, this->positionOffset);
+		}
+		else if (player.GetIsLockOn())
 		{
 			const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));
 			nextPosition = VScale(ENEMY_TO_PLAYER, this->length);

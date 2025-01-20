@@ -93,14 +93,6 @@ void SceneManager::SceneChange()
 			delete(this->mainScene);
 			this->mainScene = new GameScene();
 			break;
-		case SceneChanger::SceneType::GAME_CLEAR:
-			delete(this->mainScene);
-			this->mainScene = new GameClearScene();
-			break;
-		case SceneChanger::SceneType::GAME_OVER:
-			delete(this->mainScene);
-			this->mainScene = new GameOverScene();
-			break;
 		}
 		changer.SynchroScene();
 	}

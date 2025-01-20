@@ -111,8 +111,8 @@ void Player::Initialize()
 	this->healCount			= json.GetJson(JsonManager::FileType::PLAYER)["MAX_HEAL_ORB_NUM"];
 	this->frameTime			= 0;
 	this->isDrawSword		= true;
-	this->isPrevPushLS = false;
-	
+	this->isPrevPushLS		= false;
+	this->isLock			= false;
 	/*コライダーの初期化*/
 	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_POSITION"]);//座標
 	const VECTOR SCALE	  = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["INIT_SCALE"]);	//拡大率

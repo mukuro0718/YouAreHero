@@ -137,20 +137,12 @@ void BossIdleAction::CalcParameter(const Boss& _boss)
 	if (_boss.GetAttackComboCount() == 0)
 	{
 		int nowAngryState = _boss.GetAngryState();
-		if (nowAngryState != static_cast<int>(Boss::BossState::TIRED))
+		if (nowAngryState == static_cast<int>(Boss::BossState::NORMAL))
 		{
 			this->parameter->desireValue = this->maxDesireValue;
-			this->isPriority = true;
-			this->isChangeColorScale = true;
+			this->isPriority			 = true;
+			this->isChangeColorScale	 = true;
 			this->isInitializeColorScale = false;
-			if (nowAngryState == static_cast<int>(Boss::BossState::ANGRY))
-			{
-				this->maxFrameCount = this->ANGRY_MAX_ANGRY_FRAME_COUNT;
-			}
-			else if (nowAngryState == static_cast<int>(Boss::BossState::NORMAL))
-			{
-				this->maxFrameCount = this->NORMAL_MAX_ANGRY_FRAME_COUNT;
-			}
 		}
 	}
 }

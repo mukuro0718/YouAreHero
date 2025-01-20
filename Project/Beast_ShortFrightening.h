@@ -12,7 +12,7 @@ public:
 
 	NodeState Update()override;//更新
 private:
-	/*構造体*/
+	/*列挙体*/
 	//アニメーションの段階
 	enum class AnimationStage
 	{

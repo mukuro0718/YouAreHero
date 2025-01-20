@@ -20,29 +20,29 @@
 /// コンストラクタ
 /// </summary>
 BossStabAction::BossStabAction()
-	: isClose(false)
+	: isClose			(false)
+	, ATTACK_TYPE		(static_cast<int>(Boss::AttackType::STAB))
+	, HIT_STOP_DELAY	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][this->ATTACK_TYPE])
+	, HIT_STOP_TYPE		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][this->ATTACK_TYPE])
+	, HIT_STOP_TIME		(static_cast<int>(HitStop::Type::STOP))
+	, SLOW_FACTOR		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][this->ATTACK_TYPE])
+	, ROTATE_FIX_COUNT	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["ROTATION_FIX_COUNT"])
+	, ROTATE_PLAY_TIME	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["STAB_ROTATE_PLAY_TIME"])
+	, MOVE_PLAY_TIME	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["STAB_MOVE_PLAY_TIME"])
+	, STOP_PLAY_TIME	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["STAB_STOP_PLAY_TIME"])
+	, STOP_DISTANCE		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["STAB_STOP_MOVE_DISTANCE"])
+	, ROTATE_LERP_VALUE	(Gori::Convert(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]))
+	, MAX_INTERVAL		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["STAB_INTERVAL"])
+	, SLOW_PLAY_TIME	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["STAB_SLOW_PLAY_TIME"])
+	, MIN_ACTION_DISTANCE(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["NEAR_DISTANCE"])
+	, MAX_ACTION_DISTANCE(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["MIDDLE_DISTANCE"])
+	, SLOW_LIMIT_TIME(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::ENEMY)["STAB_SLOW_LIMIT_TIME"])
+	, CHECK_STATE	(static_cast<int>(Boss::BossState::ANGRY))
 {
 	this->attack			= new BossStabAttack(static_cast<int>(BossAttack::AttackType::STAB));
 	auto& json				= Singleton<JsonManager>::GetInstance();
-	const int ATTACK_TYPE	= static_cast<int>(Boss::AttackType::STAB);
-	this->hitStopTime		= json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_TIME"][ATTACK_TYPE];
-	this->hitStopType		= static_cast<int>(HitStop::Type::STOP);
-	this->hitStopDelay		= json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_HIT_STOP_DELAY"][ATTACK_TYPE];
-	this->slowFactor		= json.GetJson(JsonManager::FileType::ENEMY)["OFFENSE_SLOW_FACTOR"][ATTACK_TYPE];
-	this->moveFrame			= json.GetJson(JsonManager::FileType::ENEMY)["STAB_MOVE_FRAME"];
-	this->stopFrame			= json.GetJson(JsonManager::FileType::ENEMY)["STAB_STOP_FRAME"];
-	this->rotateFrame		= json.GetJson(JsonManager::FileType::ENEMY)["STAB_ROTATE_FRAME"];
-	this->rotateFixFrame	= json.GetJson(JsonManager::FileType::ENEMY)["ROTATION_FIX_COUNT"];
-	this->homingFrame		= json.GetJson(JsonManager::FileType::ENEMY)["STAB_HOMING_FRAME"];
-	this->rotateLerpValue	= Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["ROTATE_LERP_VALUE"]);
-	this->stopDistance		= json.GetJson(JsonManager::FileType::ENEMY)["STAB_STOP_MOVE_DISTANCE"];
 	this->speed				= json.GetJson(JsonManager::FileType::ENEMY)["STAB_MOVE_SPEED"];
 	this->nextAnimation		= static_cast<int>(Boss::AnimationType::STAB);
-	this->slowPlayTime		= json.GetJson(JsonManager::FileType::ENEMY)["STAB_SLOW_PLAY_TIME"];
-	this->maxInterval		= json.GetJson(JsonManager::FileType::ENEMY)["STAB_INTERVAL"];
-	this->actionDistance	= json.GetJson(JsonManager::FileType::ENEMY)["ACTION_DISTANCE"][ATTACK_TYPE];
-	this->normalDisireValue = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DESIRE_VALUE"];
-	this->checkState		= static_cast<int>(Boss::BossState::ANGRY);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 }
 
@@ -63,6 +63,7 @@ void BossStabAction::Initialize()
 	this->isClose				 = false;
 	this->isAllowAction			 = false;
 	this->frameCount			 = 0;
+	this->nowTotalAnimPlayTime	 = 0.0f;
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
 	this->attack->Initialize();
@@ -80,144 +81,132 @@ void BossStabAction::Update(Boss& _boss)
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	
-
-	/*攻撃準備*/
+	/*初期化されていなかったら初期化*/
+	if (!this->isInitialize)
 	{
-		//初期化されていなかったら
-		if (!this->isInitialize)
-		{
-			//攻撃タイプの設定
-			_boss.SetAttackType(Boss::AttackType::STAB);
-			//攻撃フラグを立てる
-			this->attack->OnIsStart();
-			//初期化フラグを立てる
-			this->isInitialize = true;
-			//アニメーションの設定
-			_boss.SetNowAnimation(this->nextAnimation);
-		}
+		//攻撃タイプの設定
+		_boss.SetAttackType(Boss::AttackType::STAB);
+		//攻撃フラグを立てる
+		this->attack->OnIsStart();
+		//初期化フラグを立てる
+		this->isInitialize = true;
+		//アニメーションの設定
+		_boss.SetNowAnimation(this->nextAnimation);
 	}
 
 	/*ヒットストップの更新*/
+	//攻撃が当たっていたら
+	if (this->attack->GetIsHitAttack())
 	{
-		//攻撃が当たっていたら
-		if (this->attack->GetIsHitAttack())
-		{
-			//攻撃の種類
-			//ヒットストップの設定
-			this->hitStop->SetHitStop(this->hitStopTime, this->hitStopType, this->hitStopDelay, this->slowFactor);
-			//攻撃ヒットフラグを下す
-			this->attack->OffIsHitAttack();
-		}
-		//ヒットストップ中だったら早期リターン
-		if (this->hitStop->IsHitStop()) return;
+		//ヒットストップの設定
+		this->hitStop->SetHitStop(this->HIT_STOP_TIME, this->HIT_STOP_TYPE, this->HIT_STOP_DELAY, this->SLOW_FACTOR);
+		//攻撃ヒットフラグを下す
+		this->attack->OffIsHitAttack();
+	}
+	//ヒットストップ中だったら早期リターン
+	if (this->hitStop->IsHitStop()) return;
+
+	/*フレームカウントが回転定数以上だったら許可フラグを立てる*/
+	this->frameCount++;
+	if (this->frameCount > this->ROTATE_FIX_COUNT)
+	{
+		this->isAllowAction = true;
+	}
+	else
+	{
+		this->moveTarget = player.GetRigidbody().GetPosition();
 	}
 
-	/*カウントの計測*/
-	this->frameCount++;
+	/*現在のアニメーション再生時間によってフラグを決める*/
 	bool isRotation = false;	//回転するか
 	bool isMove		= false;	//移動するか
-	bool isStop		= false;	//停止するか
+	//再生時間が定数以内なら移動フラグを立てる
+	if (this->nowTotalAnimPlayTime < this->MOVE_PLAY_TIME)
 	{
-		//フレームカウントが定数未満だったら許可フラグを立てる
-		if (this->frameCount > this->rotateFixFrame)
-		{
-			this->isAllowAction = true;
-		}
-		//フレームカウントが定数以内なら移動フラグを立てる
-		if (this->frameCount < this->moveFrame)
-		{
-			isMove = true;
-		}
-		//フレームカウントが定数以内なら移動フラグを立てる
-		else if (this->frameCount >= this->stopFrame)
-		{
-			isStop = true;
-		}
-		//フレームカウントが定数以内なら回転フラグを立てる
-		if (this->frameCount < this->rotateFrame)
-		{
-			isRotation = true;
-		}
-		//フレームカウントが定数以内なら移動目標を更新する
-		if (this->frameCount < this->homingFrame)
-		{
-			this->moveTarget = player.GetRigidbody().GetPosition();
-		}
+		isMove = true;
+	}
+	//再生時間が定数以内なら移動フラグを立てる
+	else if (this->nowTotalAnimPlayTime >= this->STOP_PLAY_TIME)
+	{
+		isMove = false;
+	}
+	//再生時間が定数以内なら回転フラグを立てる
+	if (this->nowTotalAnimPlayTime < this->ROTATE_PLAY_TIME)
+	{
+		isRotation = true;
 	}
 
 	/*移動処理*/
+	//使用する値の準備
+	const VECTOR POSITION	 = _boss.GetRigidbody().GetPosition();	//座標
+		  VECTOR nowRotation = _boss.GetRigidbody().GetRotation();	//回転率
+		  VECTOR toTarget	 = VSub(POSITION, this->moveTarget);	//座標と移動目標間のベクトル
+		  VECTOR direction	 = VGet(0.0f, 0.0f, 0.0f);				//向き
+		  float  speed		 = 0.0f;								//移動スピードの設定
+	//回転処理
+	if (isRotation)
 	{
-		//使用する値の準備
-		const VECTOR POSITION	 = _boss.GetRigidbody().GetPosition();	//座標
-			  VECTOR nowRotation = _boss.GetRigidbody().GetRotation();	//回転率
-			  VECTOR toTarget	 = VSub(POSITION, this->moveTarget);	//座標と移動目標間のベクトル
-			  VECTOR direction	 = VGet(0.0f, 0.0f, 0.0f);				//向き
-			  float  speed		 = 0.0f;								//移動スピードの設定
-		//回転処理
+		//回転率を補完する
+		nowRotation = GetLerpRotation(_boss, toTarget, nowRotation, this->ROTATE_LERP_VALUE);
+		//回転率を設定
+		_boss.SetRotation(nowRotation);
+	}
+	//アクション許可フラグが立っていなければ早期リターン
+	if (!this->isAllowAction)return;
+	//移動速度の設定
+	//一度でも近づいていない＆＆移動フラグが立っていなかったら
+	if (!this->isClose && isMove)
+	{
+		//座標と移動目標との距離を求める
+		const float DISTANCE = VSize(toTarget);
+		//距離が定数以上か
+		if (DISTANCE >= this->STOP_DISTANCE)
 		{
-			if (isRotation)
-			{
-				//回転率を補完する
-				nowRotation = GetLerpRotation(_boss, toTarget, nowRotation, this->rotateLerpValue);
-				//回転率を設定
-				_boss.SetRotation(nowRotation);
-			}
+			speed = this->speed;
 		}
-		//アクション許可フラグが立っていなければ早期リターン
-		if (!this->isAllowAction)return;
-		//移動速度の設定
+		else
 		{
-			//一度でも近づいていない＆＆移動フラグが立っていなかったら
-			if (!this->isClose && !isMove && !isStop)
-			{
-				//座標と移動目標との距離を求める
-				const float DISTANCE = VSize(toTarget);
-				//距離が定数以上か
-				if (DISTANCE >= this->stopDistance)
-				{
-					speed = this->speed;
-				}
-				else
-				{
-					//近づいたフラグを立てる
-					this->isClose = true;
-				}
-			}
-		}
-		//移動ベクトルの設定
-		{
-			//移動目標の設定
-			_boss.SetNowMoveTarget(this->moveTarget);
-			//新しい移動ベクトルの算出
-			VECTOR newVelocity = CalcVelocity(_boss.GetRigidbody().GetVelocity(), nowRotation, speed);
-			//移動ベクトルの設定
-			_boss.SetVelocity(newVelocity);
+			//近づいたフラグを立てる
+			this->isClose = true;
 		}
 	}
+	//移動ベクトルの設定
+	//移動目標の設定
+	_boss.SetNowMoveTarget(this->moveTarget);
+	//新しい移動ベクトルの算出
+	VECTOR newVelocity = CalcVelocity(_boss.GetRigidbody().GetVelocity(), nowRotation, speed);
+	//移動ベクトルの設定
+	_boss.SetVelocity(newVelocity);
 
 	/*アニメーション処理*/
+	float playTime = 0.0f;
+	if (this->nowTotalAnimPlayTime <= this->SLOW_LIMIT_TIME)
 	{
-		//アニメーション再生時間
-		float animationPlayTime = this->animationPlayTime;
-		//カウントが終了していなければアニメーション再生速度を遅くする
-		if (isMove)
-		{
-			animationPlayTime = this->slowPlayTime;
-		}
-		_boss.SetAnimationPlayTime(animationPlayTime);
-		/*アニメーションの再生*/
-		_boss.PlayAnimation();
+		playTime = this->SLOW_PLAY_TIME;
 	}
+	else
+	{
+		playTime = this->animationPlayTime;
+	}
+	this->nowTotalAnimPlayTime += playTime;
+	_boss.SetAnimationPlayTime(playTime);
+	//アニメーションの再生
+	_boss.PlayAnimation();
 
 	/*攻撃判定の更新*/
-	this->attack->Update(0.0f);
+	this->attack->Update(this->nowTotalAnimPlayTime);
 
 	/*終了判定*/
+	//アニメーションが終了していたら
 	if (_boss.GetIsChangeAnimation())
 	{
+		//各フラグを下す
 		this->isInitialize = false;
 		this->isClose = false;
-		OffIsSelect(this->maxInterval);
+		this->nowTotalAnimPlayTime = 0.0f;
+		//その他変数の初期化とインターバルのセット
+		OffIsSelect(this->MAX_INTERVAL);
+		//コンボ数を減らす
 		_boss.DecAttackComboCount();
 	}
 }
@@ -226,35 +215,23 @@ void BossStabAction::Update(Boss& _boss)
 /// </summary>
 void BossStabAction::CalcParameter(const Boss& _boss)
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& player = Singleton<PlayerManager>::GetInstance();
-
-	/*距離を求める*/
-	const VECTOR POSITION			= _boss.GetRigidbody().GetPosition();	//座標
-	const VECTOR MOVE_TARGET		= player.GetRigidbody().GetPosition();	//移動目標
-	const VECTOR POSITION_TO_TARGET = VSub(POSITION, MOVE_TARGET);			//目標から現在の移動目標へのベクトル
-	const float  DISTANCE			= VSize(POSITION_TO_TARGET);			//距離
-
 	this->parameter->desireValue = 0;
 
-	/*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
-	if (_boss.GetHP() <= 0)
-	{
-		return;
-	}
-
 	/*状態がANGRYだったら欲求値を増加する*/
-	else if (_boss.GetAngryState() >= this->checkState)
+	if (_boss.GetAngryState() == this->CHECK_STATE)
 	{
+		/*距離を求める*/
+		auto& player = Singleton<PlayerManager>::GetInstance();
+		const VECTOR POSITION			= _boss.GetRigidbody().GetPosition();	//座標
+		const VECTOR MOVE_TARGET		= player.GetRigidbody().GetPosition();	//移動目標
+		const VECTOR POSITION_TO_TARGET = VSub(POSITION, MOVE_TARGET);			//目標から現在の移動目標へのベクトル
+		const float  DISTANCE			= VSize(POSITION_TO_TARGET);			//距離
 		/*もしボスとプレイヤーの間が定数以内なら欲求値を倍増させる*/
-		if (DISTANCE >= actionDistance)
+		if (this->MIN_ACTION_DISTANCE <= DISTANCE && DISTANCE <= this->MAX_ACTION_DISTANCE)
 		{
-			Boss::AttackType type = _boss.GetPrevAttackType();
 			//コンボ数が残っていたら
-			if (_boss.GetAttackComboCount() != 0)
-			{
-				this->parameter->desireValue = this->normalDisireValue;
-			}
+			if (_boss.GetAttackComboCount() == 0)return;
+			this->parameter->desireValue = this->maxDesireValue;
 		}
 	}
 }

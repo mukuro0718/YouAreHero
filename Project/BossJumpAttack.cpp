@@ -42,10 +42,11 @@ BossJumpAttack::BossJumpAttack(const int _attackIndex)
 	collider.data->slowFactor	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
 	collider.data->isHitAttack	= false;
 
-	this->startHitCheckFrame = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_FRAME"][this->attackIndex];
-	this->endHitCheckFrame	 = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"][this->attackIndex];
+	this->startHitCheckFrame = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_PLAY_TIME"][this->attackIndex];
+	this->endHitCheckFrame	 = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_PLAY_TIME"][this->attackIndex];
 	this->positionOffset	 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"][this->attackIndex];
 	this->yOffset			 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"][this->attackIndex];
+	this->totalAnimPlayTime  = json.GetJson(JsonManager::FileType::ENEMY)["TOTAL_ANIMATION_PLAY_TIME"][this->attackIndex];
 
 }
 
@@ -84,10 +85,8 @@ void BossJumpAttack::Update(const float _playTime)
 	{
 		auto& enemy = Singleton<EnemyManager>::GetInstance();
 		auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-		//フレームを増やす
-		this->frameCount++;
-		//フレームが定数を超えていなかったら早期リターン
-		if (this->frameCount < this->startHitCheckFrame)return;
+		//再生時間が定数を超えていなかったら早期リターン
+		if (_playTime < this->startHitCheckFrame)return;
 
 		//今回の攻撃中に当たり判定フラグが一度もたっていなかったら
 		if (!this->isNotOnHit)
@@ -110,8 +109,8 @@ void BossJumpAttack::Update(const float _playTime)
 		//爪先の座標をカプセル上座標とする
 		collider.topPositon = headPosition;
 
-		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
-		if (this->frameCount > this->endHitCheckFrame || (this->isNotOnHit && !collider.data->isDoHitCheck))
+		//再生時間が定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
+		if (_playTime > this->endHitCheckFrame)
 		{
 			this->isStartHitCheck = false;
 			collider.data->isDoHitCheck = false;

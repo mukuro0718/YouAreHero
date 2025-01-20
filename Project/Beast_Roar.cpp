@@ -52,6 +52,8 @@ Beast_Roar::NodeState Beast_Roar::Update()
 		//アクションの状態をセット
 		auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 		rootNode.SetSelectAction(this->actionType);
+		//アクションの登録
+		rootNode.EntryCurrentBattleAction(*this);
 		this->isInitialize = true;
 	}
 	//アニメーションの再生
@@ -71,6 +73,8 @@ Beast_Roar::NodeState Beast_Roar::Update()
 		{
 			auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 			rootNode.SetBeastState(BeastBehaviorTree::BeastState::ANGRY);
+			//アクションの解除
+			rootNode.ExitCurrentBattleAction();
 			this->isInitialize = false;
 			return ActionNode::NodeState::SUCCESS;
 		}

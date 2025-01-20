@@ -69,6 +69,15 @@ Beast_SuperNova::~Beast_SuperNova()
 {
 
 }
+/// <summary>
+/// ‰Šú‰»
+/// </summary>
+void Beast_SuperNova::Initialize()
+{
+	this->frameCount  = 0;
+	this->isFixRotate = false;
+	this->stage		  = AnimationStage::START;
+}
 
 /// <summary>
 /// XVˆ—

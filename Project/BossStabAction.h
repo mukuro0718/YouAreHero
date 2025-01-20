@@ -16,23 +16,27 @@ public:
 	void CalcParameter(const Boss& _boss) override;//パラメーターの計算
 
 private:
+	/*定数*/
+	const int	 ATTACK_TYPE;		 //攻撃の種類
+	const float  HIT_STOP_DELAY;	 //ヒットストップディレイ
+	const float	 HIT_STOP_TIME;		 //ヒットストップ時間
+	const int	 HIT_STOP_TYPE;		 //ヒットストップの種類
+	const float	 SLOW_FACTOR;		 //スロー係数
+	const short	 ROTATE_FIX_COUNT;	 //回転補正用
+	const short	 ROTATE_PLAY_TIME;	 //回転補正用
+	const short	 MOVE_PLAY_TIME;	 //移動用
+	const short	 STOP_PLAY_TIME;	 //停止用
+	const float	 STOP_DISTANCE;		 //停止する距離
+	const VECTOR ROTATE_LERP_VALUE;	 //回転補正量
+	const short  MAX_INTERVAL;		 //最大インターバル
+	const float	 SLOW_PLAY_TIME;	 //スロー中の再生時間
+	const float	 MIN_ACTION_DISTANCE;//アクションが可能になる距離
+	const float	 MAX_ACTION_DISTANCE;//アクションが可能になる距離
+	const short	 CHECK_STATE;		 //どの状態で確認するか
+	const float	 SLOW_LIMIT_TIME;	 //アニメーションを遅くする最大時間
+
+	/*メンバ変数*/
 	bool	isClose;			//近づいたか
-	float	hitStopTime;		//ヒットストップ時間
-	int		hitStopDelay;		//ヒットストップディレイ
-	int		hitStopType;		//ヒットストップの種類
-	float	slowFactor;			//スロー係数
-	short	rotateFixFrame;		//回転補正用
-	short	moveFrame;			//移動用
-	short	stopFrame;			//停止用
-	short	rotateFrame;		//回転用
-	short	homingFrame;		//追跡用
-	float	stopDistance;		//停止する距離
-	VECTOR	rotateLerpValue;	//回転補正量
 	float	speed;				//速度
-	float	slowPlayTime;		//スロー中の再生時間
-	short	maxInterval;		//最大インターバル
-	float	actionDistance;		//アクションが可能になる距離
-	short	normalDisireValue;	//最大欲求値
-	short	checkState;			//どの状態で確認するか
 };
 

@@ -14,6 +14,19 @@ public:
 
 	NodeState Update()override;//更新
 private:
+	/*列挙体*/
+	//アニメーションの段階
+	enum class AnimationStage
+	{
+		START,
+		LOOP,
+		END,
+	};
+
+	/*メンバ変数*/
+	AnimationStage							 stage;			//アニメーションの段階
+	std::map<AnimationStage, int>			 animationSet;	//アニメーションのセット
+	std::map<AnimationStage, AnimationStage> nextStageSet;	//次のステージのセット
 	bool isInitialize;//初期化したか
 };
 

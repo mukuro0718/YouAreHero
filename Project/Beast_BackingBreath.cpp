@@ -45,7 +45,7 @@ Beast_BackingBreath::Beast_BackingBreath()
 	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
 	this->collider->radius				= json.GetJson(JsonManager::FileType::BEAST)["BACKING_BREATH_RADIUS"];
 	this->collider->data->damage		= json.GetJson(JsonManager::FileType::BEAST)["BACKING_BREATH_DAMAGE"];
-	this->collider->data->reactionType	= static_cast<int>(Gori::PlayerReactionType::NORMAL);
+	this->collider->data->reactionType	= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
 	this->collider->data->hitStopTime	= json.GetJson(JsonManager::FileType::BEAST)["BACKING_BREATH_HIT_STOP_TIME"];
 	this->collider->data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
 	this->collider->data->hitStopDelay	= json.GetJson(JsonManager::FileType::BEAST)["BACKING_BREATH_HIT_STOP_DELAY"];
@@ -60,6 +60,14 @@ Beast_BackingBreath::Beast_BackingBreath()
 Beast_BackingBreath::~Beast_BackingBreath()
 {
 
+}
+/// <summary>
+/// 初期化
+/// </summary>
+void Beast_BackingBreath::Initialize()
+{
+	this->frameCount = 0;
+	this->isFixRotate = false;
 }
 
 /// <summary>
@@ -127,8 +135,6 @@ Beast_BackingBreath::NodeState Beast_BackingBreath::Update()
 	//アニメーションが終了していたら
 	if (enemy.GetIsChangeAnimation())
 	{
-		//ボスを怒り状態にする
-		rootNode.SetBeastState(BeastBehaviorTree::BeastState::ANGRY);
 		//インターバルの設定
 		rootNode.SetInterval(this->actionType, this->interval);
 		//アクションの解除

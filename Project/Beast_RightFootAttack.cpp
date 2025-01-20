@@ -61,6 +61,14 @@ Beast_RightFootAttack::~Beast_RightFootAttack()
 {
 
 }
+/// <summary>
+/// ‰Šú‰»
+/// </summary>
+void Beast_RightFootAttack::Initialize()
+{
+	this->frameCount  = 0;
+	this->isFixRotate = false;
+}
 
 /// <summary>
 /// XVˆ—

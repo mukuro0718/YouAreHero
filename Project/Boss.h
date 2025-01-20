@@ -26,36 +26,36 @@ public:
 	//アニメーション
 	enum class AnimationType
 	{
-		 DYING			= 0, //デス
-		 IDLE			= 1, //待機
-		 ROAR			= 2, //咆哮
-		 WALK			= 3, //歩き
-		 WALK_LEFT		= 4, //歩き
-		 WALK_RIGHT		= 5, //歩き
+		 DYING			= 0, //デス1
+		 IDLE			= 1, //待機0
+		 ROAR			= 2, //咆哮14
+		 WALK			= 3, //歩き2
+		 WALK_LEFT		= 4, //歩き3
+		 WALK_RIGHT		= 5, //歩き4
 
-		 SLASH_1		= 6, //スラッシュ
-		 SLASH_2		= 7, //スラッシュ
-		 STAB			= 8, //突き刺し攻撃
-		 ROTATE_SLASH	= 9, //回転スラッシュ
-		 PUNCH			= 10,//パンチ
-		 SLASH_COMBO_1	= 11,//スラッシュコンボ１
-		 SLASH_COMBO_2	= 12,//スラッシュコンボ２
-		 JUMP_ATTACK	= 13,//ジャンプアタック
-		 DOWN			= 14,//ダウン
-		 DOWN_UP		= 15 //ダウンから起き上がる
+		 SLASH_1		= 6, //スラッシュ10
+		 SLASH_2		= 7, //スラッシュ5
+		 STAB			= 8, //突き刺し攻撃11
+		 ROTATE_SLASH	= 9, //回転スラッシュ7
+		 PUNCH			= 10,//パンチ6
+		 SLASH_COMBO_1	= 11,//スラッシュコンボ１8
+		 SLASH_COMBO_2	= 12,//スラッシュコンボ２9
+		 JUMP_ATTACK	= 13,//ジャンプアタック15
+		 DOWN			= 14,//ダウン16
+		 DOWN_UP		= 15 //ダウンから起き上がる17
 	};
 	//攻撃の種類
 	enum class AttackType
 	{
 		NONE		  = -1,
-		SLASH_1		  = 0, //スラッシュ
-		SLASH_2		  = 1, //スラッシュ
-		STAB		  = 2, //突き刺し攻撃
-		ROTATE_SLASH  = 3, //回転スラッシュ
-		PUNCH		  = 4,//パンチ
-		SLASH_COMBO_1 = 5,//スラッシュコンボ１
-		SLASH_COMBO_2 = 6,//スラッシュコンボ２
-		JUMP_ATTACK	  = 7,//ジャンプアタック
+		SLASH_1		  = 0, //スラッシュ 10
+		SLASH_2		  = 1, //スラッシュ 5
+		STAB		  = 2, //突き刺し攻撃 11
+		ROTATE_SLASH  = 3, //回転スラッシュ 7
+		PUNCH		  = 4,//パンチ 6
+		SLASH_COMBO_1 = 5,//スラッシュコンボ１ 8
+		SLASH_COMBO_2 = 6,//スラッシュコンボ２ 9
+		JUMP_ATTACK	  = 7,//ジャンプアタック 15
 	};
 	//怒り状態の種類
 	enum class BossState

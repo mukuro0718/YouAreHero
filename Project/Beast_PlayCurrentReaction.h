@@ -10,6 +10,7 @@ public:
 	 Beast_PlayCurrentReaction();//コンストラクタ
 	~Beast_PlayCurrentReaction();//デストラクタ
 
-	NodeState Update()override;//更新
+	void		Initialize	();			//初期化
+	NodeState	Update		()override;	//更新
 };
 

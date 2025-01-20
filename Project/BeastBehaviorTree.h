@@ -14,8 +14,9 @@ public:
 	//キャラクターの状態
 	enum class BeastState
 	{
-		ANGRY		= 0,
-		NORMAL		= 1,
+		ANGRY	= 0,
+		NORMAL	= 1,
+		DOWN	= 2,
 	};
 
 	enum class ActionType
@@ -53,12 +54,13 @@ public:
 		Lv3 = 2,
 		Lv4 = 3,
 	};
-	void Initialize	();//初期化
-	void Update		();//更新
-	const void Draw()const;//描画
+		  void Initialize	();		//初期化
+		  void Update		();		//更新
+	const void Draw			()const;//描画
 
 	/*getter/setter*/
 	const int		 GetDownValue				()const				{ return this->downValue; }					 	 //ダウン値の取得
+	const int		 GetAngryValue				()const				{ return this->angryValue; }					 //怒り値の取得
 	const int		 GetDamage					()const				{ return this->damage; }						 //ダメージの取得
 	const int		 GetPrevHp					()const				{ return this->prevHp; }						 //前フレームのHPの取得
 	const BeastState GetBeastState				()const				{ return this->state; }							 //ボスの状態を取得
@@ -89,15 +91,18 @@ public:
 	BehaviorTreeNode& GetReaction()  { return *this->currentReaction; }
 private:
 	/*内部処理関数*/
-	 BeastBehaviorTree();//コンストラクタ
-	~BeastBehaviorTree();//デストラクタ
+		  BeastBehaviorTree	  ();//コンストラクタ
+		 ~BeastBehaviorTree	  ();//デストラクタ
 	void UpdateMemberVariables();//メンバ変数の更新
+	void ChangeState		  ();//状態の変更
+
 	/*メンバ変数*/
 	std::array<int, static_cast<int>(ActionType::COMBO_ATTACK) + 1>	intervalSet;							//インターバル
 	BehaviorTreeNode*												Selector_DeathOrReactionOrBattleOrBreak;//ビヘイビアツリーのrootノード
 	BeastState														state;									//ボスの状態
 	BehaviorTreeNode::NodeState										prevNodeState;							//前のノード状態
 	int																downValue;								//ダウン値
+	int																angryValue;								//怒り値
 	int																prevHp;									//前フレームのHP
 	int																damage;									//今までに受けたダメージ量（怒り状態が終了すると０にリセットする）
 	int																level;									//レベル

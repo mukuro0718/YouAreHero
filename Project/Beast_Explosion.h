@@ -11,8 +11,9 @@ public:
 	 Beast_Explosion();//コンストラクタ
 	~Beast_Explosion();//デストラクタ
 
-	NodeState Update()override;//更新
-	const void Draw()const;	//描画
+	void		Initialize	();			//初期化
+	NodeState	Update		()override;	//更新
+	const void	Draw		()const;	//描画
 private:
 	short						effectStartCount;				//エフェクト開始フレーム
 	short						attackStartCount;				//攻撃開始フレーム

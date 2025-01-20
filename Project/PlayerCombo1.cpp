@@ -23,7 +23,7 @@ PlayerCombo1::PlayerCombo1()
 	, FIRST_PLAY_TIME			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_START_ANIM_PLAY_TIME"])
 	, CANCELABLE_PLAY_TIME		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_CANCEL_PLAY_TIME"])
 	, START_HIT_CHECK_PLAY_TIME	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_START_HIT_CHECK_PLAY_TIME"])
-	, END_HIT_CHECK_PLAY_TIME(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_END_HIT_CHECK_PLAY_TIME"])
+	, END_HIT_CHECK_PLAY_TIME	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_END_HIT_CHECK_PLAY_TIME"])
 	, POSITION_OFFSET			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET"])
 	, Y_OFFSET					(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"])
 	, HIT_STOP_TIME				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_HIT_STOP_TIME"])
@@ -89,11 +89,11 @@ void PlayerCombo1::Update(Player& _player)
 	if (this->frameCount < 10)
 	{
 		auto& enemy = Singleton<EnemyManager>::GetInstance();
-		VECTOR nextRotation = Gori::ORIGIN;
-		VECTOR enemyPosition = enemy.GetRigidbody().GetPosition();
-		VECTOR positionToEnemy = VSub(_player.GetRigidbody().GetPosition(), enemyPosition);
-		nextRotation.y = static_cast<float>(atan2(static_cast<double>(positionToEnemy.x), static_cast<double>(positionToEnemy.z)));
-		nowRotation = Gori::LerpAngle(nowRotation, nextRotation, this->rotateLerpValue);
+		VECTOR	nextRotation	= Gori::ORIGIN;
+		VECTOR	enemyPosition	= enemy.GetRigidbody().GetPosition();
+		VECTOR	positionToEnemy = VSub(_player.GetRigidbody().GetPosition(), enemyPosition);
+				nextRotation.y	= static_cast<float>(atan2(static_cast<double>(positionToEnemy.x), static_cast<double>(positionToEnemy.z)));
+				nowRotation		= Gori::LerpAngle(nowRotation, nextRotation, this->rotateLerpValue);
 		_player.SetRotation(nowRotation, nextRotation);
 
 	}

@@ -70,6 +70,15 @@ Beast_FootComboAttack::~Beast_FootComboAttack()
 {
 
 }
+/// <summary>
+/// ‰Šú‰»
+/// </summary>
+void Beast_FootComboAttack::Initialize()
+{
+	this->frameCount  = 0;
+	this->attackCount = 0;
+	this->isFixRotate = false;
+}
 
 /// <summary>
 /// XVˆ—

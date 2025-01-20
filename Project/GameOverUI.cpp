@@ -2,38 +2,27 @@
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "SceneBase.h"
-#include "Image.h"
-#include "SceneUI.h"
 #include "GameOverUI.h"
-#include "Character.h"
-#include "Player.h"
-#include "PlayerManager.h"
-#include "EnemyManager.h"
-#include "CameraManager.h"
-#include "MapManager.h"
-#include "UIManager.h"
-#include "InputManager.h"
 #include "LoadingAsset.h"
+#include "VECTORtoUseful.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 GameOverUI::GameOverUI()
-	: isPrevPressButton	(false)
-	, isContinue		(false)
-	, isEnd				(false)
-	, type				(-1)
-	, imageHandle		(-1)
-	, fontHandle		(-1)
+	: FIRST_LOGO_RATE						(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_OVER_FIRST_LOGO_RATE"])
+	, TARGET_LOGO_RATE_FOR_FADE_IN			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_OVER_TARGET_LOGO_RATE_FOR_FADE_IN"	])
+	, LERP_VALUE_FOR_REDUCTION				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_OVER_LERP_VALUE_FOR_REDUCTION"	])
+	, WAIT_TIME_BEFORE_START_FADE_IN		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_OVER_WAIT_TIME_BEFORE_START_FADE_IN"])
+	, WAIT_TIME_BEFORE_START_FADE_OUT		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_OVER_WAIT_TIME_BEFORE_START_FADE_OUT"])
+	, INCREASED_ALPHA_FOR_LOGO_FADE_IN		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_OVER_INCREASED_ALPHA_FOR_LOGO_FADE_IN"])
+	, REDUCTION_ALPHA_FOR_LOGO_FADE_OUT		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_OVER_REDUCTION_ALPHA_FOR_LOGO_FADE_OUT"])
+	, POSITION_X							(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_OVER_FIRST_POSITION_X"])
+	, FIRST_POSITION_Y						(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_OVER_FIRST_POSITION_Y"])
+	, POSITION_Y_FOR_FADE_OUT_MAGNIFICATION	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_OVER_POSITION_Y_FOR_FADE_OUT_MAGNIFICATION"])
 {
-	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
-
-	/*画像クラスインスタンスの作成*/
-	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
-
-	/*fontHandleの取得*/
-	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_80_64);
+	this->questFailedLogo = asset.GetImage(LoadingAsset::ImageType::QUEST_FAILED);
 }
 
 /// <summary>
@@ -48,45 +37,66 @@ GameOverUI::~GameOverUI()
 /// </summary>
 void GameOverUI::Initialize()
 {
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = Singleton<JsonManager>	 ::GetInstance();
-	auto& player = Singleton<PlayerManager>	 ::GetInstance();
-	auto& enemy = Singleton<EnemyManager>	 ::GetInstance();
-
-	this->alpha				= 0;
-	this->isContinue		= false;
-	this->isPrevPressButton = false;
-	this->type				= 0;
+	this->logoRate				= this->FIRST_LOGO_RATE;
+	this->logoAlpha				= 0;
+	this->waitTimer				= this->WAIT_TIME_BEFORE_START_FADE_IN;
+	this->isProductFinished		= false;
+	this->positionY				= this->FIRST_POSITION_Y;
+	this->currentProductStage	= ProductStage::WAIT_FOR_FADE_IN;
 }
-
 
 /// <summary>
 /// 更新
 /// </summary>
 void GameOverUI::Update()
 {
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = Singleton<JsonManager>	::GetInstance();
+	/*終了フラグが立っていたら早期リターン*/
+	if (this->isProductFinished)return;
 
-	bool isPressButton = IsPressButton();
-
-	SetType();
-
-	/*拡大が終了していなければ拡大して早期リターン*/
-	if (this->alpha < json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"])
+	switch (this->currentProductStage)
 	{
-		this->alpha += json.GetJson(JsonManager::FileType::UI)["GAME_ADD_ALPHA"];
-		return;
-	}
-
-	/*ボタンが押されていたらリザルト終了*/
-	if (isPressButton)
-	{
-		if (this->type == static_cast<int>(ImageType::CONTINUE))
+	case ProductStage::WAIT_FOR_FADE_IN:
+		//waitTimerを減らす
+		this->waitTimer--;
+		//waitTimerが0だったら段階を切り返る
+		if (this->waitTimer == 0)
 		{
-			this->isContinue = true;
+			this->currentProductStage = ProductStage::LOGO_FADE_IN;
 		}
-		this->isEnd = true;
+		break;
+	case ProductStage::LOGO_FADE_IN:
+		//縮小処理
+		this->logoRate = Gori::LerpFloat(this->logoRate, this->TARGET_LOGO_RATE_FOR_FADE_IN, this->LERP_VALUE_FOR_REDUCTION);
+		//フェードイン
+		this->logoAlpha += this->INCREASED_ALPHA_FOR_LOGO_FADE_IN;
+		//フェードインが終わっていたら段階を切り返る
+		if (this->logoAlpha >= this->MAX_ALPHA)
+		{
+			this->currentProductStage = ProductStage::WAIT_FOR_FADE_OUT;
+			this->waitTimer = this->WAIT_TIME_BEFORE_START_FADE_OUT;
+		}
+		break;
+	case ProductStage::WAIT_FOR_FADE_OUT:
+		//waitTimerを減らす
+		this->waitTimer--;
+		//waitTimerが0だったら段階を切り返る
+		if (this->waitTimer == 0)
+		{
+			this->currentProductStage = ProductStage::LOGO_FADE_OUT;
+		}
+		break;
+	case ProductStage::LOGO_FADE_OUT:
+		//移動
+		this->positionY += this->POSITION_Y_FOR_FADE_OUT_MAGNIFICATION;
+		//フェードアウト
+		this->logoAlpha -= this->REDUCTION_ALPHA_FOR_LOGO_FADE_OUT;
+		//フェードアウトが終わっていたら段階を切り返る
+		if (this->logoAlpha <= 0)
+		{
+			this->currentProductStage = ProductStage::WAIT_FOR_FADE_IN;
+			this->isProductFinished = true;
+		}
+		break;
 	}
 }
 
@@ -95,106 +105,12 @@ void GameOverUI::Update()
 /// </summary>
 const void GameOverUI::Draw()const
 {
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = Singleton<JsonManager>	::GetInstance();
+	/*終了フラグが立っていたら早期リターン*/
+	if (this->isProductFinished)return;
 
-	/*背景の描画*/
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->alpha);
-	vector<int> table = json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TABLE_POSITION"];
-	DrawExtendGraph(table[0], table[1], table[2], table[3], this->imageHandle, TRUE);
-
-	/*文字の描画*/
-	vector<int> position1 = json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TEXT_POSITION"][0];
-	vector<int> position2 = json.GetJson(JsonManager::FileType::UI)["GAME_OVER_TEXT_POSITION"][1];
-	if (this->type == static_cast<int>(ImageType::CONTINUE))
-	{
-		DrawStringToHandle(position1[0], position1[1], "再戦", this->PRESS_TEXT_COLOR, this->fontHandle, TRUE);
-		DrawStringToHandle(position2[0], position2[1], "終了", this->TEXT_COLOR, this->fontHandle, TRUE);
-	}
-	else
-	{
-		DrawStringToHandle(position1[0], position1[1], "再戦", this->TEXT_COLOR, this->fontHandle, TRUE);
-		DrawStringToHandle(position2[0], position2[1], "終了", this->PRESS_TEXT_COLOR, this->fontHandle, TRUE);
-	}
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"]);
-}
-
-/// <summary>
-/// シーンを終了するか
-/// </summary>
-const bool GameOverUI::IsEnd()const
-{
-	/*PRESSのアルファが変動していたら表示している*/
-	return this->isEnd;
-}
-
-/// <summary>
-/// ゲームオーバー時、アイコンの種類を設定
-/// </summary>
-void GameOverUI::SetType()
-{
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = Singleton<JsonManager>	::GetInstance();
-	auto& input = Singleton<InputManager>::GetInstance();
-
-	const int Y_BUF = input.GetLStickState().YBuf;
-
-	/*上*/
-	if (Y_BUF > 0)
-	{
-		this->type++;
-		if (this->type >= static_cast<int>(ImageType::END))
-		{
-			this->type = static_cast<int>(ImageType::END);
-		}
-	}
-	/*下*/
-	else if (Y_BUF < 0)
-	{
-		this->type--;
-		if (this->type <= static_cast<int>(ImageType::CONTINUE))
-		{
-			this->type = static_cast<int>(ImageType::CONTINUE);
-		}
-	}
-}
-
-/// <summary>
-/// ボタンの入力
-/// </summary>
-bool GameOverUI::IsPressButton()
-{
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& input = Singleton<InputManager>::GetInstance();
-	auto& json = Singleton<JsonManager>	 ::GetInstance();
-
-	/*pad入力*/
-	int pad = input.GetNowPadState();
-	bool isPressButton = false;
-
-	/*windowが移動していない/拡大もしていなければ*/
-	isPressButton = (pad & PAD_INPUT_4);
-	//前にボタン入力がない&今ボタン入力がある
-	if (!this->isPrevPressButton && isPressButton)
-	{
-		this->isPrevPressButton = true;
-	}
-	//前にボタン入力がある
-	else if (this->isPrevPressButton)
-	{
-		//今ボタン入力がない
-		if (!isPressButton)
-		{
-			this->isPrevPressButton = false;
-		}
-		isPressButton = false;
-	}
-
-	return isPressButton;
-}
-
-
-const bool GameOverUI::IsContinue()const
-{
-	return this->isContinue;
+	/*ロゴの描画*/
+	double rate = static_cast<double>(this->logoRate);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->logoAlpha);
+	DrawRotaGraph(this->POSITION_X, this->positionY, rate, this->LOGO_ANGLE, this->questFailedLogo, TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, this->MAX_ALPHA);
 }

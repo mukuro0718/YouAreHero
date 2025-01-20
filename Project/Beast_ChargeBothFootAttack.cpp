@@ -66,6 +66,15 @@ Beast_ChargeBothFootAttack::~Beast_ChargeBothFootAttack()
 {
 
 }
+/// <summary>
+/// ‰Šú‰»
+/// </summary>
+void Beast_ChargeBothFootAttack::Initialize()
+{
+	this->frameCount = 0;
+	this->isFixRotate = false;
+	this->stage = AnimationStage::START;
+}
 
 /// <summary>
 /// XVˆ—

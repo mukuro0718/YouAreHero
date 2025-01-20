@@ -61,6 +61,14 @@ Beast_Explosion::~Beast_Explosion()
 {
 
 }
+/// <summary>
+/// ‰Šú‰»
+/// </summary>
+void Beast_Explosion::Initialize()
+{
+	this->frameCount  = 0;
+	this->isFixRotate = false;
+}
 
 /// <summary>
 /// XVˆ—

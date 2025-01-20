@@ -13,6 +13,11 @@ public:
 	void Finalize	() override;				//後処理
 	void Update		(Player& _player) override;	//更新
 private:
-	float maxSpeed;
+	/*定数*/
+	const float MAX_SPEED;	//最大速度
+	const float DECEL;		//減速度
+
+	/*メンバ変数*/
+	float nowSpeed;//現在の速度
 };
 

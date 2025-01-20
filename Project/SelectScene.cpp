@@ -70,7 +70,7 @@ void SelectScene::Update()
 const void SelectScene::Draw()const
 {
 	/*UI‚Ì•`‰æ*/
-	auto& ui	 = Singleton<UIManager>		::GetInstance();
+	auto& ui = Singleton<UIManager>::GetInstance();
 	ui.Draw();
 }
 

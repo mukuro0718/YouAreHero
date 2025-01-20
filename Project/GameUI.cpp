@@ -8,6 +8,8 @@
 #include "HPUI.h"
 #include "ButtonUI.h"
 #include "BossNameUI.h"
+#include "GameClearUI.h"
+#include "GameOverUI.h"
 #include "SceneUI.h"
 #include "GameUI.h"
 #include "UIManager.h"
@@ -22,38 +24,44 @@
 /// コンストラクタ
 /// </summary>
 GameUI::GameUI()
-	: hp(nullptr)
-	, button(nullptr)
-	, bossName(nullptr)
-	, LOCK_ON_UI_OFFSET(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_LOCK_ON_POSITION_OFFSET"])
-	, LOCK_ON_UI_SIZE(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_LOCK_ON_SIZE"])
+	: hp				(nullptr)
+	, button			(nullptr)
+	, bossName			(nullptr)
+	, LOCK_ON_UI_OFFSET	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_LOCK_ON_POSITION_OFFSET"])
+	, LOCK_ON_UI_SIZE	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::UI)["GAME_LOCK_ON_SIZE"])
 {
 	/*インスタンスの生成*/
-	this->hp = new HPUI();
-	this->button = new ButtonUI();
-	this->bossName = new BossNameUI();
+	this->hp		= new HPUI();
+	this->button	= new ButtonUI();
+	this->bossName	= new BossNameUI();
+	this->clearUI	= new GameClearUI();
+	this->overUI	= new GameOverUI();
 
 	/*画像クラスインスタンスの作成*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
-	this->imageHandle		= asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
-	this->fontHandle		= asset.GetFont(LoadingAsset::FontType::MINTYO_150_32);
-	this->pauseFontHandle	= asset.GetFont(LoadingAsset::FontType::MINTYO_50_32);
+	this->backGround		= asset.GetImage(LoadingAsset::ImageType::SELECT_IMAGE_TABLE);
+	this->pauseFontHandle	= asset.GetFont(LoadingAsset::FontType::SELECT_HEADER);
+	this->pauseActionHandle = asset.GetFont(LoadingAsset::FontType::SELECT_QUEST);
 	this->lockOnImage		= asset.GetImage(LoadingAsset::ImageType::ICON_LOCK_ON);
+	this->decideButton		= asset.GetImage(LoadingAsset::ImageType::B_BUTTON);
+	this->backButton		= asset.GetImage(LoadingAsset::ImageType::A_BUTTON);
 
 	auto& json = Singleton<JsonManager>	 ::GetInstance();
-	this->maxAlpha					= json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"];
-	this->addAlpha					= json.GetJson(JsonManager::FileType::UI)["GAME_ADD_ALPHA"];
-	this->logoDrawTime				= json.GetJson(JsonManager::FileType::UI)["GAME_LOGO_DRAW_TIME"];
-	vector<int> tableDrawRect		= json.GetJson(JsonManager::FileType::UI)["GAME_TABLE_DRAW_RECT"];
-	this->tableDrawRect				= tableDrawRect;
-	vector<int> destroyTextPosition = json.GetJson(JsonManager::FileType::UI)["GAME_TEXT_POSITION_1"];
-	this->destroyTextPosition		= destroyTextPosition;
-	vector<int> resultTextPosition	= json.GetJson(JsonManager::FileType::UI)["GAME_TEXT_POSITION_2"];
-	this->resultTextPosition		= resultTextPosition;
-	vector<int> pauseTableDrawRect = json.GetJson(JsonManager::FileType::UI)["GAME_PAUSE_TABLE_DRAW_RECT"];
-	this->pauseTableDrawRect = pauseTableDrawRect;
-	vector<int> pauseTextPosition = json.GetJson(JsonManager::FileType::UI)["GAME_PAUSE_TEXT_POSITION"];
-	this->pauseTextPosition = pauseTextPosition;
+	this->maxAlpha		= json.GetJson(JsonManager::FileType::UI)["GAME_MAX_ALPHA"];
+	this->addAlpha		= json.GetJson(JsonManager::FileType::UI)["GAME_ADD_ALPHA"];
+	this->logoDrawTime	= json.GetJson(JsonManager::FileType::UI)["GAME_LOGO_DRAW_TIME"];
+
+
+	vector<int> pauseTableDrawRect		= json.GetJson(JsonManager::FileType::UI)["GAME_PAUSE_TABLE_DRAW_RECT"];
+	vector<int> pauseHeaderTextPosition = json.GetJson(JsonManager::FileType::UI)["GAME_PAUSE_HEADER_TEXT_POSITION"];
+	vector<int> pauseActionTextPosition = json.GetJson(JsonManager::FileType::UI)["GAME_PAUSE_ACTION_TEXT_POSITION"];
+	vector<int> decideButtonDrawRect	= json.GetJson(JsonManager::FileType::UI)["GAME_PAUSE_DECIDE_DRAW_RECT"];
+	vector<int> backButtonDrawRect		= json.GetJson(JsonManager::FileType::UI)["GAME_PAUSE_BACK_DRAW_RECT"];
+	this->pauseTableDrawRect		= pauseTableDrawRect;
+	this->pauseHeaderTextPosition	= pauseHeaderTextPosition;
+	this->pauseActionTextPosition	= pauseActionTextPosition;
+	this->decideButtonDrawRect		= decideButtonDrawRect;
+	this->backButtonDrawRect		= backButtonDrawRect;
 	Initialize();
 }
 
@@ -76,12 +84,18 @@ void GameUI::Initialize()
 	this->hp->Initialize();
 	this->button->Initialize();
 	this->bossName->Initialize();
+	this->clearUI->Initialize();
+	this->overUI->Initialize();
 
 	/*変数の初期化*/
-	this->alpha = 0;
-	this->isEnd = false;
-	this->type = -1;
-	this->frameCount = 0;
+	this->alpha						= 0;
+	this->isEnd						= false;
+	this->type						= ResultType::NONE;
+	this->frameCount				= 0;
+	this->alphaForTransition		= this->MAX_ALPHA;
+	this->isTransition				= true;
+	this->isEndFadeInForTransition  = false;
+
 }
 
 
@@ -90,55 +104,78 @@ void GameUI::Initialize()
 /// </summary>
 void GameUI::Update()
 {
-	/*中断UIをするかどうかの判定*/
-	auto& input = Singleton<InputManager>::GetInstance();
-	//中断フラグが立っていなければ
-	if (!this->isPause)
+	/*画面遷移用のアルファ値が残っていたら*/
+	if (this->isTransition)
 	{
-		//PADのSTARTが立っていたら
-		if (input.GetNowPadState() & InputManager::PAD_START)
+		//遷移用のフェードインが終わって居なかったら
+		if (!this->isEndFadeInForTransition)
 		{
-			this->isPause = true;
+			this->alphaForTransition -= this->ALPHA_REDUCTION;
+			if (this->alphaForTransition <= 0)
+			{
+				this->isEndFadeInForTransition = true;
+				this->isTransition = false;
+			}
 		}
-	}
-	//立っていたら
-	else
-	{
-		//Bが押されていたら
-		if (input.GetNowPadState() & InputManager::PAD_B)
+		else
 		{
-			this->type = static_cast<int>(Type::LOSE);
-			this->isPause = false;
-		}
-		//Aが押されていたら
-		else if (input.GetNowPadState() & InputManager::PAD_A)
-		{
-			this->isPause = false;
+			this->alphaForTransition += this->ALPHA_INCREASE;
 		}
 	}
 
 	this->hp->Update();
 	this->button->Update();
 	this->bossName->Update();
-
-	/*タイプの設定*/
-	SetType();
-
-	/*まだゲームが終了していなければ早期リターン*/
-	if (this->type == -1)return;
-
-	/*拡大が終了していなければ拡大して早期リターン*/
-	if (this->alpha < this->maxAlpha)
+	
+	if (this->type == ResultType::NONE)
 	{
-		this->alpha += this->addAlpha;
-		return;
+		/*中断UIをするかどうかの判定*/
+		auto& input = Singleton<InputManager>::GetInstance();
+		//中断フラグが立っていなければ
+		if (!this->isPause)
+		{
+			//PADのSTARTが立っていたら
+			if (input.GetNowPadState() & InputManager::PAD_START)
+			{
+				this->isPause = true;
+			}
+		}
+		//立っていたら
+		else
+		{
+			//Bが押されていたら
+			if (input.GetNowPadState() & InputManager::PAD_B)
+			{
+				this->type = ResultType::LOSE;
+				this->isPause = false;
+			}
+			//Aが押されていたら
+			else if (input.GetNowPadState() & InputManager::PAD_A)
+			{
+				this->isPause = false;
+			}
+		}
+
+
+		/*タイプの設定*/
+		SetType();
 	}
-
-	/*フレームカウントが定数以上だったら終了フラグを立てる*/
-	this->frameCount++;
-	if (this->frameCount >= this->logoDrawTime)
+	else
 	{
-		this->isEnd = true;
+		if (this->type == ResultType::LOSE)
+		{
+			this->overUI->Update();
+			this->isEnd = this->overUI->GetIsProductFinished();
+		}
+		else
+		{
+			this->clearUI->Update();
+			this->isEnd = this->clearUI->GetIsProductFinished();
+		}
+		if (this->isEnd)
+		{
+			this->isTransition = true;
+		}
 	}
 }
 
@@ -150,42 +187,44 @@ const void GameUI::Draw()const
 	this->hp->Draw();
 	this->button->Draw();
 	this->bossName->Draw();
-
-	/*中断フラグが立っていたらUIを表示する*/
-	if (this->isPause)
-	{
-		DrawExtendGraph(this->pauseTableDrawRect[0], this->pauseTableDrawRect[1], this->pauseTableDrawRect[2], this->pauseTableDrawRect[3], this->imageHandle, TRUE);
-		DrawStringToHandle(this->pauseTextPosition[0], this->pauseTextPosition[1], "ゲームを中断しますか\nB:はい A:いいえ", this->TEXT_COLOR, this->pauseFontHandle);
-
-	}
-
-	auto& player = Singleton<PlayerManager>::GetInstance();
-	if (player.GetIsLockOn())
-	{
-		auto& enemy = Singleton<EnemyManager>::GetInstance();
-		VECTOR position = enemy.GetRigidbody().GetPosition();
-		position.y += this->LOCK_ON_UI_OFFSET;
-		DrawBillboard3D(position, 0.5f, 0.5f, this->LOCK_ON_UI_SIZE, 0.0f, this->lockOnImage, TRUE);
-	}
-
 	/*まだゲームが終了していなければ早期リターン*/
-	if (this->type == -1)return;
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = Singleton<JsonManager>	::GetInstance();
-
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->alpha);
-	DrawExtendGraph(this->tableDrawRect[0], this->tableDrawRect[1], this->tableDrawRect[2], this->tableDrawRect[3], this->imageHandle, TRUE);
-	if (this->type == static_cast<int>(Type::LOSE))
+	if (this->type == ResultType::NONE)
 	{
-		DrawStringToHandle(this->destroyTextPosition[0], this->destroyTextPosition[1], "討\n伐", this->TEXT_COLOR, this->fontHandle);
-		DrawStringToHandle(this->resultTextPosition[0], this->resultTextPosition[1], "失\n敗", this->TEXT_COLOR, this->fontHandle);
+		/*中断フラグが立っていたらUIを表示する*/
+		if (this->isPause)
+		{
+			DrawExtendGraph(this->pauseTableDrawRect[0], this->pauseTableDrawRect[1], this->pauseTableDrawRect[2], this->pauseTableDrawRect[3], this->backGround, TRUE);
+			DrawExtendGraph(this->decideButtonDrawRect[0], this->decideButtonDrawRect[1], this->decideButtonDrawRect[2], this->decideButtonDrawRect[3], this->decideButton, TRUE);
+			DrawExtendGraph(this->backButtonDrawRect[0], this->backButtonDrawRect[1], this->backButtonDrawRect[2], this->backButtonDrawRect[3], this->backButton, TRUE);
+			DrawStringToHandle(this->pauseHeaderTextPosition[0], this->pauseHeaderTextPosition[1], "ゲームを中断しますか", this->TEXT_COLOR, this->pauseFontHandle);
+			DrawStringToHandle(this->pauseActionTextPosition[0], this->pauseActionTextPosition[1], ":はい       :いいえ", this->TEXT_COLOR, this->pauseActionHandle);
+		}
+
+		auto& player = Singleton<PlayerManager>::GetInstance();
+		if (player.GetIsLockOn())
+		{
+			auto& enemy = Singleton<EnemyManager>::GetInstance();
+			VECTOR position = enemy.GetRigidbody().GetPosition();
+			position.y += this->LOCK_ON_UI_OFFSET;
+			DrawBillboard3D(position, 0.5f, 0.5f, this->LOCK_ON_UI_SIZE, 0.0f, this->lockOnImage, TRUE);
+		}
 	}
 	else
 	{
-		DrawStringToHandle(this->destroyTextPosition[0], this->destroyTextPosition[1], "討\n伐", this->TEXT_COLOR, this->fontHandle);
-		DrawStringToHandle(this->resultTextPosition[0], this->resultTextPosition[1], "完\n了", this->TEXT_COLOR, this->fontHandle);
+		if (this->type == ResultType::LOSE)
+		{
+			this->overUI->Draw();
+		}
+		else
+		{
+			this->clearUI->Draw();
+		}
 	}
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, this->maxAlpha);
+
+	/*シーン遷移の描画*/
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->alphaForTransition);
+	DrawBox(0, 0, this->MAX_X, this->MAX_Y, 0, TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->MAX_ALPHA);
 }
 
 /// <summary>
@@ -193,7 +232,12 @@ const void GameUI::Draw()const
 /// </summary>
 const bool GameUI::IsEnd()const
 {
-	return this->isEnd;
+	/*PRESSのアルファが変動していたら表示している*/
+	if (this->isEndFadeInForTransition && this->alphaForTransition >= this->MAX_ALPHA)
+	{
+		return true;
+	}
+	return false;
 }
 
 /// <summary>
@@ -202,7 +246,7 @@ const bool GameUI::IsEnd()const
 void GameUI::SetType()
 {
 	/*-1じゃなければ早期リターン*/
-	if (this->type != -1)return;
+	if (this->type != ResultType::NONE)return;
 	
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
@@ -210,11 +254,11 @@ void GameUI::SetType()
 	/*プレイヤーのHPが０以下*/
 	if (player.GetHP() <= 0 && !player.GetIsAlive())
 	{
-		this->type = static_cast<int>(Type::LOSE);
+		this->type = ResultType::LOSE;
 	}
 	/*ボスのHPが０以下*/
 	else if (enemy.GetHP() <= 0 && !enemy.GetIsAlive())
 	{
-		this->type = static_cast<int>(Type::WIN);
+		this->type = ResultType::WIN;
 	}
 }

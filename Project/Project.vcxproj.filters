@@ -640,7 +640,10 @@
     <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction">
       <UniqueIdentifier>{b3f2960f-ad0a-4820-bfac-863d747bc82a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BeastAction\12_StepBack\9_LongFrightening">
+    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsAngryValueGreaterThanConstant">
+      <UniqueIdentifier>{0cba7bfb-5b02-493b-bbe0-2a9aec2c5e60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BeastAction\9_LongFrightening">
       <UniqueIdentifier>{f7b629fd-4980-4e34-aed2-e5ce935d80e0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -1046,7 +1049,7 @@
       <Filter>Object\Character\Enemy\Action\BeastAction\8_Down</Filter>
     </ClCompile>
     <ClCompile Include="Beast_LongFrightening.cpp">
-      <Filter>Object\Character\Enemy\Action\BeastAction\12_StepBack\9_LongFrightening</Filter>
+      <Filter>Object\Character\Enemy\Action\BeastAction\9_LongFrightening</Filter>
     </ClCompile>
     <ClCompile Include="Beast_ShortFrightening.cpp">
       <Filter>Object\Character\Enemy\Action\BeastAction\10_ShortFrightening</Filter>
@@ -1236,6 +1239,9 @@
     </ClCompile>
     <ClCompile Include="Dragon_PlayCurrentBattleAction.cpp">
       <Filter>Object\Character\Enemy\Action\DragonAction\18_SelectedBattleAction</Filter>
+    </ClCompile>
+    <ClCompile Include="Condition_IsAngryValueGreaterThanConstant.cpp">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsAngryValueGreaterThanConstant</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1672,7 +1678,7 @@
       <Filter>Object\Character\Enemy\Action\BeastAction\8_Down</Filter>
     </ClInclude>
     <ClInclude Include="Beast_LongFrightening.h">
-      <Filter>Object\Character\Enemy\Action\BeastAction\12_StepBack\9_LongFrightening</Filter>
+      <Filter>Object\Character\Enemy\Action\BeastAction\9_LongFrightening</Filter>
     </ClInclude>
     <ClInclude Include="Beast_ShortFrightening.h">
       <Filter>Object\Character\Enemy\Action\BeastAction\10_ShortFrightening</Filter>
@@ -1865,6 +1871,9 @@
     </ClInclude>
     <ClInclude Include="Dragon_PlayCurrentBattleAction.h">
       <Filter>Object\Character\Enemy\Action\DragonAction\18_SelectedBattleAction</Filter>
+    </ClInclude>
+    <ClInclude Include="Condition_IsAngryValueGreaterThanConstant.h">
+      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsAngryValueGreaterThanConstant</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

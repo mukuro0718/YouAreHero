@@ -111,21 +111,20 @@ void BossChaseAction::Update(Boss& _boss)
 /// </summary>
 void BossChaseAction::CalcParameter(const Boss& _boss)
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& player = Singleton<PlayerManager>::GetInstance();
-
 	this->parameter->desireValue = 0;
 
-	/*HPが０以下またはフェーズが異なっていたら欲求値を0にする*/
-	if (_boss.GetHP() <= 0)
+	/*インターバルが残っていたら早期リターン*/
+	if (this->interval != 0)
 	{
+		this->interval--;
 		return;
 	}
 
 	/*距離を求める*/
+	auto& player = Singleton<PlayerManager>::GetInstance();
 	const VECTOR POSITION			= _boss.GetRigidbody().GetPosition();	//座標
 	const VECTOR MOVE_TARGET		= player.GetRigidbody().GetPosition();	//移動目標
-	const VECTOR POSITION_TO_TARGET	= VSub(POSITION, MOVE_TARGET);	//目標から現在の移動目標へのベクトル
+	const VECTOR POSITION_TO_TARGET	= VSub(POSITION, MOVE_TARGET);			//目標から現在の移動目標へのベクトル
 	const float  DISTANCE			= VSize(POSITION_TO_TARGET);			//距離
 
 	/*もしボスとプレイヤーの間が定数以上離れていたら欲求値を倍増させる*/

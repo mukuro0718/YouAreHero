@@ -13,13 +13,24 @@
 /// コンストラクタ
 /// </summary>
 BossNameUI::BossNameUI()
+	: fontHandle(-1)
+	, imageHandle(-1)
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
+	/*画像ハンドルの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
-
-	this->fontHandle = asset.GetFont(LoadingAsset::FontType::MINTYO_80_64);
+	this->fontHandle  = asset.GetFont(LoadingAsset::FontType::BOSS_NAME);
 	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
+
+	/*変数の初期化*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
+	int			 enemyType	 = enemyChanger.GetEnemyType();
+	vector<int>	 position	 = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_POSITION"][enemyType];
+	vector<int>  background	 = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_BACKGROUND"][enemyType];
+	string		 name		 = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_TYPE"][enemyType];
+	this->namePosition		 = position;
+	this->backgroundDrawRect = background;
+	this->bossName			 = name;
 }
 
 /// <summary>
@@ -42,11 +53,6 @@ void BossNameUI::Initialize()
 /// </summary>
 void BossNameUI::Update()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto&  enemy = Singleton<EnemyManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
-
 }
 
 /// <summary>
@@ -54,14 +60,7 @@ void BossNameUI::Update()
 /// </summary>
 const void BossNameUI::Draw()const
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
-	int enemyType = enemyChanger.GetEnemyType();
-	vector<int>	 position = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_POSITION"][enemyType];
-	vector<int> backGround = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_BACKGROUND"][enemyType];
-	string name = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_TYPE"][enemyType];
-	DrawExtendGraph(backGround[0], backGround[1], backGround[2], backGround[3], this->imageHandle, TRUE);
-	DrawStringToHandle(position[0], position[1], name.c_str(), this->TEXT_COLOR, this->fontHandle);
+	//DrawExtendGraph(this->backgroundDrawRect[0], this->backgroundDrawRect[1], this->backgroundDrawRect[2], this->backgroundDrawRect[3], this->imageHandle, TRUE);
+	DrawStringToHandle(this->namePosition[0], this->namePosition[1], this->bossName.c_str(), this->TEXT_COLOR, this->fontHandle);
 }
 

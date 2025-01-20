@@ -3,7 +3,6 @@
 //===============================================
 #pragma once
 
-class Image;
 class SceneUI;
 class TitleUI : public SceneUI
 {
@@ -16,19 +15,33 @@ public:
 	const void Draw		 ()const override;
 	const bool IsEnd	 ()const override;
 private:
-	/*列挙体*/
-	enum class Type
+	/*構造体・列挙体*/
+	//ロゴの種類
+	enum class LogoType
 	{
-		TITLE,//タイトルロゴ
-		PRESS,//「PressA」ロゴ
+		TITLE,
+		PRESS,
+	};
+	//画像データ構造体
+	struct ImageData
+	{
+		int handle;
+		int alpha;
+		int alphaIncrease;
+		int alphaReduction;
+		int x;
+		int y;
+		double rate;
+		double angle;
 	};
 
 	/*内部処理関数*/
 	bool IsPressButton();
 
 	/*メンバ変数*/
-	std::vector<Image*> image;
+	ImageData titleLogo;
+	ImageData pressLogo;
+	bool isFadeIn;
 	bool isPrevPressButton;
-	bool isFadeOut;
 };
 

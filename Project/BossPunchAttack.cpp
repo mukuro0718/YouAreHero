@@ -41,10 +41,11 @@ BossPunchAttack::BossPunchAttack(const int _attackIndex)
 	collider.data->slowFactor	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
 	collider.data->isHitAttack	= false;
 
-	this->startHitCheckFrame	= json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_FRAME"][this->attackIndex];
-	this->endHitCheckFrame		= json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"][this->attackIndex];
+	this->startHitCheckFrame	= json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_PLAY_TIME"][this->attackIndex];
+	this->endHitCheckFrame		= json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_PLAY_TIME"][this->attackIndex];
 	this->positionOffset		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"][this->attackIndex];
 	this->yOffset				= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"][this->attackIndex];
+	this->totalAnimPlayTime		= json.GetJson(JsonManager::FileType::ENEMY)["TOTAL_ANIMATION_PLAY_TIME"][this->attackIndex];
 
 }
 
@@ -85,10 +86,8 @@ void BossPunchAttack::Update(const float _playTime)
 	/*当たり判定の確認が開始している*/
 	if (this->isStartHitCheck)
 	{
-		//フレームを増やす
-		this->frameCount++;
-		//フレームが定数を超えていなかったら早期リターン
-		if (this->frameCount < this->startHitCheckFrame)return;
+		//再生時間が定数を超えていなかったら早期リターン
+		if (_playTime < this->startHitCheckFrame)return;
 
 		auto& enemy = Singleton<EnemyManager>::GetInstance();
 		auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
@@ -103,8 +102,8 @@ void BossPunchAttack::Update(const float _playTime)
 		//当たり判定位置の更新
 		collider.rigidbody.SetPosition(MV1GetFramePosition(enemy.GetModelHandle(), 14));
 		collider.topPositon = MV1GetFramePosition(enemy.GetModelHandle(), 19);
-		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
-		if (this->frameCount > this->endHitCheckFrame)
+		//再生時間が定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
+		if (_playTime > this->endHitCheckFrame)
 		{
 			this->isStartHitCheck = false;
 			collider.data->isDoHitCheck = false;

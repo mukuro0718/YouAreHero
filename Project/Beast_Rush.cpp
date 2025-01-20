@@ -70,6 +70,15 @@ Beast_Rush::~Beast_Rush()
 {
 
 }
+/// <summary>
+/// ‰Šú‰»
+/// </summary>
+void Beast_Rush::Initialize()
+{
+	this->frameCount  = 0;
+	this->isFixRotate = false;
+	this->stage		  = AnimationStage::START;
+}
 
 /// <summary>
 /// XVˆ—

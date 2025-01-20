@@ -105,104 +105,97 @@ void GameScene::Update()
 
 	/*更新処理*/
 	{
-		int startTime = GetNowCount();
+		LONGLONG startTime = GetNowHiPerformanceCount();
 		timer.Update();
-		int endTime = GetNowCount();
-		int frameTime = endTime - startTime;
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
 		printfDx("TIMER:%d\n", frameTime);
 	}
 	{
-		int startTime = GetNowCount();
+		LONGLONG startTime = GetNowHiPerformanceCount();
 		debug.Update();
-		int endTime = GetNowCount();
-		int frameTime = endTime - startTime;
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
 		printfDx("DEBUG:%d\n", frameTime);
 	}
 
 	{
-		int startTime = GetNowCount();
+		LONGLONG startTime = GetNowHiPerformanceCount();
 		input.Update();
-		int endTime = GetNowCount();
-		int frameTime = endTime - startTime;
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
 		printfDx("INPUT:%d\n", frameTime);
 	}
 
 	{
-		int startTime = GetNowCount();
+		LONGLONG startTime = GetNowHiPerformanceCount();
 		hitStop.Update();
-		int endTime = GetNowCount();
-		int frameTime = endTime - startTime;
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
 		printfDx("HITSTOP:%d\n", frameTime);
 	}
 
 	{
-		int startTime = GetNowCount();
+		LONGLONG startTime = GetNowHiPerformanceCount();
 		camera.Update();
-		int endTime = GetNowCount();
-		int frameTime = endTime - startTime;
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
 		printfDx("CAMERA:%d\n", frameTime);
 	}
 
 	{
-		int startTime = GetNowCount();
+		LONGLONG startTime = GetNowHiPerformanceCount();
 		map.Update();
-		int endTime = GetNowCount();
-		int frameTime = endTime - startTime;
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
 		printfDx("MAP:%d\n", frameTime);
 	}
 
 	{
-		int startTime = GetNowCount();
+		LONGLONG startTime = GetNowHiPerformanceCount();
 		enemy.Update();
-		int endTime = GetNowCount();
-		int frameTime = endTime - startTime;
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
 		printfDx("ENEMY:%d\n", frameTime);
 	}
 
 
 	{
-		int startTime = GetNowCount();
+		LONGLONG startTime = GetNowHiPerformanceCount();
 		player.Update();
-		int endTime = GetNowCount();
-		int frameTime = endTime - startTime;
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
 		printfDx("PLAYER:%d\n", frameTime);
 	}
 
 	{
-		int startTime = GetNowCount();
+		LONGLONG startTime = GetNowHiPerformanceCount();
 		effect.Update();
-		int endTime = GetNowCount();
-		int frameTime = endTime - startTime;
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
 		printfDx("EFFECT:%d\n", frameTime);
 	}
 
 	{
-		int startTime = GetNowCount();
+		LONGLONG startTime = GetNowHiPerformanceCount();
 		collision.Update();
-		int endTime = GetNowCount();
-		int frameTime = endTime - startTime;
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
 		printfDx("COLL:%d\n", frameTime);
 	}
 	{
-		int startTime = GetNowCount();
+		LONGLONG startTime = GetNowHiPerformanceCount();
 
 		ui.Update();
-		int endTime = GetNowCount();
-		int frameTime = endTime - startTime;
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
 		printfDx("UI:%d\n", frameTime);
 	}
 
 	/*シーンの終了処理*/
 	if (IsEnd())
 	{
-		if (enemy.GetHP() > 0)
-		{
-			sceneChanger.ChangeScene(SceneChanger::SceneType::GAME_OVER);
-		}
-		else
-		{
-			sceneChanger.ChangeScene(SceneChanger::SceneType::GAME_CLEAR);
-		}
+		sceneChanger.ChangeScene(SceneChanger::SceneType::SELECT);
 	}
 }
 
@@ -222,14 +215,72 @@ const void GameScene::Draw()const
 	auto& timer = Singleton<Timer>::GetInstance();
 
 	/*描画*/
-	camera.Draw();
-	map.Draw();
-	enemy.Draw();
-	player.Draw();
-	playerAttack.Draw();
-	effect.Draw();
-	ui.Draw();
-	timer.Draw();
+	{
+		LONGLONG startTime = GetNowHiPerformanceCount();
+
+		camera.Draw();
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
+		printfDx("DRAW_CAMERA:%d\n", frameTime);
+	}
+	{
+		LONGLONG startTime = GetNowHiPerformanceCount();
+
+		map.Draw();
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
+		printfDx("DRAW_MAP:%d\n", frameTime);
+	}
+
+	{
+		LONGLONG startTime = GetNowHiPerformanceCount();
+		enemy.Draw();
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
+		printfDx("DRAW_ENEMY:%d\n", frameTime);
+	}
+
+	{
+		LONGLONG startTime = GetNowHiPerformanceCount();
+
+		player.Draw();
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
+		printfDx("DRAW_PLAYER:%d\n", frameTime);
+	}
+
+	{
+		LONGLONG startTime = GetNowHiPerformanceCount();
+
+		playerAttack.Draw();
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
+		printfDx("DRAW_PLAYER_ATTACK:%d\n", frameTime);
+	}
+
+	{
+		LONGLONG startTime = GetNowHiPerformanceCount();
+		effect.Draw();
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
+		printfDx("DRAW_EFFECT:%d\n", frameTime);
+	}
+
+	{
+		LONGLONG startTime = GetNowHiPerformanceCount();
+		ui.Draw();
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
+		printfDx("DRAW_UI:%d\n", frameTime);
+	}
+	{
+		LONGLONG startTime = GetNowHiPerformanceCount();
+		timer.Draw();
+		LONGLONG endTime = GetNowHiPerformanceCount();
+		LONGLONG frameTime = endTime - startTime;
+		printfDx("DRAW_TIMER:%d\n", frameTime);
+	}
+
 	//printfDx("GAME_FRAMETIME:%d\n", this->frameTime);
 }
 

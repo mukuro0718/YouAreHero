@@ -58,5 +58,9 @@ private:
 	float				blockStaminaConsumption; //防御時の消費スタミナ
 	float				avoidStaminaConsumption; //回避時の消費スタミナ
 	float				runStaminaConsumption;	 //ダッシュ時の消費スタミナ
+	float strongAttackStaminaConsumption;//強攻撃消費スタミナ
+	float weakAttackStaminaConsumption1;//弱攻撃消費スタミナ
+	float weakAttackStaminaConsumption2;//弱攻撃消費スタミナ
+	float weakAttackStaminaConsumption3;//弱攻撃消費スタミナ
 };
 

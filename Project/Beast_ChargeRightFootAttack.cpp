@@ -64,6 +64,15 @@ Beast_ChargeRightFootAttack::~Beast_ChargeRightFootAttack()
 }
 
 /// <summary>
+/// ‰Šú‰»
+/// </summary>
+void Beast_ChargeRightFootAttack::Initialize()
+{
+	this->frameCount  = 0;
+	this->isFixRotate = false;
+}
+
+/// <summary>
 /// XVˆ—
 /// </summary>
 Beast_ChargeRightFootAttack::NodeState Beast_ChargeRightFootAttack::Update()

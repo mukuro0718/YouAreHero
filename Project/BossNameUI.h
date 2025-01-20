@@ -20,7 +20,10 @@ private:
 	static constexpr int TEXT_COLOR = 0xffffff;
 
 	/*メンバ変数*/
-	int fontHandle;
-	int imageHandle;
+	int			fontHandle;			//フォント
+	int			imageHandle;		//背景
+	vector<int> namePosition;		//名前の座標
+	vector<int> backgroundDrawRect;	//背景の描画範囲
+	string		bossName;			//ボスの名前
 };
 

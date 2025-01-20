@@ -20,8 +20,6 @@ UIManager::UIManager()
 	this->scene.emplace_back(new TitleUI());
 	this->scene.emplace_back(new SelectUI());
 	this->scene.emplace_back(new GameUI());
-	this->scene.emplace_back(new GameClearUI());
-	this->scene.emplace_back(new GameOverUI());
 }
 
 /// <summary>
@@ -67,16 +65,11 @@ const void UIManager::Draw()const
 	//printfDx("UI_FRAMETIME:%d\n", this->frameTime);
 }
 
+/// <summary>
+/// •`‰æ‚µ‚Ä‚¢‚é‚©
+/// </summary>
 const bool UIManager::IsDraw()const
 {
 	auto& sceneChanger = Singleton<SceneChanger>::GetInstance();
 	return this->scene[static_cast<int>(sceneChanger.GetNextSceneType())]->IsEnd();
-}
-
-const bool UIManager::IsContinue()const
-{
-	int type = static_cast<int>(SceneChanger::SceneType::GAME_OVER);
-	auto& scene = dynamic_cast<GameOverUI&>(*this->scene[type]);
-	bool isContinue = scene.IsContinue();
-	return isContinue;
 }

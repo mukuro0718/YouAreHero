@@ -220,6 +220,7 @@
     <ClCompile Include="ButtonUI.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Condition_IsAngryValueGreaterThanConstant.cpp" />
     <ClCompile Include="Condition_IsDragonActionIntervalIsOver.cpp" />
     <ClCompile Include="Condition_IsDragonHpIsLessThanZero.cpp" />
     <ClCompile Include="Condition_IsDragonActiveFlagIsTrue.cpp" />
@@ -421,6 +422,7 @@
     <ClInclude Include="ButtonUI.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="Condition_IsAngryValueGreaterThanConstant.h" />
     <ClInclude Include="Condition_IsDragonActionIntervalIsOver.h" />
     <ClInclude Include="Condition_IsDragonHpIsLessThanZero.h" />
     <ClInclude Include="Condition_IsDragonActiveFlagIsTrue.h" />

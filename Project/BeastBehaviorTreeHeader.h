@@ -9,6 +9,7 @@
 #include "Condition_IsDownValueGreaterThanConstant.h"
 #include "Condition_IsNowLevelIsSameAsTheSpecifiedLevel.h"
 #include "Condition_IsNowStateIsSameAsTheSpecifiedState.h"
+#include "Condition_IsAngryValueGreaterThanConstant.h"
 #include "Condition_IsActionIntervalIsOver.h"
 #include "Condition_IsHpBelowConstant.h"
 #include "Condition_IsNodeStateIsSameAsSpecifiedLevel.h"

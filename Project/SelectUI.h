@@ -31,8 +31,8 @@ private:
 	int			actionFont;		//アクションフォント
 	int			enemyImageTable;//敵画像テーブル
 	int			drawRectBackGround;//描画範囲背景
-	int aButton;
-	int bButton;
-	int lStick;
+	int			aButton;
+	int			bButton;
+	int			lStick;
 };
 

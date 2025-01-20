@@ -21,6 +21,9 @@ public:
 	const VECTOR GetNowTarget	() { return this->nowTarget; }	//現在の注視点（使用していない）
 	const VECTOR GetDirection	() { return this->direction; }	//現在の注視点（プレイヤーをTPSで操作するときのみ必要）
 private:
+	/*定数*/
+	const int BOSS_HEAD_FRAME_INDEX;
+
 	/*内部処理関数*/
 	void   UpdateDirection	();																//向きの更新
 	void   UpdateAngle		();																//座標の更新

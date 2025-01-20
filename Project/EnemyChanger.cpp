@@ -46,25 +46,28 @@ void EnemyChanger::Update()
 	auto& input = Singleton<InputManager>::GetInstance();
 	if (this->inputInterval <= 0)
 	{
-		if ((input.GetLStickState().YBuf < 0) || CheckHitKey(KEY_INPUT_UP))
+		if (!this->isProvDecide)
 		{
-			this->enemyType--;
-			int min = static_cast<int>(EnemyType::GOLEM);
-			if (this->enemyType < min)
+			if ((input.GetLStickState().YBuf < 0) || CheckHitKey(KEY_INPUT_UP))
 			{
-				this->enemyType = min;
+				this->enemyType--;
+				int min = static_cast<int>(EnemyType::GOLEM);
+				if (this->enemyType < min)
+				{
+					this->enemyType = min;
+				}
+				this->inputInterval = this->MAX_INPUT_INTERBVAL;
 			}
-			this->inputInterval = this->MAX_INPUT_INTERBVAL;
-		}
-		else if ((input.GetLStickState().YBuf > 0) || CheckHitKey(KEY_INPUT_DOWN))
-		{
-			this->enemyType++;
-			int max = static_cast<int>(EnemyType::DRAGON);
-			if (this->enemyType > max)
+			else if ((input.GetLStickState().YBuf > 0) || CheckHitKey(KEY_INPUT_DOWN))
 			{
-				this->enemyType = max;
+				this->enemyType++;
+				int max = static_cast<int>(EnemyType::DRAGON);
+				if (this->enemyType > max)
+				{
+					this->enemyType = max;
+				}
+				this->inputInterval = this->MAX_INPUT_INTERBVAL;
 			}
-			this->inputInterval = this->MAX_INPUT_INTERBVAL;
 		}
 	}
 	else

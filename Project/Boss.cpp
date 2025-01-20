@@ -128,7 +128,8 @@ void Boss::Initialize()
 	this->collider->isUseCollWithGround = true;
 	this->collider->data->hp					= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
 	this->collider->data->isHit				= false;
-	
+	this->tiredInterval = 0;
+
 	/*ƒRƒ“ƒ{‚Ìİ’è*/
 	SetAttackComboCount();
 
@@ -380,6 +381,7 @@ void Boss::SetAngryState()
 	{
 		//“{‚è
 	case static_cast<int>(BossState::ANGRY):
+		this->attackComboCount = 2;
 		this->angryValue--;
 		if (this->angryValue < 0)
 		{

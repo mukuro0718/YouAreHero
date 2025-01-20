@@ -25,11 +25,11 @@ BossRestAction::BossRestAction()
 	, isDownUp(false)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->nextAnimation = static_cast<int>(Boss::AnimationType::DOWN);
-	this->nextAnimation2 = static_cast<int>(Boss::AnimationType::DOWN_UP);
-	this->maxDesireValue = json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
-	this->maxFrameCount = json.GetJson(JsonManager::FileType::ENEMY)["REST_ACTION_MAX_FRAME"];
-	this->checkedState = static_cast<int>(Boss::BossState::TIRED);
+	this->nextAnimation		= static_cast<int>(Boss::AnimationType::DOWN);
+	this->nextAnimation2	= static_cast<int>(Boss::AnimationType::DOWN_UP);
+	this->maxDesireValue	= json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
+	this->maxFrameCount		= json.GetJson(JsonManager::FileType::ENEMY)["REST_ACTION_MAX_FRAME"];
+	this->checkedState		= static_cast<int>(Boss::BossState::TIRED);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 }
 
@@ -67,34 +67,6 @@ void BossRestAction::Update(Boss& _boss)
 {
 	/*死亡していたらisSelectをfalseにして早期リターン*/
 	if (_boss.GetHP() <= 0) { this->isSelect = false; return; }
-
-	///*カラースケールの変更*/
-	//{
-	//	//初期化フラグが立っていなかったらカラースケールを更新する
-	//	if (this->isChangeColorScale)
-	//	{
-	//		//ボスのモデルハンドル
-	//		const int MODEL_HANDLE = _boss.GetModelHandle();
-	//		//初期化フラグが立っていたら現在の色を取得する
-	//		if (!this->isInitializeColorScale)
-	//		{
-	//			//カラースケールの更新(ここでは赤色になるようにする)
-	//			for (int i = 0; i < this->nowColorScale.size(); i++)
-	//			{
-	//				this->getColorScaleMap[i](this->baseColorScale[i], this->nowColorScale[i], MODEL_HANDLE);
-	//			}
-	//			this->isInitializeColorScale = true;
-	//		}
-	//		//カラースケールの更新(ここでは赤色になるようにする)
-	//		for (int i = 0; i < this->nowColorScale.size(); i++)
-	//		{
-	//			const COLOR_F TARGET = ColorConvert(json.GetJson(JsonManager::FileType::ENEMY)["REST_TARGET_COLOR_SCALE"]);
-	//			const COLOR_F LERP = ColorConvert(json.GetJson(JsonManager::FileType::ENEMY)["LERP_COLOR_SCALE"]);
-	//			this->nowColorScale[i] = LerpColor(this->nowColorScale[i], TARGET, LERP);
-	//			this->setColorScaleMap[i](this->nowColorScale[i], MODEL_HANDLE);
-	//		}
-	//	}
-	//}
 
 	/*怒り状態を合わせる*/
 	if (this->frameCount == 0)
@@ -175,9 +147,8 @@ void BossRestAction::CalcParameter(const Boss& _boss)
 	/*もしHPが０以下だったら欲求値を０にして優先フラグを下す*/
 	if (_boss.GetHP() <= 0)return;
 
-	/*怒り状態*/
-	int nowState = _boss.GetAngryState();
 	/*AngryStateがTIREDの時に*/
+	int nowState = _boss.GetAngryState();
 	if (nowState == this->checkedState)
 	{
 		this->parameter->desireValue = this->maxDesireValue;

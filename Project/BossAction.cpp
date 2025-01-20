@@ -32,35 +32,6 @@ BossAction::BossAction()
 	/*インスタンスの作成*/
 	this->parameter = new ActionParameter();
 	this->hitStop	= new HitStop();
-
-	/*functionMapの作成*/
-	auto getDif = [](COLOR_F& _base, COLOR_F& _now, const int _modelHandle) {_base = _now = MV1GetDifColorScale(_modelHandle); };
-	auto getSpc = [](COLOR_F& _base, COLOR_F& _now, const int _modelHandle) {_base = _now = MV1GetSpcColorScale(_modelHandle); };
-	auto getEmi = [](COLOR_F& _base, COLOR_F& _now, const int _modelHandle) {_base = _now = MV1GetEmiColorScale(_modelHandle); };
-	auto getAmb = [](COLOR_F& _base, COLOR_F& _now, const int _modelHandle) {_base = _now = MV1GetAmbColorScale(_modelHandle); };
-	this->getColorScaleMap.emplace(static_cast<int>(ColorType::DIF), getDif);
-	this->getColorScaleMap.emplace(static_cast<int>(ColorType::SPC), getSpc);
-	this->getColorScaleMap.emplace(static_cast<int>(ColorType::EMI), getEmi);
-	this->getColorScaleMap.emplace(static_cast<int>(ColorType::AMB), getAmb);
-	auto setDif = [](const COLOR_F _color, const int _modelHandle) {MV1SetDifColorScale(_modelHandle, _color); };
-	auto setSpc = [](const COLOR_F _color, const int _modelHandle) {MV1SetSpcColorScale(_modelHandle, _color); };
-	auto setEmi = [](const COLOR_F _color, const int _modelHandle) {MV1SetEmiColorScale(_modelHandle, _color); };
-	auto setAmb = [](const COLOR_F _color, const int _modelHandle) {MV1SetAmbColorScale(_modelHandle, _color); };
-	this->setColorScaleMap.emplace(static_cast<int>(ColorType::DIF), setDif);
-	this->setColorScaleMap.emplace(static_cast<int>(ColorType::SPC), setSpc);
-	this->setColorScaleMap.emplace(static_cast<int>(ColorType::EMI), setEmi);
-	this->setColorScaleMap.emplace(static_cast<int>(ColorType::AMB), setAmb);
-
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-
-	/*colorScaleListの作成*/
-	COLOR_F color = { 1.0f,1.0f,1.0f,1.0f };
-	for (int i = 0; i < json.GetJson(JsonManager::FileType::ENEMY)["COLOR_SCALE_NUM"]; i++)
-	{
-		this->baseColorScale.emplace_back(color);
-		this->nowColorScale.emplace_back(color);
-	}
 }
 
 /// <summary>
@@ -71,10 +42,6 @@ BossAction::~BossAction()
 	DeleteMemberInstance(this->attack);
 	DeleteMemberInstance(this->hitStop);
 	DeleteMemberInstance(this->parameter);
-	this->getColorScaleMap.clear();
-	this->setColorScaleMap.clear();
-	this->baseColorScale.clear();
-	this->nowColorScale.clear();
 }
 /// <summary>
 /// 描画
@@ -139,6 +106,7 @@ void BossAction::OffIsSelect(const int _maxInterval)
 		this->isAllowAction = false;
 		this->frameCount = 0;
 		this->parameter->desireValue = 0;
+		this->interval = _maxInterval;
 	}
 }
 

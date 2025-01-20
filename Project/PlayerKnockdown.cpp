@@ -7,23 +7,26 @@
 #include "Character.h"
 #include "Player.h"
 #include "PlayerAction.h"
+#include "VECTORtoUseful.h"
 #include "PlayerKnockdown.h"
 #include "EffectManager.h"
+#include "EnemyManager.h"
 #include "InputManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 PlayerKnockdown::PlayerKnockdown()
-	: PlayerAction()
+	: PlayerAction	()
+	, MAX_SPEED		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["REACTION_SPEED"][static_cast<int>(Gori::PlayerReactionType::BLOW_BIG)])
+	, DECEL			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["ACCEL"])
+	, nowSpeed		(0)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->staminaRecoveryValue = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"];
-	this->maxStamina = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
-	this->maxSpeed = json.GetJson(JsonManager::FileType::PLAYER)["REACTION_SPEED"][static_cast<int>(Gori::PlayerReactionType::BLOW_BIG)];
-	this->nextAnimation = static_cast<int>(Player::AnimationType::DOWN_REACTION);
-	this->playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
-
+	this->staminaRecoveryValue	= json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"];
+	this->maxStamina			= json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
+	this->nextAnimation			= static_cast<int>(Player::AnimationType::DOWN_REACTION);
+	this->playTime				= json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 }
 
 /// <summary>
@@ -61,17 +64,29 @@ void PlayerKnockdown::Update(Player& _player)
 	_player.CalcStamina(this->staminaRecoveryValue, this->maxStamina);
 
 	/*回転の更新*/
-	VECTOR nowRotation = _player.GetRigidbody().GetRotation();
-	VECTOR nextRotation = _player.GetNextRotation();
-	UpdateRotation(true, nextRotation, nowRotation);
+	auto& enemy = Singleton<EnemyManager>::GetInstance();
+	VECTOR	nowRotation		= _player.GetRigidbody().GetRotation();
+	VECTOR	nextRotation	= Gori::ORIGIN;
+	VECTOR	enemyPosition	= enemy.GetRigidbody().GetPosition();
+	VECTOR	positionToEnemy = VSub(_player.GetRigidbody().GetPosition(), enemyPosition);
+			nextRotation.y	= static_cast<float>(atan2(static_cast<double>(positionToEnemy.x), static_cast<double>(positionToEnemy.z)));
+			nowRotation		= Gori::LerpAngle(nowRotation, nextRotation, this->rotateLerpValue);
 	_player.SetRotation(nowRotation, nextRotation);
 
 	/*移動速度の更新*/
-	_player.SetSpeed(0.0f);
+	if (this->nowSpeed != 0)
+	{
+		this->nowSpeed += this->DECEL;
+		if (this->nowSpeed > 0.0f)
+		{
+			this->nowSpeed = 0.0f;
+		}
+		_player.SetSpeed(this->nowSpeed);
+	}
 
 	/*移動ベクトルを出す*/
 	VECTOR nowVelocity = _player.GetRigidbody().GetVelocity();
-	VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelocity, 0.0f, false);
+	VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelocity, this->nowSpeed, false);
 	_player.SetVelocity(newVelocity);
 
 	/*処理の開始時に一度だけ行う処理*/
@@ -82,7 +97,7 @@ void PlayerKnockdown::Update(Player& _player)
 		effect.OnIsEffect(EffectManager::EffectType::BOSS_IMPACT);
 		//スピードの設定
 		const CharacterData& data = _player.GetCharacterData();
-		_player.SetSpeed(this->maxSpeed);
+		this->nowSpeed = this->MAX_SPEED;
 		//ヒットストップの設定
 		_player.SetHitStop(data.hitStopTime, data.hitStopType, data.hitStopDelay, data.slowFactor);
 		//ヒットフラグを下す

@@ -26,14 +26,6 @@ public:
 		  void OnIsSelect	 (){ this->isSelect = true; }
 protected:
 	/*列挙体*/
-	//変更する色の種類
-	enum class ColorType
-	{
-		DIF,
-		SPC,
-		EMI,
-		AMB,
-	};
 	/*内部処理関数*/
 		  bool		FrameCount		(const int _maxFrame);																						//フレームカウント
 		  void		OffIsSelect		(const int _maxInterval);																					//選択フラグの初期化
@@ -44,25 +36,20 @@ protected:
 	const COLOR_F	ColorConvert	(const std::vector<float> _value);																			//vector<float>をCOLOR_Fに変換
 
 	/*メンバ変数*/
-	std::map<int, std::function<void(COLOR_F&, COLOR_F&, const int _modelHandle)>>	getColorScaleMap;//色の取得
-	std::map<int, std::function<void(const COLOR_F, const int _modelHandle)>>		setColorScaleMap;//色のセット
-
-	BossAttack*				 attack;		//ボス攻撃クラス
-	HitStop*				 hitStop;		//ヒットストップ
-	ActionParameter*		 parameter;		//パラメータ
-	VECTOR					 moveTarget;	//移動目標
-	bool					 isSelect;		//アクションが選択されたか
-	short					 frameCount;	//フレームカウント
-	bool					 isInitialize;	//初期化されたか
-	bool					 isPriority;	//優先フラグ
-	bool					 isAllowAction;	//アクションを許可する
-	std::vector<COLOR_F>	 baseColorScale;//元の色
-	std::vector<COLOR_F>	 nowColorScale;	//今の色
-	int frameTime;
-	short nextAnimation;
-	float animationPlayTime;
-	short maxDesireValue;		 //最大欲求値
-	float nowTotalAnimPlayTime;
-
+	BossAttack*				attack;				 //ボス攻撃クラス
+	HitStop*				hitStop;			 //ヒットストップ
+	ActionParameter*		parameter;			 //パラメータ
+	VECTOR					moveTarget;			 //移動目標
+	bool					isSelect;			 //アクションが選択されたか
+	short					frameCount;			 //フレームカウント
+	bool					isInitialize;		 //初期化されたか
+	bool					isPriority;			 //優先フラグ
+	bool					isAllowAction;		 //アクションを許可する
+	int						frameTime;			 //フレーム時間
+	short					nextAnimation;		 //次のアニメーション
+	float					animationPlayTime;	 //アニメーション再生時間
+	short					maxDesireValue;		 //最大欲求値
+	float					nowTotalAnimPlayTime;//現在の総再生時間
+	short					interval;			 //インターバル
 };
 

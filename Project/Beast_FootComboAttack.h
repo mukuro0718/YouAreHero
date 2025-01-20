@@ -12,8 +12,9 @@ public:
 	 Beast_FootComboAttack();//コンストラクタ
 	~Beast_FootComboAttack();//デストラクタ
 
-	NodeState Update()override;//更新
-	const void Draw()const;//描画
+	void		Initialize	();			//初期化
+	NodeState	Update		()override;	//更新
+	const void	Draw		()const;	//描画
 private:
 	vector<short>				attackStartCount;				//攻撃開始フレーム
 	vector<short>				attackEndCount;					//攻撃終了フレーム

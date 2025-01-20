@@ -18,8 +18,6 @@ public:
 		TITLE		= 0,
 		SELECT		= 1,
 		GAME		= 2,//ƒQ[ƒ€
-		GAME_CLEAR	= 3,
-		GAME_OVER	= 4,
 	};
 
 	void SynchroScene();							//ƒV[ƒ“‚Ì“¯Šú

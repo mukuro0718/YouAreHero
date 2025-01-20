@@ -32,15 +32,15 @@ BossSlash2Attack::BossSlash2Attack(const int _attackIndex)
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
 	collider.radius				= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
 	collider.data->damage		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
-	collider.data->reactionType = static_cast<int>(Gori::PlayerReactionType::NORMAL);
+	collider.data->reactionType = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
 	//ここでのヒットストップ系の変数は、キャラクター側に与えるものになる
 	collider.data->hitStopTime	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
 	collider.data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
 	collider.data->hitStopDelay = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
 	collider.data->slowFactor	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
 
-	this->startHitCheckFrame = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_FRAME"][this->attackIndex];
-	this->endHitCheckFrame	 = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"][this->attackIndex];
+	this->startHitCheckFrame = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_PLAY_TIME"][this->attackIndex];
+	this->endHitCheckFrame	 = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_PLAY_TIME"][this->attackIndex];
 	this->positionOffset	 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"][this->attackIndex];
 	this->yOffset			 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"][this->attackIndex];
 	this->totalAnimPlayTime	 = json.GetJson(JsonManager::FileType::ENEMY)["TOTAL_ANIMATION_PLAY_TIME"][this->attackIndex];
@@ -110,7 +110,7 @@ void BossSlash2Attack::Update(const float _playTime)
 		//爪先の座標をカプセル上座標とする
 		collider.topPositon = crowTopPosition;
 
-		//フレームが定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
+		//再生時間が定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
 		if (_playTime > this->endHitCheckFrame)
 		{
 			this->isStartHitCheck = false;

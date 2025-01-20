@@ -29,7 +29,7 @@ int ScreenSetup::Initialize()
     int colorBit     = json.GetJson(JsonManager::FileType::SCREEN_SETUP)["COLOR_BIT"];
 
     //背景色の設定
-    SetBackgroundColor(100, 100, 100);
+    //SetBackgroundColor(100, 100, 100);
     //画面モードをウィンドウモードで描画するか
 #if _DEBUG
     ChangeWindowMode(TRUE);

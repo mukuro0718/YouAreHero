@@ -16,14 +16,29 @@
 /// </summary>
 TitleUI::TitleUI()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& asset = Singleton<LoadingAsset>::GetInstance();
-
 	/*画像クラスインスタンスの作成*/
-	const int TITLE_LOGO = asset.GetImage(LoadingAsset::ImageType::TITLE_LOGO);
-	const int PRESS_BUTTON_LOGO = asset.GetImage(LoadingAsset::ImageType::PRESS_BUTTON_LOGO);
-	this->image.emplace_back(new Image(TITLE_LOGO));
-	this->image.emplace_back(new Image(PRESS_BUTTON_LOGO));
+	auto& asset = Singleton<LoadingAsset>::GetInstance();
+	this->titleLogo.handle = asset.GetImage(LoadingAsset::ImageType::TITLE_LOGO);
+	this->pressLogo.handle = asset.GetImage(LoadingAsset::ImageType::PRESS_BUTTON_LOGO);
+
+	/*メンバ変数の初期化*/
+	auto& json = Singleton<JsonManager>	::GetInstance();
+	this->titleLogo.x				= json.GetJson(JsonManager::FileType::UI)["TITLE_LOGO_POSITION"][0];
+	this->titleLogo.y				= json.GetJson(JsonManager::FileType::UI)["TITLE_LOGO_POSITION"][1];
+	this->titleLogo.rate			= json.GetJson(JsonManager::FileType::UI)["TITLE_LOGO_RATE"];
+	this->titleLogo.alphaIncrease	= json.GetJson(JsonManager::FileType::UI)["TITLE_LOGO_ALPHA_INCREASE"];
+	this->titleLogo.alphaReduction	= json.GetJson(JsonManager::FileType::UI)["TITLE_LOGO_ALPHA_REDUCTION"];
+	this->titleLogo.alpha			= 0.0f;
+	this->titleLogo.angle			= 0.0f;
+	this->pressLogo.x				= json.GetJson(JsonManager::FileType::UI)["PRESS_A_POSITION"][0];
+	this->pressLogo.y				= json.GetJson(JsonManager::FileType::UI)["PRESS_A_POSITION"][1];
+	this->pressLogo.rate			= json.GetJson(JsonManager::FileType::UI)["PRESS_A_RATE"];
+	this->pressLogo.alphaIncrease	= json.GetJson(JsonManager::FileType::UI)["PRESS_A_ALPHA_INCREASE"];
+	this->pressLogo.alphaReduction	= json.GetJson(JsonManager::FileType::UI)["PRESS_A_ALPHA_REDUCTION"];
+	this->pressLogo.alpha			= 0.0f;
+	this->pressLogo.angle			= 0.0f;
+
+	/*初期化*/
 	Initialize();
 }
 
@@ -41,16 +56,12 @@ void TitleUI::Initialize()
 {
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>	 ::GetInstance();
-
-	for (int i = 0; i < this->image.size(); i++)
-	{
-		this->image[i]->alpha = 0;
-		this->image[i]->isAddAlpha = true;
-	}
-	this->image[static_cast<int>(Type::TITLE)]->SetPosition(json.GetJson(JsonManager::FileType::UI)["TITLE_LOGO_DRAW_RECT"]);
-	this->image[static_cast<int>(Type::PRESS)]->SetPosition(json.GetJson(JsonManager::FileType::UI)["PRESS_A_DRAW_RECT"]);
-	this->isPrevPressButton = false;
-	this->isFadeOut = false;
+	this->titleLogo.alpha			= 0.0f;
+	this->pressLogo.alpha			= 0.0f;
+	this->isFadeIn					= true;
+	this->alphaForTransition		= this->MAX_ALPHA;
+	this->isTransition				= true;
+	this->isEndFadeInForTransition	= false;
 }
 
 
@@ -59,44 +70,61 @@ void TitleUI::Initialize()
 /// </summary>
 void TitleUI::Update()
 {
-	/*シングルトンクラスのインスタンスを取得*/
-	auto& json = Singleton<JsonManager>	::GetInstance();
-
-	/*pad入力*/
-	bool isPressButton = IsPressButton();
-	//前にボタンが押されていたか
-
-	/*アルファ処理*/
-	int type = static_cast<int>(Type::TITLE);
-	int addAlpha = json.GetJson(JsonManager::FileType::UI)["TITLE_LOGO_ADD_ALPHA"];
-	if (!this->isFadeOut)
+	/*画面遷移用のアルファ値が残っていたら*/
+	if (this->isTransition)
 	{
-		//タイトルロゴのアルファが最大アルファ未満だったら
-		if (this->image[type]->alpha < Image::MAX_ALPHA)
+		//遷移用のフェードインが終わって居なかったら
+		if (!this->isEndFadeInForTransition)
 		{
-			//typeロゴのアルファを増加させる
-			this->image[type]->FadeIn(addAlpha);
+			this->alphaForTransition -= this->ALPHA_REDUCTION;
+			if (this->alphaForTransition <= 0)
+			{
+				this->isEndFadeInForTransition = true;
+				this->isTransition = false;
+			}
 		}
-		//違うならtypeはPRESS
 		else
 		{
-			type = static_cast<int>(Type::PRESS);
-			addAlpha = json.GetJson(JsonManager::FileType::UI)["PRESS_A_ADD_ALPHA"];
-			this->image[type]->FadeInOut(addAlpha);
+			this->alphaForTransition += this->ALPHA_INCREASE;
 		}
 	}
-
-	if (this->isFadeOut)
+	else
 	{
-		addAlpha = json.GetJson(JsonManager::FileType::UI)["TITLE_LOGO_ADD_ALPHA"];
-		this->image[static_cast<int>(Type::TITLE)]->FadeOut(addAlpha);
-	}
+		/*pad入力*/
+		bool isPressButton = IsPressButton();
 
-	/*ボタンが押されていたらアルファを最大アルファにする*/
-	if (isPressButton && !this->image[static_cast<int>(Type::TITLE)]->isAddAlpha)
-	{
-		this->isFadeOut = true;
-		this->image[static_cast<int>(Type::PRESS)]->alpha = 0;
+		/*アルファ処理*/
+		//タイトルロゴのアルファが最大アルファ未満だったらアルファを増加させる
+		if (this->titleLogo.alpha < this->MAX_ALPHA)
+		{
+			this->titleLogo.alpha += this->titleLogo.alphaIncrease;
+		}
+		//それ以外ならプレスボタンをフェードインアウトする
+		else
+		{
+			if (this->isFadeIn)
+			{
+				this->pressLogo.alpha += this->pressLogo.alphaIncrease;
+				if (this->pressLogo.alpha >= this->MAX_ALPHA)
+				{
+					this->isFadeIn = false;
+				}
+			}
+			else
+			{
+				this->pressLogo.alpha -= this->pressLogo.alphaReduction;
+				if (this->pressLogo.alpha <= 0)
+				{
+					this->isFadeIn = true;
+				}
+			}
+			//ボタンが押されていたらアルファを最大アルファにする
+			if (isPressButton)
+			{
+				this->isTransition = true;
+				this->pressLogo.alpha = 0;
+			}
+		}
 	}
 }
 
@@ -105,10 +133,16 @@ void TitleUI::Update()
 /// </summary>
 const void TitleUI::Draw()const
 {
-	for (int i = 0; i < this->image.size(); i++)
-	{
-		this->image[i]->Draw();
-	}
+	/*タイトルロゴの描画*/
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA,this->titleLogo.alpha);
+	DrawRotaGraph(this->titleLogo.x, this->titleLogo.y, this->titleLogo.rate, this->titleLogo.angle, this->titleLogo.handle, TRUE);;
+	/*プレスボタンの描画*/
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->pressLogo.alpha);
+	DrawRotaGraph(this->pressLogo.x, this->pressLogo.y, this->pressLogo.rate, this->pressLogo.angle, this->pressLogo.handle, TRUE);;
+	/*シーン遷移の描画*/
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->alphaForTransition);
+	DrawBox(0, 0, this->MAX_X, this->MAX_Y, 0, TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->MAX_ALPHA);
 }
 
 /// <summary>
@@ -117,7 +151,7 @@ const void TitleUI::Draw()const
 const bool TitleUI::IsEnd()const
 {
 	/*PRESSのアルファが変動していたら表示している*/
-	if (this->isFadeOut && this->image[static_cast<int>(Type::TITLE)]->alpha <= 0)
+	if (this->isEndFadeInForTransition && this->alphaForTransition >= this->MAX_ALPHA)
 	{
 		return true;
 	}
@@ -138,7 +172,7 @@ bool TitleUI::IsPressButton()
 	bool isPressButton = false;
 
 	/*PRESSロゴが表示されていたら*/
-	if (this->image[static_cast<int>(Type::PRESS)]->alpha > 0)
+	if (this->pressLogo.alpha > 0)
 	{
 			isPressButton = (pad & PAD_INPUT_4);
 			//前にボタン入力がない&今ボタン入力がある

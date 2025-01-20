@@ -12,11 +12,10 @@ public:
 	friend class Singleton<UIManager>;
 	virtual ~UIManager();//デストラクタ
 
-	void Initialize();		//初期化
-	void Update();		//更新
-	const void Draw()const;//描画
-	const bool IsContinue()const;
-	const bool IsDraw()const;
+		  void Initialize();	 //初期化
+		  void Update	 ();	 //更新
+	const void Draw		 ()const;//描画
+	const bool IsDraw	 ()const;//描画しているか
 
 private:
 	/*内部処理関数*/

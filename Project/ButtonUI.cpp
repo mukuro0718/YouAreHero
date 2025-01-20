@@ -19,23 +19,28 @@ ButtonUI::ButtonUI()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
 
-	this->table = asset.GetImage(LoadingAsset::ImageType::POTION_TABLE);
-	this->potion = asset.GetImage(LoadingAsset::ImageType::POTION);
-
-	this->operationFont = asset.GetFont(LoadingAsset::FontType::MINTYO_80_64);
-	this->itemFont = asset.GetFont(LoadingAsset::FontType::MINTYO_30_32);
-	this->textList.emplace_back(asset.GetImage(LoadingAsset::ImageType::OPERATION_WALK));
-	this->textList.emplace_back(asset.GetImage(LoadingAsset::ImageType::OPERATION_RUN));
-	this->textList.emplace_back(asset.GetImage(LoadingAsset::ImageType::OPERATION_AVOID));
-	this->textList.emplace_back(asset.GetImage(LoadingAsset::ImageType::OPERATION_GUARD));
-	this->textList.emplace_back(asset.GetImage(LoadingAsset::ImageType::OPERATION_DEVALUTION));
-	this->textList.emplace_back(asset.GetImage(LoadingAsset::ImageType::OPERATION_ROUNDING_UP));
-	this->textList.emplace_back(asset.GetImage(LoadingAsset::ImageType::OPERATION_DIVE_CUTTING));
-	this->textList.emplace_back(asset.GetImage(LoadingAsset::ImageType::OPERATION_ROTARY_CUTTER));
-	this->textList.emplace_back(asset.GetImage(LoadingAsset::ImageType::OPERATION_USE_ITEM));
-	this->textList.emplace_back(asset.GetImage(LoadingAsset::ImageType::OPERATION_SWORD_DELIVERY));
-	this->textList.emplace_back(asset.GetImage(LoadingAsset::ImageType::OPERATION_SWORD_DRAWING));
-
+	//フォント
+	this->operationFont	 = asset.GetFont(LoadingAsset::FontType::BUTTON_OPERATION);
+	this->itemFont		 = asset.GetFont(LoadingAsset::FontType::ITEM_NUM);
+	//回復ポーション用画像
+	this->table			 = asset.GetImage(LoadingAsset::ImageType::POTION_TABLE);
+	this->potion		 = asset.GetImage(LoadingAsset::ImageType::POTION);
+	//説明背景
+	this->operationTable = asset.GetImage(LoadingAsset::ImageType::OPERATION_TABLE);
+	//説明文字
+	this->operationText.emplace_back("移動");
+	this->operationText.emplace_back("ダッシュ");
+	this->operationText.emplace_back("回避");
+	this->operationText.emplace_back("ガード");
+	this->operationText.emplace_back("切り下げ");
+	this->operationText.emplace_back("切り上げ");
+	this->operationText.emplace_back("飛び込み切り");
+	this->operationText.emplace_back("回転切り");
+	this->operationText.emplace_back("アイテム使用");
+	this->operationText.emplace_back("納刀");
+	this->operationText.emplace_back("抜刀");
+	this->operationText.emplace_back("ロックオン");
+	//表示するボタンのリスト
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::A_BUTTON));
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::B_BUTTON));
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::X_BUTTON));
@@ -45,6 +50,7 @@ ButtonUI::ButtonUI()
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::RIGHT_BUMPER));
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::BUTTON_SET_1));
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::BUTTON_SET_2));
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::PUSH_RIGHT_STICK));
 
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->changeDisplayIndexType.emplace_back(static_cast<int>(PlayerController::PlayerState::COMBO_1));
@@ -98,7 +104,6 @@ void ButtonUI::Update()
 			return;
 		}
 	}
-	/*回復アイコンのリキャストタイムを表示できるようにしたい*/
 	
 }
 
@@ -131,34 +136,26 @@ void ButtonUI::DrawItem()
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	/*変数の準備*/
-	vector<int> potionPositon = json.GetJson(JsonManager::FileType::UI)["ITEM_POSITION"];
-	vector<int> tablePosition = json.GetJson(JsonManager::FileType::UI)["ITEM_TABLE_POSITION"];
-	vector<int> buttonPosition = json.GetJson(JsonManager::FileType::UI)["ITEM_BUTTON_POSITION"];
-	vector<int> numPosition = json.GetJson(JsonManager::FileType::UI)["ITEM_NUM_POSITION"];
-	vector<int> numTablePosition = json.GetJson(JsonManager::FileType::UI)["ITEM_NUM_TABLE_POSITION"];
-	int radius = json.GetJson(JsonManager::FileType::UI)["RADIUS"];
-	int thickness = json.GetJson(JsonManager::FileType::UI)["THICKNESS"];
-	vector<int> tableColorBase = json.GetJson(JsonManager::FileType::UI)["TABLE_COLOR"];
-	vector<int> numColorBase = json.GetJson(JsonManager::FileType::UI)["NUM_COLOR"];
-	int tableColor = GetColor(tableColorBase[0], tableColorBase[1], tableColorBase[2]);
-	int numColor = GetColor(numColorBase[0], numColorBase[1], numColorBase[2]);
-	int buttonType = json.GetJson(JsonManager::FileType::UI)["ITEM_BUTTON_TYPE"];
+	vector<int> potionPositon	 = json.GetJson(JsonManager::FileType::UI)["ITEM_POSITION"];
+	vector<int> tablePosition	 = json.GetJson(JsonManager::FileType::UI)["ITEM_TABLE_POSITION"];
+	vector<int> buttonPosition	 = json.GetJson(JsonManager::FileType::UI)["ITEM_BUTTON_POSITION"];
+	vector<int> numPosition		 = json.GetJson(JsonManager::FileType::UI)["ITEM_NUM_POSITION"];
+	int			buttonType		 = json.GetJson(JsonManager::FileType::UI)["ITEM_BUTTON_TYPE"];
 
 	/*jsonデータの代入*/
 	const int itemNum = player.GetHealOrbNum();
 
-	/*アイテムの描画*/
-	DrawExtendGraph(potionPositon[0], potionPositon[1], potionPositon[2], potionPositon[3], this->table, TRUE);
-	
 	/*テーブルの描画*/
-	DrawExtendGraph(tablePosition[0], tablePosition[1], tablePosition[2], tablePosition[3], this->potion, TRUE);
+	DrawExtendGraph(tablePosition[0], tablePosition[1], tablePosition[2], tablePosition[3], this->table, TRUE);
+	
+	/*アイテムの描画*/
+	DrawExtendGraph(potionPositon[0], potionPositon[1], potionPositon[2], potionPositon[3], this->potion, TRUE);
 	
 	/*ボタンの描画*/
 	DrawExtendGraph(buttonPosition[0], buttonPosition[1], buttonPosition[2], buttonPosition[3], this->buttonList[buttonType], TRUE);
 
 	/*アイテムの数*/
-	DrawCircle(numTablePosition[0], numTablePosition[1], radius, tableColor,1);
-	DrawFormatStringToHandle(numPosition[0], numPosition[1], numColor, this->itemFont, "×%d", itemNum);
+	DrawFormatStringToHandle(numPosition[0], numPosition[1], this->TEXT_COLOR, this->itemFont, "×%d", itemNum);
 }
 
 void ButtonUI::DrawButton()
@@ -187,18 +184,20 @@ void ButtonUI::DrawTextImage()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& input = Singleton<InputManager>::GetInstance();
-	auto& screen = Singleton<ScreenSetup>::GetInstance();
 
-	vector<int> position = json.GetJson(JsonManager::FileType::UI)["DISPLAY_TEXT_POSITION"];
-	int width = json.GetJson(JsonManager::FileType::UI)["DISPLAY_TEXT_WIDTH"];
-	int height = json.GetJson(JsonManager::FileType::UI)["DISPLAY_TEXT_HEIGHT"];
-	vector<int> drawList = this->displayTextMap[this->displayIndex];
+	vector<int> position	 = json.GetJson(JsonManager::FileType::UI)["OPERATION_TEXT_TABLE_POSITION"];
+	int			tableYOffset = json.GetJson(JsonManager::FileType::UI)["OPERATION_TABLE_Y_OFFSET"];
+	int			textYOffset	 = json.GetJson(JsonManager::FileType::UI)["OPERATION_TEXT_Y_OFFSET"];
+	vector<int>	textXOffset	 = json.GetJson(JsonManager::FileType::UI)["OPERATION_TEXT_X_OFFSET"];
+	int			height		 = json.GetJson(JsonManager::FileType::UI)["OPERATION_TABLE_HEIGHT"];
+	int			width		 = json.GetJson(JsonManager::FileType::UI)["OPERATION_TABLE_WIDTH"];
+	vector<int> drawList	 = this->displayTextMap[this->displayIndex];
 	for (int i = 0; i < drawList.size(); i++)
 	{
 		int textType = drawList[i];
-		DrawExtendGraph(position[0], position[1], position[0] + width, position[1] + height, this->textList[textType], TRUE);
-		position[1] += height;
+		DrawExtendGraph(position[0], position[1], position[0] + width, position[1] + height, this->operationTable, TRUE);
+		DrawStringToHandle(position[0] + textXOffset[textType], position[1] + textYOffset, this->operationText[textType].c_str(), this->TEXT_COLOR, this->operationFont);
+		position[1] += tableYOffset;
 	}
 }
 /// <summary>

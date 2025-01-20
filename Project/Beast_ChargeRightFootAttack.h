@@ -11,8 +11,9 @@ public:
 	Beast_ChargeRightFootAttack();//コンストラクタ
 	~Beast_ChargeRightFootAttack();//デストラクタ
 
-	NodeState Update()override;//更新
-	const void Draw()const;//描画
+	void		Initialize	();			//初期化
+	NodeState	Update		()override;	//更新
+	const void	Draw		()const;	//描画
 private:
 	short						attackStartCount;				//攻撃開始フレーム
 	short						attackEndCount;					//攻撃終了フレーム

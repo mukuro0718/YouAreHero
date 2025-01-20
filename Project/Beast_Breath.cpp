@@ -47,7 +47,7 @@ Beast_Breath::Beast_Breath()
 	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
 	this->collider->radius				= json.GetJson(JsonManager::FileType::BEAST)["BREATH_RADIUS"];
 	this->collider->data->damage		= json.GetJson(JsonManager::FileType::BEAST)["BREATH_DAMAGE"];
-	this->collider->data->reactionType	= static_cast<int>(Gori::PlayerReactionType::NORMAL);
+	this->collider->data->reactionType	= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
 	this->collider->data->hitStopTime	= json.GetJson(JsonManager::FileType::BEAST)["BREATH_HIT_STOP_TIME"];
 	this->collider->data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
 	this->collider->data->hitStopDelay  = json.GetJson(JsonManager::FileType::BEAST)["BREATH_HIT_STOP_DELAY"];
@@ -63,6 +63,15 @@ Beast_Breath::Beast_Breath()
 Beast_Breath::~Beast_Breath()
 {
 
+}
+/// <summary>
+/// èâä˙âª
+/// </summary>
+void Beast_Breath::Initialize()
+{
+	this->frameCount  = 0;
+	this->isFixRotate = false;
+	this->stage		  = AnimationStage::START;
 }
 
 /// <summary>

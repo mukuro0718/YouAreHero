@@ -55,7 +55,7 @@ void Skydome::Initialize()
 void Skydome::Update()
 {
 	/*‰ñ“]*/
-	this->rotation.y += this->addRotate;
+	this->rotation.y -= this->addRotate;
 	MV1SetRotationXYZ(this->model,this->rotation);
 }
 

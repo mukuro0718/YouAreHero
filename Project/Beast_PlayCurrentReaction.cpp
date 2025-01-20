@@ -20,6 +20,16 @@ Beast_PlayCurrentReaction::~Beast_PlayCurrentReaction()
 
 }
 
+
+/// <summary>
+/// ‰Šú‰»
+/// </summary>
+void Beast_PlayCurrentReaction::Initialize()
+{
+	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
+	rootNode.Initialize();
+}
+
 /// <summary>
 /// XVˆ—
 /// </summary>

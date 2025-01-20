@@ -6,8 +6,10 @@
     "Asset/Image/UI/Bar/Player_hp_bar.png",
     "Asset/Image/UI/Bar/Player_stamina_bar.png",
 
-    "Asset/Image/UI/Logo/Press_button_logo.png",
-    "Asset/Image/UI/Logo/Title_logo.png",
+    "Asset/Image/UI/Logo/PressButtonLogo.png",
+    "Asset/Image/UI/Logo/TitleLogo.png",
+    "Asset/Image/UI/Logo/QuestClear.png",
+    "Asset/Image/UI/Logo/QuestFailed.png",
 
     "Asset/Image/UI/Button/A_button.png",
     "Asset/Image/UI/Button/B_button.png",
@@ -20,9 +22,11 @@
     "Asset/Image/UI/Button/Right_bumper.png",
     "Asset/Image/UI/Button/button_set_1.png",
     "Asset/Image/UI/Button/button_set_2.png",
+    "Asset/Image/UI/Button/Left_stick_input.png",
 
     "Asset/Image/UI/Icon/hpPotion.png",
     "Asset/Image/UI/Icon/PotionTable.png",
+    "Asset/Image/UI/Icon/LockOn.png",
 
     "Asset/Image/UI/Other/BackGround.png",
 
@@ -39,24 +43,12 @@
     "Asset/Image/UI/Select/SelectImageTable.png",
     "Asset/Image/UI/Select/SelectDrawRectBackGround.png",
 
-    "Asset/Image/UI/Operation/walk.png",
-    "Asset/Image/UI/Operation/dash.png",
-    "Asset/Image/UI/Operation/avoid.png",
-    "Asset/Image/UI/Operation/guard.png",
-    "Asset/Image/UI/Operation/devaluation.png",
-    "Asset/Image/UI/Operation/roundingUp.png",
-    "Asset/Image/UI/Operation/diveCutting.png",
-    "Asset/Image/UI/Operation/rotaryCutter.png",
-    "Asset/Image/UI/Operation/useItem.png",
-    "Asset/Image/UI/Operation/swordDelivery.png",
-    "Asset/Image/UI/Operation/swordDrawing.png",
+    "Asset/Image/UI/Operation/OperationTable.png",
 
     "Asset/Texture/Character/Boss.fbm/Mutant_diffuse.png",
     "Asset/Texture/Character/Boss.fbm/Mutant_diffuse_2.png",
-    "Asset/Texture/Character/Boss.fbm/Mutant_diffuse_3.png",
+    "Asset/Texture/Character/Boss.fbm/Mutant_diffuse_3.png"
 
-    "Asset/Image/UI/Button/Left_stick_input.png",
-    "Asset/Image/UI/Icon/LockOn.png"
 
   ]
 }

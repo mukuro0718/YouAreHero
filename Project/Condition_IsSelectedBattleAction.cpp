@@ -28,7 +28,7 @@ Condition_IsSelectedBattleAction::~Condition_IsSelectedBattleAction()
 /// </summary>
 Condition_IsSelectedBattleAction::NodeState Condition_IsSelectedBattleAction::Update()
 {
-	/*部位破壊されていたら成功*/
+	/*攻撃アクションが選択されていたら成功*/
 	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 	if (rootNode.GetIsSelectedBattleAction())
 	{

@@ -31,20 +31,20 @@ BossStabAttack::BossStabAttack(const int _attackIndex)
 
 	/*コライダーの初期化*/
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-	collider.radius = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
-	collider.data->damage = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
+	collider.radius				= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
+	collider.data->damage		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
 	collider.data->reactionType = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
 	//ここでのヒットストップ系の変数は、キャラクター側に与えるものになる
-	collider.data->hitStopTime = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
-	collider.data->hitStopType = static_cast<int>(HitStop::Type::STOP);
+	collider.data->hitStopTime	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
+	collider.data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
 	collider.data->hitStopDelay = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
-	collider.data->slowFactor = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
+	collider.data->slowFactor	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
 
-	this->startHitCheckFrame = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_FRAME"][this->attackIndex];
-	this->endHitCheckFrame = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_FRAME"][this->attackIndex];
-	this->positionOffset = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"][this->attackIndex];
-	this->yOffset = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"][this->attackIndex];
-
+	this->startHitCheckFrame = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_PLAY_TIME"][this->attackIndex];
+	this->endHitCheckFrame	 = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_PLAY_TIME"][this->attackIndex];
+	this->positionOffset	 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET"][this->attackIndex];
+	this->yOffset			 = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_OFFSET_Y"][this->attackIndex];
+	this->totalAnimPlayTime	 = json.GetJson(JsonManager::FileType::ENEMY)["TOTAL_ANIMATION_PLAY_TIME"][this->attackIndex];
 }
 
 /// <summary>
@@ -85,10 +85,8 @@ void BossStabAttack::Update(const float _playTime)
 	/*当たり判定の確認が開始している*/
 	if (this->isStartHitCheck)
 	{
-		//フレームを増やす
-		this->frameCount++;
-		//フレームが定数を超えていなかったら早期リターン
-		if (this->frameCount < this->startHitCheckFrame)return;
+		//再生時間が定数を超えていなかったら早期リターン
+		if (_playTime < this->startHitCheckFrame)return;
 
 		auto& enemy = Singleton<EnemyManager>::GetInstance();
 		auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
@@ -102,8 +100,8 @@ void BossStabAttack::Update(const float _playTime)
 		//当たり判定位置の更新
 		collider.rigidbody.SetPosition(MV1GetFramePosition(enemy.GetModelHandle(), 9));
 		collider.topPositon = MV1GetFramePosition(enemy.GetModelHandle(), 11);
-		//フレームが定数を超えていたら当たり判定開始フラグを下す
-		if (this->frameCount > this->endHitCheckFrame || (this->isNotOnHit && !collider.data->isDoHitCheck))
+		//再生時間が定数を超えている、当たり判定フラグが降りていたら当たり判定開始フラグを下す
+		if (_playTime > this->endHitCheckFrame)
 		{
 			this->isStartHitCheck = false;
 			collider.data->isDoHitCheck = false;

@@ -19,12 +19,12 @@ public:
 		TUTORIAL = 3,//チュートリアル
 	};
 
-	void Initialize();//初期化
-	void Update();//
+	void Initialize	();//初期化
+	void Update		();//更新
 
-	const int GetEnemyType()const { return this->enemyType; }
-	const bool GetIsProvDecide()const { return this->isProvDecide; }
-	const bool GetIsFinalDecide()const { return this->isFinalDecide; }
+	const int  GetEnemyType		()const { return this->enemyType; }
+	const bool GetIsProvDecide	()const { return this->isProvDecide; }
+	const bool GetIsFinalDecide	()const { return this->isFinalDecide; }
 private:
 	 EnemyChanger();
 	~EnemyChanger();

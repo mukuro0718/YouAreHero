@@ -11,7 +11,7 @@ public:
 	 Condition_IsNowStateIsSameAsTheSpecifiedState(const BeastBehaviorTree::BeastState _specifiedState);//コンストラクタ
 	~Condition_IsNowStateIsSameAsTheSpecifiedState();//デストラクタ
 
-	NodeState Update	() override;//更新
+	NodeState Update() override;//更新
 private:
 	const BeastBehaviorTree::BeastState SPECIFIED_STATE;
 };

@@ -84,13 +84,8 @@ void CollisionManager::Update()
 		//次の座標とVelocityを出す
 		VECTOR nextPosition = VAdd(position, velocity);
 		item->rigidbody.SetVelocity(velocity);
-		//もともとの情報、予定情報をデバッグ表示
-		LONGLONG startTime = GetNowHiPerformanceCount();
 		//予定ポジション設定
 		item->SetNextPosition(nextPosition);
-	LONGLONG endTime = GetNowHiPerformanceCount();
-	LONGLONG frameTime = endTime - startTime;
-	printfDx("COLL_FRAMETIME:%d\n", frameTime);
 	}
 
 	/*当たり判定チェック*/
@@ -423,7 +418,7 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		if (!primaryColliderData.isUseCollWithChara || !secondaryColliderData.isUseCollWithChara)return;
 
 		//そのままだとちょうど当たる位置になるので少し余分に離す
-		float awayDist = primaryColliderData.radius + secondaryColliderData.radius - secondaryToPrimarySize + 0.000001f;
+		float awayDist = primaryColliderData.radius + secondaryColliderData.radius - secondaryToPrimarySize + 0.000005f;
 
 		VECTOR fixVector = VScale(secondaryToPrimaryNorm, awayDist);
 		fixVector.y = 0.0f;

@@ -53,9 +53,13 @@ PlayerController::PlayerController()
 	connectedActionsOfKnockDown.emplace_back(static_cast<int>(PlayerState::RUN));
 	this->stateTheIsCancel.emplace(static_cast<int>(PlayerState::KNOCK_UP), connectedActionsOfKnockDown);
 
-	this->blockStaminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"];
-	this->avoidStaminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["AVOID_STAMINA_CONSUMPTION"];
-	this->runStaminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"];
+	this->blockStaminaConsumption		 = json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"];
+	this->avoidStaminaConsumption		 = json.GetJson(JsonManager::FileType::PLAYER)["AVOID_STAMINA_CONSUMPTION"];
+	this->runStaminaConsumption			 = json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"];
+	this->weakAttackStaminaConsumption1	 = json.GetJson(JsonManager::FileType::PLAYER)["COMBO1_STAMINA_CONSUMPTION"];
+	this->weakAttackStaminaConsumption2 = json.GetJson(JsonManager::FileType::PLAYER)["COMBO2_STAMINA_CONSUMPTION"];
+	this->weakAttackStaminaConsumption3	 = json.GetJson(JsonManager::FileType::PLAYER)["COMBO3_STAMINA_CONSUMPTION"];
+	this->strongAttackStaminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_STAMINA_CONSUMPTION"];
 }
 
 /// <summary>
@@ -80,7 +84,7 @@ void PlayerController::Initialize()
 /// </summary>
 bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEndAction, const bool _isDrawSword, const CharacterData& _data)
 {
-	PlayerState nextState;
+	PlayerState nextState = PlayerState::IDLE;
 
 	//auto& json = Singleton<JsonManager>  ::GetInstance();
 	auto& input = Singleton<InputManager>  ::GetInstance();
@@ -144,20 +148,29 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	}
 
 	/*ŽãUŒ‚*/
-	else if (nowPadState & InputManager::PAD_B)
+	else if ( nowPadState & InputManager::PAD_B)
 	{
 		if (_isDrawSword)
 		{
 			switch (this->nowState)
 			{
 			case static_cast<int>(PlayerState::COMBO_1):
-				nextState = PlayerState::COMBO_2;
+				if (CanAction(_data.stamina, this->weakAttackStaminaConsumption2))
+				{
+					nextState = PlayerState::COMBO_2;
+				}
 				break;
 			case static_cast<int>(PlayerState::COMBO_2):
-				nextState = PlayerState::COMBO_3;
+				if (CanAction(_data.stamina, this->weakAttackStaminaConsumption3))
+				{
+					nextState = PlayerState::COMBO_3;
+				}
 				break;
 			default:
-				nextState = PlayerState::COMBO_1;
+				if (CanAction(_data.stamina, this->weakAttackStaminaConsumption1))
+				{
+					nextState = PlayerState::COMBO_1;
+				}
 				break;
 			}
 		}
@@ -172,7 +185,10 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	{
 		if (_isDrawSword)
 		{
-			nextState = PlayerState::STRONG_ATTACK;
+			if (CanAction(_data.stamina, this->strongAttackStaminaConsumption))
+			{
+				nextState = PlayerState::STRONG_ATTACK;
+			}
 		}
 		else
 		{

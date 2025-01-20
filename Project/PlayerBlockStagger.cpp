@@ -14,6 +14,8 @@
 /// </summary>
 PlayerBlockStagger::PlayerBlockStagger()
 	: PlayerAction()
+	, MAX_SPEED(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAGGER_SPEED"])
+	, DECEL(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["ACCEL"])
 {
 	auto& json = Singleton<JsonManager>  ::GetInstance();
 	this->staminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"];
@@ -39,6 +41,7 @@ void PlayerBlockStagger::Initialize()
 	this->isChangeAction = false;
 	this->isEndAction = false;
 	this->frameCount = 0;
+	this->nowSpeed = 0;
 }
 
 /// <summary>
@@ -54,11 +57,21 @@ void PlayerBlockStagger::Finalize()
 /// </summary>
 void PlayerBlockStagger::Update(Player& _player)
 {
-	/*移動速度が０以上の時処理を行う*/
+	/*移動速度の更新*/
+	if (this->nowSpeed != 0)
+	{
+		this->nowSpeed += this->DECEL;
+		if (this->nowSpeed > 0.0f)
+		{
+			this->nowSpeed = 0.0f;
+		}
+		_player.SetSpeed(this->nowSpeed);
+	}
+
 	if (_player.GetSpeed() != 0)
 	{
 		MoveData data;
-		data.Set(_player.GetNextRotation(), 0.0f, true, false);
+		data.Set(_player.GetNextRotation(), this->nowSpeed, true, false);
 		Move(_player, data);
 	}
 
@@ -72,16 +85,8 @@ void PlayerBlockStagger::Update(Player& _player)
 		_player.GetPlayerData().isHit = false;
 		//スタミナを減らす
 		_player.CalcStamina(this->staminaConsumption, this->maxStamina);
-	}
-
-	/*フレーム計測*/
-	if (!this->isChangeAction)
-	{
+		this->nowSpeed = this->MAX_SPEED;
 		this->frameCount++;
-		if (this->frameCount >= this->cancelableFrame)
-		{
-			this->isChangeAction = true;
-		}
 	}
 
 	/*アニメーションの再生*/

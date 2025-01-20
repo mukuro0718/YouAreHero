@@ -5,6 +5,7 @@
 #include "UseJson.h"
 #include "ActionParameter.h"
 #include "BossAction.h"
+#include "Rigidbody.h"
 #include "Character.h"
 #include "Enemy.h"
 #include "Boss.h"
@@ -57,6 +58,27 @@ void BossDeathAction::Update(Boss& _boss)
 		_boss.SetAnimationPlayTime(this->animationPlayTime);//アニメーション再生時間の設定
 
 	}
+
+	/*移動処理*/
+	{
+		//使用する値の準備
+		const float  SPEED = 0.0f;								 //スピード
+		const VECTOR ROTATION = _boss.GetRigidbody().GetRotation();//回転率
+		VECTOR direction = VGet(0.0f, 0.0f, 0.0f);		 //向き
+		//スピードの設定
+		_boss.SetSpeed(SPEED);
+		//回転率をもとに、移動する向きを出す
+		direction = VGet(-sinf(ROTATION.y), 0.0f, -cosf(ROTATION.y));
+		//向きベクトルを正規化
+		direction = VNorm(direction);
+		//移動ベクトルを出す（重力を加算するため、Yベクトルのみ前のベクトルを使用する）
+		VECTOR aimVelocity = VScale(direction, SPEED);					//算出された移動ベクトル
+		VECTOR prevVelocity = _boss.GetRigidbody().GetVelocity();				//前の移動ベクトル
+		VECTOR newVelocity = VGet(aimVelocity.x, prevVelocity.y, aimVelocity.z);//新しい移動ベクトル
+		//移動ベクトルの設定
+		_boss.SetVelocity(newVelocity);
+	}
+
 
 	/*アニメーションの再生*/
 	_boss.PlayAnimation();
