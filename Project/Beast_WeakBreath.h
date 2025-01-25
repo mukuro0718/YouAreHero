@@ -15,6 +15,10 @@ public:
 	NodeState	Update		()override;	//更新
 	const void	Draw		()const;	//描画
 private:
+	/*定数*/
+	const int FIX_ROTATE_COUNT;//回転補正数
+
+	/*メンバ変数*/
 	short						attackStartCount;				//攻撃開始フレーム
 	short						attackEndCount;					//攻撃終了フレーム
 	short						frameCount;						//フレームカウント

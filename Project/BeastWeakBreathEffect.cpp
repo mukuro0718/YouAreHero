@@ -71,14 +71,14 @@ void BeastWeakBreathEffect::Update()
 		{
 			//再生するエフェクトのハンドルを取得
 			this->playingEffectHandle[this->useEffectNum] = PlayEffekseer3DEffect(this->effectResourceHandle);
-			//回転率、拡大率、座標を設定
-			SetScalePlayingEffekseer3DEffect(this->playingEffectHandle[this->useEffectNum], this->transform->GetScale().x, this->transform->GetScale().y, this->transform->GetScale().z);
+			this->isPlay[this->useEffectNum] = true;
 			VECTOR nosePosition = MV1GetFramePosition(enemy.GetModelHandle(), this->useFrameIndex2);
 			VECTOR direction = VSub(nosePosition, facePosition);
 			direction.y = 0.0f;
 			this->velocity[this->useEffectNum] = VScale(VNorm(direction), this->moveSpeed);
 			this->position[this->useEffectNum] = facePosition;
-			this->isPlay[this->useEffectNum] = true;
+			//回転率、拡大率、座標を設定
+			SetScalePlayingEffekseer3DEffect(this->playingEffectHandle[this->useEffectNum], this->transform->GetScale().x, this->transform->GetScale().y, this->transform->GetScale().z);
 			this->useEffectNum++;
 		}
 	}
@@ -93,10 +93,14 @@ void BeastWeakBreathEffect::Update()
 			//最大距離を超えていたら初期位置に戻す
 			if (distance >= this->maxDistance)
 			{
+				VECTOR nosePosition = MV1GetFramePosition(enemy.GetModelHandle(), this->useFrameIndex2);
+				VECTOR direction = VSub(nosePosition, facePosition);
+				direction.y = 0.0f;
+				this->velocity[i] = VScale(VNorm(direction), this->moveSpeed);
 				this->position[i] = facePosition;
 			}
-			SetPosPlayingEffekseer3DEffect(this->playingEffectHandle[i], this->position[i].x, this->position[i].y, this->position[i].z);
 		}
+		SetPosPlayingEffekseer3DEffect(this->playingEffectHandle[i], this->position[i].x, this->position[i].y, this->position[i].z);
 	}
 	//Effekseerにより再生中のエフェクトを更新する。
 	UpdateEffekseer3D();

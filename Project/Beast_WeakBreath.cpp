@@ -28,6 +28,7 @@ Beast_WeakBreath::Beast_WeakBreath()
 	, frameIndexUsedCapsuleDirection2(0)
 	, collider						 (nullptr)
 	, breathLength					 (0.0f)
+	, FIX_ROTATE_COUNT				 (Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::BEAST)["ROTATE_FIX_COUNT"])
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->actionType		= static_cast<int>(BeastBehaviorTree::ActionType::WEAK_BREATH);
@@ -42,6 +43,7 @@ Beast_WeakBreath::Beast_WeakBreath()
 	this->breathLength		= json.GetJson(JsonManager::FileType::BEAST)["WEAK_BREATH_LENGTH"];
 	this->frameIndexUsedCapsuleDirection1 = json.GetJson(JsonManager::FileType::BEAST)["WEAK_BREATH_FRAME_INDEX_USED_CAPSULE_DIRECTION"][0];
 	this->frameIndexUsedCapsuleDirection2 = json.GetJson(JsonManager::FileType::BEAST)["WEAK_BREATH_FRAME_INDEX_USED_CAPSULE_DIRECTION"][1];
+	this->isFixRotate					  = true;
 
 	/*コライダーの作成*/
 	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
@@ -70,7 +72,7 @@ Beast_WeakBreath::~Beast_WeakBreath()
 void Beast_WeakBreath::Initialize()
 {
 	this->frameCount  = 0;
-	this->isFixRotate = false;
+	this->isFixRotate = true;
 }
 
 /// <summary>
@@ -96,10 +98,10 @@ Beast_WeakBreath::NodeState Beast_WeakBreath::Update()
 	}
 
 	/*コライダーの更新*/
+	this->frameCount++;
 	//指定フレームを超えていなければフレームの増加
 	if (this->frameCount < this->attackEndCount)
 	{
-		this->frameCount++;
 		//指定フレームを超えていたら
 		if (this->frameCount == this->attackStartCount)
 		{
@@ -135,10 +137,13 @@ Beast_WeakBreath::NodeState Beast_WeakBreath::Update()
 	enemy.PlayAnimation();
 
 	/*移動*/
-	if (enemy.GetSpeed() != 0.0f || this->frameCount == 1)
+	if (this->isFixRotate)
 	{
-		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
-		enemy.UpdateVelocity(false);
+		enemy.Move(this->maxSpeed, this->accel, this->decel, false);
+		if (this->frameCount >= this->FIX_ROTATE_COUNT)
+		{
+			this->isFixRotate = false;
+		}
 	}
 
 	//アニメーションが終了していたら
@@ -151,6 +156,7 @@ Beast_WeakBreath::NodeState Beast_WeakBreath::Update()
 		this->frameCount = 0;
 		this->collider->data->isDoHitCheck = false;
 		this->collider->data->isHitAttack = false;
+		this->isFixRotate = true;
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//それ以外は実行中を返す

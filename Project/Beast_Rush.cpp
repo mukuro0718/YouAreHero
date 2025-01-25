@@ -29,6 +29,7 @@ Beast_Rush::Beast_Rush()
 	, frameIndexUsedCapsuleDirection2(0)
 	, stage							 (AnimationStage::START)
 	, collider						 (nullptr)
+	, STOP_DISTANCE					 (Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::BEAST)["STOP_RUSH_DISTANCE"])
 {
 	this->animationSet.emplace(AnimationStage::START, static_cast<int>(Beast::AnimationType::RUSH_START));
 	this->animationSet.emplace(AnimationStage::LOOP, static_cast<int>(Beast::AnimationType::RUSH_LOOP));
@@ -41,7 +42,7 @@ Beast_Rush::Beast_Rush()
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->actionType		= static_cast<int>(BeastBehaviorTree::ActionType::BREATH);
 	this->interval			= json.GetJson(JsonManager::FileType::BEAST)["ACTION_INTERVAL"][this->actionType];
-	this->maxSpeed			= json.GetJson(JsonManager::FileType::BEAST)["RUN_SPEED"];
+	this->maxSpeed			= json.GetJson(JsonManager::FileType::BEAST)["RUSH_SPEED"];
 	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
 	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
 	this->attackStartCount	= json.GetJson(JsonManager::FileType::BEAST)["RUSH_ATTACK_START_COUNT"];
@@ -98,20 +99,20 @@ Beast_Rush::NodeState Beast_Rush::Update()
 	/*コライダーの更新*/
 	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
 	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
-	//指定フレームを超えていなければフレームの増加
-	if (this->frameCount < this->attackEndCount)
+	//アニメーションがLOOPだったらかつフレームカウントが1だったら当たり判定フラグを立てる
+	if (this->stage == AnimationStage::LOOP)
 	{
 		this->frameCount++;
 		//指定フレームを超えていたら
-		if (this->frameCount >= this->attackStartCount)
+		if (this->frameCount == 1)
 		{
 			this->collider->data->isDoHitCheck = true;
 		}
-		if (this->frameCount >= this->attackEndCount)
-		{
-			this->collider->data->isDoHitCheck = false;
-			this->collider->data->isHitAttack = false;
-		}
+	}
+	else
+	{
+		this->collider->data->isDoHitCheck = false;
+		this->collider->data->isHitAttack = false;
 	}
 	//あたり判定が取れる状態だったら
 	if (this->collider->data->isDoHitCheck)
@@ -145,21 +146,18 @@ Beast_Rush::NodeState Beast_Rush::Update()
 
 	/*移動*/
 	float maxSpeed = 0.0f;
-	if (this->frameCount >= this->attackStartCount)
+	//もしアニメーションがSTARTなら移動目標を更新して回転
+	if (this->stage == AnimationStage::START)
 	{
-		if (this->frameCount < this->attackEndCount)
-		{
-			maxSpeed = this->maxSpeed;
-		}
-	}
-	else
-	{
-		//目標までのベクトルを出す
 		auto& player = Singleton<PlayerManager>::GetInstance();
-		VECTOR toTarget = VSub(enemy.GetRigidbody().GetPosition(), player.GetRigidbody().GetPosition());
-		//正規化
-		//toTarget = VNorm(toTarget);
+		enemy.SetNowMoveTarget(player.GetRigidbody().GetPosition());
+		VECTOR toTarget = VSub(enemy.GetRigidbody().GetPosition(), enemy.GetNowMoveTarget());
 		enemy.UpdateRotation(toTarget);
+	}
+	//もしアニメーションがLOOP中なら速度を入れる
+	else if (this->stage == AnimationStage::LOOP)
+	{
+		maxSpeed = this->maxSpeed;
 	}
 	//移動速度の更新
 	enemy.UpdateSpeed(maxSpeed, this->accel, this->decel);
@@ -168,19 +166,18 @@ Beast_Rush::NodeState Beast_Rush::Update()
 
 	/*状態を返す*/
 	//アニメーションが終了していたら
-	if (enemy.GetIsChangeAnimation())
+	if (this->stage == AnimationStage::LOOP)
 	{
-		if (this->stage == AnimationStage::LOOP)
+		VECTOR toTarget = VSub(enemy.GetRigidbody().GetPosition(), enemy.GetNowMoveTarget());
+		if (VSquareSize(toTarget) < this->STOP_DISTANCE)
 		{
-			if (this->frameCount >= this->attackEndCount)
-			{
-				this->stage = this->nextStageSet[this->stage];
-			}
+			this->stage = AnimationStage::NORMAL_END;
 		}
-		else
-		{
-			this->stage = this->nextStageSet[this->stage];
-		}
+		return ActionNode::NodeState::RUNNING;
+	}
+	else if (enemy.GetIsChangeAnimation())
+	{
+		this->stage = this->nextStageSet[this->stage];
 		//ここでステージがSTARTならアニメーションがすべて終了したということ
 		if (this->stage == AnimationStage::START)
 		{

@@ -49,6 +49,7 @@ Beast_Idle::NodeState Beast_Idle::Update()
 		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
 		enemy.SetAnimationPlayTime(this->animationPlayTime);
+		rootNode.EntryCurrentBattleAction(*this);
 	}
 
 	/*アニメーションの再生*/
@@ -63,5 +64,17 @@ Beast_Idle::NodeState Beast_Idle::Update()
 	}
 
 	/*状態を返す*/
-	return ActionNode::NodeState::SUCCESS;
+	//アニメーションが終了していたら
+	if (enemy.GetIsChangeAnimation())
+	{
+		auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
+		//アクションの解除
+		rootNode.ExitCurrentBattleAction();
+		return ActionNode::NodeState::SUCCESS;
+	}
+	//それ以外は実行中を返す
+	else
+	{
+		return ActionNode::NodeState::RUNNING;
+	}
 }

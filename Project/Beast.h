@@ -77,6 +77,7 @@ public:
 
 	/*getter/setter*/
 	const bool		 GetIsAttack			()const override;													//コウゲキしたか
+	const VECTOR GetNowMoveTarget()const { return this->moveTarget; }//移動目標の取得
 		  void		 SetRotation			(const VECTOR _rotation);											//回転率の設定
 		  void		 SetVelocity			(const VECTOR _velocity);											//移動ベクトルの設定
 		  void		 SetNowMoveTarget		(const VECTOR _moveTarget)	{ this->moveTarget = _moveTarget; }		//現在の移動目標を設定

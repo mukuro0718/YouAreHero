@@ -26,6 +26,9 @@ private:
 		ANGRY_END,
 	};
 
+	/*定数*/
+	const float STOP_DISTANCE;//停止距離
+
 	/*メンバ変数*/
 	short									 attackStartCount;				 //攻撃開始フレーム
 	short									 attackEndCount;				 //攻撃終了フレーム

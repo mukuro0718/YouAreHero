@@ -72,7 +72,6 @@ public:
 	const bool		 GetIsSelectedReaction		()const				{ return this->isSelectedReaction; }			 //部位破壊されているか
 	const short		 GetNowSelectAction			()const				{ return this->selectAction; }					 //選択されているアクションを取得
 	const float		 GetDotOfDirAndToTarget		()const				{ return this->innerProductOfDirectionToTarget; }//内積の取得
-	const BehaviorTreeNode::NodeState GetNodeState()const			{ return this->prevNodeState; }					 //ノードの状態を取得
 	void SetDownValue		(const int _set)						{ this->downValue = _set; }						//ダウン値を設定
 	void SetDamage			(const int _set)						{ this->damage = _set; }						//ダメージを設定
 	void SetPrevHp			(const int _set)			 			{ this->downValue = _set; }						//前フレームのHPを設定
@@ -100,7 +99,6 @@ private:
 	std::array<int, static_cast<int>(ActionType::COMBO_ATTACK) + 1>	intervalSet;							//インターバル
 	BehaviorTreeNode*												Selector_DeathOrReactionOrBattleOrBreak;//ビヘイビアツリーのrootノード
 	BeastState														state;									//ボスの状態
-	BehaviorTreeNode::NodeState										prevNodeState;							//前のノード状態
 	int																downValue;								//ダウン値
 	int																angryValue;								//怒り値
 	int																prevHp;									//前フレームのHP
@@ -114,5 +112,5 @@ private:
 	float															innerProductOfDirectionToTarget;		//向きベクトルと目標ベクトルの内積
 	BehaviorTreeNode*												currentBattleAction;					//現在のバトルアクション
 	BehaviorTreeNode*												currentReaction;						//現在のリアクションアクション
-	BehaviorTreeNode* debugActionNode;
+	BehaviorTreeNode*												debugActionNode;//デバック用アクションノード
 };

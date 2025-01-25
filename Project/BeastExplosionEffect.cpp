@@ -35,18 +35,6 @@ void BeastExplosionEffect::Update()
 	/*再生フラグが立っていなければ早期リターン*/
 	if (!this->isPlayEffect)return;
 
-	/*処理の開始時に一度だけ呼ぶ*/
-	if (this->frameCount == 0)
-	{
-		//トランスフォームの設定
-		auto& enemy = Singleton<EnemyManager>::GetInstance();
-		VECTOR position = MV1GetFramePosition(enemy.GetModelHandle(), this->useIndexNum);
-		VECTOR rotation = enemy.GetRigidbody().GetRotation();
-		this->transform->SetPosition(position);
-		this->transform->SetScale(this->scale);
-		this->transform->SetRotationOfRadian(rotation);
-	}
-
 	/*フレーム計測*/
 	this->frameCount++;
 	//開始フレームを超えていなければ早期リターン
@@ -58,6 +46,14 @@ void BeastExplosionEffect::Update()
 	{
 		//再生するエフェクトのハンドルを取得
 		this->playingEffectHandle = PlayEffekseer3DEffect(this->effectResourceHandle);
+		//トランスフォームの設定
+		auto& enemy = Singleton<EnemyManager>::GetInstance();
+		VECTOR position = MV1GetFramePosition(enemy.GetModelHandle(), this->useIndexNum);
+		position.y = enemy.GetRigidbody().GetPosition().y;
+		VECTOR rotation = enemy.GetRigidbody().GetRotation();
+		this->transform->SetPosition(position);
+		this->transform->SetScale(this->scale);
+		this->transform->SetRotationOfRadian(rotation);
 		//回転率、拡大率、座標を設定
 		SetRotationPlayingEffekseer3DEffect(this->playingEffectHandle, this->transform->GetRotation().x, this->transform->GetRotation().y, this->transform->GetRotation().z);
 		SetScalePlayingEffekseer3DEffect(this->playingEffectHandle, this->transform->GetScale().x, this->transform->GetScale().y, this->transform->GetScale().z);
