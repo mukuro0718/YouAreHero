@@ -183,5 +183,8 @@ void Character::SetVelocity(const VECTOR _velocity)
 /// </summary>
 void Character::DyingIfOutOfStage()
 {
-	this->collider->data->hp = 0;
+	VECTOR nowPosition = Gori::ORIGIN;
+	nowPosition.y = 10.0f;
+	this->collider->rigidbody.SetPosition(nowPosition);
+	//this->collider->data->hp = 0;
 }
