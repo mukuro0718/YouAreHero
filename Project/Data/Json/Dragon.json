@@ -31,82 +31,107 @@
 
   "INIT_DIRECTION": [ 0.0, 0.0, -1.0 ],
   "INIT_POSITION": [ 0.0, 0.0, 0.0 ],
-  "INIT_SCALE": [ 0.015, 0.015, 0.015 ],
+  "INIT_SCALE": [ 0.008, 0.008, 0.008 ],
   "INIT_ROTATION": [ 0.0, 0.0, 0.0 ],
 
   "ACCEL": 0.05,
   "DECEL": -0.05,
   "WALK_SPEED": 0.7,
 
+  "FIX_ROTATE_FRAME": 30,
 
   "ATTACK_COLLIDER_NUM": 5,
   "COLLIDER_NUM": 9,
-  "PARTS_COLL_RADIUS": [ 7, 7, 5, 5, 5, 5, 6, 5, 4 ],
+  "PARTS_COLL_RADIUS": [ 7, 8, 5, 5, 5, 5, 6, 5, 4 ],
   "FRAME_INDEX_USE_PARTS_COLLIDER": [
     [ 7, 10 ],
     [ 94, 203 ],
-    [ 57, 58 ],
-    [ 76, 77 ],
-    [ 161, 164 ],
-    [ 180, 183 ],
+    [ 56, 59 ],
+    [ 75, 78 ],
+    [ 161, 165 ],
+    [ 180, 184 ],
     [ 204, 206 ],
     [ 206, 208 ],
     [ 208, 210 ]
   ],
 
-  "NEAR_ATTACK_RANGE": 40.0,
+  "NEAR_ATTACK_RANGE": 20.0,
+  "LONG_ATTACK_RANGE": 50.0,
+  "TOLERANCE_RANGE": [ -0.707, -1.0 ],
+  "THRESHOLD_OF_FURY": 600,
+  "UNLEASHED_FURY": 300,
+  "AWAKENING_STANDBY_TIME": 180,
+  "FURY_STANDBY_TIME": 120,
+  "RAMPAGE_STANDBY_TIME": 90,
 
   "SMASH_CANCEL_PLAY_TIME": 100.0,
   "SWEEP_CANCEL_PLAY_TIME": 100.0,
 
+  "SMASH_PLAY_TIME": [ 0.8, 0.9, 1.0 ],
+  "SWEEP_PLAY_TIME": [ 0.8, 0.9, 1.0 ],
+  "ROTATE_PLAY_TIME": [ 0.7, 0.75, 0.8 ],
+  "BREATH_PLAY_TIME": [ 0.7, 0.75, 0.8 ],
+
+  "AWAKENING_ATTACK_COUNT": 2,
+  "FURY_ATTACK_COUNT": 3,
+  "RAMPAGE_ATTACK_COUNT": 4,
+
   "BREATH_SMASH_PLAY_TIME": [ 0.8, 0.8, 0.8 ],
-  "SMASH_ROTATE_PLAY_TIME": [ 0.8, 0.8, 0.8 ],
-  "ROTATE_SWEEP_PLAY_TIME": [ 0.8, 0.8, 0.8 ],
+  "SMASH_ROTATE_PLAY_TIME": [ 0.8, 0.8, 0.7 ],
+  "ROTATE_SWEEP_PLAY_TIME": [ 0.8, 0.7, 0.8 ],
   "SWEEP_BREATH_PLAY_TIME": [ 0.8, 0.8, 0.8 ],
-  "BREATH_SMASH_ROTATE_PLAY_TIME": [ 0.8, 0.8, 1.0, 1.0 ],
-  "ROTATE_SWEEP_SMASH_PLAY_TIME": [ 0.8, 1.0, 0.8, 1.0, 1.0 ],
-  "SWEEP_BREATH_SMASH_PLAY_TIME": [ 0.8, 1.0, 0.8, 1.0, 1.0 ],
 
-  "BREATH_SMASH_SWEEP_ROTATE_PLAY_TIME": [ 0.8, 0.8, 1.2, 1.2, 1.2 ],
-  "SWEEP_SMASH_ROTATE_BREATH_PLAY_TIME": [ 0.8, 1.2, 1.2, 1.2, 0.8 ],
-  "ROTATE_SWEEP_BREATH_SMASH_PLAY_TIME": [ 0.8, 1.2, 1.2, 0.8, 0.8, 1.2 ],
+  "BREATH_SMASH_ROTATE_PLAY_TIME": [ 0.8, 0.8, 0.85, 0.7 ],
+  "ROTATE_SWEEP_SMASH_PLAY_TIME": [ 0.8, 0.7, 0.8, 0.85, 0.85 ],
+  "SWEEP_BREATH_SMASH_PLAY_TIME": [ 0.8, 0.85, 0.8, 0.85, 0.85 ],
 
-  "BREATH_LENGTH": 40.0,
-  "ATTACK_HIT_RADIUS": [ 5, 5, 5, 5, 5 ],
-  "ATTACK_DAMAGE": [ 25, 30, 30, 30, 15 ],
-  "ATTACK_HIT_STOP_TIME": [ 5, 5, 5, 5, 5 ],
-  "ATTACK_HIT_STOP_DELAY": [ 0, 0, 0, 0, 0 ],
-  "ATTACK_HIT_STOP_SLOW_FACTOR": [ 0.3, 0.3, 0.3, 0.3, 0.3 ],
-  "FRAME_INDEX_USE_ATTACK_COLLIDER": [
-    [ 76, 77 ],
-    [ 204, 206 ],
-    [ 206, 208 ],
-    [ 208, 210 ],
-    [ 7, 10 ]
+  "BREATH_SMASH_SWEEP_ROTATE_PLAY_TIME": [ 0.8, 0.8, 0.9, 0.9, 0.7 ],
+  "SWEEP_SMASH_ROTATE_BREATH_PLAY_TIME": [ 0.8, 0.9, 0.9, 0.7, 0.8 ],
+  "ROTATE_SWEEP_BREATH_SMASH_PLAY_TIME": [ 0.8, 0.7, 0.9, 0.8, 0.8, 0.9 ],
+
+  "BREATH_LENGTH": 10.0,
+  "ATTACK_HIT_RADIUS": [
+    [ 5 ],
+    [ 5 ],
+    [ 5, 5, 5 ],
+    [ 5 ]
+  ],
+  "ATTACK_DAMAGE": [
+    [ 25 ],
+    [ 25 ],
+    [ 15, 15, 15 ],
+    [ 30 ]
+  ],
+  "ATTACK_HIT_STOP_TIME": [
+    [ 5 ],
+    [ 5 ],
+    [ 5, 5, 5 ],
+    [ 5 ]
+  ],
+  "ATTACK_HIT_STOP_DELAY": [
+    [ 0 ],
+    [ 0 ],
+    [ 0, 0, 0 ],
+    [ 0 ]
+  ],
+  "ATTACK_HIT_STOP_SLOW_FACTOR": [
+    [ 0.3 ],
+    [ 0.3 ],
+    [ 0.3, 0.3, 0.3 ],
+    [ 0.3 ]
   ],
 
-  "SMASH_DAMAGE": 25,
-  "SWEEP_DAMAGE": 25,
-  "ROTATE_DAMAGE": 30,
-  "BREATH_DAMAGE": 15,
+  "FRAME_INDEX_USE_ATTACK_COLLIDER": [
+    [ [ 76, 77 ] ],
+    [ [ 76, 77 ] ],
+    [
+      [ 204, 206 ],
+      [ 206, 208 ],
+      [ 208, 210 ]
+    ],
+    [ [ 7, 10 ] ]
+  ],
 
-  "SMASH_HIT_STOP_TIME": 5,
-  "SWEEP_HIT_STOP_TIME": 5,
-  "ROTATE_HIT_STOP_TIME": 5,
-  "BREATH_HIT_STOP_TIME": 5,
-
-  "SMASH_HIT_STOP_DELAY": 0,
-  "SWEEP_HIT_STOP_DELAY": 0,
-  "ROTATE_HIT_STOP_DELAY": 0,
-  "BREATH_HIT_STOP_DELAY": 0,
-
-  "SMASH_HIT_STOP_SLOW_FACTOR": 0.3,
-  "SWEEP_HIT_STOP_SLOW_FACTOR": 0.3,
-  "ROTATE_HIT_STOP_SLOW_FACTOR": 0.3,
-  "BREATH_HIT_STOP_SLOW_FACTOR": 0.3,
-
-  "SMASH_FRAME_INDEX_USED_CAPSULE_POSITION": [ 76, 77 ],
-  "SWEEP_FRAME_INDEX_USED_CAPSULE_POSITION": [ 76, 77 ],
-  "ROTATE_FRAME_INDEX_USED_CAPSULE_POSITION": [ 76, 77 ],
-  "BREATH_FRAME_INDEX_USED_CAPSULE_POSITION": [ 76, 77 ]
+  "ATTACK_START_HIT_CHECK_PLAY_TIME": [ 84.0, 81.0, 32.0, 61.0 ],
+  "ATTACK_END_HIT_CHECK_PLAY_TIME": [ 86.0, 89.0, 52.0, 116.0 ]
 }

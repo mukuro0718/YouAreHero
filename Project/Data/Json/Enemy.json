@@ -33,7 +33,7 @@
   "COMBO_COUNT": [ 2, 3, 5 ],
   "HIT_RADIUS": 7.0,
   "HIT_HEIGHT": 10.0,
-  "HP": 1,
+  "HP": 1000,
   "ATTACK_COMBO_INDEX_OFFSET": [ 0, 2, 5 ],
   "SPEED": 0.8,
   "SIDE_WALK_SPEED": 0.2,
