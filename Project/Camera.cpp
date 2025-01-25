@@ -164,17 +164,19 @@ void Camera::UpdateTarget()
 	case SceneChanger::SceneType::GAME:
 		int playerHP = player.GetHP();
 		int enemyHP = enemy.GetHP();
-		if (playerHP <= 0 ||  enemyHP <= 0)
+		if (playerHP <= 0 || enemyHP <= 0)
 		{
+			VECTOR target;
 			if (playerHP <= 0)
 			{
-				//注視点オフセット
-				this->nextTarget = VAdd(player.GetRigidbody().GetPosition(), this->targetOffset);
+				target = player.GetRigidbody().GetPosition();
 			}
 			else
 			{
-				this->nextTarget = VAdd(MV1GetFramePosition(enemy.GetModelHandle(), this->BOSS_HEAD_FRAME_INDEX), this->targetOffset);
+				target = MV1GetFramePosition(enemy.GetModelHandle(), this->BOSS_HEAD_FRAME_INDEX);
 			}
+			//注視点オフセット
+			this->nextTarget = VAdd(target, this->targetOffset);
 		}
 		else
 		{
