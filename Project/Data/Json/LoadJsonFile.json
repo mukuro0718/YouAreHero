@@ -18,6 +18,7 @@
     "Data/Json/Bot.json",
     "Data/Json/Ranking.json",
     "Data/Json/Dragon.json",
-    "Data/Json/Beast.json"
+    "Data/Json/Beast.json",
+    "Data/Json/Sound.json"
   ]
 }

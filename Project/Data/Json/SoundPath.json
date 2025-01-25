@@ -1,7 +1,11 @@
 {
   "PATH": [
-    "swordSlash1.mp3",
-    "swordSlash2.mp3",
-    "swordSlash3.mp3"
+    "Asset/Sound/titleBGM.mp3",
+    "Asset/Sound/confirmationSound.mp3",
+    "Asset/Sound/cancelSound.mp3",
+    "Asset/Sound/changeSelectIcon.mp3",
+    "Asset/Sound/swordSlash1.mp3",
+    "Asset/Sound/swordSlash2.mp3",
+    "Asset/Sound/swordSlash3.mp3"
   ]
 }
