@@ -10,6 +10,7 @@
 #include "UIManager.h"
 #include "InputManager.h"
 #include "LoadingAsset.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -121,6 +122,8 @@ void TitleUI::Update()
 			//ボタンが押されていたらアルファを最大アルファにする
 			if (isPressButton)
 			{
+				auto& sound = Singleton<SoundManager>::GetInstance();
+				sound.OnIsPlayEffect(SoundManager::EffectType::CONFIRMATION_SOUND);
 				this->isTransition = true;
 				this->pressLogo.alpha = 0;
 			}

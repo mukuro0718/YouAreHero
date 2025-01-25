@@ -1,6 +1,9 @@
 #pragma once
 #include "Singleton.h"
 
+class Sound;
+class SoundEffect;
+class Bgm;
 class SoundManager : public Singleton<SoundManager>
 {
 public:
@@ -9,9 +12,17 @@ public:
 
 
 	/*列挙体*/
+	//BGMの種類
+	enum class BgmType
+	{
+		TITLE_BGM,
+	};
 	//エフェクトの種類
 	enum class EffectType
 	{
+		CONFIRMATION_SOUND,
+		CANCEL_SOUND,
+		CHANGE_SELECT_ICON,
 		PLAYER_COMBO_1,
 		PLAYER_COMBO_2,
 		PLAYER_COMBO_3,
@@ -22,17 +33,18 @@ public:
 		  void Update	 ();	 //更新
 	const void Draw		 ()const;//描画
 	
-	void OnIsPlay(const EffectType _type, const bool isTop);							//エフェクト再生フラグを立てる
+	void OnIsPlayBgm(const BgmType _type);		//エフェクト再生フラグを立てる
+	void OnIsPlayEffect(const EffectType _type);
+	void OffIsPlayBgm(const BgmType _type);		//エフェクト再生フラグを下す
+	void OffIsPlayEffect(const EffectType _type);
 private:
 	/*内部処理関数*/
 	 SoundManager();//コンストラクタ
 	~SoundManager();//デストラクタ
 		
 	/*メンバ変数*/
-	std::vector<int> sound;//サウンドハンドル
-	std::vector<bool> isPlay;//再生するか
-	std::vector<int> playType;//再生携帯
-	std::vector<bool> isTopPosition;//再生位置を音データの先頭に移動するかどうか
+	vector<Bgm*>		bgms;	//BGM
+	vector<SoundEffect*>effects;	//サウンドエフェクト
 
 	int frameTime;//処理までにかかった時間
 };

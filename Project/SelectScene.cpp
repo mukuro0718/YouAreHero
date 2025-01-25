@@ -8,6 +8,7 @@
 #include "UIManager.h"
 #include "SceneChanger.h"
 #include "InputManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -60,6 +61,8 @@ void SelectScene::Update()
 	/*シーンの終了処理*/
 	if (this->IsEnd())
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OffIsPlayBgm(SoundManager::BgmType::TITLE_BGM);
 		sceneChanger.ChangeScene(SceneChanger::SceneType::GAME);
 	}
 }

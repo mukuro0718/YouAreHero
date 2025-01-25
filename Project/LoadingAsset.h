@@ -87,6 +87,10 @@ public:
 	//‰¹‚Ìƒ^ƒCƒv
 	enum class SoundType
 	{
+		TITLE_BGM,
+		CONFIRMATION,
+		CANCEL,
+		CHANGE_SELECT_ICON,
 		SWORD_SLASH_1,//combo1,2
 		SWORD_SLASH_2,//combo3
 		SWORD_SLASH_3,//skill

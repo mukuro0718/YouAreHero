@@ -60,7 +60,7 @@ LoadingAsset::LoadingAsset()
 	{
 		this->effectHandle.emplace_back(LoadEffekseerEffect(effectPath[i].c_str(), 1.0f));
 	}
-	/*エフェクトのロード*/
+	/*サウンドのロード*/
 	for (int i = 0; i < soundPath.size(); i++)
 	{
 		this->soundHandle.emplace_back(LoadSoundMem(soundPath[i].c_str()));

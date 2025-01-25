@@ -10,6 +10,7 @@
 #include "InputManager.h"
 #include "SceneChanger.h"
 #include "CollisionManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -35,11 +36,13 @@ void TitleScene::Initialize()
 	auto& camera = Singleton<CameraManager>::GetInstance();
 	auto& map = Singleton<MapManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
+	auto& sound = Singleton<SoundManager>::GetInstance();
 
 	/*初期化*/
 	//camera.Initialize();
 	map.Initialize();
 	ui.Initialize();
+	sound.OnIsPlayBgm(SoundManager::BgmType::TITLE_BGM);
 }
 
 /// <summary>
@@ -65,6 +68,7 @@ void TitleScene::Update()
 	auto& ui			= Singleton<UIManager>		::GetInstance();
 	auto& sceneChanger	= Singleton<SceneChanger>	::GetInstance();
 	auto& collision = Singleton<CollisionManager>::GetInstance();
+	auto& sound = Singleton<SoundManager>::GetInstance();
 
 	/*更新処理*/
 	collision.Update();
@@ -72,6 +76,7 @@ void TitleScene::Update()
 	camera.Update();
 	map.Update();
 	ui.Update();
+	sound.Update();
 
 	/*シーンの終了処理*/
 	if (this->IsEnd())
