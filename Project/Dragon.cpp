@@ -68,21 +68,40 @@ Dragon::Dragon()
 		this->partsCollider[i]->rigidbody.Initialize(false);
 		this->prevPartsHp.emplace_back(this->maxHp);
 	}
-	this->frameIndexUseAttackColider = json.GetJson(JsonManager::FileType::DRAGON)["FRAME_INDEX_USE_ATTACK_COLLIDER"];
+	//攻撃コライダー
 	this->breathLength = json.GetJson(JsonManager::FileType::DRAGON)["BREATH_LENGTH"];
-	short maxAttackColliderNum = json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_COLLIDER_NUM"];
-	for (int i = 0; i < maxAttackColliderNum; i++)
+	vector<AttackCapsuleColliderData*> smashColider;
+	vector<AttackCapsuleColliderData*> sweepColider;
+	vector<AttackCapsuleColliderData*> rotateColider;
+	vector<AttackCapsuleColliderData*> breathColider;
+	smashColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
+	sweepColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
+	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
+	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
+	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
+	breathColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
+	this->attackCollider.emplace(static_cast<int>(AttackCollider::SMASH), smashColider);
+	this->attackCollider.emplace(static_cast<int>(AttackCollider::SWEEP), sweepColider);
+	this->attackCollider.emplace(static_cast<int>(AttackCollider::ROTATE), rotateColider);
+	this->attackCollider.emplace(static_cast<int>(AttackCollider::BREATH), breathColider);
+	for (int i = 0; i < this->attackCollider.size(); i++)
 	{
-		this->attackCollider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
-		this->attackCollider[i]->radius				= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_RADIUS"][i];
-		this->attackCollider[i]->data->damage		= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_DAMAGE"][i];
-		this->attackCollider[i]->data->reactionType = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
-		this->attackCollider[i]->data->hitStopTime	= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_STOP_TIME"][i];
-		this->attackCollider[i]->data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
-		this->attackCollider[i]->data->hitStopDelay = json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_STOP_DELAY"][i];
-		this->attackCollider[i]->data->slowFactor	= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_STOP_SLOW_FACTOR"][i];
-		this->attackCollider[i]->data->isHitAttack	= false;
-		this->attackCollider[i]->data->isDoHitCheck = false;
+		for (int j = 0; j < this->attackCollider[i].size(); j++)
+		{
+			this->attackCollider[i][j]->radius				= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_RADIUS"][i][j];
+			this->attackCollider[i][j]->data->damage		= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_DAMAGE"][i][j];
+			this->attackCollider[i][j]->data->reactionType	= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
+			this->attackCollider[i][j]->data->hitStopTime	= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_STOP_TIME"][i][j];
+			this->attackCollider[i][j]->data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
+			this->attackCollider[i][j]->data->hitStopDelay	= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_STOP_DELAY"][i][j];
+			this->attackCollider[i][j]->data->slowFactor	= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_STOP_SLOW_FACTOR"][i][j];
+			this->attackCollider[i][j]->data->isHitAttack	= false;
+			this->attackCollider[i][j]->data->isDoHitCheck	= false;
+		}
+		this->isStartHitCheck[i]		= false;
+		this->startHitCheckPlayTime[i]	= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_START_HIT_CHECK_PLAY_TIME"][i];
+		this->endHitCheckPlayTime[i]	= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_END_HIT_CHECK_PLAY_TIME"][i];
+		this->frameIndexUseAttackColider.emplace(i, json.GetJson(JsonManager::FileType::DRAGON)["FRAME_INDEX_USE_ATTACK_COLLIDER"][i]);
 	}
 
 }
@@ -154,7 +173,7 @@ void Dragon::Update()
 		if (this->partsCollider[i]->data->isHit)
 		{
 			this->partsCollider[i]->data->isHit = false;
-			float damage = this->prevPartsHp[i] - this->partsCollider[i]->data->hp;
+			int damage = this->prevPartsHp[i] - this->partsCollider[i]->data->hp;
 			this->prevPartsHp[i] = this->partsCollider[i]->data->hp;
 			this->collider->data->hp -= damage;
 		}
@@ -169,6 +188,8 @@ void Dragon::Update()
 	/*ビヘイビアツリーの更新*/
 	auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
 	tree.Update();
+
+	
 }
 
 /// <summary>
@@ -195,15 +216,22 @@ const void Dragon::DrawCharacterInfo()const
 #ifdef _DEBUG
 	auto& debug = Singleton<Debug>::GetInstance();
 	auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
-	tree.Draw();
-	for (int i = 0; i < this->maxPartsColliderNum; i++)
+	//tree.Draw();
+	//for (int i = 0; i < this->maxPartsColliderNum; i++)
+	//{
+	//	VECTOR underPos = this->partsCollider[i]->rigidbody.GetPosition();
+	//	VECTOR topPos = this->partsCollider[i]->topPositon;
+	//	DrawCapsule3D(underPos, topPos, this->partsCollider[i]->radius, 16, GetColor(0, 255, 0), GetColor(0, 255, 0), FALSE);
+	//}
+	for (const auto& pair : this->attackCollider)
 	{
-		//VECTOR pos1 = this->pos1[i];
-		//VECTOR pos2 = this->pos2[i];
-		//DrawCapsule3D(pos1, pos2, this->partsCollider[i]->radius, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), FALSE);
-		VECTOR underPos = this->partsCollider[i]->rigidbody.GetPosition();
-		VECTOR topPos = this->partsCollider[i]->topPositon;
-		DrawCapsule3D(underPos, topPos, this->partsCollider[i]->radius, 16, GetColor(0, 255, 0), GetColor(0, 255, 0), FALSE);
+		const std::vector<AttackCapsuleColliderData*>& colliderSet = pair.second;
+		for (const auto& collider : colliderSet)
+		{
+			VECTOR underPos = collider->rigidbody.GetPosition();
+			VECTOR topPos = collider->topPositon;
+			DrawCapsule3D(underPos, topPos, collider->radius, 16, GetColor(0, 255, 0), GetColor(250, 0, 0), FALSE);
+		}
 	}
 #endif // _DEBUG
 
@@ -224,34 +252,61 @@ const bool Dragon::GetIsAttack()const
 /// </summary>
 void Dragon::OnAttackCollider(const short _index)
 {
-	this->attackCollider[_index]->data->isDoHitCheck = true;
+	for (auto& collider:this->attackCollider[_index])
+	{
+		collider->data->isDoHitCheck = true;
+	}
 }
 /// <summary>
 /// 指定の攻撃コライダーを更新
 /// </summary>
-void Dragon::UpdateAttackCollider(const short _index)
+void Dragon::UpdateAttackCollider(const short _colliderIndex, const float _nowTotalPlayTime)
 {
-	/*座標の更新*/
-	VECTOR capsuleTopPosition = MV1GetFramePosition(this->modelHandle, this->frameIndexUseAttackColider[_index][0]);
-	VECTOR capsuleUnderPosition = MV1GetFramePosition(this->modelHandle, this->frameIndexUseAttackColider[_index][1]);
-	if (_index == static_cast<short>(AttackCollider::BREATH))
+	/*当たり判定開始フラグが立っていないかつ、再生時間が開始の再生時間を超えていたら*/
+	if (!this->isStartHitCheck[_colliderIndex] && _nowTotalPlayTime >= this->startHitCheckPlayTime[_colliderIndex])
 	{
-		this->collider->rigidbody.SetPosition(capsuleTopPosition);
-		VECTOR direction = VSub(capsuleUnderPosition, capsuleTopPosition);
-		direction.y = 0.0f;
-		VECTOR directionScaling = VScale(direction, this->breathLength);
-		this->collider->topPositon = VAdd(capsuleTopPosition, directionScaling);
-	}
-	else
-	{
-		this->collider->rigidbody.SetPosition(capsuleTopPosition);
-		this->collider->topPositon = capsuleUnderPosition;
+		if (_nowTotalPlayTime < this->endHitCheckPlayTime[_colliderIndex] && _colliderIndex == static_cast<int>(AttackCollider::BREATH))
+		{
+			auto& effect = Singleton<EffectManager>::GetInstance();
+			effect.OnIsEffect(EffectManager::EffectType::DRAGON_BREATH);
+		}
+		OnAttackCollider(_colliderIndex);
+		this->isStartHitCheck[_colliderIndex] = true;
 	}
 
-	/*攻撃が当たっていたらヒットフラグを下す*/
-	if (this->attackCollider[_index]->data->isHitAttack)
+	/*再生時間が終了の再生時間を超えていたら*/
+	if (_nowTotalPlayTime >= this->endHitCheckPlayTime[_colliderIndex])
 	{
-		this->attackCollider[_index]->data->isHitAttack = false;
+		OffAttackCollider(_colliderIndex);
+	}
+
+	/*当たり判定フラグが立っていなければ早期リターン*/
+	for (int i = 0; i < this->attackCollider[_colliderIndex].size(); i++)
+	{
+		if (!this->attackCollider[_colliderIndex][i]->data->isDoHitCheck) continue;
+
+		/*座標の更新*/
+		VECTOR capsuleTopPosition = MV1GetFramePosition(this->modelHandle, this->frameIndexUseAttackColider[_colliderIndex][i][0]);
+		VECTOR capsuleUnderPosition = MV1GetFramePosition(this->modelHandle, this->frameIndexUseAttackColider[_colliderIndex][i][1]);
+		if (_colliderIndex == static_cast<short>(AttackCollider::BREATH))
+		{
+			this->attackCollider[_colliderIndex][i]->rigidbody.SetPosition(capsuleTopPosition);
+			VECTOR direction = VSub(capsuleUnderPosition, capsuleTopPosition);
+			direction.y = 0.0f;
+			VECTOR directionScaling = VScale(direction, this->breathLength);
+			this->attackCollider[_colliderIndex][i]->topPositon = VAdd(capsuleTopPosition, directionScaling);
+		}
+		else
+		{
+			this->attackCollider[_colliderIndex][i]->rigidbody.SetPosition(capsuleTopPosition);
+			this->attackCollider[_colliderIndex][i]->topPositon = capsuleUnderPosition;
+		}
+
+		/*攻撃が当たっていたらヒットフラグを下す*/
+		if (this->attackCollider[_colliderIndex][i]->data->isHitAttack)
+		{
+			OffAttackCollider(_colliderIndex);
+		}
 	}
 }
 /// <summary>
@@ -259,7 +314,11 @@ void Dragon::UpdateAttackCollider(const short _index)
 /// </summary>
 void Dragon::OffAttackCollider(const short _index)
 {
-	this->attackCollider[_index]->data->isDoHitCheck = false;
-	this->attackCollider[_index]->data->isHitAttack = false;
+	for (auto& collider : this->attackCollider[_index])
+	{
+		collider->data->isDoHitCheck = false;
+		collider->data->isHitAttack = false;
+	}
+	this->isStartHitCheck[_index] = false;
 }
 

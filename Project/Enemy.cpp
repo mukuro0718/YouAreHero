@@ -138,8 +138,6 @@ void Enemy::Move(const float _maxSpeed, const float _accel, const float _decel, 
 	this->moveTarget = player.GetRigidbody().GetPosition();
 	//目標までのベクトルを出す
 	VECTOR toTarget = VSub(this->collider->rigidbody.GetPosition(), this->moveTarget);
-	//正規化
-	toTarget = VNorm(toTarget);
 	//回転率の更新
 	UpdateRotation(toTarget);
 

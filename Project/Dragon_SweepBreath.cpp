@@ -14,16 +14,24 @@
 /// コンストラクタ
 /// </summary>
 Dragon_SweepBreath::Dragon_SweepBreath()
-	: useAnimationType(0)
-	, maxUseAnimation(0)
-	, nearAttackRange(0)
-	, totalPlayTime(0)
+	: useAnimationType	 (0)
+	, maxUseAnimation	 (0)
+	, nearAttackRange	 (0)
+	, nowTotalPlayTime	 (0)
 	, sweepCancelPlayTime(0)
+	, FIX_ROTATE_FRAME	 (Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["FIX_ROTATE_FRAME"])
+	, frameCount		 (0)
+	, isClose			 (false)
+
 {
 	/*使用するアニメーション*/
 	this->animationType.emplace_back(static_cast<int>(Dragon::AnimationType::WALK));
 	this->animationType.emplace_back(static_cast<int>(Dragon::AnimationType::SWEEP));
 	this->animationType.emplace_back(static_cast<int>(Dragon::AnimationType::BREATH));
+
+	/*攻撃の当たり判定のタイミングマップ*/
+	this->useColliderIndex.emplace(static_cast<short>(UseAnimationType::SWEEP), static_cast<short>(Dragon::AttackCollider::SWEEP));
+	this->useColliderIndex.emplace(static_cast<short>(UseAnimationType::BREATH), static_cast<short>(Dragon::AttackCollider::BREATH));
 
 	/*メンバ変数の初期化*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -55,9 +63,14 @@ Dragon_SweepBreath::NodeState Dragon_SweepBreath::Update()
 	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
 	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
 	short walkIndex = static_cast<short>(UseAnimationType::WALK);
-	if (this->useAnimationType == walkIndex)
+	if (this->useAnimationType == walkIndex || !this->isFixRotate)
 	{
-		enemy.Move(this->maxSpeed, this->accel, this->decel, false);
+		float speed = 0.0f;
+		if (!this->isClose)
+		{
+			speed = this->maxSpeed;
+		}
+		enemy.Move(speed, this->accel, this->decel, false);
 	}
 	else
 	{
@@ -75,8 +88,26 @@ Dragon_SweepBreath::NodeState Dragon_SweepBreath::Update()
 		rootNode.EntryCurrentBattleAction(*this);
 	}
 
+	/*フレームカウントの増加*/
+	if (!this->isFixRotate)
+	{
+		this->frameCount++;
+		if (this->frameCount >= this->FIX_ROTATE_FRAME)
+		{
+			this->isFixRotate = true;
+		}
+	}
+
+	/*当たり判定コライダーの更新*/
+	//指定のアニメーションじゃなければ
+	if (this->useAnimationType != walkIndex)
+	{
+		enemy.UpdateAttackCollider(this->useColliderIndex[this->useAnimationType], this->nowTotalPlayTime);
+	}
+
 	/*アニメーションの再生*/
 	float playTime = this->animationPlayTime[this->useAnimationType];
+	this->nowTotalPlayTime += playTime;
 	enemy.PlayAnimation(this->animationType[this->useAnimationType], playTime);
 
 	/*状態を返す*/
@@ -85,27 +116,34 @@ Dragon_SweepBreath::NodeState Dragon_SweepBreath::Update()
 	{
 		if (rootNode.GetToTargetDistance() <= this->nearAttackRange)
 		{
+			this->isClose = true;
 			this->useAnimationType++;
+			this->nowTotalPlayTime = 0.0f;
 		}
 		return ActionNode::NodeState::RUNNING;
 	}
 	//叩きつけ攻撃時に指定の再生フレームを終了していたら次のアニメーションに移行する
 	else if (this->useAnimationType == static_cast<short>(UseAnimationType::SWEEP))
 	{
-		this->totalPlayTime += playTime;
-		if (this->sweepCancelPlayTime <= this->totalPlayTime)
+		if (this->sweepCancelPlayTime <= this->nowTotalPlayTime)
 		{
+			enemy.OffAttackCollider(this->useColliderIndex[this->useAnimationType]);
 			this->useAnimationType++;
-			this->totalPlayTime = 0.0f;
+			this->nowTotalPlayTime = 0.0f;
 		}
 	}
 	//アニメーションが終了していたら
 	else if (enemy.GetIsChangeAnimation())
 	{
+		enemy.OffAttackCollider(this->useColliderIndex[this->useAnimationType]);
+		this->nowTotalPlayTime = 0.0f;
 		//叩きつけアニメーションが終了していたら成功を返す
 		if (this->useAnimationType == this->maxUseAnimation)
 		{
-			this->useAnimationType = 0;
+			this->useAnimationType	= 0;
+			this->isClose			= false;
+			this->isFixRotate		= false;
+			this->frameCount		= 0;
 			//アクションの解除
 			rootNode.ExitCurrentBattleAction();
 			return ActionNode::NodeState::SUCCESS;

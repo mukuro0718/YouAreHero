@@ -28,6 +28,7 @@ public:
 		BEAST_SUPER_NOVA	 = 9, //獣ボス大爆発エフェクト
 		BEAST_RAISE_LEVEL	 = 10,//獣ボスレベル上昇エフェクト
 		BEAST_EXPLOSION_RANGE= 11,//獣ボス爆発範囲エフェクト
+		DRAGON_BREATH		 = 12, //ドラゴンボスブレスエフェクト
 	};
 
 		  void Initialize();	 //初期化

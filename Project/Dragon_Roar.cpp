@@ -51,7 +51,10 @@ Dragon_Roar::NodeState Dragon_Roar::Update()
 	/*アクションの状態をセット*/
 	if (prevAction != this->actionType)
 	{
+		//アクションの設定
 		rootNode.SetCurrentAction(this->actionType);
+		//アクションの登録
+		rootNode.EntryCurrentBattleAction(*this);
 	}
 
 	/*アニメーションの再生*/
@@ -62,7 +65,7 @@ Dragon_Roar::NodeState Dragon_Roar::Update()
 	if (enemy.GetIsChangeAnimation())
 	{
 		//インターバルの設定
-		rootNode.SetInterval(this->actionType);
+		rootNode.ExitCurrentBattleAction();
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//それ以外は実行中を返す

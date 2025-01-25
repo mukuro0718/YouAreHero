@@ -21,6 +21,9 @@ private:
 		BREATH = 2,//回転攻撃
 	};
 
+	/*定数*/
+	const int FIX_ROTATE_FRAME;//回転補正フレーム
+
 	/*メンバ変数*/
 	vector<short>	animationType;		//アニメーションの種類
 	vector<float>	animationPlayTime;	//アニメーション再生時間
@@ -28,7 +31,10 @@ private:
 	short			maxUseAnimation;	//使用するアニメーションの最大
 	float			nearAttackRange;	//近接攻撃範囲
 	float			sweepCancelPlayTime;//なぎ払い攻撃キャンセルフレーム
-	float			totalPlayTime;		//総再生時間
+	map<short,short>useColliderIndex;	//使用するコライダー
+	float			nowTotalPlayTime;	//現在の総再生時間
+	bool			isClose;			//近づいたか
+	short			frameCount;			//フレームカウント
 
 };
 

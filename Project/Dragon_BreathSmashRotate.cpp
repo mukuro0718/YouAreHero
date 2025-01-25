@@ -18,13 +18,21 @@ Dragon_BreathSmashRotate::Dragon_BreathSmashRotate()
 	, maxUseAnimation	 (0)
 	, nearAttackRange	 (0.0f)
 	, smashCancelPlayTime(0.0f)
-	, totalPlayTime		 (0.0f)
+	, nowTotalPlayTime	 (0.0f)
+	, FIX_ROTATE_FRAME	 (Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["FIX_ROTATE_FRAME"])
+	, frameCount		 (0)
+	, isClose			 (false)
 {
 	/*使用するアニメーション*/
 	this->animationType.emplace_back(static_cast<int>(Dragon::AnimationType::BREATH));
 	this->animationType.emplace_back(static_cast<int>(Dragon::AnimationType::WALK));
 	this->animationType.emplace_back(static_cast<int>(Dragon::AnimationType::SMASH));
 	this->animationType.emplace_back(static_cast<int>(Dragon::AnimationType::ROTATE_ATTACK));
+
+	/*攻撃の当たり判定のタイミングマップ*/
+	this->useColliderIndex.emplace(static_cast<short>(UseAnimationType::BREATH), static_cast<short>(Dragon::AttackCollider::BREATH));
+	this->useColliderIndex.emplace(static_cast<short>(UseAnimationType::SMASH), static_cast<short>(Dragon::AttackCollider::SMASH));
+	this->useColliderIndex.emplace(static_cast<short>(UseAnimationType::ROTATE), static_cast<short>(Dragon::AttackCollider::ROTATE));
 
 	/*使用するアニメーションの再生時間*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -56,9 +64,14 @@ Dragon_BreathSmashRotate::NodeState Dragon_BreathSmashRotate::Update()
 	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
 	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
 	short walkIndex = static_cast<short>(UseAnimationType::WALK);
-	if (this->useAnimationType == walkIndex)
+	if (this->useAnimationType == walkIndex || !this->isFixRotate)
 	{
-		enemy.Move(this->maxSpeed, this->accel, this->decel, false);
+		float speed = 0.0f;
+		if (!this->isClose)
+		{
+			speed = this->maxSpeed;
+		}
+		enemy.Move(speed, this->accel, this->decel, false);
 	}
 	else
 	{
@@ -76,36 +89,61 @@ Dragon_BreathSmashRotate::NodeState Dragon_BreathSmashRotate::Update()
 		rootNode.EntryCurrentBattleAction(*this);
 	}
 
+	/*フレームカウントの増加*/
+	if (!this->isFixRotate)
+	{
+		this->frameCount++;
+		if (this->frameCount >= this->FIX_ROTATE_FRAME)
+		{
+			this->isFixRotate = true;
+		}
+	}
+
+	/*当たり判定コライダーの更新*/
+	//指定のアニメーションじゃなければ
+	if (this->useAnimationType != walkIndex)
+	{
+		enemy.UpdateAttackCollider(this->useColliderIndex[this->useAnimationType], this->nowTotalPlayTime);
+	}
+
 	/*アニメーションの再生*/
 	float playTime = this->animationPlayTime[this->useAnimationType];
+	this->nowTotalPlayTime += playTime;
 	enemy.PlayAnimation(this->animationType[this->useAnimationType], playTime);
 
 	/*状態を返す*/
 	//移動状態かつ近接攻撃範囲なら次のアニメーションに移行する
 	if (this->useAnimationType == walkIndex)
 	{
-		if (rootNode.GetToTargetDistance() <= this->nearAttackRange)
+		if (rootNode.GetToTargetDistance() < this->nearAttackRange)
 		{
+			this->isClose = true;
 			this->useAnimationType++;
+			this->nowTotalPlayTime = 0.0f;
 		}
 	}
 	//叩きつけ攻撃時に指定の再生フレームを終了していたら次のアニメーションに移行する
 	else if (this->useAnimationType == static_cast<short>(UseAnimationType::SMASH))
 	{
-		this->totalPlayTime += playTime;
-		if (this->smashCancelPlayTime <= this->totalPlayTime)
+		if (this->smashCancelPlayTime <= this->nowTotalPlayTime)
 		{
+			enemy.OffAttackCollider(this->useColliderIndex[this->useAnimationType]);
+			this->nowTotalPlayTime = 0.0f;
 			this->useAnimationType++;
 		}
 	}
 	//アニメーションが終了していたら
 	if (enemy.GetIsChangeAnimation())
 	{
+		enemy.OffAttackCollider(this->useColliderIndex[this->useAnimationType]);
+		this->nowTotalPlayTime = 0.0f;
 		//回転攻撃アニメーションが終了していたら成功を返す
 		if (this->useAnimationType == this->maxUseAnimation)
 		{
-			this->totalPlayTime = 0;
 			this->useAnimationType = 0;
+			this->isClose = false;
+			this->isFixRotate = false;
+			this->frameCount = 0;
 			//アクションの解除
 			rootNode.ExitCurrentBattleAction();
 			return ActionNode::NodeState::SUCCESS;

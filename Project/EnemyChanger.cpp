@@ -1,6 +1,8 @@
 #include <DxLib.h>
+#include "UseSTL.h"
 #include "EnemyChanger.h"
 #include "InputManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -44,12 +46,14 @@ void EnemyChanger::Update()
 
 	/*エネミーの種類を選択*/
 	auto& input = Singleton<InputManager>::GetInstance();
+	auto& sound = Singleton<SoundManager>::GetInstance();
 	if (this->inputInterval <= 0)
 	{
 		if (!this->isProvDecide)
 		{
 			if ((input.GetLStickState().YBuf < 0) || CheckHitKey(KEY_INPUT_UP))
 			{
+				sound.OnIsPlayEffect(SoundManager::EffectType::CHANGE_SELECT_ICON);
 				this->enemyType--;
 				int min = static_cast<int>(EnemyType::GOLEM);
 				if (this->enemyType < min)
@@ -60,6 +64,7 @@ void EnemyChanger::Update()
 			}
 			else if ((input.GetLStickState().YBuf > 0) || CheckHitKey(KEY_INPUT_DOWN))
 			{
+				sound.OnIsPlayEffect(SoundManager::EffectType::CHANGE_SELECT_ICON);
 				this->enemyType++;
 				int max = static_cast<int>(EnemyType::DRAGON);
 				if (this->enemyType > max)
@@ -81,6 +86,7 @@ void EnemyChanger::Update()
 	//パッドのBまたはキーのEが押されたら
 	if ((!(prevPad & InputManager::PAD_B) && (nowPad & InputManager::PAD_B)) || CheckHitKey(KEY_INPUT_E))
 	{
+		sound.OnIsPlayEffect(SoundManager::EffectType::CONFIRMATION_SOUND);
 		if (!this->isProvDecide)
 		{
 			this->isProvDecide = true;
@@ -93,6 +99,7 @@ void EnemyChanger::Update()
 	//パッドのAまたはキーのFが押されたら
 	else if ((nowPad & InputManager::PAD_A) || CheckHitKey(KEY_INPUT_F))
 	{
+		sound.OnIsPlayEffect(SoundManager::EffectType::CANCEL_SOUND);
 		this->isProvDecide = false;
 	}
 }

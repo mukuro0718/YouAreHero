@@ -14,6 +14,10 @@
 /// コンストラクタ
 /// </summary>
 Dragon_Idle::Dragon_Idle()
+	: RAMPAGE_STANDBY_TIME(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["RAMPAGE_STANDBY_TIME"])
+	, FURY_STANDBY_TIME(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["FURY_STANDBY_TIME"])
+	, AWAKENING_STANDBY_TIME(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["AWAKENING_STANDBY_TIME"])
+	, currentStandbyTime(0)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->animationType		= static_cast<int>(Dragon::AnimationType::IDLE);
@@ -52,11 +56,36 @@ Dragon_Idle::NodeState Dragon_Idle::Update()
 	if (prevAction != this->actionType)
 	{
 		rootNode.SetCurrentAction(this->actionType);
+		short stage = rootNode.GetDragonStage();
+		switch (stage)
+		{
+		case static_cast<short>(DragonBehaviorTree::DragonStage::AWAKENING):
+			this->standbyTime = this->AWAKENING_STANDBY_TIME;
+			break;
+		case static_cast<short>(DragonBehaviorTree::DragonStage::FURY):
+			this->standbyTime = this->FURY_STANDBY_TIME;
+			break;
+		case static_cast<short>(DragonBehaviorTree::DragonStage::RAMPAGE):
+			this->standbyTime = this->RAMPAGE_STANDBY_TIME;
+			break;
+		default:
+			break;
+		}
 	}
 
 	/*アニメーションの再生*/
 	enemy.PlayAnimation(this->animationType, this->animationPlayTime);
 
+	/*待機時間を計測*/
+	this->currentStandbyTime++;
+
 	/*状態を返す*/
-	return ActionNode::NodeState::SUCCESS;
+	//指定の待機時間を超えていたらSUCCESSを返す
+	if (this->currentStandbyTime >= this->standbyTime)
+	{
+		rootNode.SetAttackCount();
+		this->currentStandbyTime = 0;
+		return ActionNode::NodeState::SUCCESS;
+	}
+	return ActionNode::NodeState::RUNNING;
 }

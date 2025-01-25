@@ -22,9 +22,10 @@ DragonBehaviorTree::DragonBehaviorTree()
 	, toTargetDistance				 (0.0f)
 	, innerProductOfDirectionToTarget(0.0f)
 	, currentAction					 (0)
-	, stamina						 (0)
-	, isActive						 (true)
+	, attackCount					 (0)
 	, isSelectedBattleAction		 (false)
+	, THRESHOLD_OF_FURY				 (Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["THRESHOLD_OF_FURY"])
+	, UNLEASHED_FURY				 (Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["UNLEASHED_FURY"])
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
 
@@ -33,100 +34,127 @@ DragonBehaviorTree::DragonBehaviorTree()
 	
 	/*ÉfÉXÉmÅ[Éh*/
 	BehaviorTreeNode* Sequencer_DyingIfHpIsLessThanZero = new SequencerNode();
-	Sequencer_DyingIfHpIsLessThanZero->AddChild(*new Condition_IsDragonHpIsLessThanZero());
-	Sequencer_DyingIfHpIsLessThanZero->AddChild(*new Dragon_Dying());
+	{
+		Sequencer_DyingIfHpIsLessThanZero->AddChild(*new Condition_IsDragonHpIsLessThanConstant(0));
+		Sequencer_DyingIfHpIsLessThanZero->AddChild(*new Dragon_Dying());
+	}
 
-	/*ÉoÉgÉãÉAÉNÉVÉáÉì*/
-	////ÉuÉåÉXÅ{í@Ç´Ç¬ÇØ
-	//BehaviorTreeNode* Sequencer_BreathSmashIfIntervalIsOver = new SequencerNode();
-	//Sequencer_BreathSmashIfIntervalIsOver->AddChild(*new Condition_IsDragonActionIntervalIsOver(static_cast<int>(ActionType::BREATH_SMASH)));
-	//Sequencer_BreathSmashIfIntervalIsOver->AddChild(*new Dragon_BreathSmash());
-	////í@Ç´Ç¬ÇØÅ{âÒì]çUåÇ
-	//BehaviorTreeNode* Sequencer_SmashRotateIfIntervalIsOver = new SequencerNode();
-	//Sequencer_SmashRotateIfIntervalIsOver->AddChild(*new Condition_IsDragonActionIntervalIsOver(static_cast<int>(ActionType::SMASH_ROTATE)));
-	//Sequencer_SmashRotateIfIntervalIsOver->AddChild(*new Dragon_SmashRotate());
-	////Ç»Ç¨ï•Ç¢Å{í@Ç´Ç¬ÇØ
-	//BehaviorTreeNode* Sequencer_SweepSmashIfIntervalIsOver = new SequencerNode();
-	//Sequencer_SweepSmashIfIntervalIsOver->AddChild(*new Condition_IsDragonActionIntervalIsOver(static_cast<int>(ActionType::SWEEP_SMASH)));
-	//Sequencer_SweepSmashIfIntervalIsOver->AddChild(*new Dragon_SweepSmash());
-	////âÒì]çUåÇÅ{Ç»Ç¨ï•Ç¢
-	//BehaviorTreeNode* Sequencer_RotateSweepIfIntervalIsOver = new SequencerNode();
-	//Sequencer_RotateSweepIfIntervalIsOver->AddChild(*new Condition_IsDragonActionIntervalIsOver(static_cast<int>(ActionType::ROTATE_SWEEP)));
-	//Sequencer_RotateSweepIfIntervalIsOver->AddChild(*new Dragon_RotateSweep());
-	////Ç»Ç¨ï•Ç¢Å{ÉuÉåÉX
-	//BehaviorTreeNode* Sequencer_SweepBreathIfIntervalIsOver = new SequencerNode();
-	//Sequencer_SweepBreathIfIntervalIsOver->AddChild(*new Condition_IsDragonActionIntervalIsOver(static_cast<int>(ActionType::SWEEP_BREATH)));
-	//Sequencer_SweepBreathIfIntervalIsOver->AddChild(*new Dragon_SweepBreath());
-	////ÉuÉåÉXÅ{í@Ç´Ç¬ÇØÅ{âÒì]çUåÇ
-	//BehaviorTreeNode* Sequencer_BreathSmashRotateIfIntervalIsOver = new SequencerNode();
-	//Sequencer_BreathSmashRotateIfIntervalIsOver->AddChild(*new Condition_IsDragonActionIntervalIsOver(static_cast<int>(ActionType::BREATH_SMASH_ROTATE)));
-	//Sequencer_BreathSmashRotateIfIntervalIsOver->AddChild(*new Dragon_BreathSmashRotate());
-	////âÒì]çUåÇÅ{Ç»Ç¨ï•Ç¢Å{í@Ç´Ç¬ÇØ
-	//BehaviorTreeNode* Sequencer_RotateSweepSmashIfIntervalIsOver = new SequencerNode();
-	//Sequencer_RotateSweepSmashIfIntervalIsOver->AddChild(*new Condition_IsDragonActionIntervalIsOver(static_cast<int>(ActionType::ROTATE_SWEEP_SMASH)));
-	//Sequencer_RotateSweepSmashIfIntervalIsOver->AddChild(*new Dragon_RotateSweepSmash());
-	////Ç»Ç¨ï•Ç¢Å{ÉuÉåÉXÅ{í@Ç´Ç¬ÇØ
-	//BehaviorTreeNode* Sequencer_SweepBreathSmashIfIntervalIsOver = new SequencerNode();
-	//Sequencer_SweepBreathSmashIfIntervalIsOver->AddChild(*new Condition_IsDragonActionIntervalIsOver(static_cast<int>(ActionType::SWEEP_BREATH_SMASH)));
-	//Sequencer_SweepBreathSmashIfIntervalIsOver->AddChild(*new Dragon_SweepBreathSmash());
-	////ÉuÉåÉXÅ{í@Ç´Ç¬ÇØÅ{Ç»Ç¨ï•Ç¢Å{âÒì]çUåÇ
-	//BehaviorTreeNode* Sequencer_BreathSmashSweepRotateIfIntervalIsOver = new SequencerNode();
-	//Sequencer_BreathSmashSweepRotateIfIntervalIsOver->AddChild(*new Condition_IsDragonActionIntervalIsOver(static_cast<int>(ActionType::BREATH_SMASH_SWEEP_ROTATE)));
-	//Sequencer_BreathSmashSweepRotateIfIntervalIsOver->AddChild(*new Dragon_BreathSmashSweepRotate());
-	////âÒì]çUåÇÅ{Ç»Ç¨ï•Ç¢Å{ÉuÉåÉXÅ{í@Ç´Ç¬ÇØ
-	//BehaviorTreeNode* Sequencer_RotateSweepBreathSmashIfIntervalIsOver = new SequencerNode();
-	//Sequencer_RotateSweepBreathSmashIfIntervalIsOver->AddChild(*new Condition_IsDragonActionIntervalIsOver(static_cast<int>(ActionType::ROTATE_SWEEP_BREATH_SMASH)));
-	//Sequencer_RotateSweepBreathSmashIfIntervalIsOver->AddChild(*new Dragon_RotateSweepBreathSmash());
-	////Ç»Ç¨ï•Ç¢Å{í@Ç´Ç¬ÇØÅ{âÒì]çUåÇÅ{ÉuÉåÉX
-	//BehaviorTreeNode* Sequencer_SweepSmashRotateBreathIfIntervalIsOver = new SequencerNode();
-	//Sequencer_SweepBreathSmashIfIntervalIsOver->AddChild(*new Condition_IsDragonActionIntervalIsOver(static_cast<int>(ActionType::SWEEP_SMASH_ROTATE_BREATH)));
-	//Sequencer_SweepBreathSmashIfIntervalIsOver->AddChild(*new Dragon_SweepSmashRotateBreath());
-	//1íiäKñ⁄ÇÃçUåÇÉAÉNÉVÉáÉì
-	BehaviorTreeNode* Selector_OneStepAttackAction = new RandomSelector();
-	Selector_OneStepAttackAction->AddChild(*new Dragon_BreathSmash());	//ÉuÉåÉXÅ{í@Ç´Ç¬ÇØ
-	Selector_OneStepAttackAction->AddChild(*new Dragon_SmashRotate());	//í@Ç´Ç¬ÇØÅ{âÒì]çUåÇ
-	Selector_OneStepAttackAction->AddChild(*new Dragon_SweepSmash());	//Ç»Ç¨ï•Ç¢Å{í@Ç´Ç¬ÇØ
-	Selector_OneStepAttackAction->AddChild(*new Dragon_RotateSweep());	//âÒì]çUåÇÅ{Ç»Ç¨ï•Ç¢
-	Selector_OneStepAttackAction->AddChild(*new Dragon_SweepBreath());	//Ç»Ç¨ï•Ç¢Å{ÉuÉåÉX
-	//2íiäKñ⁄ÇÃçUåÇÉAÉNÉVÉáÉì
-	BehaviorTreeNode* Selector_TwoStepAttackAction = new RandomSelector();
-	Selector_TwoStepAttackAction->AddChild(*new Dragon_BreathSmashRotate());	//ÉuÉåÉXÅ{í@Ç´Ç¬ÇØÅ{âÒì]çUåÇ
-	Selector_TwoStepAttackAction->AddChild(*new Dragon_SmashRotate());	//í@Ç´Ç¬ÇØÅ{âÒì]çUåÇ
-	Selector_TwoStepAttackAction->AddChild(*new Dragon_SweepSmash());	//Ç»Ç¨ï•Ç¢Å{í@Ç´Ç¬ÇØ
-	Selector_TwoStepAttackAction->AddChild(*new Dragon_RotateSweepSmash());	//âÒì]çUåÇÅ{Ç»Ç¨ï•Ç¢Å{í@Ç´Ç¬ÇØ
-	Selector_TwoStepAttackAction->AddChild(*new Dragon_SweepBreathSmash());	//Ç»Ç¨ï•Ç¢Å{ÉuÉåÉXÅ{í@Ç´Ç¬ÇØ
-	//3íiäKñ⁄ÇÃçUåÇÉAÉNÉVÉáÉì
-	BehaviorTreeNode* Selector_ThreeStepAttackAction = new RandomSelector();
-	Selector_ThreeStepAttackAction->AddChild(*new Dragon_BreathSmashSweepRotate());//ÉuÉåÉXÅ{í@Ç´Ç¬ÇØÅ{Ç»Ç¨ï•Ç¢Å{âÒì]çUåÇ
-	Selector_ThreeStepAttackAction->AddChild(*new Dragon_SmashRotate());//í@Ç´Ç¬ÇØÅ{âÒì]çUåÇ
-	Selector_ThreeStepAttackAction->AddChild(*new Dragon_SweepSmashRotateBreath());//Ç»Ç¨ï•Ç¢Å{í@Ç´Ç¬ÇØÅ{âÒì]çUåÇÅ{ÉuÉåÉX
-	Selector_ThreeStepAttackAction->AddChild(*new Dragon_RotateSweepBreathSmash());//âÒì]çUåÇÅ{Ç»Ç¨ï•Ç¢Å{ÉuÉåÉXÅ{í@Ç´Ç¬ÇØ
-	Selector_ThreeStepAttackAction->AddChild(*new Dragon_SweepBreathSmash());//Ç»Ç¨ï•Ç¢Å{ÉuÉåÉXÅ{í@Ç´Ç¬ÇØ
-	//íiäKÇ≤Ç∆ÇÃçUåÇÉAÉNÉVÉáÉì
-	BehaviorTreeNode* Selector_StepByStepAttackAction = new SelectorNode();
-	Selector_StepByStepAttackAction->AddChild(*Selector_OneStepAttackAction);
-	Selector_StepByStepAttackAction->AddChild(*Selector_TwoStepAttackAction);
-	Selector_StepByStepAttackAction->AddChild(*Selector_ThreeStepAttackAction);
-	//ÉAÉNÉeÉBÉuÉtÉâÉOÇ™óßÇ¡ÇƒÇ¢ÇÈÇ∆Ç´ÇÃÉAÉNÉVÉáÉì
-	BehaviorTreeNode* Sequencer_ActiveActionIfActiveFlagIsTrue = new SequencerNode();
-	Sequencer_ActiveActionIfActiveFlagIsTrue->AddChild(*new Condition_IsDragonActiveFlagIsTrue());
-	Sequencer_ActiveActionIfActiveFlagIsTrue->AddChild(*Selector_StepByStepAttackAction);
-	//ÉAÉNÉVÉáÉìÇ™ëIëÇ≥ÇÍÇƒÇ¢ÇÈÇ©
+	/*ÉoÉgÉãÉAÉNÉVÉáÉìÉTÉuÉcÉäÅ[*/
+	BehaviorTreeNode* Sequencer_BattleAction= new SequencerNode();
+	//ÉAÉNÉVÉáÉìëIëÉTÉuÉcÉäÅ[
+	{
+		//íiäKÇ≤Ç∆ÇÃçUåÇÉTÉuÉcÉäÅ[
+		{
+			BehaviorTreeNode* Selector_StepByStepAttackAction = new SelectorNode();
+			//3íiäKñ⁄ÇÃçUåÇÉAÉNÉVÉáÉìÉTÉuÉcÉäÅ[
+			{
+				BehaviorTreeNode* Selector_ThreeStepAttackAction = new SelectorNode();
+				//âìãóó£çUåÇîÕàÕäOÇæÇ¡ÇΩÇÁï‡Ç≠
+				BehaviorTreeNode* Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack = new SequencerNode();
+				Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack->AddChild(*new Condition_IsDragonToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::DRAGON)["LONG_ATTACK_RANGE"]));
+				Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack->AddChild(*new Dragon_Walk());
+				//ãﬂãóó£çUåÇîÕàÕäOÇæÇ¡ÇΩÇÁÉuÉåÉX
+				BehaviorTreeNode* Sequencer_BreathIfTargetOutOfRangeOfNearRangeAttack = new SequencerNode();
+				Sequencer_BreathIfTargetOutOfRangeOfNearRangeAttack->AddChild(*new Condition_IsDragonToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::DRAGON)["NEAR_ATTACK_RANGE"]));
+				Sequencer_BreathIfTargetOutOfRangeOfNearRangeAttack->AddChild(*new Dragon_Breath());
+				//RayÇÃäOÇæÇ¡ÇΩÇÁâÒì]çUåÇ
+				BehaviorTreeNode* Sequencer_RotateAttackIfTargetOutOfRangeRay = new SequencerNode();
+				Sequencer_RotateAttackIfTargetOutOfRangeRay->AddChild(*new Condition_IsTargetOutOfRangeOfDragonRay(json.GetJson(JsonManager::FileType::DRAGON)["TOLERANCE_RANGE"][0], json.GetJson(JsonManager::FileType::DRAGON)["TOLERANCE_RANGE"][1]));
+				Sequencer_RotateAttackIfTargetOutOfRangeRay->AddChild(*new Dragon_Rotate());
+				//ÇªÇÍà»äOÇæÇ¡ÇΩÇÁÉâÉìÉ_ÉÄÇ≈ëIÇ‘
+				BehaviorTreeNode* Selector_RandomAttackAction = new RandomSelector();
+				Selector_RandomAttackAction->AddChild(*new Dragon_Smash());	//í@Ç´Ç¬ÇØ
+				Selector_RandomAttackAction->AddChild(*new Dragon_Sweep());	//Ç»Ç¨ï•Ç¢
+				Selector_RandomAttackAction->AddChild(*new Dragon_Rotate());	//âÒì]çUåÇ
+				Selector_RandomAttackAction->AddChild(*new Dragon_Breath());	//ÉuÉåÉX
+				//3íiäKñ⁄ÇÃçUåÇÉAÉNÉVÉáÉìÉTÉuÉcÉäÅ[Ç…í«â¡
+				Selector_ThreeStepAttackAction->AddChild(*Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack);
+				Selector_ThreeStepAttackAction->AddChild(*Sequencer_BreathIfTargetOutOfRangeOfNearRangeAttack);
+				Selector_ThreeStepAttackAction->AddChild(*Sequencer_RotateAttackIfTargetOutOfRangeRay);
+				Selector_ThreeStepAttackAction->AddChild(*Selector_RandomAttackAction);
+				//ÇRíiäKñ⁄ÇÃçUåÇÉAÉNÉVÉáÉìÉTÉuÉcÉäÅ[ÇëIëÇ∑ÇÈèåèÇí«â¡
+				BehaviorTreeNode* Sequencer_ThreeStepActionIfHpIsLessThanConstant = new SequencerNode();
+				Sequencer_ThreeStepActionIfHpIsLessThanConstant->AddChild(*new Condition_IsDragonHpIsLessThanConstant(json.GetJson(JsonManager::FileType::DRAGON)["UNLEASHED_FURY"]));
+				Sequencer_ThreeStepActionIfHpIsLessThanConstant->AddChild(*Selector_ThreeStepAttackAction);
+				//íiäKÇ≤Ç∆ÇÃçUåÇÉTÉuÉcÉäÅ[Ç…í«â¡
+				Selector_StepByStepAttackAction->AddChild(*Sequencer_ThreeStepActionIfHpIsLessThanConstant);
+			}
+			//2íiäKñ⁄ÇÃçUåÇÉAÉNÉVÉáÉìÉTÉuÉcÉäÅ[
+			{
+				BehaviorTreeNode* Selector_TwoStepAttackAction = new SelectorNode();
+				//âìãóó£çUåÇîÕàÕäOÇæÇ¡ÇΩÇÁï‡Ç≠
+				BehaviorTreeNode* Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack = new SequencerNode();
+				Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack->AddChild(*new Condition_IsDragonToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::DRAGON)["LONG_ATTACK_RANGE"]));
+				Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack->AddChild(*new Dragon_Walk());
+				//ãﬂãóó£çUåÇîÕàÕäOÇæÇ¡ÇΩÇÁÉuÉåÉX
+				BehaviorTreeNode* Sequencer_BreathIfTargetOutOfRangeOfNearRangeAttack = new SequencerNode();
+				Sequencer_BreathIfTargetOutOfRangeOfNearRangeAttack->AddChild(*new Condition_IsDragonToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::DRAGON)["NEAR_ATTACK_RANGE"]));
+				Sequencer_BreathIfTargetOutOfRangeOfNearRangeAttack->AddChild(*new Dragon_Breath());
+				//RayÇÃäOÇæÇ¡ÇΩÇÁâÒì]çUåÇ
+				BehaviorTreeNode* Sequencer_RotateAttackIfTargetOutOfRangeRay = new SequencerNode();
+				Sequencer_RotateAttackIfTargetOutOfRangeRay->AddChild(*new Condition_IsTargetOutOfRangeOfDragonRay(json.GetJson(JsonManager::FileType::BEAST)["TOLERANCE_RANGE"][0], json.GetJson(JsonManager::FileType::BEAST)["TOLERANCE_RANGE"][1]));
+				Sequencer_RotateAttackIfTargetOutOfRangeRay->AddChild(*new Dragon_Rotate());
+				//ÇªÇÍà»äOÇæÇ¡ÇΩÇÁÉâÉìÉ_ÉÄÇ≈ëIÇ‘
+				BehaviorTreeNode* Selector_RandomAttackAction = new RandomSelector();
+				Selector_RandomAttackAction->AddChild(*new Dragon_Smash());	//í@Ç´Ç¬ÇØ
+				Selector_RandomAttackAction->AddChild(*new Dragon_Sweep());	//Ç»Ç¨ï•Ç¢
+				//2íiäKñ⁄ÇÃçUåÇÉAÉNÉVÉáÉìÉTÉuÉcÉäÅ[Ç…í«â¡
+				Selector_TwoStepAttackAction->AddChild(*Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack);
+				Selector_TwoStepAttackAction->AddChild(*Sequencer_BreathIfTargetOutOfRangeOfNearRangeAttack);
+				Selector_TwoStepAttackAction->AddChild(*Sequencer_RotateAttackIfTargetOutOfRangeRay);
+				Selector_TwoStepAttackAction->AddChild(*Selector_RandomAttackAction);
+				//ÇRíiäKñ⁄ÇÃçUåÇÉAÉNÉVÉáÉìÉTÉuÉcÉäÅ[ÇëIëÇ∑ÇÈèåèÇí«â¡
+				BehaviorTreeNode* Sequencer_TwoStepActionIfHpIsLessThanConstant = new SequencerNode();
+				Sequencer_TwoStepActionIfHpIsLessThanConstant->AddChild(*new Condition_IsDragonHpIsLessThanConstant(json.GetJson(JsonManager::FileType::DRAGON)["THRESHOLD_OF_FURY"]));
+				Sequencer_TwoStepActionIfHpIsLessThanConstant->AddChild(*Selector_TwoStepAttackAction);
+				//íiäKÇ≤Ç∆ÇÃçUåÇÉTÉuÉcÉäÅ[Ç…í«â¡
+				Selector_StepByStepAttackAction->AddChild(*Sequencer_TwoStepActionIfHpIsLessThanConstant);
+			}
+			//1íiäKñ⁄ÇÃçUåÇÉAÉNÉVÉáÉìÉTÉuÉcÉäÅ[
+			{
+				BehaviorTreeNode* Selector_OneStepAttackAction = new SelectorNode();
+				//ãﬂãóó£çUåÇîÕàÕäOÇæÇ¡ÇΩÇÁï‡Ç≠
+				BehaviorTreeNode* Sequencer_ApproachIfTargetOutOfRangeOfNearRangeAttack = new SequencerNode();
+				Sequencer_ApproachIfTargetOutOfRangeOfNearRangeAttack->AddChild(*new Condition_IsDragonToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::DRAGON)["NEAR_ATTACK_RANGE"]));
+				Sequencer_ApproachIfTargetOutOfRangeOfNearRangeAttack->AddChild(*new Dragon_Walk());
+				//ÇªÇÍà»äOÇæÇ¡ÇΩÇÁÉâÉìÉ_ÉÄÇ≈ëIÇ‘
+				BehaviorTreeNode* Selector_RandomAttackAction = new RandomSelector();
+				Selector_RandomAttackAction->AddChild(*new Dragon_Smash());	//í@Ç´Ç¬ÇØ
+				Selector_RandomAttackAction->AddChild(*new Dragon_Sweep());	//Ç»Ç¨ï•Ç¢
+				//1íiäKñ⁄ÇÃçUåÇÉAÉNÉVÉáÉìÉTÉuÉcÉäÅ[Ç…í«â¡
+				Selector_OneStepAttackAction->AddChild(*Sequencer_ApproachIfTargetOutOfRangeOfNearRangeAttack);
+				Selector_OneStepAttackAction->AddChild(*Selector_RandomAttackAction);
+				//íiäKÇ≤Ç∆ÇÃçUåÇÉTÉuÉcÉäÅ[Ç…í«â¡
+				Selector_StepByStepAttackAction->AddChild(*Selector_OneStepAttackAction);
+			}
+			//ÉoÉgÉãÉTÉuÉcÉäÅ[Ç…èåèÇ∆ÉAÉNÉVÉáÉìëIëÉTÉuÉcÉäÅ[Çí«â¡
+			Sequencer_BattleAction->AddChild(*new Condition_IsDragonAttackCountLeft());
+			Sequencer_BattleAction->AddChild(*Selector_StepByStepAttackAction);
+		}
+	}
+
+	/*ÉAÉNÉVÉáÉìÇ™ëIëÇ≥ÇÍÇƒÇ¢ÇÈÇ©*/
 	BehaviorTreeNode* Sequencer_PlayCurrentIfSelectedBattleAction = new SequencerNode();
-	Sequencer_PlayCurrentIfSelectedBattleAction->AddChild(*new Condition_IsSelectedDragonBattleAction());
-	Sequencer_PlayCurrentIfSelectedBattleAction->AddChild(*new Dragon_PlayCurrentBattleAction());
-	//ÉAÉNÉeÉBÉuÇ©Ç«Ç§Ç©ÇîªífÇµÉAÉNÉVÉáÉìÇåàÇﬂÇÈÉZÉåÉNÉ^Å[ÉmÅ[Éh
-	BehaviorTreeNode* Selector_ActiveOrNoneActiveAction = new SelectorNode();
-	Selector_ActiveOrNoneActiveAction->AddChild(*Sequencer_PlayCurrentIfSelectedBattleAction);
-	Selector_ActiveOrNoneActiveAction->AddChild(*Sequencer_ActiveActionIfActiveFlagIsTrue);
-	Selector_ActiveOrNoneActiveAction->AddChild(*Selector_OneStepAttackAction);
+	{
+		Sequencer_PlayCurrentIfSelectedBattleAction->AddChild(*new Condition_IsSelectedDragonBattleAction());
+		Sequencer_PlayCurrentIfSelectedBattleAction->AddChild(*new Dragon_PlayCurrentBattleAction());
+	}
+
+	/*ôÙöKÉAÉNÉVÉáÉì*/
+	SequencerNode* RoarIfDragonStageIsDifferent = new SequencerNode();
+	{
+		RoarIfDragonStageIsDifferent->AddChild(*new Condition_IsStageIsDifferent());
+		RoarIfDragonStageIsDifferent->AddChild(*new Dragon_Roar());
+	}
 
 	/*ÉãÅ[ÉgÉmÅ[ÉhÇ…äeÉAÉNÉVÉáÉìÉcÉäÅ[Çë}ì¸*/
 	this->Selector_DyingOrBattleOrIdle->AddChild(*Sequencer_DyingIfHpIsLessThanZero);
-	this->Selector_DyingOrBattleOrIdle->AddChild(*Selector_ActiveOrNoneActiveAction);
+	this->Selector_DyingOrBattleOrIdle->AddChild(*Sequencer_PlayCurrentIfSelectedBattleAction);
+	this->Selector_DyingOrBattleOrIdle->AddChild(*RoarIfDragonStageIsDifferent);
+	this->Selector_DyingOrBattleOrIdle->AddChild(*Sequencer_BattleAction);
 	this->Selector_DyingOrBattleOrIdle->AddChild(*new Dragon_Idle());
 
-	this->debugActionNode = new Dragon_RotateSweepBreathSmash();
+	this->debugActionNode = new Dragon_Breath();
 
 	/*èâä˙âª*/
 	Initialize();
@@ -145,9 +173,43 @@ DragonBehaviorTree::~DragonBehaviorTree()
 /// </summary>
 void DragonBehaviorTree::Initialize()
 {
-	//auto& json	= Singleton<JsonManager>::GetInstance();
-	this->state		= DragonState::NORMAL;
+	this->state			= DragonState::NORMAL;
+	this->currentStage	= DragonStage::AWAKENING;
+	SetAttackCount();
 }
+
+/// <summary>
+/// É{ÉXÇÃíiäKÇîªíË
+/// </summary>
+bool DragonBehaviorTree::JudgeBossStage()
+{
+	auto& enemy = Singleton<EnemyManager>::GetInstance();
+	int hp = enemy.GetHP();
+
+	/*HPÇ™ÉäÉ~ÉbÉgà»â∫ÇæÇ¡ÇΩÇÁíiäKÇïœÇ¶ÇÈ*/
+	DragonStage newStage;
+	if (hp <= this->UNLEASHED_FURY)
+	{
+		newStage = DragonStage::RAMPAGE;
+	}
+	else if (hp <= this->THRESHOLD_OF_FURY)
+	{
+		newStage = DragonStage::FURY;
+	}
+	else
+	{
+		newStage = DragonStage::AWAKENING;
+	}
+
+	/*Ç‡ÇµíiäKÇ™ç°ï€ë∂Ç≥ÇÍÇƒÇ¢ÇÈèÛë‘Ç∆àŸÇ»Ç¡ÇƒÇ¢ÇΩÇÁèÛë‘ÇïœÇ¶ÇÈ*/
+	if (this->currentStage != newStage)
+	{
+		this->currentStage = newStage;
+		return true;
+	}
+	return false;
+}
+
 
 /// <summary>
 /// ÉÅÉìÉoïœêîÇÃçXêV
@@ -172,6 +234,7 @@ void DragonBehaviorTree::UpdateMemberVariables()
 	/*É{ÉXÇÃå¸Ç¢ÇƒÇ¢ÇÈï˚å¸Ç∆ÉvÉåÉCÉÑÅ[ÇÃà íuÇ∆ÇÃì‡êœÇéÊÇÈ*/
 	VECTOR enemyDirection = VTransform(VGet(0.0f, 0.0f, -1.0f), MGetRotY(enemy.GetRigidbody().GetRotation().y));
 	this->innerProductOfDirectionToTarget = VDot(enemyDirection, VNorm(VSub(enemy.GetRigidbody().GetPosition(), player.GetRigidbody().GetPosition())));
+
 }
 
 /// <summary>
@@ -183,8 +246,10 @@ void DragonBehaviorTree::Update()
 	UpdateMemberVariables();
 
 	printfDx("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD:%f\n", this->innerProductOfDirectionToTarget);
-	printfDx("BEAST_TO_TARGET:%f\n", this->toTargetDistance);
-	printfDx("BEAST_ACTION_STATE:%d\n", this->currentAction);
+	printfDx("DRAGON_TO_TARGET:%f\n", this->toTargetDistance);
+	printfDx("DRAGON_ACTION_STATE:%d\n", this->currentAction);
+	printfDx("DRAGON_ACTION_SELECT:%d\n", this->isSelectedBattleAction);
+	printfDx("DRAGON_CANCEL_ACTION:%d\n", this->isCancelAction);
 
 	/*ÉcÉäÅ[ÇÃé¿çs*/
 	this->prevNodeState = this->Selector_DyingOrBattleOrIdle->Update();
@@ -200,6 +265,25 @@ const void DragonBehaviorTree::Draw()const
 	this->debugActionNode->Draw();
 #endif // _DEBUG
 
+}
+
+void DragonBehaviorTree::SetAttackCount()
+{
+	auto& json = Singleton<JsonManager>::GetInstance();
+	switch (this->currentStage)
+	{
+	case DragonStage::AWAKENING:
+		this->attackCount = json.GetJson(JsonManager::FileType::DRAGON)["AWAKENING_ATTACK_COUNT"];
+		break;
+	case DragonStage::FURY:
+		this->attackCount = json.GetJson(JsonManager::FileType::DRAGON)["FURY_ATTACK_COUNT"];
+		break;
+	case DragonStage::RAMPAGE:
+		this->attackCount = json.GetJson(JsonManager::FileType::DRAGON)["RAMPAGE_ATTACK_COUNT"];
+		break;
+	default:
+		break;
+	}
 }
 
 /// <summary>

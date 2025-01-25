@@ -21,23 +21,23 @@ public:
 	const void	DrawCharacterInfo	() const override;									//描画
 	void		PlayAnimation		(const float _playAnimation, const float _playTime);//アニメーションの再生
 	void		OnAttackCollider	(const short _index);								//指定の攻撃コライダーのフラグを立てる
-	void		UpdateAttackCollider(const short _index);								//指定の攻撃コライダーを更新
 	void		OffAttackCollider	(const short _index);								//指定の攻撃コライダーのフラグを下す
+	void		UpdateAttackCollider(const short _colliderIndex, const float _nowTotalPlayTime);//指定の攻撃コライダーを更新
 
 	/*列挙体*/
 	//アニメーション
 	enum class AnimationType
 	{
-		 DYING			= 0,//デス
-		 IDLE			= 1,//待機
-		 ROAR			= 2,//咆哮
-		 WALK			= 3,//歩き
-		 TURN_LEFT		= 4,//左を向く
-		 TURN_RIGHT		= 5,//右を向く
-		 SMASH			= 6,//叩きつける
-		 SWEEP			= 7,//なぎ払い
-		 ROTATE_ATTACK	= 8,//回転攻撃
-		 BREATH			= 9,//ブレス
+		 DYING			= 0,//デス3
+		 IDLE			= 1,//待機19
+		 ROAR			= 2,//咆哮9
+		 WALK			= 3,//歩き26
+		 TURN_LEFT		= 4,//左を向く21
+		 TURN_RIGHT		= 5,//右を向く22
+		 SMASH			= 6,//叩きつける1
+		 SWEEP			= 7,//なぎ払い0
+		 ROTATE_ATTACK	= 8,//回転攻撃18
+		 BREATH			= 9,//ブレス12
 	};
 	//部位ごとのコライダー
 	enum class PartsCollider
@@ -55,11 +55,10 @@ public:
 	//攻撃コライダー
 	enum class AttackCollider
 	{
-		RIGHT_HAND	= 0,
-		TAIL1		= 1,
-		TAIL2		= 2,
-		TAIL3		= 3,
-		BREATH		= 4
+		SMASH = 0,
+		SWEEP = 1,
+		ROTATE= 2,
+		BREATH= 3,
 	};
 	/*getter/setter*/
 	const bool GetIsAttack	()const override;			//コウゲキしたか
@@ -70,14 +69,17 @@ private:
 	static constexpr float SHADOW_SIZE	 = 30.0f; //影のサイズ
 
 	/*メンバ変数*/
-	vector<AttackCapsuleColliderData*>  attackCollider;				//部位ごとの攻撃コライダー
-	vector<CharacterColliderData*>		partsCollider;				//部位ごとのコライダー
-	vector<vector<short>>				frameIndexUsePartsColider;	//部位ごとのコライダーの指定に使用するフレーム番号
-	vector<vector<short>>				frameIndexUseAttackColider;	//攻撃のコライダーの指定に使用するフレーム番号
-	short								maxPartsColliderNum;		//コライダーの数
-	vector<float>						prevPartsHp;				//1フレーム前の部位ごとのHP
-	float								maxHp;						//部位の最大HP
-	float								breathLength;				//ブレスの長さ
+	map<short,vector<AttackCapsuleColliderData*>>				attackCollider;				//攻撃コライダー
+	map<short, vector<vector<short>>>							frameIndexUseAttackColider;	//攻撃コライダーに使用するフレーム番号
+	vector<CharacterColliderData*>								partsCollider;				//部位ごとのコライダー
+	vector<vector<short>>										frameIndexUsePartsColider;	//部位ごとのコライダーの指定に使用するフレーム番号
+	array<float,static_cast<int>(AttackCollider::BREATH) + 1>	startHitCheckPlayTime;		//当たり判定開始フレーム
+	array<float,static_cast<int>(AttackCollider::BREATH) + 1>	endHitCheckPlayTime;		//当たり判定終了フレーム
+	array<bool, static_cast<int>(AttackCollider::BREATH) + 1>	isStartHitCheck;			//当たり判定終了フレーム
+	short														maxPartsColliderNum;		//コライダーの数
+	vector<int>													prevPartsHp;				//1フレーム前の部位ごとのHP
+	int															maxHp;						//部位の最大HP
+	float														breathLength;				//ブレスの長さ
 
 };
 

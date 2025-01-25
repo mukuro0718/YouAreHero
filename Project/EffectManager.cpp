@@ -17,6 +17,7 @@
 #include "BeastSuperNovaEffect.h"
 #include "BeastRaiseLevelEffect.h"
 #include "BeastExplosionRangeEffect.h"
+#include "DragonBreathEffect.h"
 #include "EffectManager.h"
 #include "EnemyManager.h"
 #include "PlayerManager.h"
@@ -44,6 +45,7 @@ EffectManager::EffectManager()
 	this->effect.emplace_back(new BeastSuperNovaEffect		(asset.GetEffect(LoadingAsset::EffectType::BEAST_SUPER_NOVA)));
 	this->effect.emplace_back(new BeastRaiseLevelEffect		(asset.GetEffect(LoadingAsset::EffectType::BOSS_ROAR)));
 	this->effect.emplace_back(new BeastExplosionRangeEffect (asset.GetEffect(LoadingAsset::EffectType::BEAST_EXPLOSION_RANGE)));
+	this->effect.emplace_back(new DragonBreathEffect		(asset.GetEffect(LoadingAsset::EffectType::BEAST_PARTS_FIRE)));
 }
 
 /// <summary>
