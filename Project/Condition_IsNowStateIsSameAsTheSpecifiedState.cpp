@@ -31,7 +31,7 @@ Condition_IsNowStateIsSameAsTheSpecifiedState::NodeState Condition_IsNowStateIsS
 {
 	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 
-	/*インターバルが終了していなければFAILUREを返す*/
+	/*状態が指定の状態でなければFAILUREを返す*/
 	if (rootNode.GetBeastState() != this->SPECIFIED_STATE)
 	{
 		//printfDx("CONDITION_STATE_FAILURE\n");
