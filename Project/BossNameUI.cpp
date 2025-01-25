@@ -21,16 +21,6 @@ BossNameUI::BossNameUI()
 	this->fontHandle  = asset.GetFont(LoadingAsset::FontType::BOSS_NAME);
 	this->imageHandle = asset.GetImage(LoadingAsset::ImageType::BACK_GROUND);
 
-	/*•Ï”‚Ì‰Šú‰»*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
-	int			 enemyType	 = enemyChanger.GetEnemyType();
-	vector<int>	 position	 = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_POSITION"][enemyType];
-	vector<int>  background	 = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_BACKGROUND"][enemyType];
-	string		 name		 = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_TYPE"][enemyType];
-	this->namePosition		 = position;
-	this->backgroundDrawRect = background;
-	this->bossName			 = name;
 }
 
 /// <summary>
@@ -46,6 +36,16 @@ BossNameUI::~BossNameUI()
 /// </summary>
 void BossNameUI::Initialize()
 {
+	/*•Ï”‚Ì‰Šú‰»*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
+	int			 enemyType	 = enemyChanger.GetEnemyType();
+	vector<int>	 position	 = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_POSITION"][enemyType];
+	vector<int>  background  = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_BACKGROUND"][enemyType];
+	string		 name		 = json.GetJson(JsonManager::FileType::UI)["BOSS_NAME_TYPE"][enemyType];
+	this->namePosition		 = position;
+	this->backgroundDrawRect = background;
+	this->bossName			 = name;
 }
 
 /// <summary>
