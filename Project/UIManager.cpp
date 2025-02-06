@@ -16,10 +16,8 @@
 /// コンストラクタ
 /// </summary>
 UIManager::UIManager()
+	: scene(nullptr)
 {
-	this->scene.emplace_back(new TitleUI());
-	this->scene.emplace_back(new SelectUI());
-	this->scene.emplace_back(new GameUI());
 }
 
 /// <summary>
@@ -27,11 +25,7 @@ UIManager::UIManager()
 /// </summary>
 UIManager::~UIManager()
 {
-	for (int i = 0; i < this->scene.size(); i++)
-	{
-		DeleteMemberInstance(this->scene[i]);
-	}
-	this->scene.clear();
+	DeleteMemberInstance(this->scene);
 }
 
 /// <summary>
@@ -40,7 +34,25 @@ UIManager::~UIManager()
 void UIManager::Initialize()
 {
 	auto& sceneChanger = Singleton<SceneChanger>::GetInstance();
-	this->scene[static_cast<int>(sceneChanger.GetNextSceneType())]->Initialize();
+
+	if (this->scene != nullptr)
+	{
+		DeleteMemberInstance(this->scene);
+	}
+
+	switch (sceneChanger.GetNextSceneType())
+	{
+	case SceneChanger::SceneType::TITLE:
+		this->scene = new TitleUI();
+		break;
+	case SceneChanger::SceneType::GAME:
+		this->scene = new GameUI();
+		break;
+	case SceneChanger::SceneType::SELECT:
+		this->scene = new SelectUI();
+		break;
+	}
+	this->scene->Initialize();
 }
 
 /// <summary>
@@ -49,8 +61,7 @@ void UIManager::Initialize()
 void UIManager::Update()
 {
 	//int startTime = GetNowCount();
-	auto& sceneChanger = Singleton<SceneChanger>::GetInstance();
-	this->scene[static_cast<int>(sceneChanger.GetNextSceneType())]->Update();
+	this->scene->Update();
 	//int endTime = GetNowCount();
 	//this->frameTime = endTime - startTime;
 }
@@ -60,8 +71,7 @@ void UIManager::Update()
 /// </summary>
 const void UIManager::Draw()const
 {
-	auto& sceneChanger = Singleton<SceneChanger>::GetInstance();
-	this->scene[static_cast<int>(sceneChanger.GetNextSceneType())]->Draw();
+	this->scene->Draw();
 	//printfDx("UI_FRAMETIME:%d\n", this->frameTime);
 }
 
@@ -70,6 +80,14 @@ const void UIManager::Draw()const
 /// </summary>
 const bool UIManager::IsDraw()const
 {
-	auto& sceneChanger = Singleton<SceneChanger>::GetInstance();
-	return this->scene[static_cast<int>(sceneChanger.GetNextSceneType())]->IsEnd();
+	return this->scene->IsEnd();
+}
+
+/// <summary>
+/// 描画しているか
+/// </summary>
+const bool UIManager::GetIsBackTitle()const
+{
+	auto& selectScene = dynamic_cast<SelectUI&>(*this->scene);
+	return selectScene.GetIsBack();
 }

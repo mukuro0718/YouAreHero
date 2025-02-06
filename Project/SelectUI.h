@@ -15,6 +15,7 @@ public:
 		  void Update	 ()		 override;
 	const void Draw		 ()const override;
 	const bool IsEnd	 ()const override;
+	const bool GetIsBack()const { return this->isBackTitle; }
 private:
 	/*Ã“I’è”*/
 
@@ -34,5 +35,7 @@ private:
 	int			aButton;
 	int			bButton;
 	int			lStick;
+	bool		isProvDecideForBackTitle;
+	bool		isBackTitle;
 };
 

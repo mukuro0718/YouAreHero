@@ -177,7 +177,7 @@ bool TitleUI::IsPressButton()
 	/*PRESSロゴが表示されていたら*/
 	if (this->pressLogo.alpha > 0)
 	{
-			isPressButton = (pad & PAD_INPUT_4);
+			isPressButton = (pad & InputManager::PAD_A);
 			//前にボタン入力がない&今ボタン入力がある
 			if (!this->isPrevPressButton && isPressButton)
 			{
@@ -196,7 +196,7 @@ bool TitleUI::IsPressButton()
 	}
 
 	/*何かキーが押されたら、無条件でtrueを返す*/
-	if (CheckHitKeyAll()) return true;
+	//if (CheckHitKeyAll()) return true;
 
 
 	return isPressButton;

@@ -19,6 +19,7 @@ LoadingAsset::LoadingAsset()
 	vector<string> imagePath  = json.GetJson(JsonManager::FileType::IMAGE_PATH)["PATH"];
 	vector<string> effectPath = json.GetJson(JsonManager::FileType::EFFECT_PATH)["PATH"];
 	vector<string> soundPath = json.GetJson(JsonManager::FileType::SOUND_PATH)["PATH"];
+	vector<int> soundFlag = json.GetJson(JsonManager::FileType::SOUND_PATH)["FLAG"];
 
 	vector<string> fontPath = json.GetJson(JsonManager::FileType::FONT_PATH )["PATH"];
 	vector<string> fontName = json.GetJson(JsonManager::FileType::FONT_PATH)["NAME"];
@@ -63,8 +64,10 @@ LoadingAsset::LoadingAsset()
 	/*サウンドのロード*/
 	for (int i = 0; i < soundPath.size(); i++)
 	{
+		SetCreate3DSoundFlag(soundFlag[i]);
 		this->soundHandle.emplace_back(LoadSoundMem(soundPath[i].c_str()));
 	}
+	SetCreate3DSoundFlag(FALSE);
 	//フラグを立てることで非同期ロードが可能になる
 	SetUseASyncLoadFlag(TRUE);
 }

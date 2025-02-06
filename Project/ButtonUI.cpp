@@ -28,29 +28,27 @@ ButtonUI::ButtonUI()
 	//説明背景
 	this->operationTable = asset.GetImage(LoadingAsset::ImageType::OPERATION_TABLE);
 	//説明文字
-	this->operationText.emplace_back("移動");
-	this->operationText.emplace_back("ダッシュ");
-	this->operationText.emplace_back("回避");
-	this->operationText.emplace_back("ガード");
-	this->operationText.emplace_back("切り下げ");
-	this->operationText.emplace_back("切り上げ");
-	this->operationText.emplace_back("飛び込み切り");
-	this->operationText.emplace_back("回転切り");
-	this->operationText.emplace_back("アイテム使用");
-	this->operationText.emplace_back("納刀");
-	this->operationText.emplace_back("抜刀");
-	this->operationText.emplace_back("ロックオン");
+	this->operationText.emplace_back("移動");		//0
+	this->operationText.emplace_back("ダッシュ");	//1
+	this->operationText.emplace_back("回避");		//2
+	this->operationText.emplace_back("ガード");		//3
+	this->operationText.emplace_back("攻撃");		//4
+	this->operationText.emplace_back("回転切り");	//5
+	this->operationText.emplace_back("アイテム使用");//6
+	this->operationText.emplace_back("納刀");		//7
+	this->operationText.emplace_back("抜刀");		//8
+	this->operationText.emplace_back("ロックオン");	//9
 	//表示するボタンのリスト
-	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::A_BUTTON));
-	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::B_BUTTON));
-	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::X_BUTTON));
-	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::Y_BUTTON));
-	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::LEFT_STICK));
-	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::RIGHT_TRIGGER));
-	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::RIGHT_BUMPER));
-	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::BUTTON_SET_1));
-	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::BUTTON_SET_2));
-	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::PUSH_RIGHT_STICK));
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::A_BUTTON));		 //0
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::B_BUTTON));		 //1
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::X_BUTTON));		 //2
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::Y_BUTTON));		 //3
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::LEFT_STICK));		 //4
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::RIGHT_TRIGGER));	 //5
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::RIGHT_BUMPER));	 //6
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::BUTTON_SET_1));	 //7
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::BUTTON_SET_2));	 //8
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::PUSH_RIGHT_STICK));//9
 
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->changeDisplayIndexType.emplace_back(static_cast<int>(PlayerController::PlayerState::COMBO_1));

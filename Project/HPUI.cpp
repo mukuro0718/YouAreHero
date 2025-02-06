@@ -51,7 +51,7 @@ void HPUI::Initialize()
 	/*‰Šú‰»*/
 	int		playerHP	  = player.GetHP();
 	int		bossHP		  = enemy.GetHP();
-	float	playerStamina = player.GetStamina();
+	int		playerStamina = static_cast<int>(player.GetStamina());
 
 	/*”ÍˆÍ‚Ìİ’è*/
 	this->playerHP		.SetRange(playerHP		, 0, playerHP);
@@ -71,7 +71,7 @@ void HPUI::Update()
 	/*HPŒvZ*/
 	this->playerHP.SetNow(player.GetHP());
 	this->bossHP.SetNow(enemy.GetHP());
-	this->playerStamina.SetNow(player.GetStamina());
+	this->playerStamina.SetNow(static_cast<int>(player.GetStamina()));
 
 	this->playerHP.PrevDecrease();
 	this->bossHP.PrevDecrease();

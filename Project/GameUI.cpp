@@ -12,6 +12,7 @@
 #include "GameOverUI.h"
 #include "SceneUI.h"
 #include "GameUI.h"
+#include "TutorialUI.h"
 #include "UIManager.h"
 #include "InputManager.h"
 #include "LoadingAsset.h"
@@ -19,6 +20,7 @@
 #include "Player.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"
+#include "EnemyChanger.h"
 
 /// <summary>
 /// コンストラクタ
@@ -36,6 +38,7 @@ GameUI::GameUI()
 	this->bossName	= new BossNameUI();
 	this->clearUI	= new GameClearUI();
 	this->overUI	= new GameOverUI();
+	this->tutorialUI= new TutorialUI();
 
 	/*画像クラスインスタンスの作成*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
@@ -123,6 +126,12 @@ void GameUI::Update()
 		}
 	}
 
+	auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
+	if (enemyChanger.GetEnemyType() == static_cast<int>(EnemyChanger::EnemyType::TUTORIAL))
+	{
+		this->tutorialUI->Update();
+	}
+
 	this->hp->Update();
 	this->button->Update();
 	this->bossName->Update();
@@ -143,14 +152,14 @@ void GameUI::Update()
 		//立っていたら
 		else
 		{
-			//Bが押されていたら
-			if (input.GetNowPadState() & InputManager::PAD_B)
+			//Aが押されていたら
+			if (input.GetNowPadState() & InputManager::PAD_A)
 			{
 				this->type = ResultType::LOSE;
 				this->isPause = false;
 			}
-			//Aが押されていたら
-			else if (input.GetNowPadState() & InputManager::PAD_A)
+			//Bが押されていたら
+			else if (input.GetNowPadState() & InputManager::PAD_B)
 			{
 				this->isPause = false;
 			}
@@ -184,6 +193,7 @@ void GameUI::Update()
 /// </summary>
 const void GameUI::Draw()const
 {
+	this->tutorialUI->Draw();
 	this->hp->Draw();
 	this->button->Draw();
 	this->bossName->Draw();
@@ -194,8 +204,8 @@ const void GameUI::Draw()const
 		if (this->isPause)
 		{
 			DrawExtendGraph(this->pauseTableDrawRect[0], this->pauseTableDrawRect[1], this->pauseTableDrawRect[2], this->pauseTableDrawRect[3], this->backGround, TRUE);
-			DrawExtendGraph(this->decideButtonDrawRect[0], this->decideButtonDrawRect[1], this->decideButtonDrawRect[2], this->decideButtonDrawRect[3], this->decideButton, TRUE);
-			DrawExtendGraph(this->backButtonDrawRect[0], this->backButtonDrawRect[1], this->backButtonDrawRect[2], this->backButtonDrawRect[3], this->backButton, TRUE);
+			DrawExtendGraph(this->decideButtonDrawRect[0], this->decideButtonDrawRect[1], this->decideButtonDrawRect[2], this->decideButtonDrawRect[3], this->backButton, TRUE);
+			DrawExtendGraph(this->backButtonDrawRect[0], this->backButtonDrawRect[1], this->backButtonDrawRect[2], this->backButtonDrawRect[3], this->decideButton, TRUE);
 			DrawStringToHandle(this->pauseHeaderTextPosition[0], this->pauseHeaderTextPosition[1], "ゲームを中断しますか", this->TEXT_COLOR, this->pauseFontHandle);
 			DrawStringToHandle(this->pauseActionTextPosition[0], this->pauseActionTextPosition[1], ":はい       :いいえ", this->TEXT_COLOR, this->pauseActionHandle);
 		}

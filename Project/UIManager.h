@@ -16,13 +16,13 @@ public:
 		  void Update	 ();	 //更新
 	const void Draw		 ()const;//描画
 	const bool IsDraw	 ()const;//描画しているか
-
+	const bool GetIsBackTitle()const;
 private:
 	/*内部処理関数*/
 	UIManager();//コンストラクタ
 
 	/*メンバ変数*/
-	std::vector<SceneUI*>	scene;
-	int frameTime;//処理までにかかった時間
+	SceneUI* scene;
+	int		 frameTime;//処理までにかかった時間
 };
 
