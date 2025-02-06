@@ -13,6 +13,7 @@
 #include "EnemyManager.h"
 #include "Debug.h"
 #include "HitStop.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -31,14 +32,14 @@ BossSlashCombo2Attack::BossSlashCombo2Attack(const int _attackIndex)
 
 	/*コライダーの初期化*/
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);
-	collider.radius				= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
-	collider.data->damage		= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
-	collider.data->reactionType = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
-	//ここでのヒットストップ系の変数は、キャラクター側に与えるものになる
-	collider.data->hitStopTime	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
-	collider.data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
-	collider.data->hitStopDelay = json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
-	collider.data->slowFactor	= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
+	collider.radius							= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_RADIUS"][this->attackIndex];
+	collider.data->damage					= json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_DAMAGE"][this->attackIndex];
+	collider.data->reactionType				= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
+	collider.data->hitStopTime				= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_TIME"][this->attackIndex];
+	collider.data->hitStopType				= static_cast<int>(HitStop::Type::STOP);
+	collider.data->hitStopDelay				= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_HIT_STOP_DELAY"][this->attackIndex];
+	collider.data->slowFactor				= json.GetJson(JsonManager::FileType::ENEMY)["DEFENSE_SLOW_FACTOR"][this->attackIndex];
+	collider.data->blockStaminaConsumption	= json.GetJson(JsonManager::FileType::ENEMY)["BLOCK_STAMINA_CONSUMPTION"][this->attackIndex];
 
 	this->startHitCheckFrame = json.GetJson(JsonManager::FileType::ENEMY)["START_HIT_CHECK_PLAY_TIME"][this->attackIndex];
 	this->endHitCheckFrame	 = json.GetJson(JsonManager::FileType::ENEMY)["END_HIT_CHECK_PLAY_TIME"][this->attackIndex];
@@ -108,6 +109,9 @@ void BossSlashCombo2Attack::Update(const float _playTime)
 			//指定フレームの時に、当たり判定フラグをもう一度立てる
 			if (this->frameCount == this->onHitCheckFrame[i])
 			{
+				//サウンドエフェクトの再生
+				auto& sound = Singleton<SoundManager>::GetInstance();
+				sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_SWING_1);
 				collider.data->isDoHitCheck = true;
 			}
 			//指定フレームの時に当たり判定フラグを下す

@@ -16,6 +16,7 @@
 #include "BossPunchAction.h"
 #include "PlayerManager.h"
 #include "EffectManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -89,6 +90,8 @@ void BossPunchAction::Update(Boss& _boss)
 	/*ヒットストップの更新*/
 	if (this->attack->GetIsHitAttack())
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_LIGHT_ATTACK);
 		//ヒットストップの設定
 		this->hitStop->SetHitStop(this->HIT_STOP_TIME, this->HIT_STOP_TYPE, this->HIT_STOP_DELAY, this->SLOW_FACTOR);
 		//攻撃ヒットフラグを下す

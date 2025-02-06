@@ -18,7 +18,7 @@ public:
 private:
 	/*定数*/
 	const int	 ATTACK_TYPE;		//攻撃の種類
-	const float  HIT_STOP_DELAY;	//ヒットストップディレイ
+	const int	 HIT_STOP_DELAY;	//ヒットストップディレイ
 	const float	 HIT_STOP_TIME;		//ヒットストップ時間
 	const int	 HIT_STOP_TYPE;		//ヒットストップの種類
 	const float	 SLOW_FACTOR;		//スロー係数

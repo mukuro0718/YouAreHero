@@ -60,7 +60,7 @@ const void BossAction::Draw()const
 /// </summary>
 const int BossAction::GetDesireValue() const
 {
-	return this->parameter->desireValue;
+	return static_cast<int>(this->parameter->desireValue);
 }
 
 /// <summary>
@@ -76,7 +76,7 @@ const int BossAction::GetWeight(const int _sum)const
 /// </summary>
 const int BossAction::GetBaseWeight()const
 {
-	return this->parameter->BASE_WEIGHT;
+	return static_cast<int>(this->parameter->BASE_WEIGHT);
 }
 /// <summary>
 /// 指定したフレームの計測

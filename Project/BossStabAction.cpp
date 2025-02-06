@@ -15,6 +15,7 @@
 #include "BossStabAttack.h"
 #include "BossStabAction.h"
 #include "PlayerManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -98,6 +99,8 @@ void BossStabAction::Update(Boss& _boss)
 	//攻撃が当たっていたら
 	if (this->attack->GetIsHitAttack())
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_HEAVY_ATTACK);
 		//ヒットストップの設定
 		this->hitStop->SetHitStop(this->HIT_STOP_TIME, this->HIT_STOP_TYPE, this->HIT_STOP_DELAY, this->SLOW_FACTOR);
 		//攻撃ヒットフラグを下す

@@ -11,6 +11,7 @@
 #include "Boss.h"
 #include "BossChaseAction.h"
 #include "PlayerManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -54,6 +55,15 @@ void BossChaseAction::Update(Boss& _boss)
 	/*死亡していたらisSelectをfalseにして早期リターン*/
 	if (_boss.GetHP() <= 0) { this->isSelect = false; return; }
 
+	//間隔で足音を鳴らす
+	if (this->frameCount == 25)
+	{
+		this->frameCount = 0;
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_FOOTSTEPS);
+	}
+	this->frameCount++;
+
 	if (this->parameter->desireValue != 0)
 	{
 		this->parameter->desireValue = 0;							//欲求値を０にする
@@ -82,7 +92,6 @@ void BossChaseAction::Update(Boss& _boss)
 
 	/*回転率を代入*/
 	_boss.SetRotation(nowRotation);
-
 
 	/*回転率をもとに、移動する向きを出す*/
 	direction = VGet(-sinf(nowRotation.y), 0.0f, -cosf(nowRotation.y));

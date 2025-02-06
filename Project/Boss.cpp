@@ -91,6 +91,7 @@ Boss::Boss()
 	this->parameters.emplace_back(new BossSlashComboAction());
 	this->parameters.emplace_back(new BossSlashCombo2Action());
 	this->parameters.emplace_back(new BossJumpAttackAction());
+
 }
 
 /// <summary>
@@ -99,6 +100,13 @@ Boss::Boss()
 Boss::~Boss()
 {
 	Finalize();
+	this->actionTypeMap.clear();
+	DeleteMemberInstance(this->collider);
+	for (int i = 0; i < this->parameters.size(); i++)
+	{
+		DeleteMemberInstance(this->parameters[i]);
+	}
+	this->parameters.clear();
 }
 
 /// <summary>
@@ -111,23 +119,25 @@ void Boss::Initialize()
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	/*変数の初期化*/
-	this->isAlive			= true;
-	this->isGround			= true;
-	this->isDraw			= true;
-	this->speed				= 0.0f;
-	this->animationPlayTime	= 0.0f;
-	this->entryInterval		= 0;
-	this->moveTarget		= Gori::ORIGIN;
-	this->nowAnimation		= static_cast<int>(AnimationType::ROAR);
-	this->nowAction			= static_cast<int>(ActionType::ROAR);
-	this->attackComboCount	= 0;
-	this->angryState		= static_cast<int>(BossState::NORMAL);
-	float height			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_HEIGHT"];
-	this->collider->topPositon		= VGet(0.0f, height, 0.0f);
-	this->collider->radius			= json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
-	this->collider->isUseCollWithGround = true;
-	this->collider->data->hp					= json.GetJson(JsonManager::FileType::ENEMY)["HP"];
-	this->collider->data->isHit				= false;
+	this->isAlive						 = true;
+	this->isGround						 = true;
+	this->isDraw						 = true;
+	this->speed							 = 0.0f;
+	this->animationPlayTime				 = 0.0f;
+	this->entryInterval					 = 0;
+	this->moveTarget					 = Gori::ORIGIN;
+	this->nowAnimation					 = static_cast<int>(AnimationType::ROAR);
+	this->nowAction						 = static_cast<int>(ActionType::ROAR);
+	this->attackComboCount				 = 0;
+	this->angryState					 = static_cast<int>(BossState::NORMAL);
+	float height						 = json.GetJson(JsonManager::FileType::ENEMY)["HIT_HEIGHT"];
+	this->collider->topPositon			 = VGet(0.0f, height, 0.0f);
+	this->collider->radius				 = json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
+	this->collider->isUseCollWithGround	 = true;
+	this->collider->isUseCollWithChara	 = true;
+	this->collider->data->defensivePower = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DEFENSIVE_POWER"];
+	this->collider->data->hp			 = json.GetJson(JsonManager::FileType::ENEMY)["HP"];
+	this->collider->data->isHit			 = false;
 	this->tiredInterval = 0;
 
 	/*コンボの設定*/
@@ -167,12 +177,7 @@ void Boss::Initialize()
 /// </summary>
 void Boss::Finalize()
 {
-	this->actionTypeMap.clear();
-	for (int i = 0; i < this->parameters.size(); i++)
-	{
-		DeleteMemberInstance(this->parameters[i]);
-	}
-	this->parameters.clear();
+	this->collider->isUseCollWithGround = false;
 }
 
 /// <summary>
@@ -251,9 +256,12 @@ void Boss::ChangeState()
 		int  sumDesireValue = 0;	//欲求値の合計
 		for (int i = 0; i < this->parameters.size(); i++)
 		{
-			isSelect = this->parameters[i]->GetIsSelect();
+			if (i == this->nowAction)
+			{
+				isSelect = this->parameters[i]->GetIsSelect();
+				if (isSelect)return;
+			}
 			sumDesireValue += parameters[i]->GetDesireValue();
-			if (isSelect)return;
 		}
 		
 		/*ここですべてのパラメータの計算を行う*/
@@ -327,30 +335,30 @@ const void Boss::DrawCharacterInfo()const
 #ifdef _DEBUG
 
 
-	auto& debug = Singleton<Debug>::GetInstance();
-	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
-	{
-		VECTOR position = this->collider->rigidbody.GetPosition();
-		VECTOR rotation = this->collider->rigidbody.GetRotation();
-		printfDx("Boss_POSITION X:%f,Y:%f,Z:%f	\n", position.x, position.y, position.z);
-		printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f	\n", rotation.x, rotation.y, rotation.z);
-		printfDx("%d:DYING						\n", this->state->CheckFlag(this->DYING));
-		printfDx("%d:IDLE						\n", this->state->CheckFlag(this->IDLE));
-		printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
-		printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
-		printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
-		printfDx("%d:SLASH_1					\n", this->state->CheckFlag(this->SLASH_1));
-		printfDx("%d:SLASH_2					\n", this->state->CheckFlag(this->SLASH_2));
-		printfDx("%d:STAB						\n", this->state->CheckFlag(this->STAB));
-		printfDx("%d:ROTATE_SLASH				\n", this->state->CheckFlag(this->ROTATE_SLASH));
-		printfDx("%d:PUNCH						\n", this->state->CheckFlag(this->PUNCH));
-		printfDx("%d:SLASH_COMBO_1				\n", this->state->CheckFlag(this->SLASH_COMBO_1));
-		printfDx("%d:SLASH_COMBO_2				\n", this->state->CheckFlag(this->SLASH_COMBO_2));
-		printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
-		printfDx("%d:STATE						\n", this->angryState);
-		/*各アクションの当たり判定図形の描画*/
-		this->parameters[this->nowAction]->Draw();
-	}
+	//auto& debug = Singleton<Debug>::GetInstance();
+	//if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
+	//{
+	//	VECTOR position = this->collider->rigidbody.GetPosition();
+	//	VECTOR rotation = this->collider->rigidbody.GetRotation();
+	//	printfDx("Boss_POSITION X:%f,Y:%f,Z:%f	\n", position.x, position.y, position.z);
+	//	printfDx("Boss_ROTATION X:%f,Y:%f,Z:%f	\n", rotation.x, rotation.y, rotation.z);
+	//	printfDx("%d:DYING						\n", this->state->CheckFlag(this->DYING));
+	//	printfDx("%d:IDLE						\n", this->state->CheckFlag(this->IDLE));
+	//	printfDx("%d:ROAR						\n", this->state->CheckFlag(this->ROAR));
+	//	printfDx("%d:WALK						\n", this->state->CheckFlag(this->WALK));
+	//	printfDx("%d:REST						\n", this->state->CheckFlag(this->REST));
+	//	printfDx("%d:SLASH_1					\n", this->state->CheckFlag(this->SLASH_1));
+	//	printfDx("%d:SLASH_2					\n", this->state->CheckFlag(this->SLASH_2));
+	//	printfDx("%d:STAB						\n", this->state->CheckFlag(this->STAB));
+	//	printfDx("%d:ROTATE_SLASH				\n", this->state->CheckFlag(this->ROTATE_SLASH));
+	//	printfDx("%d:PUNCH						\n", this->state->CheckFlag(this->PUNCH));
+	//	printfDx("%d:SLASH_COMBO_1				\n", this->state->CheckFlag(this->SLASH_COMBO_1));
+	//	printfDx("%d:SLASH_COMBO_2				\n", this->state->CheckFlag(this->SLASH_COMBO_2));
+	//	printfDx("%d:JUMP_ATTACK				\n", this->state->CheckFlag(this->JUMP_ATTACK));
+	//	printfDx("%d:STATE						\n", this->angryState);
+	//	/*各アクションの当たり判定図形の描画*/
+	//	this->parameters[this->nowAction]->Draw();
+	//}
 
 #endif // _DEBUG
 	if (this->isDraw)
@@ -388,6 +396,7 @@ void Boss::SetAngryState()
 			this->angryState = static_cast<int>(BossState::TIRED);
 			this->angryValue = 0;
 			MV1SetTextureGraphHandle(this->modelHandle, 0, this->tiredTexture, FALSE);
+			this->collider->data->defensivePower = json.GetJson(JsonManager::FileType::ENEMY)["TIRED_DEFENSIVE_POWER"];
 		}
 		break;
 		//通常
@@ -404,6 +413,7 @@ void Boss::SetAngryState()
 		{
 			this->angryState = static_cast<int>(BossState::ANGRY);
 			MV1SetTextureGraphHandle(this->modelHandle, 0, this->angryTexture, FALSE);
+			this->collider->data->defensivePower = json.GetJson(JsonManager::FileType::ENEMY)["ANGRY_DEFENSIVE_POWER"];
 		}
 		break;
 	//疲れ
@@ -416,6 +426,7 @@ void Boss::SetAngryState()
 			this->angryState = static_cast<int>(BossState::NORMAL);
 			MV1SetTextureGraphHandle(this->modelHandle, 0, this->normalTexture, FALSE);
 			this->tiredInterval = 0;
+			this->collider->data->defensivePower = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DEFENSIVE_POWER"];
 		}
 		break;
 	}
