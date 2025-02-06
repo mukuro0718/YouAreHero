@@ -10,6 +10,16 @@ class AttackData;
 class CharacterColliderData : public ColliderData
 {
 public:
+	enum class CharaType
+	{
+		NONE = -1,
+		PLAYER,
+		GORG,
+		MOL,
+		LUX,
+		DEMON,
+	};
+
 	/*コンストラクタ*/
 	CharacterColliderData(const ColliderData::Priority _priority, const GameObjectTag _tag, CharacterData* _data);
 
@@ -25,4 +35,5 @@ public:
 	bool			isUseCollWithGround;//地面との当たり判定を行うか
 	bool			isUseCollWithChara;//キャラクターとの当たり判定を行うか
 	bool			isSetTopPosition;//カプセル上座標を設定しているか（falseならyにheightのみ入っている）
+	CharaType		type;
 };

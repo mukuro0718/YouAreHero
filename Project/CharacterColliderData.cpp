@@ -15,9 +15,10 @@ CharacterColliderData::CharacterColliderData(const ColliderData::Priority _prior
 	, radius			 (0.0f)
 	, topPositon		 (VGet(0.0f, 0.0f, 0.0f))
 	, data				 (_data)
-	, isUseCollWithChara (true)
+	, isUseCollWithChara (false)
 	, isUseCollWithGround(true)
 	, isSetTopPosition	 (false)
+	, type				 (CharaType::NONE)
 {
 	//èàóùÇ»Çµ
 }

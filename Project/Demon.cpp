@@ -89,7 +89,8 @@ void Demon::Initialize()
 	this->collider->data->defensivePower= json.GetJson(JsonManager::FileType::DEMON_PANDA)["NORMAL_DEFENSIVE_POWER"];
 	this->collider->data->hp			= json.GetJson(JsonManager::FileType::DEMON_PANDA)["HP"];
 	this->collider->data->isHit			= false;
-	
+	this->collider->type				= CharacterColliderData::CharaType::DEMON;
+
 	/*物理挙動の初期化*/
 	//jsonデータを定数に代入
 	const VECTOR POSITION	= Gori::Convert(json.GetJson(JsonManager::FileType::DEMON_PANDA)["INIT_POSITION"]);//座標

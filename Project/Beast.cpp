@@ -64,10 +64,11 @@ Beast::Beast()
 		this->partsCollider.emplace_back(new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData()));
 		this->partsCollider[i]->data->hp			= this->maxHp;
 		this->partsCollider[i]->radius				= json.GetJson(JsonManager::FileType::BEAST)["PARTS_COLL_RADIUS"][i];
-		this->partsCollider[i]->isUseCollWithChara	= true;
+		this->partsCollider[i]->isUseCollWithChara	= false;
 		this->partsCollider[i]->isUseCollWithGround = false;
 		this->partsCollider[i]->isSetTopPosition	= true;
 		this->partsCollider[i]->rigidbody.Initialize(false);
+		this->partsCollider[i]->type = CharacterColliderData::CharaType::LUX;
 		this->prevPartsHp.emplace_back(this->maxHp);
 		this->pos1.emplace_back(Gori::ORIGIN);
 		this->pos2.emplace_back(Gori::ORIGIN);

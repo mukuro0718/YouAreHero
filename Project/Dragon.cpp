@@ -63,10 +63,11 @@ Dragon::Dragon()
 		this->partsCollider.emplace_back(new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData()));
 		this->partsCollider[i]->data->hp			= this->maxHp;
 		this->partsCollider[i]->radius				= json.GetJson(JsonManager::FileType::DRAGON)["PARTS_COLL_RADIUS"][i];
-		this->partsCollider[i]->isUseCollWithChara	= true;
+		this->partsCollider[i]->isUseCollWithChara	= false;
 		this->partsCollider[i]->isUseCollWithGround = false;
 		this->partsCollider[i]->isSetTopPosition	= true;
 		this->partsCollider[i]->rigidbody.Initialize(false);
+		this->partsCollider[i]->type = CharacterColliderData::CharaType::MOL;
 		this->prevPartsHp.emplace_back(this->maxHp);
 	}
 	//攻撃コライダー

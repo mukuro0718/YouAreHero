@@ -76,7 +76,7 @@ Boss::Boss()
 
 	/*コライダーデータの作成*/
 	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
-
+	this->collider->type = CharacterColliderData::CharaType::GORG;
 	/*アクションパラメーターの作成*/
 	this->parameters.emplace_back(new BossDeathAction());
 	this->parameters.emplace_back(new BossIdleAction());

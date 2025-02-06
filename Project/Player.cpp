@@ -82,6 +82,7 @@ Player::Player()
 
 	/*コライダーデータの作成*/
 	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::PLAYER, new CharacterData());
+	this->collider->type = CharacterColliderData::CharaType::PLAYER;
 }
 
 /// <summary>
