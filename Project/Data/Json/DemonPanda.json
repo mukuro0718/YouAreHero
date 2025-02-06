@@ -1,0 +1,41 @@
+{
+  "ORIGIN": [ 0.0, 0.0, 0.0 ],
+  "INIT_DIRECTION": [ 0.0, 0.0, -1.0 ],
+  "OUT_POSITION": [ 0.0, 500.0, 0.0 ],
+  "MAX_HIT_POSITION_OFFSET": [ 5.0, 5.0, 5.0 ],
+  "MIN_HIT_POSITION_OFFSET": [ -5.0, -5.0, -5.0 ],
+  "INIT_POSITION": [ 0.0, 0.0, 0.0 ],
+  "INIT_SCALE": [ 0.09, 0.09, 0.09 ],
+  "INIT_ROTATION": [ 0.0, 0.0, 0.0 ],
+  "HIT_RADIUS": 7.0,
+  "HIT_HEIGHT": 10.0,
+  "HP": 1000,
+  "ACCEL": 0.05,
+  "DECEL": -0.05,
+  "SPEED": 0.8,
+  "GRAVITY": -5.0,
+  "NEAR_DISTANCE": 12.0,
+  "LONG_DISTANCE": 20.0,
+  "MOVE_DISTANCE": 30.0,
+  "NORMAL_DEFENSIVE_POWER": 0.3,
+  "ANIMATION_HANDLE": [
+    "Asset/Animation/DemonPanda/DemonPandaDying.mv1",
+    "Asset/Animation/DemonPanda/DemonPandaIdle.mv1"
+  ],
+  "ANIMATION_INDEX": [
+    0,
+    0
+  ],
+  "ANIMATION_PLAY_TIME": [
+    0.8,
+    0.8
+  ],
+
+  "ATTACK_OFFSET": 10.0,
+  "ATTACK_OFFSET_Y": 8.0,
+  "ATTACK_RADIUS": 3.0,
+  "ATTACK_DAMAGE": 5,
+  "START_HIT_CHECK_FRAME": 50,
+  "END_HIT_CHECK_FRAME": 100,
+  "HIT_STOP_TIME": 30
+}
