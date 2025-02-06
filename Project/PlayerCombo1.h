@@ -21,11 +21,12 @@ private:
 	const float END_HIT_CHECK_PLAY_TIME;	//当たり判定再生時間
 	const float	POSITION_OFFSET;			//座標オフセット
 	const float	Y_OFFSET;					//Yオフセット
-	const float	HIT_STOP_TIME;				//ヒットストップ時間
+	const int	HIT_STOP_TIME;				//ヒットストップ時間
 	const int	HIT_STOP_DELAY;				//ヒットストップディレイ
 	const int	HIT_STOP_TYPE;				//ヒットストップの種類
 	const float	SLOW_FACTOR;				//スロー係数
-	const int	STAMINA_CONSUMPTION;		//スタミナ消費量
+	const float	STAMINA_CONSUMPTION;		//スタミナ消費量
+	const float MOVE_SPEED;					//移動スピード
 
 	/*メンバ変数*/
 	AttackSphereColliderData*	collider;		//コライダー

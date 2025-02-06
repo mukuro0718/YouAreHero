@@ -8,6 +8,7 @@
 #include "PlayerAction.h"
 #include "PlayerRun.h"
 #include "UseJson.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -53,6 +54,12 @@ void PlayerRun::Finalize()
 /// </summary>
 void PlayerRun::Update(Player& _player)
 {
+	auto& sound = Singleton<SoundManager>::GetInstance();
+	if (!sound.GetCheckEffectSoundState(SoundManager::EffectType::PLAYER_RUN))
+	{
+		sound.OnIsPlayEffect(SoundManager::EffectType::PLAYER_RUN);
+	}
+
 	this->isEndAction = true;
 
 	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/

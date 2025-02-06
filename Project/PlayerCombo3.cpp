@@ -13,6 +13,7 @@
 #include "PlayerCombo3.h"
 #include "EffectManager.h"
 #include "HitStop.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -130,13 +131,17 @@ void PlayerCombo3::Update(Player& _player)
 	/*あたり判定が開始しているときに、当たり判定フラグが一度もたっていなかったらフラグを立てる*/
 	if (!this->isStartHitCheck)
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::PLAYER_COMBO_3_SWING);
 		this->collider->data->isDoHitCheck = true;
 		this->isStartHitCheck = true;
 	}
 
-	/*攻撃が当たっていたらエフェクトを再生*/
+	/*攻撃が当たっていたらエフェクトとサウンドの再生とヒットストップの設定*/
 	if (this->collider->data->isHitAttack)
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::PLAYER_COMBO_3);
 		auto& effect = Singleton<EffectManager>::GetInstance();
 		effect.OnIsEffect(EffectManager::EffectType::PLAYER_IMPACT);
 		effect.SetPosition(EffectManager::EffectType::PLAYER_IMPACT, this->collider->rigidbody.GetPosition());

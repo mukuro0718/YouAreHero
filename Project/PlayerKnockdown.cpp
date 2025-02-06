@@ -12,6 +12,7 @@
 #include "EffectManager.h"
 #include "EnemyManager.h"
 #include "InputManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -79,6 +80,8 @@ void PlayerKnockdown::Update(Player& _player)
 		this->nowSpeed += this->DECEL;
 		if (this->nowSpeed > 0.0f)
 		{
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OnIsPlayEffect(SoundManager::EffectType::PLAYER_KNOCKDOWN);
 			this->nowSpeed = 0.0f;
 		}
 		_player.SetSpeed(this->nowSpeed);
@@ -105,6 +108,8 @@ void PlayerKnockdown::Update(Player& _player)
 		//無敵フラグを立てる
 		_player.GetPlayerData().isInvinvible = true;
 	}
+
+
 
 	/*アニメーションの再生*/
 	bool isStopAnimation = false;

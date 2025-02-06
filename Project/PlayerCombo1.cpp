@@ -14,6 +14,7 @@
 #include "EffectManager.h"
 #include "EnemyManager.h"
 #include "HitStop.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -31,6 +32,7 @@ PlayerCombo1::PlayerCombo1()
 	, HIT_STOP_TYPE				(static_cast<int>(HitStop::Type::SLOW))
 	, SLOW_FACTOR				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_HIT_STOP_FACTOR"])
 	, STAMINA_CONSUMPTION		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_STAMINA_CONSUMPTION"])
+	, MOVE_SPEED				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["RUN_SPEED"])
 	, firstDirection			(Gori::ORIGIN)
 	, isStartHitCheck			(false)
 	, collider					(nullptr)
@@ -86,6 +88,7 @@ void PlayerCombo1::Update(Player& _player)
 {
 	/*回転処理*/
 	VECTOR nowRotation = _player.GetRigidbody().GetRotation();
+	float speed = 0.0f;
 	if (this->frameCount < 10)
 	{
 		auto& enemy = Singleton<EnemyManager>::GetInstance();
@@ -95,15 +98,18 @@ void PlayerCombo1::Update(Player& _player)
 				nextRotation.y	= static_cast<float>(atan2(static_cast<double>(positionToEnemy.x), static_cast<double>(positionToEnemy.z)));
 				nowRotation		= Gori::LerpAngle(nowRotation, nextRotation, this->rotateLerpValue);
 		_player.SetRotation(nowRotation, nextRotation);
-
+		if (VSquareSize(VSub(enemy.GetRigidbody().GetPosition(), _player.GetRigidbody().GetPosition())) >= 55.0f)
+		{
+			speed = MOVE_SPEED;
+		}
 	}
 
 	/*移動速度の更新*/
-	_player.SetSpeed(0.0f);
+	_player.SetSpeed(speed);
 
 	/*移動ベクトルを出す*/
 	VECTOR nowVelocity = _player.GetRigidbody().GetVelocity();
-	VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelocity, 0.0f, false);
+	VECTOR newVelocity = UpdateVelocity(nowRotation, nowVelocity, speed, false);
 	_player.SetVelocity(newVelocity);
 
 	/*アニメーションの再生*/
@@ -140,13 +146,17 @@ void PlayerCombo1::Update(Player& _player)
 	/*あたり判定が開始しているときに、当たり判定フラグが一度もたっていなかったらフラグを立てる*/
 	if (!this->isStartHitCheck)
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::PLAYER_COMBO_1_SWING);
 		this->collider->data->isDoHitCheck = true;
 		this->isStartHitCheck = true;
 	}
 
-	/*攻撃が当たっていたらエフェクトを再生*/
+	/*攻撃が当たっていたらエフェクトとサウンドの再生とヒットストップの設定*/
 	if (this->collider->data->isHitAttack)
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::PLAYER_COMBO_1);
 		auto& effect = Singleton<EffectManager>::GetInstance();
 		effect.OnIsEffect(EffectManager::EffectType::PLAYER_IMPACT);
 		effect.SetPosition(EffectManager::EffectType::PLAYER_IMPACT, this->collider->rigidbody.GetPosition());

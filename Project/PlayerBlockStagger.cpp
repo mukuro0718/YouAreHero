@@ -8,6 +8,7 @@
 #include "PlayerAction.h"
 #include "PlayerBlockStagger.h"
 #include "EffectManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -19,9 +20,9 @@ PlayerBlockStagger::PlayerBlockStagger()
 {
 	auto& json = Singleton<JsonManager>  ::GetInstance();
 	this->staminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["BLOCK_STAMINA_CONSUMPTION"];
-	this->maxStamina = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
-	this->nextAnimation = static_cast<int>(Player::AnimationType::BLOCK_REACTION);
-	this->playTime = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
+	this->maxStamina		 = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
+	this->nextAnimation		 = static_cast<int>(Player::AnimationType::BLOCK_REACTION);
+	this->playTime			 = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 
 }
 
@@ -78,13 +79,14 @@ void PlayerBlockStagger::Update(Player& _player)
 	/*処理の開始時に一度だけ行う処理*/
 	if (this->frameCount == 0)
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::PLAYER_BLOCK);
 		//エフェクトの再生
 		auto& effect = Singleton<EffectManager>::GetInstance();
 		effect.OnIsEffect(EffectManager::EffectType::PLAYER_GUARD_HIT);
 		//ヒットフラグを下す
 		_player.GetPlayerData().isHit = false;
-		//スタミナを減らす
-		_player.CalcStamina(this->staminaConsumption, this->maxStamina);
+		//_player.GetPlayerData().isInvinvible = true;
 		this->nowSpeed = this->MAX_SPEED;
 		this->frameCount++;
 	}
@@ -95,5 +97,6 @@ void PlayerBlockStagger::Update(Player& _player)
 	if (_player.GetIsChangeAnimation())
 	{
 		this->isEndAction = true;
+		//_player.GetPlayerData().isInvinvible = false;
 	}
 }

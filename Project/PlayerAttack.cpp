@@ -126,7 +126,7 @@ void PlayerAttack::SetDamage(const float _damage)
 {
 	auto& collider = dynamic_cast<AttackSphereColliderData&>(*this->collider);
 
-	collider.data->damage = _damage;
+	collider.data->damage = static_cast<int>(_damage);
 }
 
 /// <summary>

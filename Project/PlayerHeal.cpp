@@ -11,8 +11,7 @@
 #include "UseJson.h"
 #include "Debug.h"
 #include "EffectManager.h"
-
-
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -71,6 +70,9 @@ void PlayerHeal::Update(Player& _player)
 	/*開始時に行う処理*/
 	if (this->frameCount == 0)
 	{
+		//サウンドエフェクトの再生
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::PLAYER_HEAL);
 		//回復回数の減少
 		int healCount = _player.GetHealCount();
 		healCount--;

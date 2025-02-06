@@ -8,6 +8,7 @@
 #include "VECTORtoUseful.h"
 #include "PlayerAction.h"
 #include "PlayerWalk.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -52,6 +53,12 @@ void PlayerWalk::Finalize()
 /// </summary>
 void PlayerWalk::Update(Player& _player)
 {
+	auto& sound = Singleton<SoundManager>::GetInstance();
+	if (!sound.GetCheckEffectSoundState(SoundManager::EffectType::PLAYER_WALK))
+	{
+		sound.OnIsPlayEffect(SoundManager::EffectType::PLAYER_WALK);
+	}
+
 	this->isEndAction = true;
 
 	/*移動処理（移動をしない場合でも、速度の減速が入るので処理を行う）*/

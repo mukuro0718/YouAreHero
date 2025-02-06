@@ -9,6 +9,7 @@
 #include "PlayerAvoid.h"
 #include "UseJson.h"
 #include "CharacterData.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -82,15 +83,17 @@ void PlayerAvoid::Update(Player& _player)
 		//フレームカウントの増加
 		this->frameCount++;
 		//アクションキャンセルが可能だったら
-		if (!this->isRotate && (this->frameCount >= this->rotatableFrame))
+		if (this->frameCount >= this->rotatableFrame)
 		{
 			this->isChangeAction = true;
 			this->isRotate = true;
 		}
 		//無敵時間
-		if (this->frameCount >= this->justAvoidFrame)
+		if (this->frameCount >= this->justAvoidFrame && _player.GetPlayerData().isInvinvible)
 		{
 			_player.GetPlayerData().isInvinvible = false;
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OnIsPlayEffect(SoundManager::EffectType::PLAYER_ROLL);
 		}
 	}
 

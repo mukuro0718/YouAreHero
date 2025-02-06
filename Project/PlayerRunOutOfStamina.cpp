@@ -20,7 +20,7 @@ PlayerRunOutOfStamina::PlayerRunOutOfStamina()
 	this->staminaConsumption = json.GetJson(JsonManager::FileType::PLAYER)["RUN_STAMINA_CONSUMPTION"];
 	this->maxStamina		 = json.GetJson(JsonManager::FileType::PLAYER)["STAMINA"];
 	this->nextAnimation		 = static_cast<int>(Player::AnimationType::RUN_FRONT);
-	this->playTime			 = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
+	this->playTime			 = json.GetJson(JsonManager::FileType::PLAYER)["RUN_OUT_OF_STAMINA_PLAY_TIME"];
 }
 
 /// <summary>

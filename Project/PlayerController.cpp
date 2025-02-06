@@ -134,8 +134,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 		nextState = PlayerState::KNOCK_UP;
 	}
 	/*ガード*/
-	//スタミナは足りているか
-	else if (CanAction(_data.stamina, this->blockStaminaConsumption) && nowPadState & InputManager::PAD_RT)
+	else if (nowPadState & InputManager::PAD_LT)
 	{
 		if (_isDrawSword)
 		{

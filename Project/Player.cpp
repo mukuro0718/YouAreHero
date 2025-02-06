@@ -26,6 +26,7 @@
 #include "HitStop.h"
 #include "Shadow.h"
 #include "MapManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -201,11 +202,21 @@ void Player::Update()
 	/*アクションの更新*/
 	this->action[nowState]->Update(*this);
 	//状態がガードじゃなければガードフラグを下す
-	if (nowState != static_cast<int>(PlayerController::PlayerState::BLOCK))
+	if (nowState != static_cast<int>(PlayerController::PlayerState::BLOCK) && nowState != static_cast<int>(PlayerController::PlayerState::BLOCK_STAGGER))
 	{
 		GetPlayerData().isGuard = false;
 	}
-
+	auto& sound = Singleton<SoundManager>::GetInstance();
+	//状態が走りじゃなければ歩くサウンドを消す
+	if (sound.GetCheckEffectSoundState(SoundManager::EffectType::PLAYER_RUN) && nowState != static_cast<int>(PlayerController::PlayerState::RUN))
+	{
+		sound.OffIsPlayEffect(SoundManager::EffectType::PLAYER_RUN);
+	}
+	//状態が歩きじゃなければ歩くサウンドを消す
+	if (sound.GetCheckEffectSoundState(SoundManager::EffectType::PLAYER_WALK) && nowState != static_cast<int>(PlayerController::PlayerState::WALK))
+	{
+		sound.OffIsPlayEffect(SoundManager::EffectType::PLAYER_WALK);
+	}
 	//int endTime = GetNowCount();
 	//this->frameTime = endTime - startTime;
 	/*無敵フラグが立っていたら最大HPから変えない*/
@@ -216,7 +227,7 @@ void Player::Update()
 	{
 		GetPlayerData().hp = json.GetJson(JsonManager::FileType::PLAYER)["HP"];
 	}
-	printfDx("PLAYER_FRAMETIME:%d\n", this->frameTime);
+	//printfDx("PLAYER_FRAMETIME:%d\n", this->frameTime);
 #endif // _DEBUG
 }
 
@@ -239,6 +250,7 @@ const void Player::DrawCharacterInfo()const
 		//printfDx("PLAYER_SPEED:%f					\n", this->speed);
 		//auto& characterCollider = dynamic_cast<CharacterColliderData&> (*this->collider);
 		//printfDx("%d:REACTION_TYPE				\n", characterthis->collider->data->reactionType);
+		//printfDx("%d:PLAYER_ISHIT				\n", this->collider->data->isHit);
 		//auto& json = Singleton<JsonManager>::GetInstance();
 		//string stateInfo = json.GetJson(JsonManager::FileType::PLAYER)["STATE_INFO"][this->controller->GetNowState()];
 		//printfDx(stateInfo.c_str());
@@ -311,7 +323,7 @@ const int Player::GetNowState()const
 /// <summary>
 /// スタミナの取得
 /// </summary>
-const int Player::GetStamina()const
+const float Player::GetStamina()const
 {
 	return this->collider->data->stamina;
 }
@@ -336,7 +348,7 @@ Rigidbody& Player::GetPlayerRigidbody()
 	return this->collider->rigidbody;
 }
 
-void Player::SetHitStop(const float _time, const int _type, const float _delay, const float _factor)
+void Player::SetHitStop(const int _time, const int _type, const int _delay, const float _factor)
 {
-	this->hitStop->SetHitStop(_time, _type, _delay, _factor);
+	this->hitStop->SetHitStop(static_cast<float>(_time), _type, _delay, _factor);
 }
