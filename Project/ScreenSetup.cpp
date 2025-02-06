@@ -46,6 +46,8 @@ int ScreenSetup::Initialize()
     SetUseASyncLoadFlag(FALSE);
     //ScreenFlipを実行しても垂直同期信号を待たない
     SetWaitVSyncFlag(FALSE);
+    //1メートルに相当する値を設定する
+    Set3DSoundOneMetre(json.GetJson(JsonManager::FileType::SCREEN_SETUP)["ONE_METRE"]);
     // ＤＸライブラリの初期化
     if (DxLib_Init() == -1)
     {

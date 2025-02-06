@@ -391,12 +391,6 @@
     <Filter Include="Data\BehaviorTree\Composite\Sequencer">
       <UniqueIdentifier>{bb22b743-e140-4029-8151-876e3fde1443}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree">
-      <UniqueIdentifier>{1d4c6ed1-b41c-4d6e-83c5-ca7fff7afb98}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast">
-      <UniqueIdentifier>{16bae204-29e5-4aa4-a4b7-8ffe2bf625f8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\BeastAction\1_DYING">
       <UniqueIdentifier>{09ffb293-5481-4dcf-a549-854713b9849c}</UniqueIdentifier>
     </Filter>
@@ -454,9 +448,6 @@
     <Filter Include="Object\Character\Enemy\Action\BeastAction\3_Roar">
       <UniqueIdentifier>{67d0f528-ef90-46d0-a083-54cb14797f51}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts">
-      <UniqueIdentifier>{7c754be3-4bb9-40bf-8c91-89c2566b70a4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Data\BehaviorTree\ExecuteAll">
       <UniqueIdentifier>{31383ffa-93d9-4148-8aa4-838cfa9fd7fc}</UniqueIdentifier>
     </Filter>
@@ -486,39 +477,6 @@
     </Filter>
     <Filter Include="Sound">
       <UniqueIdentifier>{34f65a54-1206-4c7c-ac7f-7dec710cf4b4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsToTargetDistanceGreaterThanConstant">
-      <UniqueIdentifier>{c27137ab-473e-4152-a298-7c728a10328c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsActionIntervalIsOver">
-      <UniqueIdentifier>{8adde360-71ce-4d74-b5c8-02266f5717ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsNowLevelIsSameAsTheSpecifiedLevel">
-      <UniqueIdentifier>{fa4fb10b-3c8a-4b90-9f77-0f74ff83010d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsNowStateIsSameAsTheSpecifiedState">
-      <UniqueIdentifier>{1c4e80f5-1d15-4525-8f39-c4f81188b0dc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsHpBelowConstant">
-      <UniqueIdentifier>{493d281f-9e28-4d0b-9db5-d37c0b420ccd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsDownValueGreaterThanConstant">
-      <UniqueIdentifier>{bef90030-7b0d-48ed-abf4-12bdfc912f5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsFrighteningValueGreaterThanConstant">
-      <UniqueIdentifier>{3efd22df-0610-46c0-964e-17be79613763}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsDestoroyedPart">
-      <UniqueIdentifier>{da4d8cb4-b683-4697-aedc-c8f5d1c35021}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsSelectedBattleAction">
-      <UniqueIdentifier>{ddc83b90-e7e7-4db3-9a34-ddd43a4278e9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsSelectedReaction">
-      <UniqueIdentifier>{bbb04aab-de56-4ab2-b7b5-8cb11e236993}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsTargetOutOfRangeOfRay">
-      <UniqueIdentifier>{10a89f39-e28e-4c47-85c9-d3934765860d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\BeastAction\21_RightFootAttack">
       <UniqueIdentifier>{c8621dbc-3df4-4842-9c28-907a0e1114a5}</UniqueIdentifier>
@@ -559,15 +517,6 @@
     <Filter Include="Effect\Beast\ExplosionRange">
       <UniqueIdentifier>{75ea3e44-5400-492b-931f-b35fcc2c13f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon">
-      <UniqueIdentifier>{4f2091c1-908a-4b88-b4b7-84a0694c25a5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts">
-      <UniqueIdentifier>{c5627f4f-67e3-42f3-992b-8d478cb7d320}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonActionIntervalIsOver">
-      <UniqueIdentifier>{ba078d42-9e90-4144-8caf-51a551f122f2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\DragonAction">
       <UniqueIdentifier>{4448baba-768c-459d-bd2e-7291f1816e06}</UniqueIdentifier>
     </Filter>
@@ -577,20 +526,11 @@
     <Filter Include="Object\Character\Enemy\Action\DragonAction\2_Idle">
       <UniqueIdentifier>{46571fbc-b88b-4d80-8b25-a7a5025c0632}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\DragonAction\3_Roar">
-      <UniqueIdentifier>{7598e20f-3fa3-46bc-b8cb-1ba898bcc88a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\DragonAction\4_Walk">
       <UniqueIdentifier>{335681d3-f4ea-4182-9fa5-2196709dd0ea}</UniqueIdentifier>
     </Filter>
     <Filter Include="Data\BehaviorTree\Decorator\RandomSelector">
       <UniqueIdentifier>{367f1ad3-b9f0-4600-b423-8813a371d7b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction">
-      <UniqueIdentifier>{b3f2960f-ad0a-4820-bfac-863d747bc82a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsAngryValueGreaterThanConstant">
-      <UniqueIdentifier>{0cba7bfb-5b02-493b-bbe0-2a9aec2c5e60}</UniqueIdentifier>
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\BeastAction\9_LongFrightening">
       <UniqueIdentifier>{f7b629fd-4980-4e34-aed2-e5ce935d80e0}</UniqueIdentifier>
@@ -600,9 +540,6 @@
     </Filter>
     <Filter Include="Effect\Dragon\Breath">
       <UniqueIdentifier>{5b1273ed-ec13-4a92-84d0-58fbad0bee52}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsPrevActionIsSameAsSpecifiedAction">
-      <UniqueIdentifier>{03e2e083-e9d7-4df4-a387-972819d7df80}</UniqueIdentifier>
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\DragonAction\5_Smash">
       <UniqueIdentifier>{645d04b6-2dba-4f1e-8db3-76c5dcc2d281}</UniqueIdentifier>
@@ -619,21 +556,6 @@
     <Filter Include="Object\Character\Enemy\Action\DragonAction\9_SelectedBattleAction">
       <UniqueIdentifier>{ea6a605f-8d4e-44d3-8dcd-bcda1e9577fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonAttackCountLeft">
-      <UniqueIdentifier>{ee00b49c-4939-483d-87c5-f5deb72bf2a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonToTargetDistanceGreaterThanConstant">
-      <UniqueIdentifier>{b063d059-170e-414b-9b52-84688cc6ed9c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsTargetOutOfRangeOfDragonRay">
-      <UniqueIdentifier>{a734dbe6-dbf1-4554-b10c-bb3551b93274}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonHpIsLessThanConstant">
-      <UniqueIdentifier>{4e807475-3fc2-4e46-a5d5-7d0c758d4219}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsStageIsDifferent">
-      <UniqueIdentifier>{e4b03e41-c485-42bf-9591-2d52b0149248}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sound\Sound">
       <UniqueIdentifier>{5f74a022-e58b-49ce-8d64-62286ba443a1}</UniqueIdentifier>
     </Filter>
@@ -642,6 +564,105 @@
     </Filter>
     <Filter Include="Sound\Sound\SoundEffect">
       <UniqueIdentifier>{8661967b-a70c-49da-b0db-e37af6b5e057}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound\Sound\SoundEffect\3D">
+      <UniqueIdentifier>{feeea3ec-1e28-4740-bf4f-67cd23ab120c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\DragonAction\3_Roar">
+      <UniqueIdentifier>{7598e20f-3fa3-46bc-b8cb-1ba898bcc88a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree">
+      <UniqueIdentifier>{1d4c6ed1-b41c-4d6e-83c5-ca7fff7afb98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast">
+      <UniqueIdentifier>{16bae204-29e5-4aa4-a4b7-8ffe2bf625f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts">
+      <UniqueIdentifier>{7c754be3-4bb9-40bf-8c91-89c2566b70a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsToTargetDistanceGreaterThanConstant">
+      <UniqueIdentifier>{c27137ab-473e-4152-a298-7c728a10328c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsActionIntervalIsOver">
+      <UniqueIdentifier>{8adde360-71ce-4d74-b5c8-02266f5717ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsNowLevelIsSameAsTheSpecifiedLevel">
+      <UniqueIdentifier>{fa4fb10b-3c8a-4b90-9f77-0f74ff83010d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsNowStateIsSameAsTheSpecifiedState">
+      <UniqueIdentifier>{1c4e80f5-1d15-4525-8f39-c4f81188b0dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsHpBelowConstant">
+      <UniqueIdentifier>{493d281f-9e28-4d0b-9db5-d37c0b420ccd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsDownValueGreaterThanConstant">
+      <UniqueIdentifier>{bef90030-7b0d-48ed-abf4-12bdfc912f5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsFrighteningValueGreaterThanConstant">
+      <UniqueIdentifier>{3efd22df-0610-46c0-964e-17be79613763}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsDestoroyedPart">
+      <UniqueIdentifier>{da4d8cb4-b683-4697-aedc-c8f5d1c35021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsSelectedBattleAction">
+      <UniqueIdentifier>{ddc83b90-e7e7-4db3-9a34-ddd43a4278e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsSelectedReaction">
+      <UniqueIdentifier>{bbb04aab-de56-4ab2-b7b5-8cb11e236993}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsTargetOutOfRangeOfRay">
+      <UniqueIdentifier>{10a89f39-e28e-4c47-85c9-d3934765860d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsAngryValueGreaterThanConstant">
+      <UniqueIdentifier>{0cba7bfb-5b02-493b-bbe0-2a9aec2c5e60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsPrevActionIsSameAsSpecifiedAction">
+      <UniqueIdentifier>{03e2e083-e9d7-4df4-a387-972819d7df80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon">
+      <UniqueIdentifier>{4f2091c1-908a-4b88-b4b7-84a0694c25a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts">
+      <UniqueIdentifier>{c5627f4f-67e3-42f3-992b-8d478cb7d320}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonActionIntervalIsOver">
+      <UniqueIdentifier>{ba078d42-9e90-4144-8caf-51a551f122f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction">
+      <UniqueIdentifier>{b3f2960f-ad0a-4820-bfac-863d747bc82a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonAttackCountLeft">
+      <UniqueIdentifier>{ee00b49c-4939-483d-87c5-f5deb72bf2a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonToTargetDistanceGreaterThanConstant">
+      <UniqueIdentifier>{b063d059-170e-414b-9b52-84688cc6ed9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsTargetOutOfRangeOfDragonRay">
+      <UniqueIdentifier>{a734dbe6-dbf1-4554-b10c-bb3551b93274}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonHpIsLessThanConstant">
+      <UniqueIdentifier>{4e807475-3fc2-4e46-a5d5-7d0c758d4219}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsStageIsDifferent">
+      <UniqueIdentifier>{e4b03e41-c485-42bf-9591-2d52b0149248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\DemonAction">
+      <UniqueIdentifier>{59605f2e-f380-4ba2-b1ca-dc86ee856a23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Demon">
+      <UniqueIdentifier>{f8e5ffc9-f1c0-4ce3-8c80-ccb3828d6a83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Demon">
+      <UniqueIdentifier>{cfe01588-a03c-4aec-813a-de1a2c764ee7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\DemonAction\1_Dying">
+      <UniqueIdentifier>{50718f95-9f71-455b-a6d4-a28ef00ec991}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\DemonAction\2_Idle">
+      <UniqueIdentifier>{42d8687e-185e-4892-9e60-dbef68510842}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scene\TutorialUI">
+      <UniqueIdentifier>{1248496a-abdf-44ba-b526-15321fae23ec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1004,7 +1025,7 @@
       <Filter>Data\BehaviorTree\Condition</Filter>
     </ClCompile>
     <ClCompile Include="BeastBehaviorTree.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast</Filter>
     </ClCompile>
     <ClCompile Include="Beast_Dying.cpp">
       <Filter>Object\Character\Enemy\Action\BeastAction\1_DYING</Filter>
@@ -1025,13 +1046,13 @@
       <Filter>Data\BehaviorTree\ExecuteAll</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsDownValueGreaterThanConstant.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsDownValueGreaterThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsDownValueGreaterThanConstant</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsFrighteningValueGreaterThanConstant.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsFrighteningValueGreaterThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsFrighteningValueGreaterThanConstant</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsToTargetDistanceGreaterThanConstant.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsToTargetDistanceGreaterThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsToTargetDistanceGreaterThanConstant</Filter>
     </ClCompile>
     <ClCompile Include="Beast_Run.cpp">
       <Filter>Object\Character\Enemy\Action\BeastAction\5_Run</Filter>
@@ -1094,19 +1115,19 @@
       <Filter>Effect\Boss\Roar</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsDestoroyedPart.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsDestoroyedPart</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsDestoroyedPart</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsNowStateIsSameAsTheSpecifiedState.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsNowStateIsSameAsTheSpecifiedState</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsNowStateIsSameAsTheSpecifiedState</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsHpBelowConstant.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsHpBelowConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsHpBelowConstant</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsNowLevelIsSameAsTheSpecifiedLevel.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsNowLevelIsSameAsTheSpecifiedLevel</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsNowLevelIsSameAsTheSpecifiedLevel</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsActionIntervalIsOver.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsActionIntervalIsOver</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsActionIntervalIsOver</Filter>
     </ClCompile>
     <ClCompile Include="State.cpp">
       <Filter>Data\StateMachine\State</Filter>
@@ -1127,13 +1148,13 @@
       <Filter>Sound</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsPrevActionIsSameAsSpecifiedAction.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsPrevActionIsSameAsSpecifiedAction</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsPrevActionIsSameAsSpecifiedAction</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsSelectedBattleAction.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsSelectedBattleAction</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsSelectedBattleAction</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsSelectedReaction.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsSelectedReaction</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsSelectedReaction</Filter>
     </ClCompile>
     <ClCompile Include="Beast_PlayCurrentBattleAction.cpp">
       <Filter>Object\Character\Enemy\Action\BeastAction\24_PlayCurrentBattleAction</Filter>
@@ -1142,7 +1163,7 @@
       <Filter>Object\Character\Enemy\Action\BeastAction\25_PlayCurrentReaction</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsTargetOutOfRangeOfRay.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsTargetOutOfRangeOfRay</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsTargetOutOfRangeOfRay</Filter>
     </ClCompile>
     <ClCompile Include="BeastBackingBreathEffect.cpp">
       <Filter>Effect\Beast\BackingBreath</Filter>
@@ -1166,13 +1187,13 @@
       <Filter>Effect\Beast\ExplosionRange</Filter>
     </ClCompile>
     <ClCompile Include="DragonBehaviorTree.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsDragonHpIsLessThanConstant.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonHpIsLessThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonHpIsLessThanConstant</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsDragonActionIntervalIsOver.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonActionIntervalIsOver</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonActionIntervalIsOver</Filter>
     </ClCompile>
     <ClCompile Include="Dragon_Dying.cpp">
       <Filter>Object\Character\Enemy\Action\DragonAction\1_Dying</Filter>
@@ -1182,9 +1203,6 @@
     </ClCompile>
     <ClCompile Include="Dragon_Roar.cpp">
       <Filter>Object\Character\Enemy\Action\DragonAction\3_Roar</Filter>
-    </ClCompile>
-    <ClCompile Include="Dragon_Walk.cpp">
-      <Filter>Object\Character\Enemy\Action\DragonAction\4_Walk</Filter>
     </ClCompile>
     <ClCompile Include="Dragon_Sweep.cpp">
       <Filter>Object\Character\Enemy\Action\DragonAction\6_Sweep</Filter>
@@ -1202,28 +1220,28 @@
       <Filter>Data\BehaviorTree\Decorator\RandomSelector</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsSelectedDragonBattleAction.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction</Filter>
     </ClCompile>
     <ClCompile Include="Dragon_PlayCurrentBattleAction.cpp">
       <Filter>Object\Character\Enemy\Action\DragonAction\9_SelectedBattleAction</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsAngryValueGreaterThanConstant.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsAngryValueGreaterThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsAngryValueGreaterThanConstant</Filter>
     </ClCompile>
     <ClCompile Include="DragonBreathEffect.cpp">
       <Filter>Effect\Dragon\Breath</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsDragonAttackCountLeft.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonAttackCountLeft</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonAttackCountLeft</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsDragonToTargetDistanceGreaterThanConstant.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonToTargetDistanceGreaterThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonToTargetDistanceGreaterThanConstant</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsTargetOutOfRangeOfDragonRay.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsTargetOutOfRangeOfDragonRay</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsTargetOutOfRangeOfDragonRay</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsStageIsDifferent.cpp">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsStageIsDifferent</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsStageIsDifferent</Filter>
     </ClCompile>
     <ClCompile Include="Sound.cpp">
       <Filter>Sound\Sound</Filter>
@@ -1233,6 +1251,30 @@
     </ClCompile>
     <ClCompile Include="SoundEffect.cpp">
       <Filter>Sound\Sound\SoundEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemySoundEffect3D.cpp">
+      <Filter>Sound\Sound\SoundEffect\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerSoundEffect3D.cpp">
+      <Filter>Sound\Sound\SoundEffect\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Dragon_Walk.cpp">
+      <Filter>Object\Character\Enemy\Action\DragonAction\4_Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="Demon.cpp">
+      <Filter>Object\Character\Enemy\Demon</Filter>
+    </ClCompile>
+    <ClCompile Include="DemonBehaviorTree.cpp">
+      <Filter>Object\Character\Enemy\BehaviorTree\Demon</Filter>
+    </ClCompile>
+    <ClCompile Include="Demon_Dying.cpp">
+      <Filter>Object\Character\Enemy\Action\DemonAction\1_Dying</Filter>
+    </ClCompile>
+    <ClCompile Include="Demon_Idle.cpp">
+      <Filter>Object\Character\Enemy\Action\DemonAction\2_Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="TutorialUI.cpp">
+      <Filter>UI\Scene\TutorialUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1624,7 +1666,7 @@
       <Filter>Data\BehaviorTree\Condition</Filter>
     </ClInclude>
     <ClInclude Include="BeastBehaviorTree.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast</Filter>
     </ClInclude>
     <ClInclude Include="Beast_Dying.h">
       <Filter>Object\Character\Enemy\Action\BeastAction\1_DYING</Filter>
@@ -1648,13 +1690,13 @@
       <Filter>Data\HeaderFile</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsDownValueGreaterThanConstant.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsDownValueGreaterThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsDownValueGreaterThanConstant</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsFrighteningValueGreaterThanConstant.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsFrighteningValueGreaterThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsFrighteningValueGreaterThanConstant</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsToTargetDistanceGreaterThanConstant.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsToTargetDistanceGreaterThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsToTargetDistanceGreaterThanConstant</Filter>
     </ClInclude>
     <ClInclude Include="Beast_Run.h">
       <Filter>Object\Character\Enemy\Action\BeastAction\5_Run</Filter>
@@ -1717,19 +1759,19 @@
       <Filter>Effect\Boss\Roar</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsDestoroyedPart.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsDestoroyedPart</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsDestoroyedPart</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsNowStateIsSameAsTheSpecifiedState.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsNowStateIsSameAsTheSpecifiedState</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsNowStateIsSameAsTheSpecifiedState</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsHpBelowConstant.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsHpBelowConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsHpBelowConstant</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsNowLevelIsSameAsTheSpecifiedLevel.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsNowLevelIsSameAsTheSpecifiedLevel</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsNowLevelIsSameAsTheSpecifiedLevel</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsActionIntervalIsOver.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsActionIntervalIsOver</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsActionIntervalIsOver</Filter>
     </ClInclude>
     <ClInclude Include="State.h">
       <Filter>Data\StateMachine\State</Filter>
@@ -1750,13 +1792,13 @@
       <Filter>Sound</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsPrevActionIsSameAsSpecifiedAction.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsPrevActionIsSameAsSpecifiedAction</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsPrevActionIsSameAsSpecifiedAction</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsSelectedBattleAction.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsSelectedBattleAction</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsSelectedBattleAction</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsSelectedReaction.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsSelectedReaction</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsSelectedReaction</Filter>
     </ClInclude>
     <ClInclude Include="Beast_PlayCurrentBattleAction.h">
       <Filter>Object\Character\Enemy\Action\BeastAction\24_PlayCurrentBattleAction</Filter>
@@ -1765,7 +1807,7 @@
       <Filter>Object\Character\Enemy\Action\BeastAction\25_PlayCurrentReaction</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsTargetOutOfRangeOfRay.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsTargetOutOfRangeOfRay</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsTargetOutOfRangeOfRay</Filter>
     </ClInclude>
     <ClInclude Include="BeastBackingBreathEffect.h">
       <Filter>Effect\Beast\BackingBreath</Filter>
@@ -1789,16 +1831,16 @@
       <Filter>Effect\Beast\ExplosionRange</Filter>
     </ClInclude>
     <ClInclude Include="DragonBehaviorTree.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon</Filter>
     </ClInclude>
     <ClInclude Include="DragonBehaviorTreeHeader.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsDragonHpIsLessThanConstant.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonHpIsLessThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonHpIsLessThanConstant</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsDragonActionIntervalIsOver.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonActionIntervalIsOver</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonActionIntervalIsOver</Filter>
     </ClInclude>
     <ClInclude Include="Dragon_Dying.h">
       <Filter>Object\Character\Enemy\Action\DragonAction\1_Dying</Filter>
@@ -1828,28 +1870,28 @@
       <Filter>Data\BehaviorTree\Decorator\RandomSelector</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsSelectedDragonBattleAction.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction</Filter>
     </ClInclude>
     <ClInclude Include="Dragon_PlayCurrentBattleAction.h">
       <Filter>Object\Character\Enemy\Action\DragonAction\9_SelectedBattleAction</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsAngryValueGreaterThanConstant.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Beast\Parts\Condition_IsAngryValueGreaterThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsAngryValueGreaterThanConstant</Filter>
     </ClInclude>
     <ClInclude Include="DragonBreathEffect.h">
       <Filter>Effect\Dragon\Breath</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsDragonAttackCountLeft.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonAttackCountLeft</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonAttackCountLeft</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsDragonToTargetDistanceGreaterThanConstant.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsDragonToTargetDistanceGreaterThanConstant</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonToTargetDistanceGreaterThanConstant</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsTargetOutOfRangeOfDragonRay.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsTargetOutOfRangeOfDragonRay</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsTargetOutOfRangeOfDragonRay</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsStageIsDifferent.h">
-      <Filter>Object\Character\Enemy\Action\BehaviorTree\Dragon\Parts\Condition_IsStageIsDifferent</Filter>
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsStageIsDifferent</Filter>
     </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>Sound\Sound</Filter>
@@ -1859,6 +1901,30 @@
     </ClInclude>
     <ClInclude Include="SoundEffect.h">
       <Filter>Sound\Sound\SoundEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemySoundEffect3D.h">
+      <Filter>Sound\Sound\SoundEffect\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSoundEffect3D.h">
+      <Filter>Sound\Sound\SoundEffect\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Demon.h">
+      <Filter>Object\Character\Enemy\Demon</Filter>
+    </ClInclude>
+    <ClInclude Include="DemonBehaviorTree.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\Demon</Filter>
+    </ClInclude>
+    <ClInclude Include="DemonBehaviorTreeHeader.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\Demon</Filter>
+    </ClInclude>
+    <ClInclude Include="Demon_Dying.h">
+      <Filter>Object\Character\Enemy\Action\DemonAction\1_Dying</Filter>
+    </ClInclude>
+    <ClInclude Include="Demon_Idle.h">
+      <Filter>Object\Character\Enemy\Action\DemonAction\2_Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="TutorialUI.h">
+      <Filter>UI\Scene\TutorialUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1910,9 +1976,6 @@
     <None Include="Data\Json\Effect.json">
       <Filter>Json\File</Filter>
     </None>
-    <None Include="Data\Json\Bot.json">
-      <Filter>Json\File</Filter>
-    </None>
     <None Include="Data\Json\Beast.json">
       <Filter>Json\File</Filter>
     </None>
@@ -1920,6 +1983,9 @@
       <Filter>Json\File</Filter>
     </None>
     <None Include="Data\Json\Sound.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\DemonPanda.json">
       <Filter>Json\File</Filter>
     </None>
   </ItemGroup>

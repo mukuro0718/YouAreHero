@@ -13,6 +13,8 @@ public:
 
 	virtual NodeState Update() abstract;//更新
 protected:
+	static constexpr short BREATH_HIT_COUNT = 10;//ブレス攻撃のヒットフラグを再起的に立てるカウント
+
 	short rotateAnimationType;	//回転用アニメーション（これは共通）
 	short animationType;		//アニメーションの種類
 	short actionType;			//アクションの種類

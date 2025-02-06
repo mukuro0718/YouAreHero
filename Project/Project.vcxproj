@@ -249,6 +249,10 @@
     <ClCompile Include="ConditionNode.cpp" />
     <ClCompile Include="DecoratorNode.cpp" />
     <ClCompile Include="Condition_IsDownValueGreaterThanConstant.cpp" />
+    <ClCompile Include="Demon.cpp" />
+    <ClCompile Include="DemonBehaviorTree.cpp" />
+    <ClCompile Include="Demon_Dying.cpp" />
+    <ClCompile Include="Demon_Idle.cpp" />
     <ClCompile Include="Dragon.cpp" />
     <ClCompile Include="DragonBehaviorTree.cpp" />
     <ClCompile Include="DragonBreathEffect.cpp" />
@@ -298,6 +302,7 @@
     <ClCompile Include="PlayerKnockup.cpp" />
     <ClCompile Include="PlayerRun.cpp" />
     <ClCompile Include="PlayerRunOutOfStamina.cpp" />
+    <ClCompile Include="PlayerSoundEffect3D.cpp" />
     <ClCompile Include="PlayerStagger.cpp" />
     <ClCompile Include="PlayerStrongAttack.cpp" />
     <ClCompile Include="PlayerWalk.cpp" />
@@ -308,6 +313,7 @@
     <ClCompile Include="Shadow.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SoundEffect.cpp" />
+    <ClCompile Include="EnemySoundEffect3D.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="SphereColliderData.cpp" />
     <ClCompile Include="CharacterData.cpp" />
@@ -350,6 +356,7 @@
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="SelectScene.cpp" />
     <ClCompile Include="SelectUI.cpp" />
+    <ClCompile Include="TutorialUI.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VECTORtoUseful.cpp" />
   </ItemGroup>
@@ -450,6 +457,11 @@
     <ClInclude Include="ConditionNode.h" />
     <ClInclude Include="DecoratorNode.h" />
     <ClInclude Include="Condition_IsDownValueGreaterThanConstant.h" />
+    <ClInclude Include="Demon.h" />
+    <ClInclude Include="DemonBehaviorTree.h" />
+    <ClInclude Include="DemonBehaviorTreeHeader.h" />
+    <ClInclude Include="Demon_Dying.h" />
+    <ClInclude Include="Demon_Idle.h" />
     <ClInclude Include="Dragon.h" />
     <ClInclude Include="DragonBehaviorTree.h" />
     <ClInclude Include="DragonBehaviorTreeHeader.h" />
@@ -500,6 +512,7 @@
     <ClInclude Include="PlayerKnockup.h" />
     <ClInclude Include="PlayerRun.h" />
     <ClInclude Include="PlayerRunOutOfStamina.h" />
+    <ClInclude Include="PlayerSoundEffect3D.h" />
     <ClInclude Include="PlayerStagger.h" />
     <ClInclude Include="PlayerStrongAttack.h" />
     <ClInclude Include="PlayerWalk.h" />
@@ -512,6 +525,7 @@
     <ClInclude Include="Shadow.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundEffect.h" />
+    <ClInclude Include="EnemySoundEffect3D.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="SphereColliderData.h" />
     <ClInclude Include="CharacterData.h" />
@@ -548,6 +562,7 @@
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="SelectScene.h" />
     <ClInclude Include="SelectUI.h" />
+    <ClInclude Include="TutorialUI.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="UseJson.h" />
     <ClInclude Include="JsonLoader.h" />
@@ -565,9 +580,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\Json\Beast.json" />
-    <None Include="Data\Json\Bot.json" />
     <None Include="Data\Json\Camera.json" />
     <None Include="Data\Json\Debug.json" />
+    <None Include="Data\Json\DemonPanda.json" />
     <None Include="Data\Json\Dragon.json" />
     <None Include="Data\Json\Effect.json" />
     <None Include="Data\Json\EffectPath.json" />

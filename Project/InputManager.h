@@ -53,7 +53,7 @@ public:
 	void Update();//更新
 
 	/*getter*/
-	const int GetNowPadState()const { return this->nowPad; }//pad状態のgetter
+	const int GetNowPadState ()const { return this->nowPad; } //pad状態のgetter
 	const int GetPrevPadState()const { return this->prevPad; }//pad状態のgetter
 	//const bool GetReturnKeyState()const { return this->isInputReturnKey; }//key状態のgetter
 	//const bool GetComKeysForMoveState(const ComKeysForMove _index)const { return this->moveKey[convMoveKey.at(_index)]; }//移動キーの状態のgetter
@@ -73,14 +73,14 @@ private:
 	void InputMouseState();//キーボード入力の取得
 
 	/*メンバ変数*/
-	InputAnalogStick lStick;
-	InputAnalogStick rStick;
-	InputMouse mouse;
-	int nowPad;//パッド入力変数
-	int prevPad;//パッド入力変数
-	int nowKey;//キー入力変数
-	int prevKey;//キー入力変数
-	int nowMouse;//マウスボタン入力変数
-	int prevMouse;//マウスボタン入力変数
+	InputAnalogStick lStick;	//lStick
+	InputAnalogStick rStick;	//rStick
+	InputMouse		 mouse;		//マウス
+	int				 nowPad;	//パッド入力変数
+	int				 prevPad;	//パッド入力変数
+	int				 nowKey;	//キー入力変数
+	int				 prevKey;	//キー入力変数
+	int				 nowMouse;	//マウスボタン入力変数
+	int				 prevMouse;	//マウスボタン入力変数
 };
 

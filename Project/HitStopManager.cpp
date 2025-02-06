@@ -43,7 +43,7 @@ void HitStopManager::Entry(HitStop& _item)
 	/*“o˜^‚³‚ê‚Ä‚¢‚½‚çƒGƒ‰[‚ğ“f‚­*/
 	else
 	{
-		assert(0 && "w’è‚Ìitem‚Í“o˜^Ï‚İ‚Å‚·");
+		//assert(0 && "w’è‚Ìitem‚Í“o˜^Ï‚İ‚Å‚·");
 	}
 }
 

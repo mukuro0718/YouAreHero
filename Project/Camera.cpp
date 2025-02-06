@@ -83,7 +83,7 @@ void Camera::Initialize()
 	auto& enemy		= Singleton<EnemyManager>::GetInstance();
 
 	/*メンバ変数の初期化*/
-	this->nowTarget			 = enemy.GetRigidbody().GetPosition() + this->targetOffset;			//注視点
+	this->nowTarget			 = Gori::ORIGIN + this->targetOffset;			//注視点
 	this->nextTarget		 = this->nowTarget;													//注視点
 	this->direction			 = this->firstDirection;											//カメラの向き
 	this->length			 = this->firstLength;												//注視点からの距離
@@ -131,6 +131,9 @@ const void Camera::Draw()const
 {
 	/*カメラの座標、注視点を設定する（上方向はＹ軸から算出）*/
 	SetCameraPositionAndTarget_UpVecY(this->collider->rigidbody.GetPosition(), this->nowTarget);
+
+	/*サウンドのリスナーの位置を向きを設定*/
+	Set3DSoundListenerPosAndFrontPos_UpVecY(this->collider->rigidbody.GetPosition(), this->nowTarget);
 
 	auto& debug = Singleton<Debug>::GetInstance();
 	if (debug.IsShowDebugInfo(Debug::ItemType::CAMERA))
