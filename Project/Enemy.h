@@ -15,11 +15,14 @@ public:
 	void UpdateRotation	(VECTOR _toTarget);																	//回転率の更新
 	void UpdateSpeed	(const float _maxSpeed, const float _accel, const float _decel);					//移動速度の更新
 	void UpdateVelocity	(const bool _isLerp);																//移動ベクトルの更新
+	void ChangeAngryColor();
+	void ChangeTiredColor();
+	void ChangeNormalColor();
 
 	/*getter/setter*/
-	const VECTOR GetMoveTarget			()const { return this->moveTarget; }
-	const float  GetAnimationPlayTime	()const;															//アニメーション再生時間の取得
-	const float  GetNowAnimationPlayTime()const { return this->animationPlayTime; }							//現在のアニメーション再生時間の取得
+	const float   GetAnimationPlayTime	 ()const;															//アニメーション再生時間の取得
+	const VECTOR  GetMoveTarget			 ()const { return this->moveTarget; }
+	const float   GetNowAnimationPlayTime()const { return this->animationPlayTime; }							//現在のアニメーション再生時間の取得
 		  void   SetRotation			(const VECTOR _rotation);											//回転率の設定
 		  void   SetVelocity			(const VECTOR _velocity);											//移動ベクトルの設定
 		  void   SetNowMoveTarget		(const VECTOR _moveTarget)	{ this->moveTarget = _moveTarget; }		//現在の移動目標を設定
@@ -33,8 +36,11 @@ protected:
 	static constexpr VECTOR VELOCITY_LERP_VALUE = { 0.1f,0.1f,0.1f };
 
 	/*メンバ変数*/
-	VECTOR						moveTarget;				//移動目標
-	float						animationPlayTime;		//アニメーション再生時間
-	int							nowAnimation;			//現在のアニメーション
+	VECTOR	moveTarget;			//移動目標
+	float	animationPlayTime;	//アニメーション再生時間
+	int		nowAnimation;		//現在のアニメーション
+	COLOR_F tiredColor;
+	COLOR_F angryColor;
+	COLOR_F normalColor;
 };
 

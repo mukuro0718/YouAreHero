@@ -27,6 +27,7 @@
 #include "MapManager.h"
 #include "ReactionType.h"
 #include "HitStop.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -103,7 +104,11 @@ Dragon::Dragon()
 		this->endHitCheckPlayTime[i]	= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_END_HIT_CHECK_PLAY_TIME"][i];
 		this->frameIndexUseAttackColider.emplace(i, json.GetJson(JsonManager::FileType::DRAGON)["FRAME_INDEX_USE_ATTACK_COLLIDER"][i]);
 	}
-
+	/*通常時のカラースケールを取得*/
+	this->normalColor = MV1GetDifColorScale(this->modelHandle);
+	this->tiredColor = this->angryColor = this->normalColor;
+	this->tiredColor.b = 200;
+	this->angryColor.r = 200;
 }
 
 /// <summary>
@@ -139,6 +144,10 @@ void Dragon::Initialize()
 	this->collider->rigidbody.SetPosition(POSITION);
 	this->collider->rigidbody.SetRotation(ROTATION);
 	this->collider->rigidbody.SetScale(SCALE);
+	for (int i = 0; i < this->maxPartsColliderNum; i++)
+	{
+		this->partsCollider[i]->isUseCollWithChara = true;
+	}
 
 	/*モデルの初期化*/
 	MV1SetPosition	 (this->modelHandle, this->collider->rigidbody.GetPosition());
@@ -154,6 +163,10 @@ void Dragon::Initialize()
 /// </summary>
 void Dragon::Finalize()
 {
+	for (int i = 0; i < this->maxPartsColliderNum; i++)
+	{
+		this->partsCollider[i]->isUseCollWithChara = false;
+	}
 }
 
 /// <summary>
@@ -188,14 +201,52 @@ void Dragon::Update()
 	/*ビヘイビアツリーの更新*/
 	auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
 	tree.Update();
-
-	
+	auto& json = Singleton<JsonManager>::GetInstance();
+	float defenisivePower = 0.0f;
+	if (tree.GetDragonState() == DragonBehaviorTree::DragonState::TIRED)
+	{
+		defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["TIRED_DEFENSIVE_POWER"];
+		for (auto& collider : this->partsCollider)
+		{
+			collider->data->defensivePower = defenisivePower;
+		}
+	}
+	else
+	{
+		switch (tree.GetDragonStage())
+		{
+			//1段階
+		case static_cast<short>(DragonBehaviorTree::DragonStage::AWAKENING):
+			defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["AWAKENING_DEFENSIVE_POWER"];
+			for (auto& collider : this->partsCollider)
+			{
+				collider->data->defensivePower = defenisivePower;
+			}
+			break;
+			//2段階
+		case static_cast<short>(DragonBehaviorTree::DragonStage::FURY):
+			defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["FURY_DEFENSIVE_POWER"];
+			for (auto& collider : this->partsCollider)
+			{
+				collider->data->defensivePower = defenisivePower;
+			}
+			break;
+			//3段階
+		case static_cast<short>(DragonBehaviorTree::DragonStage::RAMPAGE):
+			defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["RAMPAGE_DEFENSIVE_POWER"];
+			for (auto& collider : this->partsCollider)
+			{
+				collider->data->defensivePower = defenisivePower;
+			}
+			break;
+		}
+	}
 }
 
 /// <summary>
 /// アニメーションの再生
 /// </summary>
-void Dragon::PlayAnimation(const float _playAnimation, const float _playTime)
+void Dragon::PlayAnimation(const int _playAnimation, const float _playTime)
 {
 	//アニメーションの再生
 	if (this->isAlive)
@@ -214,25 +265,25 @@ const void Dragon::DrawCharacterInfo()const
 	auto& map = Singleton<MapManager>::GetInstance();
 
 #ifdef _DEBUG
-	auto& debug = Singleton<Debug>::GetInstance();
-	auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
-	//tree.Draw();
-	//for (int i = 0; i < this->maxPartsColliderNum; i++)
+	//auto& debug = Singleton<Debug>::GetInstance();
+	//auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
+	////tree.Draw();
+	////for (int i = 0; i < this->maxPartsColliderNum; i++)
+	////{
+	////	VECTOR underPos = this->partsCollider[i]->rigidbody.GetPosition();
+	////	VECTOR topPos = this->partsCollider[i]->topPositon;
+	////	DrawCapsule3D(underPos, topPos, this->partsCollider[i]->radius, 16, GetColor(0, 255, 0), GetColor(0, 255, 0), FALSE);
+	////}
+	//for (const auto& pair : this->attackCollider)
 	//{
-	//	VECTOR underPos = this->partsCollider[i]->rigidbody.GetPosition();
-	//	VECTOR topPos = this->partsCollider[i]->topPositon;
-	//	DrawCapsule3D(underPos, topPos, this->partsCollider[i]->radius, 16, GetColor(0, 255, 0), GetColor(0, 255, 0), FALSE);
+	//	const std::vector<AttackCapsuleColliderData*>& colliderSet = pair.second;
+	//	for (const auto& collider : colliderSet)
+	//	{
+	//		VECTOR underPos = collider->rigidbody.GetPosition();
+	//		VECTOR topPos = collider->topPositon;
+	//		DrawCapsule3D(underPos, topPos, collider->radius, 16, GetColor(0, 255, 0), GetColor(250, 0, 0), FALSE);
+	//	}
 	//}
-	for (const auto& pair : this->attackCollider)
-	{
-		const std::vector<AttackCapsuleColliderData*>& colliderSet = pair.second;
-		for (const auto& collider : colliderSet)
-		{
-			VECTOR underPos = collider->rigidbody.GetPosition();
-			VECTOR topPos = collider->topPositon;
-			DrawCapsule3D(underPos, topPos, collider->radius, 16, GetColor(0, 255, 0), GetColor(250, 0, 0), FALSE);
-		}
-	}
 #endif // _DEBUG
 
 	if (this->isDraw)
@@ -252,8 +303,35 @@ const bool Dragon::GetIsAttack()const
 /// </summary>
 void Dragon::OnAttackCollider(const short _index)
 {
+	auto& sound = Singleton<SoundManager>::GetInstance();
+	auto& effect = Singleton<EffectManager>::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
+	auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
+	short dragonStage = tree.GetDragonStage();
 	for (auto& collider:this->attackCollider[_index])
 	{
+		switch (_index)
+		{
+		case static_cast<short>(AttackCollider::SMASH):
+			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_SWING_1);
+			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["SMASH_BLOCK_STAMINA_CONSUMPTION"][dragonStage];
+			break;
+		case static_cast<short>(AttackCollider::SWEEP):
+			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["SWEEP_BLOCK_STAMINA_CONSUMPTION"][dragonStage];
+			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_SWING_2);
+			break;
+		case static_cast<short>(AttackCollider::ROTATE):
+			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["ROTATE_BLOCK_STAMINA_CONSUMPTION"][dragonStage];
+			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_SWING_3);
+			break;
+		case static_cast<short>(AttackCollider::BREATH):
+			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["BREATH_BLOCK_STAMINA_CONSUMPTION"][dragonStage];
+			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_BREATH);
+			effect.OnIsEffect(EffectManager::EffectType::DRAGON_BREATH);
+			break;
+		default:
+			break;
+		}
 		collider->data->isDoHitCheck = true;
 	}
 }
@@ -265,48 +343,73 @@ void Dragon::UpdateAttackCollider(const short _colliderIndex, const float _nowTo
 	/*当たり判定開始フラグが立っていないかつ、再生時間が開始の再生時間を超えていたら*/
 	if (!this->isStartHitCheck[_colliderIndex] && _nowTotalPlayTime >= this->startHitCheckPlayTime[_colliderIndex])
 	{
-		if (_nowTotalPlayTime < this->endHitCheckPlayTime[_colliderIndex] && _colliderIndex == static_cast<int>(AttackCollider::BREATH))
+		if (_nowTotalPlayTime < this->endHitCheckPlayTime[_colliderIndex])
 		{
-			auto& effect = Singleton<EffectManager>::GetInstance();
-			effect.OnIsEffect(EffectManager::EffectType::DRAGON_BREATH);
+			OnAttackCollider(_colliderIndex);
+			this->isStartHitCheck[_colliderIndex] = true;
 		}
-		OnAttackCollider(_colliderIndex);
-		this->isStartHitCheck[_colliderIndex] = true;
-	}
-
-	/*再生時間が終了の再生時間を超えていたら*/
-	if (_nowTotalPlayTime >= this->endHitCheckPlayTime[_colliderIndex])
-	{
-		OffAttackCollider(_colliderIndex);
 	}
 
 	/*当たり判定フラグが立っていなければ早期リターン*/
+	bool isHitAttack = false;
 	for (int i = 0; i < this->attackCollider[_colliderIndex].size(); i++)
 	{
+		auto& collider = this->attackCollider[_colliderIndex][i];
+		/*攻撃が当たっていたらヒットフラグを下す*/
+		if (collider->data->isHitAttack)
+		{
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			switch (_colliderIndex)
+			{
+			case static_cast<short>(AttackCollider::SMASH):
+				sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_LIGHT_ATTACK);
+				break;
+			case static_cast<short>(AttackCollider::SWEEP):
+				sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_LIGHT_ATTACK);
+				break;
+			case static_cast<short>(AttackCollider::ROTATE):
+				sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_HEAVY_ATTACK);
+				break;
+			case static_cast<short>(AttackCollider::BREATH):
+				sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_HEAVY_ATTACK);
+				break;
+			default:
+				break;
+			}
+			isHitAttack = true;
+		}
+		if (isHitAttack)
+		{
+			OffAttackCollider(_colliderIndex);
+			continue;
+		}
 		if (!this->attackCollider[_colliderIndex][i]->data->isDoHitCheck) continue;
-
 		/*座標の更新*/
 		VECTOR capsuleTopPosition = MV1GetFramePosition(this->modelHandle, this->frameIndexUseAttackColider[_colliderIndex][i][0]);
 		VECTOR capsuleUnderPosition = MV1GetFramePosition(this->modelHandle, this->frameIndexUseAttackColider[_colliderIndex][i][1]);
 		if (_colliderIndex == static_cast<short>(AttackCollider::BREATH))
 		{
-			this->attackCollider[_colliderIndex][i]->rigidbody.SetPosition(capsuleTopPosition);
+			collider->rigidbody.SetPosition(capsuleTopPosition);
 			VECTOR direction = VSub(capsuleUnderPosition, capsuleTopPosition);
 			direction.y = 0.0f;
 			VECTOR directionScaling = VScale(direction, this->breathLength);
-			this->attackCollider[_colliderIndex][i]->topPositon = VAdd(capsuleTopPosition, directionScaling);
+			collider->topPositon = VAdd(capsuleTopPosition, directionScaling);
 		}
 		else
 		{
-			this->attackCollider[_colliderIndex][i]->rigidbody.SetPosition(capsuleTopPosition);
-			this->attackCollider[_colliderIndex][i]->topPositon = capsuleUnderPosition;
+			collider->rigidbody.SetPosition(capsuleTopPosition);
+			collider->topPositon = capsuleUnderPosition;
 		}
+	}
 
-		/*攻撃が当たっていたらヒットフラグを下す*/
-		if (this->attackCollider[_colliderIndex][i]->data->isHitAttack)
-		{
-			OffAttackCollider(_colliderIndex);
-		}
+	/*再生時間が終了の再生時間を超えていたら*/
+	float endHitCheckPlayTime = this->endHitCheckPlayTime[_colliderIndex];
+	if (_nowTotalPlayTime >= endHitCheckPlayTime)
+	{
+		OffAttackCollider(_colliderIndex);
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OffIsPlayEffect(SoundManager::EffectType::MONSTER_BREATH);
+		this->isStartHitCheck[_colliderIndex] = false;
 	}
 }
 /// <summary>
@@ -319,6 +422,5 @@ void Dragon::OffAttackCollider(const short _index)
 		collider->data->isDoHitCheck = false;
 		collider->data->isHitAttack = false;
 	}
-	this->isStartHitCheck[_index] = false;
 }
 

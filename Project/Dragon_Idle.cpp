@@ -56,8 +56,8 @@ Dragon_Idle::NodeState Dragon_Idle::Update()
 	if (prevAction != this->actionType)
 	{
 		rootNode.SetCurrentAction(this->actionType);
-		short stage = rootNode.GetDragonStage();
-		switch (stage)
+		enemy.ChangeTiredColor();
+		switch (rootNode.GetDragonStage())
 		{
 		case static_cast<short>(DragonBehaviorTree::DragonStage::AWAKENING):
 			this->standbyTime = this->AWAKENING_STANDBY_TIME;
@@ -71,6 +71,7 @@ Dragon_Idle::NodeState Dragon_Idle::Update()
 		default:
 			break;
 		}
+		rootNode.SetDragonState(DragonBehaviorTree::DragonState::TIRED);
 	}
 
 	/*アニメーションの再生*/
@@ -83,6 +84,17 @@ Dragon_Idle::NodeState Dragon_Idle::Update()
 	//指定の待機時間を超えていたらSUCCESSを返す
 	if (this->currentStandbyTime >= this->standbyTime)
 	{
+		rootNode.SetDragonState(DragonBehaviorTree::DragonState::NORMAL);
+		switch (rootNode.GetDragonStage())
+		{
+		case static_cast<short>(DragonBehaviorTree::DragonStage::RAMPAGE):
+			enemy.ChangeAngryColor();
+			this->standbyTime = this->RAMPAGE_STANDBY_TIME;
+			break;
+		default:
+			enemy.ChangeNormalColor();
+			break;
+		}
 		rootNode.SetAttackCount();
 		this->currentStandbyTime = 0;
 		return ActionNode::NodeState::SUCCESS;

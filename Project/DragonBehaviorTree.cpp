@@ -2,6 +2,7 @@
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "DragonBehaviorTreeHeader.h"
+#include "DeleteInstance.h"
 #include "Rigidbody.h"
 #include "EnemyManager.h"
 #include "Character.h"
@@ -154,7 +155,7 @@ DragonBehaviorTree::DragonBehaviorTree()
 	this->Selector_DyingOrBattleOrIdle->AddChild(*Sequencer_BattleAction);
 	this->Selector_DyingOrBattleOrIdle->AddChild(*new Dragon_Idle());
 
-	this->debugActionNode = new Dragon_Breath();
+	this->debugActionNode = new Dragon_Sweep();
 
 	/*初期化*/
 	Initialize();
@@ -165,7 +166,9 @@ DragonBehaviorTree::DragonBehaviorTree()
 /// </summary>
 DragonBehaviorTree::~DragonBehaviorTree()
 {
-
+	DeleteMemberInstance(this->Selector_DyingOrBattleOrIdle);
+	DeleteMemberInstance(this->debugActionNode);
+	DeleteMemberInstance(this->currentBattleAction);
 }
 
 /// <summary>
@@ -184,6 +187,7 @@ void DragonBehaviorTree::Initialize()
 bool DragonBehaviorTree::JudgeBossStage()
 {
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
 	int hp = enemy.GetHP();
 
 	/*HPがリミット以下だったら段階を変える*/
@@ -245,11 +249,11 @@ void DragonBehaviorTree::Update()
 	/*メンバ変数の更新*/
 	UpdateMemberVariables();
 
-	printfDx("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD:%f\n", this->innerProductOfDirectionToTarget);
-	printfDx("DRAGON_TO_TARGET:%f\n", this->toTargetDistance);
-	printfDx("DRAGON_ACTION_STATE:%d\n", this->currentAction);
-	printfDx("DRAGON_ACTION_SELECT:%d\n", this->isSelectedBattleAction);
-	printfDx("DRAGON_CANCEL_ACTION:%d\n", this->isCancelAction);
+	//printfDx("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD:%f\n", this->innerProductOfDirectionToTarget);
+	//printfDx("DRAGON_TO_TARGET:%f\n", this->toTargetDistance);
+	//printfDx("DRAGON_ACTION_STATE:%d\n", this->currentAction);
+	//printfDx("DRAGON_ACTION_SELECT:%d\n", this->isSelectedBattleAction);
+	//printfDx("DRAGON_CANCEL_ACTION:%d\n", this->isCancelAction);
 
 	/*ツリーの実行*/
 	this->prevNodeState = this->Selector_DyingOrBattleOrIdle->Update();
@@ -262,7 +266,7 @@ void DragonBehaviorTree::Update()
 const void DragonBehaviorTree::Draw()const
 {
 #ifdef _DEBUG
-	this->debugActionNode->Draw();
+	//this->debugActionNode->Draw();
 #endif // _DEBUG
 
 }

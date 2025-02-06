@@ -11,5 +11,8 @@ public:
 	~Dragon_Roar();//デストラクタ
 
 	NodeState Update()override;//更新
+private:
+	short frameCount;	//フレームカウント
+	short roarFrame;	//咆哮のフレーム
 };
 

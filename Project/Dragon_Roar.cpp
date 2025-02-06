@@ -9,11 +9,15 @@
 #include "Dragon.h"
 #include "EnemyManager.h"
 #include "DragonBehaviorTree.h"
+#include "SoundManager.h"
+#include "EffectManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 Dragon_Roar::Dragon_Roar()
+	: frameCount(0)
+	, roarFrame (0)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->animationType		= static_cast<int>(Dragon::AnimationType::ROAR);
@@ -22,6 +26,7 @@ Dragon_Roar::Dragon_Roar()
 	this->maxSpeed			= 0.0f;
 	this->accel				= json.GetJson(JsonManager::FileType::DRAGON)["ACCEL"];
 	this->decel				= json.GetJson(JsonManager::FileType::DRAGON)["DECEL"];
+	this->roarFrame			= json.GetJson(JsonManager::FileType::DRAGON)["ROAR_SOUND_COUNT"];
 }
 
 /// <summary>
@@ -37,6 +42,18 @@ Dragon_Roar::~Dragon_Roar()
 /// </summary>
 Dragon_Roar::NodeState Dragon_Roar::Update()
 {
+	/*咆哮を鳴らす*/
+	this->frameCount++;
+	if (this->frameCount == this->roarFrame)
+	{
+		//音を鳴らす
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_ROAR);
+		//エフェクトの再生
+		//auto& effect = Singleton<EffectManager>  ::GetInstance();
+		//effect.OnIsEffect(EffectManager::EffectType::BOSS_ROAR);
+	}
+
 	/*速度が０以上または最初にこのアクションになった時移動処理を行う*/
 	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
 	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
@@ -66,6 +83,7 @@ Dragon_Roar::NodeState Dragon_Roar::Update()
 	{
 		//インターバルの設定
 		rootNode.ExitCurrentBattleAction();
+		this->frameCount = 0;
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//それ以外は実行中を返す

@@ -9,11 +9,14 @@
 #include "Dragon.h"
 #include "EnemyManager.h"
 #include "DragonBehaviorTree.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 Dragon_Walk::Dragon_Walk()
+	: frameCount	(0)
+	, walkSoundCount(0)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->animationType		= static_cast<int>(Dragon::AnimationType::WALK);
@@ -22,6 +25,7 @@ Dragon_Walk::Dragon_Walk()
 	this->maxSpeed			= json.GetJson(JsonManager::FileType::DRAGON)["WALK_SPEED"];
 	this->accel				= json.GetJson(JsonManager::FileType::DRAGON)["ACCEL"];
 	this->decel				= json.GetJson(JsonManager::FileType::DRAGON)["DECEL"];
+	this->walkSoundCount	= json.GetJson(JsonManager::FileType::DRAGON)["WALK_SOUND_COUNT"];
 }
 
 /// <summary>
@@ -37,6 +41,15 @@ Dragon_Walk::~Dragon_Walk()
 /// </summary>
 Dragon_Walk::NodeState Dragon_Walk::Update()
 {
+	auto& sound = Singleton<SoundManager>::GetInstance();
+	this->frameCount++;
+	if (this->frameCount == this->walkSoundCount)
+	{
+		sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_FOOTSTEPS);
+		this->frameCount = 0;
+	}
+
+
 	/*アクションの状態をセット*/
 	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
 	if (rootNode.GetCurrentAction() != this->actionType)

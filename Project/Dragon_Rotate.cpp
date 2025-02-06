@@ -15,6 +15,7 @@
 #include "DragonBehaviorTree.h"
 #include "ReactionType.h"
 #include "HitStop.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ

@@ -43,6 +43,7 @@ public:
 		  void CalcAttackCount	(){ this->attackCount--; }	//スタミナの計算
 
 	/*getter/setter*/
+	const DragonState GetDragonState			 ()const				 { return this->state; }
 	const int		  GetInterval				 (const int _index)const { return this->intervalSet[_index]; }			  //インターバルの取得
 	const float		  GetToTargetDistance		 ()const				 { return this->toTargetDistance; }				  //目標へのベクトルを取得
 	const float		  GetInnerProduct			 ()const				 { return this->innerProductOfDirectionToTarget; }//目標へのベクトルの内積を取得
@@ -53,6 +54,7 @@ public:
 	const float		  GetDotOfDirAndToTarget	 ()const				 { return this->innerProductOfDirectionToTarget; }//内積の取得
 	const short		  GetDragonStage			 ()const				 { return static_cast<short>(currentStage); }	  //現在のステージ
 	BehaviorTreeNode& GetBattleAction			 ()						 { return *this->currentBattleAction; }			  //現在実行中のバトルアクション
+	void SetDragonState		(const DragonState _state)				{ this->state = _state; }				//現在のアクションの設定
 	void SetCurrentAction	(const int _action)						{ this->currentAction = _action; }		//現在のアクションの設定
 	void SetInterval		(const int _index, const int _set = 0)	{ this->intervalSet[_index] = _set; }	//インターバルの設定
 	void SetAttackCount		();

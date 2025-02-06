@@ -20,11 +20,13 @@
 /// コンストラクタ
 /// </summary>
 Enemy::Enemy()
-	: moveTarget			(Gori::ORIGIN)
-	, animationPlayTime		(0.0f)
-	, nowAnimation			(0)
+	: Character			()
+	, moveTarget		(Gori::ORIGIN)
+	, animationPlayTime	(0.0f)
+	, nowAnimation		(0)
 
 {
+	this->modelHandle;
 	/*コライダーデータの作成*/
 	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
 }
@@ -148,3 +150,23 @@ void Enemy::Move(const float _maxSpeed, const float _accel, const float _decel, 
 	UpdateVelocity(_isLerp);
 }
 
+/// <summary>
+/// 色の変更
+/// </summary>
+void Enemy::ChangeAngryColor()
+{
+	//MV1SetEmiColorScale(this->modelHandle, this->ANGRY_COLOR);
+	//MV1SetAmbColorScale(this->modelHandle, this->ANGRY_COLOR);
+	MV1SetDifColorScale(this->modelHandle, this->angryColor);
+}
+void Enemy::ChangeTiredColor()
+{
+	//MV1SetEmiColorScale(this->modelHandle, this->TIRED_COLOR);
+	MV1SetDifColorScale(this->modelHandle, this->tiredColor);
+}
+void Enemy::ChangeNormalColor()
+{
+	//MV1SetEmiColorScale(this->modelHandle, this->normalEmiColor);
+	//MV1SetAmbColorScale(this->modelHandle, this->normalAmbColor);
+	MV1SetDifColorScale(this->modelHandle, this->normalColor);
+}

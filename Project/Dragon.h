@@ -19,7 +19,7 @@ public:
 	void		Finalize			() override;										//後処理
 	void		Update				() override;										//更新
 	const void	DrawCharacterInfo	() const override;									//描画
-	void		PlayAnimation		(const float _playAnimation, const float _playTime);//アニメーションの再生
+	void		PlayAnimation		(const int _playAnimation, const float _playTime);	//アニメーションの再生
 	void		OnAttackCollider	(const short _index);								//指定の攻撃コライダーのフラグを立てる
 	void		OffAttackCollider	(const short _index);								//指定の攻撃コライダーのフラグを下す
 	void		UpdateAttackCollider(const short _colliderIndex, const float _nowTotalPlayTime);//指定の攻撃コライダーを更新

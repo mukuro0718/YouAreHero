@@ -11,5 +11,9 @@ public:
 	~Dragon_Walk();//デストラクタ
 
 	NodeState Update()override;//更新
+private:
+	short frameCount;		//フレームカウント
+	short walkSoundCount;	//歩きの音を出すカウント
+
 };
 

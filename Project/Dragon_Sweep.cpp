@@ -9,6 +9,7 @@
 #include "Dragon.h"
 #include "EnemyManager.h"
 #include "DragonBehaviorTree.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
