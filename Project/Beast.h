@@ -100,7 +100,7 @@ private:
 	vector<vector<short>>			frameIndexUsePartsColider;	//部位ごとのコライダーの指定に使用するフレーム番号
 	vector<VECTOR>					pos1;						//部位ごとのコライダーの座標を入れている
 	vector<VECTOR>					pos2;						//HACK:なぜかいったん代入しないとうまく入らない、なぜ
-	vector<float>					prevPartsHp;				//前の部位ごとのHP
-	float							maxHp;						//部位の最大HP
+	vector<int>						prevPartsHp;				//前の部位ごとのHP
+	int								maxHp;						//部位の最大HP
 };
 

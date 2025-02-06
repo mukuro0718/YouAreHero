@@ -16,6 +16,7 @@
 #include "ReactionType.h"
 #include "HitStop.h"
 #include "EffectManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -32,28 +33,29 @@ Beast_Breath::Beast_Breath()
 	this->nextStageSet.emplace(AnimationStage::LOOP, AnimationStage::END);
 	this->nextStageSet.emplace(AnimationStage::END, AnimationStage::START);
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->actionType		= static_cast<int>(BeastBehaviorTree::ActionType::BREATH);
-	this->interval			= json.GetJson(JsonManager::FileType::BEAST)["ACTION_INTERVAL"][this->actionType];
-	this->maxSpeed			= 0.0f;
-	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
-	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
-	this->attackStartCount  = json.GetJson(JsonManager::FileType::BEAST)["BREATH_ATTACK_START_COUNT"];
-	this->attackEndCount	= json.GetJson(JsonManager::FileType::BEAST)["BREATH_ATTACK_END_COUNT"];
-	this->breathLength		= json.GetJson(JsonManager::FileType::BEAST)["BREATH_LENGTH"];
+	this->actionType					  = static_cast<int>(BeastBehaviorTree::ActionType::BREATH);
+	this->interval						  = json.GetJson(JsonManager::FileType::BEAST)["ACTION_INTERVAL"][this->actionType];
+	this->maxSpeed						  = 0.0f;
+	this->accel							  = json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
+	this->decel							  = json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
+	this->attackStartCount				  = json.GetJson(JsonManager::FileType::BEAST)["BREATH_ATTACK_START_COUNT"];
+	this->attackEndCount				  = json.GetJson(JsonManager::FileType::BEAST)["BREATH_ATTACK_END_COUNT"];
+	this->breathLength					  = json.GetJson(JsonManager::FileType::BEAST)["BREATH_LENGTH"];
 	this->frameIndexUsedCapsuleDirection1 = json.GetJson(JsonManager::FileType::BEAST)["BREATH_FRAME_INDEX_USED_CAPSULE_DIRECTION"][0];
 	this->frameIndexUsedCapsuleDirection2 = json.GetJson(JsonManager::FileType::BEAST)["BREATH_FRAME_INDEX_USED_CAPSULE_DIRECTION"][1];
 
 	/*コライダーの作成*/
 	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
-	this->collider->radius				= json.GetJson(JsonManager::FileType::BEAST)["BREATH_RADIUS"];
-	this->collider->data->damage		= json.GetJson(JsonManager::FileType::BEAST)["BREATH_DAMAGE"];
-	this->collider->data->reactionType	= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
-	this->collider->data->hitStopTime	= json.GetJson(JsonManager::FileType::BEAST)["BREATH_HIT_STOP_TIME"];
-	this->collider->data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
-	this->collider->data->hitStopDelay  = json.GetJson(JsonManager::FileType::BEAST)["BREATH_HIT_STOP_DELAY"];
-	this->collider->data->slowFactor	= json.GetJson(JsonManager::FileType::BEAST)["BREATH_SLOW_FACTOR"];
-	this->collider->data->isHitAttack	= false;
-	this->collider->data->isDoHitCheck	= false;
+	this->collider->radius						  = json.GetJson(JsonManager::FileType::BEAST)["BREATH_RADIUS"];
+	this->collider->data->damage				  = json.GetJson(JsonManager::FileType::BEAST)["BREATH_DAMAGE"];
+	this->collider->data->reactionType			  = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
+	this->collider->data->hitStopTime			  = json.GetJson(JsonManager::FileType::BEAST)["BREATH_HIT_STOP_TIME"];
+	this->collider->data->hitStopType			  = static_cast<int>(HitStop::Type::STOP);
+	this->collider->data->hitStopDelay			  = json.GetJson(JsonManager::FileType::BEAST)["BREATH_HIT_STOP_DELAY"];
+	this->collider->data->slowFactor			  = json.GetJson(JsonManager::FileType::BEAST)["BREATH_SLOW_FACTOR"];
+	this->collider->data->isHitAttack			  = false;
+	this->collider->data->isDoHitCheck			  = false;
+	this->collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_BLOCK_STAMINA_CONSUMPTION"];
 
 }
 
@@ -102,11 +104,19 @@ Beast_Breath::NodeState Beast_Breath::Update()
 			this->collider->data->isDoHitCheck = true;
 			auto& effect = Singleton<EffectManager>::GetInstance();
 			effect.OnIsEffect(EffectManager::EffectType::BEAST_BREATH);
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_BREATH);
+		}
+		else if (this->frameCount % this->BREATH_HIT_COUNT == 0)
+		{
+			this->collider->data->isDoHitCheck = true;
 		}
 		if (this->frameCount >= this->attackEndCount)
 		{
 			this->collider->data->isDoHitCheck = false;
 			this->collider->data->isHitAttack = false;
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OffIsPlayEffect(SoundManager::EffectType::MONSTER_BREATH);
 		}
 	}
 	//あたり判定が取れる状態だったら
@@ -120,9 +130,11 @@ Beast_Breath::NodeState Beast_Breath::Update()
 		VECTOR directionScaling = VScale(direction, this->breathLength);
 		this->collider->topPositon = VAdd(position1, directionScaling);
 	}
-	//当たっていたらヒットストップを設定する
+	//当たっていたら
 	if (this->collider->data->isHitAttack)
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_HEAVY_ATTACK);
 		//攻撃ヒットフラグを下す
 		this->collider->data->isHitAttack = false;
 	}

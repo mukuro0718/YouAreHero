@@ -46,6 +46,8 @@ Beast_Down::~Beast_Down()
 Beast_Down::NodeState Beast_Down::Update()
 {
 	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
+	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
+	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
 
 	/*登録されているアクションと実際のアクションが異なっていたら*/
 	if (rootNode.GetNowSelectAction() != this->actionType)
@@ -54,11 +56,12 @@ Beast_Down::NodeState Beast_Down::Update()
 		rootNode.SetSelectAction(this->actionType);
 		//アクションの登録
 		rootNode.EntryCurrentReaction(*this);
+		enemy.ChangeTiredColor();
+		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
+		enemy.UpdateVelocity(false);
 	}
 
 	/*アニメーション*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
 	//アニメーションの種類を設定
 	int nowAnimationType = this->animationSet[this->stage];
 	if (this->animationType != nowAnimationType)
@@ -96,6 +99,7 @@ Beast_Down::NodeState Beast_Down::Update()
 			//状態を通常に戻す
 			rootNode.SetBeastState(BeastBehaviorTree::BeastState::NORMAL);
 			rootNode.ExitCurrentBattleAction();
+			enemy.ChangeNormalColor();
 			return ActionNode::NodeState::SUCCESS;
 		}
 		return ActionNode::NodeState::RUNNING;

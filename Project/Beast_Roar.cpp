@@ -9,12 +9,16 @@
 #include "Beast.h"
 #include "EnemyManager.h"
 #include "BeastBehaviorTree.h"
+#include "SoundManager.h"
+#include "EffectManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 Beast_Roar::Beast_Roar()
-	: isInitialize(false)
+	: frameCount		 (0)
+	, roarFrame			 (0)
+	, isFinishedFirstRoar(false)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->animationType		= static_cast<int>(Beast::AnimationType::ROAR);
@@ -23,7 +27,7 @@ Beast_Roar::Beast_Roar()
 	this->maxSpeed			= 0.0f;
 	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
 	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
-
+	this->roarFrame			= json.GetJson(JsonManager::FileType::BEAST)["NORMAL_ROAR_COUNT"];
 }
 
 /// <summary>
@@ -43,7 +47,7 @@ Beast_Roar::NodeState Beast_Roar::Update()
 	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
 	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
 	//初期化されていなければ
-	if (!this->isInitialize)
+	if (this->frameCount == 0)
 	{
 		//アニメーションの種類を設定
 		enemy.SetNowAnimation(this->animationType);
@@ -54,7 +58,19 @@ Beast_Roar::NodeState Beast_Roar::Update()
 		rootNode.SetSelectAction(this->actionType);
 		//アクションの登録
 		rootNode.EntryCurrentBattleAction(*this);
-		this->isInitialize = true;
+		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
+		enemy.UpdateVelocity(false);
+	}
+
+	/*咆哮を鳴らす*/
+	this->frameCount++;
+	if (this->frameCount == this->roarFrame)
+	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::LUXURIO_ROAR);
+		//カラースケールの更新(ここでは赤色になるようにする)
+		enemy.ChangeAngryColor();
+		this->isFinishedFirstRoar = true;
 	}
 	//アニメーションの再生
 	enemy.PlayAnimation();
@@ -75,7 +91,7 @@ Beast_Roar::NodeState Beast_Roar::Update()
 			rootNode.SetBeastState(BeastBehaviorTree::BeastState::ANGRY);
 			//アクションの解除
 			rootNode.ExitCurrentBattleAction();
-			this->isInitialize = false;
+			this->frameCount = 0;
 			return ActionNode::NodeState::SUCCESS;
 		}
 		//それ以外は実行中を返す

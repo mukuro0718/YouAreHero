@@ -2,6 +2,7 @@
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "BeastBehaviorTreeHeader.h"
+#include "DeleteInstance.h"
 #include "Rigidbody.h"
 #include "CharacterData.h"
 #include "EnemyManager.h"
@@ -177,7 +178,7 @@ BeastBehaviorTree::BeastBehaviorTree()
 		this->Selector_DeathOrReactionOrBattleOrBreak->AddChild(*Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack);
 	}
 
-	this->debugActionNode = new Beast_Explosion();
+	this->debugActionNode = new Beast_Down();
 	
 	/*初期化*/
 	Initialize();
@@ -188,7 +189,10 @@ BeastBehaviorTree::BeastBehaviorTree()
 /// </summary>
 BeastBehaviorTree::~BeastBehaviorTree()
 {
-
+	DeleteMemberInstance(this->Selector_DeathOrReactionOrBattleOrBreak);
+	DeleteMemberInstance(this->currentBattleAction);
+	DeleteMemberInstance(this->currentReaction);
+	DeleteMemberInstance(this->debugActionNode);
 }
 
 /// <summary>
@@ -263,14 +267,14 @@ void BeastBehaviorTree::Update()
 
 	/*ツリーの実行*/
 	BehaviorTreeNode::NodeState state = this->Selector_DeathOrReactionOrBattleOrBreak->Update();
+	//BehaviorTreeNode::NodeState state = this->debugActionNode->Update();
 	int intState = static_cast<int>(state);
-	//this->debugActionNode->Update();
 
 #ifdef _DEBUG
-	printfDx("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD:%f\n", this->innerProductOfDirectionToTarget);
-	printfDx("BEAST_TO_TARGET:%f\n", this->toTargetDistance);
-	printfDx("BEAST_ACTION_STATE:%d\n", this->selectAction);
-	printfDx("BEAST_NODE_STATE:%d\n", intState);
+	//printfDx("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD:%f\n", this->innerProductOfDirectionToTarget);
+	//printfDx("BEAST_TO_TARGET:%f\n", this->toTargetDistance);
+	//printfDx("BEAST_ACTION_STATE:%d\n", this->selectAction);
+	//printfDx("BEAST_NODE_STATE:%d\n", intState);
 #endif // _DEBUG
 }
 
@@ -280,11 +284,11 @@ void BeastBehaviorTree::Update()
 const void BeastBehaviorTree::Draw()const
 {
 #ifdef _DEBUG
-	if (this->currentBattleAction)
-	{
-		this->currentBattleAction->Draw();
-	}
-	this->debugActionNode->Draw();
+	//if (this->currentBattleAction)
+	//{
+	//	this->currentBattleAction->Draw();
+	//}
+	//this->debugActionNode->Draw();
 #endif // _DEBUG
 
 }
@@ -366,19 +370,11 @@ void BeastBehaviorTree::ChangeState()
 		if (this->angryValue >= json.GetJson(JsonManager::FileType::BEAST)["MAX_ANGRY_VALUE"])
 		{
 			this->angryValue = json.GetJson(JsonManager::FileType::BEAST)["MAX_ANGRY_VALUE"];
-			//MV1SetTextureGraphHandle(this->modelHandle, 0, this->angryTexture, FALSE);
 		}
 		break;
 		//疲れ
 	case BeastState::DOWN:
-		//疲れ時間を増加
-		this->downValue--;
-		////ダウン値が０になったら状態を通常にする
-		//if (this->downValue <= 0 )
-		//{
-		//	this->state = BeastState::NORMAL;
-		//	//MV1SetTextureGraphHandle(this->modelHandle, 0, this->normalTexture, FALSE);
-		//}
+		this->downValue -= 2;
 		break;
 	}
 }

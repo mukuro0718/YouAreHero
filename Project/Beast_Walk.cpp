@@ -9,11 +9,14 @@
 #include "Beast.h"
 #include "EnemyManager.h"
 #include "BeastBehaviorTree.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 Beast_Walk::Beast_Walk()
+	: frameCount	(0)
+	, walkSoundCount(0)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->animationType		= static_cast<int>(Beast::AnimationType::WALK);
@@ -21,6 +24,7 @@ Beast_Walk::Beast_Walk()
 	this->maxSpeed			= json.GetJson(JsonManager::FileType::BEAST)["WALK_SPEED"];
 	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
 	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
+	this->walkSoundCount	= json.GetJson(JsonManager::FileType::BEAST)["WALK_SOUND_COUNT"];
 	this->actionType		= static_cast<short>(BeastBehaviorTree::ActionType::WALK);
 }
 
@@ -41,6 +45,15 @@ Beast_Walk::NodeState Beast_Walk::Update()
 	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
 	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
 
+	auto& sound = Singleton<SoundManager>::GetInstance();
+	this->frameCount++;
+	if (this->frameCount == this->walkSoundCount)
+	{
+		sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_FOOTSTEPS);
+		this->frameCount = 0;
+	}
+
+
 	/*登録されているアクションと実際のアクションが異なっていたら*/
 	if (rootNode.GetNowSelectAction() != this->actionType)
 	{
@@ -50,6 +63,7 @@ Beast_Walk::NodeState Beast_Walk::Update()
 		enemy.SetAnimationPlayTime(this->animationPlayTime);
 		//アクションの設定
 		rootNode.SetSelectAction(this->actionType);
+		this->frameCount = 0;
 	}
 
 	/*アニメーションの再生*/

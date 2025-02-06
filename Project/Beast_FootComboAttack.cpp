@@ -17,6 +17,7 @@
 #include "ReactionType.h"
 #include "HitStop.h"
 #include "PlayerManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -28,38 +29,39 @@ Beast_FootComboAttack::Beast_FootComboAttack()
 	, collider		(nullptr)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->animationPlayTime = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->animationType];
-	this->animationType		= static_cast<int>(Beast::AnimationType::COMBO_ATTACK);
-	this->actionType		= static_cast<int>(BeastBehaviorTree::ActionType::COMBO_ATTACK);
-	this->interval			= json.GetJson(JsonManager::FileType::BEAST)["ACTION_INTERVAL"][this->actionType];
-	this->maxSpeed			= json.GetJson(JsonManager::FileType::BEAST)["ATTACKING_SPEED"];
-	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
-	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
-	vector<short> attackStartCount	= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_ATTACK_START_COUNT"];
-	vector<short> attackEndCount	= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_ATTACK_END_COUNT"];
-	this->attackStartCount	= attackStartCount;
-	this->attackEndCount	= attackEndCount;
-	vector<short> moveStartCount = json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_MOVE_START_COUNT"];
-	vector<short> moveEndCount	 = json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_MOVE_END_COUNT"];
-	this->moveStartCount = moveStartCount;
-	this->moveEndCount	 = moveEndCount;
-	this->maxAttackCount = json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_MAX_ATTACK_COUNT"];
+	this->animationPlayTime						  = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->animationType];
+	this->animationType							  = static_cast<int>(Beast::AnimationType::COMBO_ATTACK);
+	this->actionType							  = static_cast<int>(BeastBehaviorTree::ActionType::COMBO_ATTACK);
+	this->interval								  = json.GetJson(JsonManager::FileType::BEAST)["ACTION_INTERVAL"][this->actionType];
+	this->maxSpeed								  = json.GetJson(JsonManager::FileType::BEAST)["ATTACKING_SPEED"];
+	this->accel									  = json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
+	this->decel									  = json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
+	vector<short> attackStartCount				  = json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_ATTACK_START_COUNT"];
+	vector<short> attackEndCount				  = json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_ATTACK_END_COUNT"];
+	this->attackStartCount						  = attackStartCount;
+	this->attackEndCount						  = attackEndCount;
+	vector<short> moveStartCount				  = json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_MOVE_START_COUNT"];
+	vector<short> moveEndCount					  = json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_MOVE_END_COUNT"];
+	this->moveStartCount						  = moveStartCount;
+	this->moveEndCount							  = moveEndCount;
+	this->maxAttackCount						  = json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_MAX_ATTACK_COUNT"];
 	vector<short> frameIndexUsedCapsuleDirection1 = json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_FRAME_INDEX_USED_CAPSULE_DIRECTION_1"];
 	vector<short> frameIndexUsedCapsuleDirection2 = json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_FRAME_INDEX_USED_CAPSULE_DIRECTION_2"];
-	this->frameIndexUsedCapsuleDirection1 = frameIndexUsedCapsuleDirection1;
-	this->frameIndexUsedCapsuleDirection2 = frameIndexUsedCapsuleDirection2;
+	this->frameIndexUsedCapsuleDirection1		  = frameIndexUsedCapsuleDirection1;
+	this->frameIndexUsedCapsuleDirection2		  = frameIndexUsedCapsuleDirection2;
 
 	/*コライダーの作成*/
 	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
-	this->collider->radius				= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_RADIUS"];
-	this->collider->data->damage		= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_DAMAGE"];
-	this->collider->data->reactionType	= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
-	this->collider->data->hitStopTime	= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_HIT_STOP_TIME"];
-	this->collider->data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
-	this->collider->data->hitStopDelay	= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_HIT_STOP_DELAY"];
-	this->collider->data->slowFactor	= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_SLOW_FACTOR"];
-	this->collider->data->isHitAttack	= false;
-	this->collider->data->isDoHitCheck	= false;
+	this->collider->radius							= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_RADIUS"];
+	this->collider->data->damage					= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_DAMAGE"];
+	this->collider->data->reactionType				= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
+	this->collider->data->hitStopTime				= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_HIT_STOP_TIME"];
+	this->collider->data->hitStopType				= static_cast<int>(HitStop::Type::STOP);
+	this->collider->data->hitStopDelay				= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_HIT_STOP_DELAY"];
+	this->collider->data->slowFactor				= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_SLOW_FACTOR"];
+	this->collider->data->isHitAttack				= false;
+	this->collider->data->isDoHitCheck				= false;
+	this->collider->data->blockStaminaConsumption	= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_BLOCK_STAMINA_CONSUMPTION"];
 
 }
 
@@ -119,6 +121,8 @@ Beast_FootComboAttack::NodeState Beast_FootComboAttack::Update()
 		}
 		if (this->frameCount == this->attackStartCount[this->attackCount])
 		{
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_SWING_1);
 			this->collider->data->isDoHitCheck = true;
 		}
 		if (this->frameCount >= this->attackEndCount[this->attackCount])
@@ -138,6 +142,8 @@ Beast_FootComboAttack::NodeState Beast_FootComboAttack::Update()
 		//当たっていたらヒットストップを設定する
 		if (this->collider->data->isHitAttack)
 		{
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_LIGHT_ATTACK);
 			//攻撃ヒットフラグを下す
 			this->collider->data->isHitAttack = false;
 		}

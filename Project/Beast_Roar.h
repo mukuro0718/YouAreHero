@@ -13,6 +13,8 @@ public:
 
 	NodeState Update()override;//更新
 private:
-	bool  isInitialize;		//初期化したか
+	short frameCount;		  //フレームカウント
+	short roarFrame;		  //咆哮のフレーム
+	bool  isFinishedFirstRoar;//最初の咆哮が終了しているか
 };
 

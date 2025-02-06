@@ -72,6 +72,12 @@ Beast::Beast()
 		this->pos1.emplace_back(Gori::ORIGIN);
 		this->pos2.emplace_back(Gori::ORIGIN);
 	}
+
+	/*通常時のカラースケールを取得*/
+	this->normalColor = MV1GetDifColorScale(this->modelHandle);
+	this->tiredColor = this->angryColor = this->normalColor;
+	this->tiredColor.b = 200;
+	this->angryColor.r = 200;
 }
 
 /// <summary>
@@ -80,6 +86,11 @@ Beast::Beast()
 Beast::~Beast()
 {
 	Finalize();
+	for (int i = 0; i < this->maxPartsColliderNum; i++)
+	{
+		DeleteMemberInstance(this->partsCollider[i]);
+	}
+	this->partsCollider.clear();
 }
 
 void Beast::Initialize()
@@ -125,11 +136,12 @@ void Beast::Initialize()
 	for (int i = 0; i < this->maxPartsColliderNum; i++)
 	{
 		this->prevPartsHp[i] = this->maxHp;
-		
+		this->partsCollider[i]->isUseCollWithChara = true;
 	}
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
+	this->ChangeNormalColor();
 }
 
 /// <summary>
@@ -139,9 +151,8 @@ void Beast::Finalize()
 {
 	for (int i = 0; i < this->maxPartsColliderNum; i++)
 	{
-		DeleteMemberInstance(this->partsCollider[i]);
+		this->partsCollider[i]->isUseCollWithChara = false;
 	}
-	this->partsCollider.clear();
 }
 
 /// <summary>
@@ -161,7 +172,7 @@ void Beast::Update()
 		if (this->partsCollider[i]->data->isHit)
 		{
 			this->partsCollider[i]->data->isHit = false;
-			float damage = this->prevPartsHp[i] - this->partsCollider[i]->data->hp;
+			int damage = this->prevPartsHp[i] - this->partsCollider[i]->data->hp;
 			this->prevPartsHp[i] = this->partsCollider[i]->data->hp;
 			this->collider->data->hp -= damage;
 		}
@@ -175,7 +186,36 @@ void Beast::Update()
 
 	/*ビヘイビアツリーの更新*/
 	auto& tree = Singleton<BeastBehaviorTree>::GetInstance();
+	auto& json = Singleton<JsonManager>::GetInstance();
 	tree.Update();
+	float defenisivePower = 0.0f;
+	switch (tree.GetBeastState())
+	{
+		//怒り
+	case BeastBehaviorTree::BeastState::ANGRY:
+		defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["ANGRY_DEFENSIVE_POWER"];
+		for (auto& collider : this->partsCollider)
+		{
+			collider->data->defensivePower = defenisivePower;
+		}
+		break;
+		//通常
+	case BeastBehaviorTree::BeastState::NORMAL:
+		defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["NORMAL_DEFENSIVE_POWER"];
+		for (auto& collider : this->partsCollider)
+		{
+			collider->data->defensivePower = defenisivePower;
+		}
+		break;
+		//疲れ
+	case BeastBehaviorTree::BeastState::DOWN:
+		defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["DOWN_DEFENSIVE_POWER"];
+		for (auto& collider : this->partsCollider)
+		{
+			collider->data->defensivePower = defenisivePower;
+		}
+		break;
+	}
 }
 
 /// <summary>
@@ -202,26 +242,26 @@ const void Beast::DrawCharacterInfo()const
 	auto& map = Singleton<MapManager>::GetInstance();
 
 #ifdef _DEBUG
-	auto& debug = Singleton<Debug>::GetInstance();
-	auto& tree = Singleton<BeastBehaviorTree>::GetInstance();
-	tree.Draw();
-	if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
-	{
-		//VECTOR position = this->collider->rigidbody.GetPosition();
-		//VECTOR rotation = this->collider->rigidbody.GetRotation();
-		//printfDx("Beast_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
-		//printfDx("Beast_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
-	}
+	//auto& debug = Singleton<Debug>::GetInstance();
+	//auto& tree = Singleton<BeastBehaviorTree>::GetInstance();
+	//tree.Draw();
+	//if (debug.IsShowDebugInfo(Debug::ItemType::ENEMY))
+	//{
+	//	//VECTOR position = this->collider->rigidbody.GetPosition();
+	//	//VECTOR rotation = this->collider->rigidbody.GetRotation();
+	//	//printfDx("Beast_POSITION X:%f,Y:%f,Z:%f\n", position.x, position.y, position.z);
+	//	//printfDx("Beast_ROTATION X:%f,Y:%f,Z:%f\n", rotation.x, rotation.y, rotation.z);
+	//}
 
-	for (int i = 0; i < this->maxPartsColliderNum; i++)
-	{
-		VECTOR pos1 = this->pos1[i];
-		VECTOR pos2 = this->pos2[i];
-		DrawCapsule3D(pos1, pos2, this->partsCollider[i]->radius, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), FALSE);
-		VECTOR underPos = this->partsCollider[i]->rigidbody.GetPosition();
-		VECTOR topPos = this->partsCollider[i]->topPositon;
-		DrawCapsule3D(underPos, topPos, this->partsCollider[i]->radius, 16, GetColor(0, 255, 0), GetColor(0, 255, 0), FALSE);
-	}
+	//for (int i = 0; i < this->maxPartsColliderNum; i++)
+	//{
+	//	VECTOR pos1 = this->pos1[i];
+	//	VECTOR pos2 = this->pos2[i];
+	//	DrawCapsule3D(pos1, pos2, this->partsCollider[i]->radius, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), FALSE);
+	//	VECTOR underPos = this->partsCollider[i]->rigidbody.GetPosition();
+	//	VECTOR topPos = this->partsCollider[i]->topPositon;
+	//	DrawCapsule3D(underPos, topPos, this->partsCollider[i]->radius, 16, GetColor(0, 255, 0), GetColor(0, 255, 0), FALSE);
+	//}
 #endif // _DEBUG
 
 	if (this->isDraw)

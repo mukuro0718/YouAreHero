@@ -28,6 +28,7 @@ private:
 
 	/*定数*/
 	const float STOP_DISTANCE;//停止距離
+	const short FOOTSTEPS_SOUND_FRAME;//足音を再生する間隔
 
 	/*メンバ変数*/
 	short									 attackStartCount;				 //攻撃開始フレーム

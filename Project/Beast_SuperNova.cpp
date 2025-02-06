@@ -16,6 +16,7 @@
 #include "ReactionType.h"
 #include "HitStop.h"
 #include "EffectManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -37,27 +38,28 @@ Beast_SuperNova::Beast_SuperNova()
 	this->nextStageSet.emplace(AnimationStage::LOOP, AnimationStage::END);
 	this->nextStageSet.emplace(AnimationStage::END, AnimationStage::START);
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->actionType		= static_cast<int>(BeastBehaviorTree::ActionType::SUPER_NOVA);
-	this->interval			= json.GetJson(JsonManager::FileType::BEAST)["ACTION_INTERVAL"][this->actionType];
-	this->maxSpeed			= 0.0f;
-	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
-	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
-	this->effectStartCount  = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_EFFECT_START_COUNT"];
-	this->attackStartCount  = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_ATTACK_START_COUNT"];
-	this->attackEndCount    = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_ATTACK_END_COUNT"];
+	this->actionType				   = static_cast<int>(BeastBehaviorTree::ActionType::SUPER_NOVA);
+	this->interval					   = json.GetJson(JsonManager::FileType::BEAST)["ACTION_INTERVAL"][this->actionType];
+	this->maxSpeed					   = 0.0f;
+	this->accel						   = json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
+	this->decel						   = json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
+	this->effectStartCount			   = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_EFFECT_START_COUNT"];
+	this->attackStartCount			   = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_ATTACK_START_COUNT"];
+	this->attackEndCount			   = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_ATTACK_END_COUNT"];
 	this->frameIndexUsedSpherePosition = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_FRAME_INDEX_USED_SPHERE_POSITION"];
 
 	/*コライダーの作成*/
 	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
-	this->collider->radius				= json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_RADIUS"];
-	this->collider->data->damage		= json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_DAMAGE"];
-	this->collider->data->reactionType	= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
-	this->collider->data->hitStopTime	= json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_HIT_STOP_TIME"];
-	this->collider->data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
-	this->collider->data->hitStopDelay	= json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_HIT_STOP_DELAY"];
-	this->collider->data->slowFactor	= json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_SLOW_FACTOR"];
-	this->collider->data->isHitAttack	= false;
-	this->collider->data->isDoHitCheck	= false;
+	this->collider->radius						  = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_RADIUS"];
+	this->collider->data->damage				  = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_DAMAGE"];
+	this->collider->data->reactionType			  = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
+	this->collider->data->hitStopTime			  = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_HIT_STOP_TIME"];
+	this->collider->data->hitStopType			  = static_cast<int>(HitStop::Type::STOP);
+	this->collider->data->hitStopDelay			  = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_HIT_STOP_DELAY"];
+	this->collider->data->slowFactor			  = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_SLOW_FACTOR"];
+	this->collider->data->isHitAttack			  = false;
+	this->collider->data->isDoHitCheck			  = false;
+	this->collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_BLOCK_STAMINA_CONSUMPTION"];
 
 
 }
@@ -97,19 +99,30 @@ Beast_SuperNova::NodeState Beast_SuperNova::Update()
 	}
 
 
-	/*アニメーション*/	/*コライダーの更新*/
 	//指定フレームを超えていなければフレームの増加
 	if (this->frameCount < this->attackEndCount)
 	{
 		this->frameCount++;
 		//指定フレームを超えていたら
+		if (this->frameCount < this->effectStartCount)
+		{
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			if (!sound.GetCheckEffectSoundState(SoundManager::EffectType::LUXURIO_WING))
+			{
+				sound.OnIsPlayEffect(SoundManager::EffectType::LUXURIO_WING);
+			}
+		}
 		if (this->frameCount == this->effectStartCount)
 		{
 			auto& effect = Singleton<EffectManager>::GetInstance();
 			effect.OnIsEffect(EffectManager::EffectType::BEAST_SUPER_NOVA);
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OnIsPlayEffect(SoundManager::EffectType::LUXURIO_CHARGE);
 		}
 		if (this->frameCount == this->attackStartCount)
 		{
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OnIsPlayEffect(SoundManager::EffectType::LUXURIO_SUPER_NOVA);
 			this->collider->data->isDoHitCheck = true;
 		}
 		if (this->frameCount >= this->attackEndCount)
@@ -124,9 +137,11 @@ Beast_SuperNova::NodeState Beast_SuperNova::Update()
 		VECTOR position1 = MV1GetFramePosition(enemy.GetModelHandle(), this->frameIndexUsedSpherePosition);
 		this->collider->rigidbody.SetPosition(position1);
 	}
-	//当たっていたらヒットストップを設定する
+	//当たっていたら
 	if (this->collider->data->isHitAttack)
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_HEAVY_ATTACK);
 		//攻撃ヒットフラグを下す
 		this->collider->data->isHitAttack = false;
 	}

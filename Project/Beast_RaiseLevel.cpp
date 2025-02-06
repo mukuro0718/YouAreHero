@@ -10,6 +10,7 @@
 #include "EnemyManager.h"
 #include "BeastBehaviorTree.h"
 #include "EffectManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -17,6 +18,7 @@
 Beast_RaiseLevel::Beast_RaiseLevel()
 	: effectStartCount	(false)
 	, frameCount		(0)
+	, roarFrame			(0)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->animationType		= static_cast<int>(Beast::AnimationType::RAISE_LEVEL);
@@ -27,6 +29,7 @@ Beast_RaiseLevel::Beast_RaiseLevel()
 	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
 	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
 	this->effectStartCount	= json.GetJson(JsonManager::FileType::BEAST)["RAISE_LEVEL_EFFECT_START_COUNT"];
+	this->roarFrame			= json.GetJson(JsonManager::FileType::BEAST)["RAISE_LEVEL_ROAR_COUNT"];
 }
 
 /// <summary>
@@ -62,14 +65,19 @@ Beast_RaiseLevel::NodeState Beast_RaiseLevel::Update()
 	}
 
 	/*エフェクトの制御*/
+	this->frameCount++;
 	if (this->frameCount < this->effectStartCount)
 	{
-		this->frameCount++;
 		if (this->frameCount == this->effectStartCount)
 		{
 			auto& effect = Singleton<EffectManager>::GetInstance();
 			effect.OnIsEffect(EffectManager::EffectType::BEAST_RAISE_LEVEL);
 		}
+	}
+	if (this->frameCount == this->roarFrame)
+	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::LUXURIO_ROAR);
 	}
 
 	/*アニメーションの再生*/

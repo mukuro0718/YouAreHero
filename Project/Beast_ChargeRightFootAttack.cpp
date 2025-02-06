@@ -17,6 +17,7 @@
 #include "BeastBehaviorTree.h"
 #include "ReactionType.h"
 #include "HitStop.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -30,29 +31,30 @@ Beast_ChargeRightFootAttack::Beast_ChargeRightFootAttack()
 	, collider						 (nullptr)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->animationPlayTime = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->animationType];
-	this->animationType		= static_cast<int>(Beast::AnimationType::CHARGE_RIGHT_ATTACK);
-	this->actionType		= static_cast<int>(BeastBehaviorTree::ActionType::CHARGE_RIGHT_ATTACK);
-	this->interval			= json.GetJson(JsonManager::FileType::BEAST)["ACTION_INTERVAL"][this->actionType];
-	this->maxSpeed			= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
-	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
-	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
-	this->attackStartCount	= json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_ATTACK_START_COUNT"];
-	this->attackEndCount	= json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_ATTACK_END_COUNT"];
+	this->animationPlayTime				  = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->animationType];
+	this->animationType					  = static_cast<int>(Beast::AnimationType::CHARGE_RIGHT_ATTACK);
+	this->actionType					  = static_cast<int>(BeastBehaviorTree::ActionType::CHARGE_RIGHT_ATTACK);
+	this->interval						  = json.GetJson(JsonManager::FileType::BEAST)["ACTION_INTERVAL"][this->actionType];
+	this->maxSpeed						  = json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
+	this->accel							  = json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
+	this->decel							  = json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
+	this->attackStartCount				  = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_ATTACK_START_COUNT"];
+	this->attackEndCount				  = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_ATTACK_END_COUNT"];
 	this->frameIndexUsedCapsuleDirection1 = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_FRAME_INDEX_USED_CAPSULE_DIRECTION"][0];
 	this->frameIndexUsedCapsuleDirection2 = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_FRAME_INDEX_USED_CAPSULE_DIRECTION"][1];
 
 	/*コライダーの作成*/
 	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
-	this->collider->radius				= json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_RADIUS"];
-	this->collider->data->damage		= json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_DAMAGE"];
-	this->collider->data->reactionType	= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
-	this->collider->data->hitStopTime	= json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_HIT_STOP_TIME"];
-	this->collider->data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
-	this->collider->data->hitStopDelay	= json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_HIT_STOP_DELAY"];
-	this->collider->data->slowFactor	= json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_SLOW_FACTOR"];
-	this->collider->data->isHitAttack	= false;
-	this->collider->data->isDoHitCheck	= false;
+	this->collider->radius						  = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_RADIUS"];
+	this->collider->data->damage				  = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_DAMAGE"];
+	this->collider->data->reactionType			  = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
+	this->collider->data->hitStopTime			  = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_HIT_STOP_TIME"];
+	this->collider->data->hitStopType			  = static_cast<int>(HitStop::Type::STOP);
+	this->collider->data->hitStopDelay			  = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_HIT_STOP_DELAY"];
+	this->collider->data->slowFactor			  = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_SLOW_FACTOR"];
+	this->collider->data->isHitAttack			  = false;
+	this->collider->data->isDoHitCheck			  = false;
+	this->collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_RIGHT_BLOCK_STAMINA_CONSUMPTION"];
 }
 
 /// <summary>
@@ -102,6 +104,8 @@ Beast_ChargeRightFootAttack::NodeState Beast_ChargeRightFootAttack::Update()
 		//指定フレームを超えていたら
 		if (this->frameCount == this->attackStartCount)
 		{
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_SWING_2);
 			this->collider->data->isDoHitCheck = true;
 		}
 		if (this->frameCount >= this->attackEndCount)
@@ -121,6 +125,8 @@ Beast_ChargeRightFootAttack::NodeState Beast_ChargeRightFootAttack::Update()
 	//当たっていたらヒットストップを設定する
 	if (this->collider->data->isHitAttack)
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_HEAVY_ATTACK);
 		//攻撃ヒットフラグを下す
 		this->collider->data->isHitAttack = false;
 	}

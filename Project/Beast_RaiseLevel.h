@@ -14,5 +14,6 @@ public:
 private:
 	short effectStartCount;	//エフェクト再生開始フレーム
 	short frameCount;		//フレームカウント
+	short roarFrame;	//咆哮のフレーム
 };
 

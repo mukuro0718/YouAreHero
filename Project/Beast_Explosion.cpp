@@ -16,6 +16,7 @@
 #include "ReactionType.h"
 #include "HitStop.h"
 #include "EffectManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -28,30 +29,31 @@ Beast_Explosion::Beast_Explosion()
 	, collider						(nullptr)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->animationPlayTime = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->animationType];
-	this->animationType		= static_cast<int>(Beast::AnimationType::EXPLOSION);
-	this->actionType		= static_cast<int>(BeastBehaviorTree::ActionType::EXPLOSION);
-	this->interval			= json.GetJson(JsonManager::FileType::BEAST)["ACTION_INTERVAL"][this->actionType];
-	this->maxSpeed			= 0.0f;
-	this->accel				= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
-	this->decel				= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
-	this->effectStartCount	= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_EFFECT_START_COUNT"];
-	this->attackStartCount	= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_ATTACK_START_COUNT"];
-	this->attackEndCount	= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_ATTACK_END_COUNT"];
-	this->frameIndexUsedSpherePosition = json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_FRAME_INDEX_USED_SPHERE_POSITION"];
+	this->animationPlayTime				= json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->animationType];
+	this->animationType					= static_cast<int>(Beast::AnimationType::EXPLOSION);
+	this->actionType					= static_cast<int>(BeastBehaviorTree::ActionType::EXPLOSION);
+	this->interval						= json.GetJson(JsonManager::FileType::BEAST)["ACTION_INTERVAL"][this->actionType];
+	this->maxSpeed						= 0.0f;
+	this->accel							= json.GetJson(JsonManager::FileType::BEAST)["ACCEL"];
+	this->decel							= json.GetJson(JsonManager::FileType::BEAST)["DECEL"];
+	this->effectStartCount				= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_EFFECT_START_COUNT"];
+	this->attackStartCount				= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_ATTACK_START_COUNT"];
+	this->attackEndCount				= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_ATTACK_END_COUNT"];
+	this->roarSoundStartCount			= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_ROAR_COUNT"];
+	this->frameIndexUsedSpherePosition  = json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_FRAME_INDEX_USED_SPHERE_POSITION"];
 
 	/*コライダーの作成*/
 	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
-	this->collider->radius				= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_RADIUS"];
-	this->collider->data->damage		= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_DAMAGE"];
-	this->collider->data->reactionType	= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
-	this->collider->data->hitStopTime	= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_HIT_STOP_TIME"];
-	this->collider->data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
-	this->collider->data->hitStopDelay	= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_HIT_STOP_DELAY"];
-	this->collider->data->slowFactor	= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_SLOW_FACTOR"];
-	this->collider->data->isHitAttack	= false;
-	this->collider->data->isDoHitCheck	= false;
-
+	this->collider->radius							= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_RADIUS"];
+	this->collider->data->damage					= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_DAMAGE"];
+	this->collider->data->reactionType				= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
+	this->collider->data->hitStopTime				= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_HIT_STOP_TIME"];
+	this->collider->data->hitStopType				= static_cast<int>(HitStop::Type::STOP);
+	this->collider->data->hitStopDelay				= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_HIT_STOP_DELAY"];
+	this->collider->data->slowFactor				= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_SLOW_FACTOR"];
+	this->collider->data->isHitAttack				= false;
+	this->collider->data->isDoHitCheck				= false;
+	this->collider->data->blockStaminaConsumption	= json.GetJson(JsonManager::FileType::BEAST)["EXPLOSION_BLOCK_STAMINA_CONSUMPTION"];
 }
 
 /// <summary>
@@ -97,15 +99,24 @@ Beast_Explosion::NodeState Beast_Explosion::Update()
 	{
 		this->frameCount++;
 		//指定フレームを超えていたら
+		if (this->frameCount == this->roarSoundStartCount)
+		{
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OnIsPlayEffect(SoundManager::EffectType::LUXURIO_ROAR);
+		}
 		if (this->frameCount == this->effectStartCount)
 		{
 			auto& effect = Singleton<EffectManager>::GetInstance();
 			effect.OnIsEffect(EffectManager::EffectType::BEAST_EXPLOSION_RANGE);
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OnIsPlayEffect(SoundManager::EffectType::LUXURIO_CHARGE);
 		}
 		if (this->frameCount == this->attackStartCount)
 		{
 			auto& effect = Singleton<EffectManager>::GetInstance();
 			effect.OnIsEffect(EffectManager::EffectType::BEAST_EXPLOSION);
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OnIsPlayEffect(SoundManager::EffectType::LUXURIO_EXPLOSION);
 			this->collider->data->isDoHitCheck = true;
 		}
 		if (this->frameCount >= this->attackEndCount)
@@ -120,9 +131,11 @@ Beast_Explosion::NodeState Beast_Explosion::Update()
 		VECTOR position1 = MV1GetFramePosition(enemy.GetModelHandle(), this->frameIndexUsedSpherePosition);
 		this->collider->rigidbody.SetPosition(position1);
 	}
-	//当たっていたらヒットストップを設定する
+	//当たっていたら
 	if (this->collider->data->isHitAttack)
 	{
+		auto& sound = Singleton<SoundManager>::GetInstance();
+		sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_HEAVY_ATTACK);
 		//攻撃ヒットフラグを下す
 		this->collider->data->isHitAttack = false;
 	}

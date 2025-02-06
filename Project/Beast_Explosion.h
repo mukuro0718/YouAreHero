@@ -15,6 +15,7 @@ public:
 	NodeState	Update		()override;	//更新
 	const void	Draw		()const;	//描画
 private:
+	short						roarSoundStartCount;			//咆哮の音開始フレーム
 	short						effectStartCount;				//エフェクト開始フレーム
 	short						attackStartCount;				//攻撃開始フレーム
 	short						attackEndCount;					//攻撃終了フレーム
