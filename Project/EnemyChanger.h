@@ -14,8 +14,8 @@ public:
 	enum class EnemyType
 	{
 		GOLEM	 = 0,//ゴーレム
-		BEAST	 = 1,//獣
-		DRAGON	 = 2,//ドラゴン
+		DRAGON	 = 1,//ドラゴン
+		BEAST	 = 2,//獣
 		TUTORIAL = 3,//チュートリアル
 	};
 

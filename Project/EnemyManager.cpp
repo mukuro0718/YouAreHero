@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "ReactionType.h"
+#include "DeleteInstance.h"
 #include "CharacterData.h"
 #include "Rigidbody.h"
 #include "Character.h"
@@ -8,6 +9,7 @@
 #include "Boss.h"
 #include "Beast.h"
 #include "Dragon.h"
+#include "Demon.h"
 #include "EnemyManager.h"
 #include "EnemyChanger.h"
 
@@ -15,12 +17,14 @@
 /// コンストラクタ
 /// </summary>
 EnemyManager::EnemyManager()
-	: frameTime(0)
+	: frameTime	(0)
+	, boss		(nullptr)
 {
-	this->boss.emplace_back(new Boss());
-	this->boss.emplace_back(new Beast());
-	this->boss.emplace_back(new Dragon());
-	this->boss.emplace_back(new Boss());
+	this->bossList.emplace_back(new Boss());
+	this->bossList.emplace_back(new Dragon());
+	this->bossList.emplace_back(new Beast());
+	this->bossList.emplace_back(new Demon());
+	this->boss = this->bossList[0];
 }
 
 /// <summary>
@@ -36,9 +40,14 @@ EnemyManager::~EnemyManager()
 /// </summary>
 void EnemyManager::Initialize()
 {
+	this->boss->Finalize();
+	
 	auto& changer = Singleton<EnemyChanger>::GetInstance();
 	this->enemyType = changer.GetEnemyType();
-	this->boss[this->enemyType]->Initialize();
+
+	this->boss = this->bossList[this->enemyType];
+
+	this->boss->Initialize();
 }
 /// <summary>
 /// 更新
@@ -46,7 +55,7 @@ void EnemyManager::Initialize()
 void EnemyManager::Update()
 {
 	//int startTime = GetNowCount();
-	this->boss[this->enemyType]->Update();
+	this->boss->Update();
 	//int endTime = GetNowCount();
 	//this->frameTime = endTime - startTime;
 }
@@ -55,7 +64,7 @@ void EnemyManager::Update()
 /// </summary>
 void EnemyManager::Finalize()
 {
-	this->boss[this->enemyType]->Finalize();
+	this->boss->Finalize();
 }
 
 /// <summary>
@@ -63,7 +72,7 @@ void EnemyManager::Finalize()
 /// </summary>
 const void EnemyManager::Draw()const
 {
-	this->boss[this->enemyType]->Draw();
+	this->boss->Draw();
 	//printfDx("M_ENEMY_FRAMETIME:%d\n", this->frameTime);
 }
 
@@ -72,7 +81,7 @@ const void EnemyManager::Draw()const
 /// </summary>
 const CharacterData& EnemyManager::GetCharacterData()const
 {
-	return this->boss[this->enemyType]->GetCharacterData();
+	return this->boss->GetCharacterData();
 }
 
 /// <summary>
@@ -80,7 +89,7 @@ const CharacterData& EnemyManager::GetCharacterData()const
 /// </summary>
 const Rigidbody& EnemyManager::GetRigidbody()const
 {
-	return this->boss[this->enemyType]->GetRigidbody();
+	return this->boss->GetRigidbody();
 }
 
 /// <summary>
@@ -88,7 +97,7 @@ const Rigidbody& EnemyManager::GetRigidbody()const
 /// </summary>
 const int EnemyManager::GetHP()const
 {
-	return this->boss[this->enemyType]->GetHP();
+	return this->boss->GetHP();
 }
 
 /// <summary>
@@ -96,7 +105,7 @@ const int EnemyManager::GetHP()const
 /// </summary>
 const bool EnemyManager::IsAttack()const
 {
-	return this->boss[this->enemyType]->GetIsAttack();
+	return this->boss->GetIsAttack();
 }
 
 /// <summary>
@@ -104,10 +113,10 @@ const bool EnemyManager::IsAttack()const
 /// </summary>
 const int EnemyManager::GetModelHandle()const
 {
-	return this->boss[this->enemyType]->GetModelHandle();
+	return this->boss->GetModelHandle();
 }
 
 const bool EnemyManager::GetIsAlive()const
 {
-	return this->boss[this->enemyType]->GetIsAlive();
+	return this->boss->GetIsAlive();
 }

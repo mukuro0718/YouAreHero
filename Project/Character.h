@@ -44,16 +44,16 @@ public:
 protected:
 
 	/*メンバ変数*/
-	Animation*		animation;	//アニメーション
-	BitFlag*				state;		//状態
-	CharacterColliderData*	collider;	//コライダー
-	VECTOR			nextRotation;		//次の回転率
-	int				modelHandle;//モデルハンドル
-	bool			isAlive;	//キャラクターが生存しているか
-	bool			isGround;	//地面に当たっている
-	float			speed;		//速度
-	int				entryInterval;
-	bool isDraw;
-	bool isInitialize;
+	Animation*				animation;		//アニメーション
+	BitFlag*				state;			//状態
+	CharacterColliderData*	collider;		//コライダー
+	VECTOR					nextRotation;	//次の回転率
+	int						modelHandle;	//モデルハンドル
+	bool					isAlive;		//キャラクターが生存しているか
+	bool					isGround;		//地面に当たっている
+	float					speed;			//速度
+	int						entryInterval;
+	bool					isDraw;
+	bool					isInitialize;
 };
 

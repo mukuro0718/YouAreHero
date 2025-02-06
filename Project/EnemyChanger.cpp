@@ -53,23 +53,29 @@ void EnemyChanger::Update()
 		{
 			if ((input.GetLStickState().YBuf < 0) || CheckHitKey(KEY_INPUT_UP))
 			{
-				sound.OnIsPlayEffect(SoundManager::EffectType::CHANGE_SELECT_ICON);
 				this->enemyType--;
 				int min = static_cast<int>(EnemyType::GOLEM);
 				if (this->enemyType < min)
 				{
 					this->enemyType = min;
 				}
+				else
+				{
+					sound.OnIsPlayEffect(SoundManager::EffectType::CHANGE_SELECT_ICON);
+				}
 				this->inputInterval = this->MAX_INPUT_INTERBVAL;
 			}
 			else if ((input.GetLStickState().YBuf > 0) || CheckHitKey(KEY_INPUT_DOWN))
 			{
-				sound.OnIsPlayEffect(SoundManager::EffectType::CHANGE_SELECT_ICON);
 				this->enemyType++;
-				int max = static_cast<int>(EnemyType::DRAGON);
+				int max = static_cast<int>(EnemyType::TUTORIAL);
 				if (this->enemyType > max)
 				{
 					this->enemyType = max;
+				}
+				else
+				{
+					sound.OnIsPlayEffect(SoundManager::EffectType::CHANGE_SELECT_ICON);
 				}
 				this->inputInterval = this->MAX_INPUT_INTERBVAL;
 			}
@@ -83,8 +89,8 @@ void EnemyChanger::Update()
 	/*決定*/
 	int nowPad = input.GetNowPadState();
 	int prevPad = input.GetPrevPadState();
-	//パッドのBまたはキーのEが押されたら
-	if ((!(prevPad & InputManager::PAD_B) && (nowPad & InputManager::PAD_B)) || CheckHitKey(KEY_INPUT_E))
+	//パッドのBが押されたら
+	if ((!(prevPad & InputManager::PAD_A) && (nowPad & InputManager::PAD_A)))
 	{
 		sound.OnIsPlayEffect(SoundManager::EffectType::CONFIRMATION_SOUND);
 		if (!this->isProvDecide)
@@ -96,8 +102,8 @@ void EnemyChanger::Update()
 			this->isFinalDecide = true;
 		}
 	}
-	//パッドのAまたはキーのFが押されたら
-	else if ((nowPad & InputManager::PAD_A) || CheckHitKey(KEY_INPUT_F))
+	//パッドのAが押されたら
+	else if ((!(prevPad & InputManager::PAD_B) && (nowPad & InputManager::PAD_B)))
 	{
 		sound.OnIsPlayEffect(SoundManager::EffectType::CANCEL_SOUND);
 		this->isProvDecide = false;
