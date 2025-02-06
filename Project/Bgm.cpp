@@ -24,10 +24,6 @@ Bgm::~Bgm()
 /// </summary>
 void Bgm::Update()
 {
-	int checkState = CheckSoundMem(this->soundHandle);
-	if (checkState == 1) printfDx("Ä¶’†\n");
-	else if (checkState == 0) printfDx("Ä¶‚³‚ê‚Ä‚¢‚È‚¢\n");
-	else if (checkState == -1) printfDx("¸”s\n");
 }
 
 /// <summary>

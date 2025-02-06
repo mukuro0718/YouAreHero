@@ -26,4 +26,3 @@ SoundEffect::~SoundEffect()
 void SoundEffect::Update()
 {
 }
-
