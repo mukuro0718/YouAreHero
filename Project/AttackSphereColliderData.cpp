@@ -25,8 +25,19 @@ void AttackSphereColliderData::OnHit(const CharacterData& _data)
 	//攻撃ヒットチェックフラグを下す
 	this->data->isDoHitCheck = false;
 
-	/*無敵フラグもガードフラグもたっていなかったら*/
-	if (!_data.isInvinvible && !_data.isGuard)
+	/*カードが成功しているか*/
+	bool isGuard = false;
+	if (_data.isGuard)
+	{
+		//残りのスタミナが足りていたらガード成功
+		if (_data.stamina >= this->data->blockStaminaConsumption)
+		{
+			isGuard = true;
+		}
+	}
+
+	/*無敵フラグもガードもしていなかったら*/
+	if (!_data.isInvinvible && !isGuard)
 	{
 		//攻撃に当たったフラグを立てる
 		this->data->isHitAttack = true;

@@ -198,7 +198,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			/*Œİ‚¢‚Ì‹——£‚ªA‚»‚ê‚¼‚ê‚Ì”¼Œa‚Ì‡Œv‚æ‚è‚à¬‚³‚¯‚ê‚Î“–‚½‚é*/
 			auto& objectAColliderData = dynamic_cast<CharacterColliderData&>(_objectA);
 			auto& objectBColliderData = dynamic_cast<CharacterColliderData&>(_objectB);
-			if (objectAColliderData.isUseCollWithChara && objectBColliderData.isUseCollWithChara)
+			if ((objectAColliderData.data->hp > 0 && objectBColliderData.data->hp > 0) && (objectAColliderData.isUseCollWithChara && objectBColliderData.isUseCollWithChara))
 			{
 				isHit = (aTobLength < objectAColliderData.radius + objectBColliderData.radius);
 			}

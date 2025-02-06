@@ -21,6 +21,7 @@ public:
 	int		hitStopType;	//ヒットストップの種類
 	int		hitStopDelay;	//ヒットストップディレイ
 	float	slowFactor;		//スロウ
+	float	defensivePower; //防御力
 	/*
 	HACK:
 	ここでのヒットストップ系の変数は、

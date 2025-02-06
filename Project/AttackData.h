@@ -9,15 +9,16 @@ public:
 			 AttackData();	//コンストラクタ
 	virtual ~AttackData(){}	//デストラクタ
 
-	VECTOR	hitPosition;	//ヒット座標
-	bool	isDoHitCheck;	//当たり判定をするか
-	bool	isHitAttack;	//攻撃が当たったか
-	int		damage;			//ダメージ
-	int		hitStopTime;	//ヒットストップ時間
-	int		hitStopType;	//ヒットストップの種類
-	int		hitStopDelay;	//ヒットストップディレイ
-	float	slowFactor;		//スロウ
-	int		reactionType;
+	VECTOR	hitPosition;			//ヒット座標
+	bool	isDoHitCheck;			//当たり判定をするか
+	bool	isHitAttack;			//攻撃が当たったか
+	int		damage;					//ダメージ
+	int		hitStopTime;			//ヒットストップ時間
+	int		hitStopType;			//ヒットストップの種類
+	int		hitStopDelay;			//ヒットストップディレイ
+	float	slowFactor;				//スロウ
+	int		reactionType;			//リアクションの種類
+	float	blockStaminaConsumption;//ブロック時の消費スタミナ
 	/*
 	HACK:
 	ここでのヒットストップ系の変数は、キャラクター側に与えるものになる

@@ -11,11 +11,13 @@ CharacterData::CharacterData()
 	, isGuard		(false)
 	, isInvinvible	(false)
 	, hp			(0)
+	, stamina		(0.0f)
 	, reactionType	(0)
 	, hitStopTime	(0)
 	, hitStopType	(0)
 	, hitStopDelay	(0)
 	, slowFactor	(0.0f)
+	, defensivePower(1.0f)
 {
 
 }

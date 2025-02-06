@@ -35,13 +35,29 @@ const CharacterData& CharacterColliderData::GetCharacterData()const
 /// </summary>
 void CharacterColliderData::OnHit(const AttackData& _data, const VECTOR _attackPosition)
 {
-	auto& hitStop = Singleton<HitStopManager>::GetInstance();
+	/*カードが成功しているか*/
+	bool isGuard = true;
+	if (this->data->isGuard)
+	{
+		this->data->stamina -= _data.blockStaminaConsumption;
+		//残りのスタミナが0未満ならガード失敗
+		if (this->data->stamina < 0)
+		{
+			this->data->stamina = 0;
+			this->data->isGuard = false;
+			isGuard = false;
+		}
+	}
+	else
+	{
+		isGuard = false;
+	}
 
 	/*ガードも無敵フラグもたっていなかったら*/
-	if (!this->data->isInvinvible && !this->data->isGuard)
+	if (!this->data->isInvinvible && !isGuard)
 	{
 		//HPを減らす
-		this->data->hp			 -= _data.damage;
+		this->data->hp			 -= _data.damage / this->data->defensivePower;
 		//ヒットストップの設定
 		this->data->hitStopTime  = _data.hitStopTime;
 		this->data->hitStopType  = _data.hitStopType;

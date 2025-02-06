@@ -26,8 +26,19 @@ void AttackCapsuleColliderData::OnHit(const CharacterData& _data)
 	/*ヒットチェックフラグを下す*/
 	this->data->isDoHitCheck = false;
 
+	/*カードが成功しているか*/
+	bool isGuard = false;
+	if (_data.isGuard)
+	{
+		//残りのスタミナが足りていたらガード成功
+		if (_data.stamina >= this->data->blockStaminaConsumption)
+		{
+			isGuard = true;
+		}
+	}
+
 	/*無敵フラグもガードもしていなかったら*/
-	if (!_data.isInvinvible && !_data.isGuard)
+	if (!_data.isInvinvible && !isGuard)
 	{
 		//攻撃ヒットフラグを立てる
 		this->data->isHitAttack = true;
