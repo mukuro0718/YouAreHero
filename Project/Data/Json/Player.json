@@ -58,7 +58,7 @@
     3.5,
     0.8,
     0.8,
-    0.8,
+    0.55,
     1.3,
     0.8,
     0.8,
@@ -114,7 +114,7 @@
   "DRAW_SWORD_1_CANCEL_FRAME": 10,
   "DRAW_SWORD_2_CANCEL_FRAME": 4,
 
-
+  "RUN_OUT_OF_STAMINA_PLAY_TIME": 0.3,
   "ROTATION_LERP_VALUE": [ 0.3, 0.3, 0.3 ],
   "VELOCITY_LERP_VALUE": [ 0.3, 0.3, 0.3 ],
   "RUN_SPEED": 0.55,

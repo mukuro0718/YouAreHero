@@ -1,11 +1,75 @@
 {
   "PATH": [
-    "Asset/Sound/titleBGM.mp3",
-    "Asset/Sound/confirmationSound.mp3",
-    "Asset/Sound/cancelSound.mp3",
-    "Asset/Sound/changeSelectIcon.mp3",
-    "Asset/Sound/swordSlash1.mp3",
-    "Asset/Sound/swordSlash2.mp3",
-    "Asset/Sound/swordSlash3.mp3"
-  ]
+    "Asset/Sound/BGM/titleBGM.mp3",
+    "Asset/Sound/BGM/battleBGM.mp3",
+
+    "Asset/Sound/SoundEffect/Other/confirmationSound.mp3",
+    "Asset/Sound/SoundEffect/Other/cancelSound.mp3",
+    "Asset/Sound/SoundEffect/Other/changeSelectIcon.mp3",
+
+    "Asset/Sound/SoundEffect/Player/swordSlash1.mp3",
+    "Asset/Sound/SoundEffect/Player/swordSlash2.mp3",
+    "Asset/Sound/SoundEffect/Player/swordSlash3.mp3",
+    "Asset/Sound/SoundEffect/Player/swordSwing1.mp3",
+    "Asset/Sound/SoundEffect/Player/swordSwing2.mp3",
+
+    "Asset/Sound/SoundEffect/Player/swordSwing3.mp3",
+    "Asset/Sound/SoundEffect/Player/playerWalk.mp3",
+    "Asset/Sound/SoundEffect/Player/playerRun.mp3",
+    "Asset/Sound/SoundEffect/Player/shieldBlock.mp3",
+    "Asset/Sound/SoundEffect/Player/HealMagic.mp3",
+    "Asset/Sound/SoundEffect/Player/knockDown.mp3",
+    "Asset/Sound/SoundEffect/Player/rolling.mp3",
+
+    "Asset/Sound/SoundEffect/Enemy/monsterLightAttack.mp3",
+    "Asset/Sound/SoundEffect/Enemy/monsterHeavyAttack.mp3",
+    "Asset/Sound/SoundEffect/Enemy/monsterSwing1.mp3",
+    "Asset/Sound/SoundEffect/Enemy/monsterSwing2.mp3",
+    "Asset/Sound/SoundEffect/Enemy/monsterSwing3.mp3",
+    "Asset/Sound/SoundEffect/Enemy/monsterBreath.mp3",
+    "Asset/Sound/SoundEffect/Enemy/monsterRoar.mp3",
+    "Asset/Sound/SoundEffect/Enemy/monsterFootsteps.mp3",
+
+    "Asset/Sound/SoundEffect/Enemy/luxurioExplosion.mp3",
+    "Asset/Sound/SoundEffect/Enemy/luxurioSuperNova.mp3",
+    "Asset/Sound/SoundEffect/Enemy/luxurioRoar.mp3",
+    "Asset/Sound/SoundEffect/Enemy/luxurioCharge.mp3",
+    "Asset/Sound/SoundEffect/Enemy/luxurioWing.mp3"
+  ],
+  "FLAG": [
+    0,
+    0,
+
+    0,
+    0,
+    0,
+
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+
+    1,
+    1,
+    1,
+    1,
+    1
+  ] 
 }

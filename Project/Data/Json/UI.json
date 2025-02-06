@@ -35,20 +35,20 @@
 
   "ICON_SIZE": 50,
   "DISPLAY_BUTTON_INDEX": [
-    [ 4, 8, 0, 5, 1, 3, 2, 9 ],
-    [ 4, 8, 0, 5, 1, 3, 2, 9 ],
-    [ 4, 8, 0, 5, 1, 3, 2, 9 ],
-    [ 4, 8, 0, 5, 1, 3, 2, 9 ],
-    [ 4, 8, 0, 5, 1, 3, 2, 9 ],
-    [ 4, 8, 0, 7, 2, 9 ]
+    [ 4, 8, 1, 3, 0, 2, 9, 5 ],
+    [ 4, 8, 1, 3, 0, 2, 9, 5 ],
+    [ 4, 8, 1, 3, 0, 2, 9, 5 ],
+    [ 4, 8, 1, 3, 0, 2, 9, 5 ],
+    [ 4, 8, 1, 3, 0, 2, 9, 5 ],
+    [ 4, 8, 1, 0, 2, 9 ]
   ],
   "DISPLAY_TEXT_INDEX": [
-    [ 0, 9, 2, 3, 5, 7, 8, 11 ],
-    [ 0, 9, 2, 3, 6, 7, 8, 11 ],
-    [ 0, 9, 2, 3, 4, 7, 8, 11 ],
-    [ 0, 9, 2, 3, 4, 7, 8, 11 ],
-    [ 0, 9, 2, 3, 4, 7, 8, 11 ],
-    [ 0, 1, 2, 10, 8, 11 ]
+    [ 0, 7, 4, 5, 2, 6, 9, 3 ],
+    [ 0, 7, 4, 5, 2, 6, 9, 3 ],
+    [ 0, 7, 4, 5, 2, 6, 9, 3 ],
+    [ 0, 7, 4, 5, 2, 6, 9, 3 ],
+    [ 0, 7, 4, 5, 2, 6, 9, 3 ],
+    [ 0, 1, 8, 2, 6, 9 ]
   ],
   "DISPLAY_BUTTON_POSITION": [ 1755, 50 ],
   "DISPLAY_BUTTON_WIDTH": [ 40, 40, 40, 40, 40, 45, 45, 110, 90, 40 ],
@@ -63,9 +63,7 @@
     84,
     100,
     100,
-    70,
-    70,
-    30,
+    100,
     70,
     35,
     100,
@@ -117,11 +115,11 @@
   "SELECT_SUMMARY_POSITION": [ 50, 675, 880, 950 ],
   "SELECT_IMAGE_POSITION": [ 910, 250, 1720, 780 ],
 
-  "SELECT_PROV_TABLE_DRAW_RECT"     : [ 660, 440, 1260, 640 ],
+  "SELECT_PROV_TABLE_DRAW_RECT": [ 660, 440, 1260, 640 ],
   "SELECT_PROV_HEADER_TEXT_POSITION": [ 740, 470 ],
   "SELECT_PROV_ACTION_TEXT_POSITION": [ 870, 560 ],
-  "SELECT_PROV_BACK_DRAW_RECT"      : [ 995, 558, 1035, 598 ],
-  "SELECT_PROV_DECIDE_DRAW_RECT"    : [ 830, 558, 870, 598 ],
+  "SELECT_PROV_BACK_DRAW_RECT": [ 995, 558, 1035, 598 ],
+  "SELECT_PROV_DECIDE_DRAW_RECT": [ 830, 558, 870, 598 ],
 
   "SELECT_DECIDE_TEXT_POSITION": [ 1380, 1000 ],
   "SELECT_DECIDE_BUTTON_POSITION": [ 1420, 990, 1460, 1030 ],
@@ -143,6 +141,10 @@
   "GAME_PAUSE_ACTION_TEXT_POSITION": [ 870, 560 ],
   "GAME_PAUSE_BACK_DRAW_RECT": [ 995, 558, 1035, 598 ],
   "GAME_PAUSE_DECIDE_DRAW_RECT": [ 830, 558, 870, 598 ],
+
+  "TUTORIAL_BACK_DRAW_RECT": [ 460, 400, 1460, 680 ],
+  "TUTORIAL_TEXT_POSITION": [ 520, 470 ],
+  "TUTORIAL_TEXT_DRAW_TIME": 120,
 
   "GAME_CLEAR_FIRST_LOGO_ANGLE": 1.0,
   "GAME_CLEAR_TARGET_LOGO_ANGLE": 0.0,
@@ -174,17 +176,20 @@
   "BOSS_NAME_BACKGROUND": [
     [ 650, 35, 1250, 110 ],
     [ 723, 35, 1177, 110 ],
-    [ 723, 35, 1177, 110 ]
+    [ 723, 35, 1177, 110 ],
+    [ 650, 35, 1250, 110 ]
   ],
   "BOSS_NAME_POSITION": [
     [ 670, 55 ],
+    [ 710, 35 ],
     [ 743, 35 ],
-    [ 710, 35 ]
+    [ 620, 55 ]
   ],
   "BOSS_NAME_TYPE": [
     "GORG GRASS",
+    "MORNACT",
     "LUXURIO",
-    "MORNACT"
+    "DEMON_PANDA"
   ],
   "AUDIENCE_VERTEX_NUM": 4,
   "AUDIENCE_VERTEX_INDEX": [ 0, 1, 2, 3, 2, 1 ],

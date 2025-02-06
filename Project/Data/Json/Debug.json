@@ -1,5 +1,5 @@
 {
-  "IS_USE_DEBUG_MODE": true,
+  "IS_USE_DEBUG_MODE": false,
   "FLAG_TYPE_GGGGG": [ "CAM", "PLY", "FPS", "EMY" ],
   "SHOW_DEBUG_INFO": [ false, false, false, false ],
   "BOSS_ACTION_NAME": [

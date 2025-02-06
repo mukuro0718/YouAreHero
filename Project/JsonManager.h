@@ -33,6 +33,7 @@ public:
 		DRAGON			= 17,
 		BEAST			= 18,
 		SOUND			= 19,
+		DEMON_PANDA		= 20,
 	};
 
 	void ReloadingJsonFile(const FileType _type);
