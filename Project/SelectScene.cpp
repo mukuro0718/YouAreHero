@@ -9,6 +9,7 @@
 #include "SceneChanger.h"
 #include "InputManager.h"
 #include "SoundManager.h"
+#include "SoundManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -32,6 +33,7 @@ void SelectScene::Initialize()
 {
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& ui = Singleton<UIManager>::GetInstance();
+	auto& sound = Singleton<SoundManager>::GetInstance();
 
 	/*初期化*/
 	ui.Initialize();
@@ -58,12 +60,21 @@ void SelectScene::Update()
 	input.Update();
 	ui.Update();
 
+	/*フレームカウントの計測*/
+
 	/*シーンの終了処理*/
 	if (this->IsEnd())
 	{
-		auto& sound = Singleton<SoundManager>::GetInstance();
-		sound.OffIsPlayBgm(SoundManager::BgmType::TITLE_BGM);
-		sceneChanger.ChangeScene(SceneChanger::SceneType::GAME);
+		if (ui.GetIsBackTitle())
+		{
+			sceneChanger.ChangeScene(SceneChanger::SceneType::TITLE);
+		}
+		else
+		{
+			auto& sound = Singleton<SoundManager>::GetInstance();
+			sound.OffIsPlayBgm(SoundManager::BgmType::TITLE_BGM);
+			sceneChanger.ChangeScene(SceneChanger::SceneType::GAME);
+		}
 	}
 }
 

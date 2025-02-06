@@ -18,5 +18,8 @@ public:
 private:
 	/*“à•”ˆ—ŠÖ”*/
 	bool IsEnd();
+
+	/*ƒƒ“ƒo•Ï”*/
+	int frameCount;
 };
 

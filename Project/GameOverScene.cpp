@@ -122,7 +122,7 @@ bool GameOverScene::IsEnd()
 
 	/*何かボタンが押されたか*/
 	int pad = input.GetNowPadState();
-	bool isPressAnyButton = (pad & PAD_INPUT_4);
+	bool isPressAnyButton = (pad & InputManager::PAD_A);
 
 	/*タイトルシーンが終了可能かつ終了ボタンが押されていたらtrueを返す*/
 	if (isPressAnyButton && ui.IsDraw())
