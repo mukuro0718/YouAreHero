@@ -89,6 +89,7 @@ void GameUI::Initialize()
 	this->bossName->Initialize();
 	this->clearUI->Initialize();
 	this->overUI->Initialize();
+	this->tutorialUI->Initialize();
 
 	/*•Ï”‚Ì‰Šú‰»*/
 	this->alpha						= 0;

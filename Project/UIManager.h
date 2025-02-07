@@ -21,8 +21,12 @@ private:
 	/*内部処理関数*/
 	UIManager();//コンストラクタ
 
+	/*静的定数*/
+	static constexpr int SELECT_UI_INDEX = 1;
+
 	/*メンバ変数*/
-	SceneUI* scene;
-	int		 frameTime;//処理までにかかった時間
+	vector<SceneUI*> scene;			//シーン
+	int				 sceneType;		//シーンの種類
+	int				 frameTime;		//処理までにかかった時間
 };
 

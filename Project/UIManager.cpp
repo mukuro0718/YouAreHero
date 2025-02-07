@@ -16,8 +16,10 @@
 /// コンストラクタ
 /// </summary>
 UIManager::UIManager()
-	: scene(nullptr)
 {
+	this->scene.emplace_back(new TitleUI());
+	this->scene.emplace_back(new SelectUI());
+	this->scene.emplace_back(new GameUI());
 }
 
 /// <summary>
@@ -25,7 +27,10 @@ UIManager::UIManager()
 /// </summary>
 UIManager::~UIManager()
 {
-	DeleteMemberInstance(this->scene);
+	for (int i = 0; i < this->scene.size(); i++)
+	{
+		DeleteMemberInstance(this->scene[i]);
+	}
 }
 
 /// <summary>
@@ -34,25 +39,9 @@ UIManager::~UIManager()
 void UIManager::Initialize()
 {
 	auto& sceneChanger = Singleton<SceneChanger>::GetInstance();
-
-	if (this->scene != nullptr)
-	{
-		DeleteMemberInstance(this->scene);
-	}
-
-	switch (sceneChanger.GetNextSceneType())
-	{
-	case SceneChanger::SceneType::TITLE:
-		this->scene = new TitleUI();
-		break;
-	case SceneChanger::SceneType::GAME:
-		this->scene = new GameUI();
-		break;
-	case SceneChanger::SceneType::SELECT:
-		this->scene = new SelectUI();
-		break;
-	}
-	this->scene->Initialize();
+	this->sceneType = static_cast<int>(sceneChanger.GetNextSceneType());
+	
+	this->scene[this->sceneType]->Initialize();
 }
 
 /// <summary>
@@ -61,7 +50,7 @@ void UIManager::Initialize()
 void UIManager::Update()
 {
 	//int startTime = GetNowCount();
-	this->scene->Update();
+	this->scene[this->sceneType]->Update();
 	//int endTime = GetNowCount();
 	//this->frameTime = endTime - startTime;
 }
@@ -71,7 +60,7 @@ void UIManager::Update()
 /// </summary>
 const void UIManager::Draw()const
 {
-	this->scene->Draw();
+	this->scene[this->sceneType]->Draw();
 	//printfDx("UI_FRAMETIME:%d\n", this->frameTime);
 }
 
@@ -80,7 +69,7 @@ const void UIManager::Draw()const
 /// </summary>
 const bool UIManager::IsDraw()const
 {
-	return this->scene->IsEnd();
+	return this->scene[this->sceneType]->IsEnd();
 }
 
 /// <summary>
@@ -88,6 +77,6 @@ const bool UIManager::IsDraw()const
 /// </summary>
 const bool UIManager::GetIsBackTitle()const
 {
-	auto& selectScene = dynamic_cast<SelectUI&>(*this->scene);
+	auto& selectScene = dynamic_cast<SelectUI&>(*this->scene[this->SELECT_UI_INDEX]);
 	return selectScene.GetIsBack();
 }
