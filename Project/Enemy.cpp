@@ -22,9 +22,14 @@
 Enemy::Enemy()
 	: Character			()
 	, moveTarget		(Gori::ORIGIN)
+	, positionForLockon (Gori::ORIGIN)
 	, animationPlayTime	(0.0f)
 	, nowAnimation		(0)
-
+	, bossState			(-1)
+	, attackCount		(0)
+	, angryValue		(0.0f)
+	, tiredValue		(0.0f)
+	, tiredDuration		(0)
 {
 	this->modelHandle;
 	/*コライダーデータの作成*/

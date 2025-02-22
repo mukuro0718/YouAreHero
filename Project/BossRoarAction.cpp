@@ -65,7 +65,7 @@ void BossRoarAction::Update(Boss& _boss)
 	if (this->frameCount == 0)
 	{
 		//“{‚èó‘Ô‚ð‡‚í‚¹‚é
-		this->prevState = _boss.GetAngryState();
+		this->prevState = _boss.GetBossState();
 		//‘I‘ð‚³‚ê‚Ä‚¢‚½‚ç—~‹’l‚ð‚O‚É‚·‚é
 		this->parameter->desireValue = 0;
 		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌÝ’è
@@ -139,7 +139,7 @@ void BossRoarAction::CalcParameter(const Boss& _boss)
 	}
 
 	/*AngryStateType‚ªANGRY‚É‚È‚Á‚½‚ç™ôšK‚ð‚·‚é*/
-	int nowState = _boss.GetAngryState();
+	int nowState = _boss.GetBossState();
 	if (nowState != this->prevState)
 	{
 		if (nowState == this->checkedState)

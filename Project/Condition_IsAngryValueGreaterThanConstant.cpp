@@ -2,6 +2,9 @@
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "BeastBehaviorTreeHeader.h"
+#include "Character.h"
+#include "Enemy.h"
+#include "EnemyManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -26,12 +29,12 @@ Condition_IsAngryValueGreaterThanConstant::~Condition_IsAngryValueGreaterThanCon
 Condition_IsAngryValueGreaterThanConstant::NodeState Condition_IsAngryValueGreaterThanConstant::Update()
 {
 	/*怒り値が０以上なら成功を返す*/
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	if (rootNode.GetAngryValue() >= this->SPECIFIED_ANGRY_VALUE)
-	{
-		//printfDx("CONDITION_ANGRY_SUCCESS\n");
-		return NodeState::SUCCESS;
-	}
+	auto& enemy = Singleton<EnemyManager>::GetInstance();
+	//if (enemy.GetAngry() >= this->SPECIFIED_ANGRY_VALUE)
+	//{
+	//	//printfDx("CONDITION_ANGRY_SUCCESS\n");
+	//	return NodeState::SUCCESS;
+	//}
 	//printfDx("CONDITION_ANGRY_FAILURE\n");
 	return NodeState::FAILURE;
 }

@@ -15,9 +15,9 @@ public:
 	TutorialUI();
 	~TutorialUI();
 
-		  void Initialize()		;
-		  void Update	 ()		;
-	const void Draw		 ()const;
+		  void Initialize()		;//初期化
+		  void Update	 ()		;//更新
+	const void Draw		 ()const;//描画
 private:
 	/*静的定数*/
 	static constexpr int	TEXT_COLOR = 0xffffff;
@@ -25,13 +25,16 @@ private:
 	static constexpr short	ADD_ALPHA = 5;
 
 	/*メンバ変数*/
-	int			 alpha;				//アルファ値
-	int			 backGround;		//背景
-	int			 fontHandle;		//中断用フォントハンドル
-	int			 frameCount;		//フレームカウント
-	short		 textDrawTime;		//ロゴ描画時間
-	bool		 isFadeIn;			//フェードインするか
-	vector<int>  backGroundDrawRect;//背景描画範囲
-	vector<int>  textPosition;		//文字座標
+	int			  alpha;			 //アルファ値
+	int			  backGround;		 //背景
+	int			  headerFontHandle;	 //中断用フォントハンドル
+	int			  bodyFontHandle;	 //中断用フォントハンドル
+	int			  frameCount;		 //フレームカウント
+	bool		  isFadeIn;			 //フェードインするか
+	string		  headerText;		 //テキスト
+	vector<string>bodyText;			 //テキスト
+	vector<int>   backGroundDrawRect;//背景描画範囲
+	vector<int>   headerTextPosition;//文字座標
+	vector<int>   bodyTextPosition;//文字座標
 };
 

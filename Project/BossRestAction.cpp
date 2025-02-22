@@ -71,7 +71,7 @@ void BossRestAction::Update(Boss& _boss)
 	/*“{‚èó‘Ô‚ğ‡‚í‚¹‚é*/
 	if (this->frameCount == 0)
 	{
-		this->prevState = _boss.GetAngryState();
+		this->prevState = _boss.GetBossState();
 	}
 
 	/*ˆÚ“®ˆ—*/
@@ -148,7 +148,7 @@ void BossRestAction::CalcParameter(const Boss& _boss)
 	if (_boss.GetHP() <= 0)return;
 
 	/*AngryState‚ªTIRED‚Ì‚É*/
-	int nowState = _boss.GetAngryState();
+	int nowState = _boss.GetBossState();
 	if (nowState == this->checkedState)
 	{
 		this->parameter->desireValue = this->maxDesireValue;

@@ -11,13 +11,6 @@ public:
 	friend class Singleton<BeastBehaviorTree>;
 
 	/*列挙体*/
-	//キャラクターの状態
-	enum class BeastState
-	{
-		ANGRY	= 0,
-		NORMAL	= 1,
-		DOWN	= 2,
-	};
 
 	enum class ActionType
 	{
@@ -59,11 +52,8 @@ public:
 	const void Draw			()const;//描画
 
 	/*getter/setter*/
-	const int		 GetDownValue				()const				{ return this->downValue; }					 	 //ダウン値の取得
-	const int		 GetAngryValue				()const				{ return this->angryValue; }					 //怒り値の取得
 	const int		 GetDamage					()const				{ return this->damage; }						 //ダメージの取得
 	const int		 GetPrevHp					()const				{ return this->prevHp; }						 //前フレームのHPの取得
-	const BeastState GetBeastState				()const				{ return this->state; }							 //ボスの状態を取得
 	const int		 GetInterval				(const int _index)	{ return this->intervalSet[_index]; }			 //インターバルの取得
 	const float		 GetToTargetDistance		()const				{ return this->toTargetDistance; }				 //目標までの距離を取得
 	const int		 GetLevel					()const				{ return this->level; }							 //レベルの取得
@@ -72,10 +62,7 @@ public:
 	const bool		 GetIsSelectedReaction		()const				{ return this->isSelectedReaction; }			 //部位破壊されているか
 	const short		 GetNowSelectAction			()const				{ return this->selectAction; }					 //選択されているアクションを取得
 	const float		 GetDotOfDirAndToTarget		()const				{ return this->innerProductOfDirectionToTarget; }//内積の取得
-	void SetDownValue		(const int _set)						{ this->downValue = _set; }						//ダウン値を設定
 	void SetDamage			(const int _set)						{ this->damage = _set; }						//ダメージを設定
-	void SetPrevHp			(const int _set)			 			{ this->downValue = _set; }						//前フレームのHPを設定
-	void SetBeastState		(const BeastState _state)				{ this->state = _state; }						//ボスの状態を設定
 	void SetInterval		(const int _index,const int _set = 600)	{ this->intervalSet[_index] = _set; }			//インターバルの設定
 	void SetToTargetDistance(const float _set)						{ this->toTargetDistance = _set; }				//目標までの距離を設定
 	void RaiseLevel			()										{ this->level++; }								//レベル上昇
@@ -93,14 +80,11 @@ private:
 		  BeastBehaviorTree	  ();//コンストラクタ
 		 ~BeastBehaviorTree	  ();//デストラクタ
 	void UpdateMemberVariables();//メンバ変数の更新
-	void ChangeState		  ();//状態の変更
+	void CreateBehaviorTree();//ビヘイビアツリーを作成
 
 	/*メンバ変数*/
 	std::array<int, static_cast<int>(ActionType::COMBO_ATTACK) + 1>	intervalSet;							//インターバル
 	BehaviorTreeNode*												Selector_DeathOrReactionOrBattleOrBreak;//ビヘイビアツリーのrootノード
-	BeastState														state;									//ボスの状態
-	int																downValue;								//ダウン値
-	int																angryValue;								//怒り値
 	int																prevHp;									//前フレームのHP
 	int																damage;									//今までに受けたダメージ量（怒り状態が終了すると０にリセットする）
 	int																level;									//レベル
@@ -112,5 +96,5 @@ private:
 	float															innerProductOfDirectionToTarget;		//向きベクトルと目標ベクトルの内積
 	BehaviorTreeNode*												currentBattleAction;					//現在のバトルアクション
 	BehaviorTreeNode*												currentReaction;						//現在のリアクションアクション
-	BehaviorTreeNode*												debugActionNode;//デバック用アクションノード
+	BehaviorTreeNode*												debugActionNode;						//デバック用アクションノード
 };

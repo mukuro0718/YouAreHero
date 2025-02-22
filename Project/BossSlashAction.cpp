@@ -68,7 +68,6 @@ void BossSlashAction::Initialize()
 	this->parameter->desireValue = 0;
 	this->parameter->interval	 = 0;
 	this->attack->Initialize();
-	this->hitStop->Initialize();
 }
 
 /// <summary>
@@ -106,13 +105,10 @@ void BossSlashAction::Update(Boss& _boss)
 		auto& sound = Singleton<SoundManager>::GetInstance();
 		sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_LIGHT_ATTACK);
 		//ヒットストップの設定
-		this->hitStop->SetHitStop(this->HIT_STOP_TIME, this->HIT_STOP_TYPE, this->HIT_STOP_DELAY, this->SLOW_FACTOR);
+		_boss.SetHitStop(this->HIT_STOP_TIME, this->HIT_STOP_TYPE, this->HIT_STOP_DELAY, this->SLOW_FACTOR);
 		//攻撃ヒットフラグを下す
 		this->attack->OffIsHitAttack();
 	}
-	//ヒットストップをしていたら早期リターン
-	if (this->hitStop->IsHitStop()) return;
-
 
 	/*フレームカウントが回転定数以上だったら許可フラグを立てる*/
 	this->frameCount++;
@@ -214,7 +210,7 @@ void BossSlashAction::CalcParameter(const Boss& _boss)
 	}
 
 	/*状態がTIRED,NORMAL,ANGRYだったら欲求値を増加する*/
-	if (_boss.GetAngryState() == this->CHECK_STATE)
+	if (_boss.GetBossState() == this->CHECK_STATE)
 	{
 		/*距離を求める*/
 		auto& player = Singleton<PlayerManager>::GetInstance();
@@ -227,7 +223,7 @@ void BossSlashAction::CalcParameter(const Boss& _boss)
 		if (DISTANCE <= this->ACTION_DISTANCE)
 		{
 			//コンボが０だったら早期リターン
-			if (_boss.GetAttackComboCount() == 0)return;
+			if (_boss.GetAttackCount() == 0)return;
 			this->parameter->desireValue = this->maxDesireValue;
 		}
 	}

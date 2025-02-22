@@ -20,10 +20,10 @@ EnemyManager::EnemyManager()
 	: frameTime	(0)
 	, boss		(nullptr)
 {
+	this->bossList.emplace_back(new Demon());
 	this->bossList.emplace_back(new Boss());
 	this->bossList.emplace_back(new Dragon());
 	this->bossList.emplace_back(new Beast());
-	this->bossList.emplace_back(new Demon());
 	this->boss = this->bossList[0];
 }
 
@@ -116,7 +116,37 @@ const int EnemyManager::GetModelHandle()const
 	return this->boss->GetModelHandle();
 }
 
+/// <summary>
+/// 生存フラグの取得
+/// </summary>
 const bool EnemyManager::GetIsAlive()const
 {
 	return this->boss->GetIsAlive();
+}
+
+/// <summary>
+/// 攻撃回数の取得
+/// </summary>
+const int EnemyManager::GetAttackCount()const
+{
+	auto& enemy = dynamic_cast<Enemy&>(*this->boss);
+	return enemy.GetAttackCount();
+}
+
+/// <summary>
+/// ボスの状態の取得
+/// </summary>
+const int EnemyManager::GetBossState()const
+{
+	auto& enemy = dynamic_cast<Enemy&>(*this->boss);
+	return enemy.GetBossState();
+}
+
+/// <summary>
+/// ボスの状態の取得
+/// </summary>
+const VECTOR EnemyManager::GetPositionForLockon()const
+{
+	auto& enemy = dynamic_cast<Enemy&>(*this->boss);
+	return enemy.GetPositionForLockon();
 }

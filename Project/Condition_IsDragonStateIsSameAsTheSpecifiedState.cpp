@@ -10,7 +10,8 @@
 /// <summary>
 /// コンストラクタ
 /// </summary>
-Condition_IsStageIsDifferent::Condition_IsStageIsDifferent()
+Condition_IsDragonStateIsSameAsTheSpecifiedState::Condition_IsDragonStateIsSameAsTheSpecifiedState(const int _specifiedState)
+	: SPECIFIED_STATE(_specifiedState)
 {
 
 }
@@ -18,7 +19,7 @@ Condition_IsStageIsDifferent::Condition_IsStageIsDifferent()
 /// <summary>
 /// デストラクタ
 /// </summary>
-Condition_IsStageIsDifferent::~Condition_IsStageIsDifferent()
+Condition_IsDragonStateIsSameAsTheSpecifiedState::~Condition_IsDragonStateIsSameAsTheSpecifiedState()
 {
 
 }
@@ -26,11 +27,11 @@ Condition_IsStageIsDifferent::~Condition_IsStageIsDifferent()
 /// <summary>
 /// 更新
 /// </summary>
-Condition_IsStageIsDifferent::NodeState Condition_IsStageIsDifferent::Update()
+Condition_IsDragonStateIsSameAsTheSpecifiedState::NodeState Condition_IsDragonStateIsSameAsTheSpecifiedState::Update()
 {
 	/*部位破壊されていたら成功*/
-	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
-	if (rootNode.JudgeBossStage())
+	auto& dragon = Singleton<EnemyManager>::GetInstance();
+	if (dragon.GetBossState() == SPECIFIED_STATE)
 	{
 		//printfDx("CONDITION_SELECTED_BATTLE_SUCCESS\n");
 		return NodeState::SUCCESS;

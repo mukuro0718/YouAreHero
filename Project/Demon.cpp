@@ -21,6 +21,7 @@
 #include "CameraManager.h"
 #include "EffectManager.h"
 #include "Debug.h"
+#include "HitStop.h"
 #include "HitStopManager.h"
 #include "Shadow.h"
 #include "MapManager.h"
@@ -29,8 +30,8 @@
 /// コンストラクタ
 /// </summary>
 Demon::Demon()
-	: animationPlayTime		(0.0f)
-	, nowAnimation			(0)
+	: animationPlayTime	(0.0f)
+	, nowAnimation		(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json  = Singleton<JsonManager>::GetInstance();
@@ -56,6 +57,7 @@ Demon::Demon()
 
 	/*コライダーデータの作成*/
 	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
+
 }
 
 /// <summary>
@@ -73,8 +75,8 @@ void Demon::Initialize()
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
 	/*変数の初期化*/
+	this->bossState						= static_cast<int>(BossState::NORMAL);
 	this->isAlive						= true;
-	this->isGround						= true;
 	this->isDraw						= true;
 	this->speed							= 0.0f;
 	this->animationPlayTime				= 0.0f;
@@ -127,12 +129,23 @@ void Demon::Update()
 	/*ステージ外に出たら中央に戻す*/
 	if (this->collider->rigidbody.GetPosition().y < -30.0f)
 	{
-		DyingIfOutOfStage();
+		RespawnIfOutOfStage();
 	}
+
+	if (this->collider->data->isHit)
+	{
+		this->hitStop->SetHitStop(this->collider->data->hitStopTime, this->collider->data->hitStopType, this->collider->data->hitStopDelay, this->collider->data->slowFactor);
+		this->collider->data->isHit = false;
+	}
+	if (this->hitStop->IsHitStop()) return;
 
 	/*ビヘイビアツリーの更新*/
 	auto& tree = Singleton<DemonBehaviorTree>::GetInstance();
 	tree.Update();
+
+	this->positionForLockon = this->collider->rigidbody.GetPosition();
+	this->positionForLockon.y += this->LOCKON_OFFSET;
+
 }
 
 /// <summary>

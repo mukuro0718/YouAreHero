@@ -5,6 +5,7 @@
 #include "Rigidbody.h"
 #include "Character.h"
 #include "Enemy.h"
+#include "EnemyManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -27,10 +28,11 @@ Condition_IsDragonAttackCountLeft::~Condition_IsDragonAttackCountLeft()
 /// </summary>
 Condition_IsDragonAttackCountLeft::NodeState Condition_IsDragonAttackCountLeft::Update()
 {
-	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
+	auto& dragon = Singleton<EnemyManager>::GetInstance();
 
 	/*攻撃回数が残っているならSUCCESSを返す*/
-	if (rootNode.GetAttackCount() > 0)
+	int count = dragon.GetAttackCount();
+	if (count > 0)
 	{
 		//printfDx("CONDITION_HP_SUCCESS\n");
 		return NodeState::SUCCESS;

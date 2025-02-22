@@ -68,8 +68,6 @@ Beast_Roar::NodeState Beast_Roar::Update()
 	{
 		auto& sound = Singleton<SoundManager>::GetInstance();
 		sound.OnIsPlayEffect(SoundManager::EffectType::LUXURIO_ROAR);
-		//カラースケールの更新(ここでは赤色になるようにする)
-		enemy.ChangeAngryColor();
 		this->isFinishedFirstRoar = true;
 	}
 	//アニメーションの再生
@@ -88,7 +86,7 @@ Beast_Roar::NodeState Beast_Roar::Update()
 		if (enemy.GetIsChangeAnimation())
 		{
 			auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-			rootNode.SetBeastState(BeastBehaviorTree::BeastState::ANGRY);
+			rootNode.SetInterval(this->actionType);
 			//アクションの解除
 			rootNode.ExitCurrentBattleAction();
 			this->frameCount = 0;

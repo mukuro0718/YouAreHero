@@ -11,7 +11,7 @@ public:
 	~PlayerController();
 
 	void Initialize();
-	bool StateChanger(const bool _isCancelAction, const bool _isEndAction, const bool _isDrawSword, const CharacterData& _data);
+	bool StateChanger(const bool _isCancelAction, const bool _isEndAction, const bool _isDrawSword, const CharacterData& _data, const int _healCount);
 	const int GetNowState()const { return this->nowState; }
 	const int GetPrevState()const { return this->prevState; }
 	void SynchroState() { this->prevState = this->nowState; }

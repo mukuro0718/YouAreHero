@@ -18,6 +18,7 @@ CharacterData::CharacterData()
 	, hitStopDelay	(0)
 	, slowFactor	(0.0f)
 	, defensivePower(1.0f)
+	, damage		(0.0f)
 {
 
 }

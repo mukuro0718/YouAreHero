@@ -54,7 +54,7 @@ void EnemyChanger::Update()
 			if ((input.GetLStickState().YBuf < 0) || CheckHitKey(KEY_INPUT_UP))
 			{
 				this->enemyType--;
-				int min = static_cast<int>(EnemyType::GOLEM);
+				int min = static_cast<int>(EnemyType::TUTORIAL);
 				if (this->enemyType < min)
 				{
 					this->enemyType = min;
@@ -68,7 +68,7 @@ void EnemyChanger::Update()
 			else if ((input.GetLStickState().YBuf > 0) || CheckHitKey(KEY_INPUT_DOWN))
 			{
 				this->enemyType++;
-				int max = static_cast<int>(EnemyType::TUTORIAL);
+				int max = static_cast<int>(EnemyType::BEAST);
 				if (this->enemyType > max)
 				{
 					this->enemyType = max;

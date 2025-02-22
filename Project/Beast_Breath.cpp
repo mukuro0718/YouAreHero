@@ -83,17 +83,19 @@ Beast_Breath::NodeState Beast_Breath::Update()
 {
 	/*選択されているアクションと実際のアクションが異なっていたら初期化*/
 	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
+	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
+	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
 	if (rootNode.GetNowSelectAction() != this->actionType)
 	{
 		//アクションの設定
 		rootNode.SetSelectAction(this->actionType);
 		//アクションの登録
 		rootNode.EntryCurrentBattleAction(*this);
+		this->frameCount = 0;
+		enemy.DecAttackComboCount();
 	}
 
 	/*コライダーの更新*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
 	//指定フレームを超えていなければフレームの増加
 	if (this->frameCount < this->attackEndCount)
 	{

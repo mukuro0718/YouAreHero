@@ -24,6 +24,7 @@
   "HP_TABLE_OFFSET": 5,
   "HP_TABLE_BOX": [ 88, 958, 612, 992 ],
 
+  "BOSS_STATE_ICON_DRAW_RECT": [ 555, 185, 600, 230 ],
 
   "TEXT_COLOR": [ 200, 200, 200 ],
 
@@ -43,12 +44,12 @@
     [ 4, 8, 1, 0, 2, 9 ]
   ],
   "DISPLAY_TEXT_INDEX": [
-    [ 0, 7, 4, 5, 2, 6, 9, 3 ],
-    [ 0, 7, 4, 5, 2, 6, 9, 3 ],
-    [ 0, 7, 4, 5, 2, 6, 9, 3 ],
-    [ 0, 7, 4, 5, 2, 6, 9, 3 ],
-    [ 0, 7, 4, 5, 2, 6, 9, 3 ],
-    [ 0, 1, 8, 2, 6, 9 ]
+    [ 0, 1, 4, 5, 2, 6, 9, 3 ],
+    [ 0, 1, 4, 5, 2, 6, 9, 3 ],
+    [ 0, 1, 4, 5, 2, 6, 9, 3 ],
+    [ 0, 1, 4, 5, 2, 6, 9, 3 ],
+    [ 0, 1, 4, 5, 2, 6, 9, 3 ],
+    [ 0, 1, 4, 2, 6, 9 ]
   ],
   "DISPLAY_BUTTON_POSITION": [ 1755, 50 ],
   "DISPLAY_BUTTON_WIDTH": [ 40, 40, 40, 40, 40, 45, 45, 110, 90, 40 ],
@@ -93,6 +94,45 @@
   "PRESS_A_ALPHA_INCREASE": 5,
   "PRESS_A_ALPHA_REDUCTION": 5,
 
+  "CREDIT_POSITION": [ 50, 50 ],
+  "CREDIT_ADD_Y_OFFSET": 1,
+  "CREDIT_TEXT_FONT_SIZE": 30,
+  "CREDIT_TEXT": [
+    "CREDIT",
+    "--Model------------------------------------------------",
+    "Artist  : Doctor A. https: //sketchfab.com/doctorA",
+    "Mornact : https: //sketchfab.com/3d-models/tarisland-dragon-high-poly-ecf63885166c40e2bbbcdf11cd14e65f",
+    "Luxurio : https: //sketchfab.com/3d-models/achates-lost-ark-4ac82a3b682d493fbc57b37be8f46086",
+
+    "site      : Mixamo mixamo:https: //www.mixamo.com/",
+    "Player    : PALADIN W/PROP J NORDSTORM",
+    "GorgGrass : MUTANT",
+    "DemonPanda: WARROK W KURNIAWAN",
+
+    "--Font------------------------------------------------",
+    "FontFree \t\t             : https: //fontfree.me/",
+    "Corporate-Mincho-ver3.otf : https: //font.gloomy.jp/honoka-mincho-dl.html",
+
+    "--Image------------------------------------------------",
+    "Itch.io :https: //itch.io/game-assets",
+    "ButtonUI:https: //arks.itch.io/xbox-buttons",
+    "LockonUI:https: //void1gaming.itch.io/free-mega-crosshairs-pack",
+
+    "CoolText         :https: //ja.cooltext.com/",
+    "QuestClear/Failed:https: //ja.cooltext.com/Logo-Design-Scavenge",
+    "PressAnyButton   :https: //ja.cooltext.com/Logo-Design-Legal",
+
+    "--Effect------------------------------------------------",
+    "Effeekseer",
+
+    "--Sound------------------------------------------------",
+    "maou.audio",
+    "soundeffect-lab",
+
+    "--Other------------------------------------------------",
+    "Everything else is me"
+  ],
+
   "SELECT_BACKGROUND_COLOR": [ 107, 103, 97 ],
   "SELECT_FONT_COLOR": [ 225, 244, 243 ],
   "SELECT_ICON_NUM": 4,
@@ -116,7 +156,7 @@
   "SELECT_IMAGE_POSITION": [ 910, 250, 1720, 780 ],
 
   "SELECT_PROV_TABLE_DRAW_RECT": [ 660, 440, 1260, 640 ],
-  "SELECT_PROV_HEADER_TEXT_POSITION": [ 740, 470 ],
+  "SELECT_PROV_HEADER_TEXT_POSITION": [ 700, 470 ],
   "SELECT_PROV_ACTION_TEXT_POSITION": [ 870, 560 ],
   "SELECT_PROV_BACK_DRAW_RECT": [ 995, 558, 1035, 598 ],
   "SELECT_PROV_DECIDE_DRAW_RECT": [ 830, 558, 870, 598 ],
@@ -142,9 +182,10 @@
   "GAME_PAUSE_BACK_DRAW_RECT": [ 995, 558, 1035, 598 ],
   "GAME_PAUSE_DECIDE_DRAW_RECT": [ 830, 558, 870, 598 ],
 
-  "TUTORIAL_BACK_DRAW_RECT": [ 460, 400, 1460, 680 ],
-  "TUTORIAL_TEXT_POSITION": [ 520, 470 ],
-  "TUTORIAL_TEXT_DRAW_TIME": 120,
+  "TUTORIAL_BACK_DRAW_RECT": [ 100, 300, 500, 500 ],
+  "TUTORIAL_HEADER_TEXT_POSITION": [ 175, 325 ],
+  "TUTORIAL_BODY_TEXT_POSITION": [ 150, 400 ],
+  
 
   "GAME_CLEAR_FIRST_LOGO_ANGLE": 1.0,
   "GAME_CLEAR_TARGET_LOGO_ANGLE": 0.0,
@@ -175,21 +216,21 @@
 
   "BOSS_NAME_BACKGROUND": [
     [ 650, 35, 1250, 110 ],
+    [ 650, 35, 1250, 110 ],
     [ 723, 35, 1177, 110 ],
-    [ 723, 35, 1177, 110 ],
-    [ 650, 35, 1250, 110 ]
+    [ 723, 35, 1177, 110 ]
   ],
   "BOSS_NAME_POSITION": [
+    [ 620, 55 ],
     [ 670, 55 ],
     [ 710, 35 ],
-    [ 743, 35 ],
-    [ 620, 55 ]
+    [ 743, 35 ]
   ],
   "BOSS_NAME_TYPE": [
+    "DEMON PANDA",
     "GORG GRASS",
     "MORNACT",
-    "LUXURIO",
-    "DEMON_PANDA"
+    "LUXURIO"
   ],
   "AUDIENCE_VERTEX_NUM": 4,
   "AUDIENCE_VERTEX_INDEX": [ 0, 1, 2, 3, 2, 1 ],

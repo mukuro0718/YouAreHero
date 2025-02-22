@@ -28,6 +28,11 @@
     "Asset/Image/UI/Icon/PotionTable.png",
     "Asset/Image/UI/Icon/LockOn.png",
 
+    "Asset/Image/UI/Icon/angryIcon.png",
+    "Asset/Image/UI/Icon/normalIcon.png",
+    "Asset/Image/UI/Icon/tiredIcon.png",
+
+
     "Asset/Image/UI/Other/BackGround.png",
 
     "Asset/Image/Shadow/Shadow.tga",

@@ -17,7 +17,7 @@ private:
 
 	/*メンバ変数*/
 	float			nowTotalPlayTime;	//現在の総再生時間
-	short			currentDragonStage;	//現在のボスの段階
+	short			currentDragonState;	//現在のボスの段階
 	vector<float>	animationPlayTime;	//アニメーション再生時間
 	short			frameCount;			//フレームカウント
 };

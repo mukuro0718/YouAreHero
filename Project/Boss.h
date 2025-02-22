@@ -17,9 +17,7 @@ public:
 	void		Update				() override;		//更新
 	const void	DrawCharacterInfo	() const override;	//描画
 	void		PlayAnimation		();					//アニメーションの再生
-	void		SetAttackComboCount	();					//攻撃コンボの設定
 
-	void		DecAttackComboCount	() { this->attackComboCount--; }//攻撃コンボを減らす
 
 
 	/*列挙体*/
@@ -52,27 +50,20 @@ public:
 		SLASH_2		  = 1, //スラッシュ 5
 		STAB		  = 2, //突き刺し攻撃 11
 		ROTATE_SLASH  = 3, //回転スラッシュ 7
-		PUNCH		  = 4,//パンチ 6
-		SLASH_COMBO_1 = 5,//スラッシュコンボ１ 8
-		SLASH_COMBO_2 = 6,//スラッシュコンボ２ 9
-		JUMP_ATTACK	  = 7,//ジャンプアタック 15
-	};
-	//怒り状態の種類
-	enum class BossState
-	{
-		TIRED,
-		NORMAL,
-		ANGRY,
+		PUNCH		  = 4, //パンチ 6
+		SLASH_COMBO_1 = 5, //スラッシュコンボ１ 8
+		SLASH_COMBO_2 = 6, //スラッシュコンボ２ 9
+		JUMP_ATTACK	  = 7, //ジャンプアタック 15
 	};
 
 	/*getter/setter*/
-	const int		 GetAttackComboCount	()const { return this->attackComboCount; }	//残り攻撃コンボ回数の取得
-	const int		 GetAngryState			()const { return this->angryState; }		//怒り状態の取得
-	const bool		 GetIsAttack			()const override;							//コウゲキしたか
-	const AttackType GetPrevAttackType		()const { return this->prevAttack; }		//前のアタックタイプの取得
-		  void		 SetAttackType			(const AttackType _type)	{ this->prevAttack = _type; }			//攻撃の種類のセット
+	const bool		 GetIsAttack		()const override;							//コウゲキしたか
+	const AttackType GetPrevAttackType	()const { return this->prevAttack; }		//前のアタックタイプの取得
+		  void		 SetAttackType		(const AttackType _type)	{ this->prevAttack = _type; }	//攻撃の種類のセット
+		  void		 SetAttackCount		() override;												//攻撃コンボの設定
 private:
 	/*静的定数*/
+	static constexpr float LOCKON_OFFSET = 10.0f;//ロックオンオフセット
 	static constexpr float SHADOW_HEIGHT = 10.0f;//影を投影する高さ
 	static constexpr float SHADOW_SIZE	 = 8.0f; //影のサイズ
 	static constexpr int   COUNT_NUM	 = 6;	 //フレームカウントの数
@@ -126,20 +117,15 @@ private:
 
 	/*内部処理関数*/
 	void ChangeState	();//状態の変更
-	void SetAngryState	();//怒り状態の変更
+	void UpdateBossState();//怒り状態の更新
 
 	/*メンバ変数*/
 	std::map<int, unsigned int>	actionTypeMap;			//アクションタイプ
 	std::vector<BossAction*>	parameters;				//アクションパラメーター
 	AttackType					prevAttack;				//前の攻撃
-	float						angryValue;				//怒りゲージ
 	int							nowAction;				//現在のアクション
-	int							angryState;				//怒り状態
-	int							tiredInterval;			//疲労インターバル
-	int							attackComboCount;		//攻撃コンボ数
-	int							frameTime;
-	int							normalTexture;
-	int							angryTexture;
-	int							tiredTexture;
+	int							normalTexture;			//通常のテクスチャ
+	int							angryTexture;			//怒り状態時のテクスチャ
+	int							tiredTexture;			//疲れ状態時のテクスチャ
 };
 

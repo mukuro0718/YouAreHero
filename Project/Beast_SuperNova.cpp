@@ -96,6 +96,7 @@ Beast_SuperNova::NodeState Beast_SuperNova::Update()
 		rootNode.SetSelectAction(this->actionType);
 		//ƒAƒNƒVƒ‡ƒ“‚Ì“o˜^
 		rootNode.EntryCurrentBattleAction(*this);
+		enemy.DecAttackComboCount();
 	}
 
 

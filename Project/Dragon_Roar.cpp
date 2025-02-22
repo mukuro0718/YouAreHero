@@ -83,6 +83,7 @@ Dragon_Roar::NodeState Dragon_Roar::Update()
 	{
 		//インターバルの設定
 		rootNode.ExitCurrentBattleAction();
+		rootNode.SetInterval(this->actionType);
 		this->frameCount = 0;
 		return ActionNode::NodeState::SUCCESS;
 	}

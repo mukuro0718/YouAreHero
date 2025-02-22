@@ -4,6 +4,7 @@
 #include "SceneBase.h"
 #include "Image.h"
 #include "SceneUI.h"
+#include "CreditUI.h"
 #include "TitleUI.h"
 #include "CameraManager.h"
 #include "MapManager.h"
@@ -38,6 +39,8 @@ TitleUI::TitleUI()
 	this->pressLogo.alphaReduction	= json.GetJson(JsonManager::FileType::UI)["PRESS_A_ALPHA_REDUCTION"];
 	this->pressLogo.alpha			= 0.0f;
 	this->pressLogo.angle			= 0.0f;
+
+	this->credit = new CreditUI();
 
 	/*初期化*/
 	Initialize();
@@ -91,6 +94,12 @@ void TitleUI::Update()
 	}
 	else
 	{
+		/*クレジットの更新処理*/
+		this->credit->Update();
+
+		/*クレジットを開いていたらその他処理は行わない*/
+		if (this->credit->GetIsOpen())return;
+
 		/*pad入力*/
 		bool isPressButton = IsPressButton();
 
@@ -146,6 +155,8 @@ const void TitleUI::Draw()const
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->alphaForTransition);
 	DrawBox(0, 0, this->MAX_X, this->MAX_Y, 0, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, this->MAX_ALPHA);
+	/*クレジットの表示*/
+	this->credit->Draw();
 }
 
 /// <summary>

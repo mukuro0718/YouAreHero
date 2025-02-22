@@ -97,6 +97,8 @@ Beast_WeakBreath::NodeState Beast_WeakBreath::Update()
 		rootNode.SetSelectAction(this->actionType);
 		//アクションの登録
 		rootNode.EntryCurrentBattleAction(*this);
+		this->frameCount = 0;
+		enemy.DecAttackComboCount();
 	}
 
 	/*コライダーの更新*/

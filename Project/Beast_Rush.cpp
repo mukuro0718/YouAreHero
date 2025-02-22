@@ -91,17 +91,18 @@ Beast_Rush::NodeState Beast_Rush::Update()
 {
 	/*選択されているアクションと実際のアクションが異なっていたら初期化*/
 	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
+	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
+	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
 	if (rootNode.GetNowSelectAction() != this->actionType)
 	{
 		//アクションの設定
 		rootNode.SetSelectAction(this->actionType);
 		//アクションの登録
 		rootNode.EntryCurrentBattleAction(*this);
+		enemy.DecAttackComboCount();
 	}
 
 	/*コライダーの更新*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
 	//当たっていたら
 	if (this->collider->data->isHitAttack)
 	{

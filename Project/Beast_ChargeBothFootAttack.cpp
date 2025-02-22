@@ -85,16 +85,17 @@ Beast_ChargeBothFootAttack::NodeState Beast_ChargeBothFootAttack::Update()
 {
 	/*選択されているアクションと実際のアクションが異なっていたら初期化*/
 	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
+	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
+	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
 	if (rootNode.GetNowSelectAction() != this->actionType)
 	{
 		//アクションの設定
 		rootNode.SetSelectAction(this->actionType);
 		//アクションの登録
 		rootNode.EntryCurrentBattleAction(*this);
+		enemy.DecAttackComboCount();
 	}
 
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
 	/*コライダーの更新*/
 	//指定フレームを超えていなければフレームの増加
 	if (this->frameCount < this->attackEndCount)

@@ -11,6 +11,7 @@ class BossNameUI;
 class GameClearUI;
 class GameOverUI;
 class TutorialUI;
+class BossStateUI;
 class GameUI : public SceneUI
 {
 public:
@@ -46,6 +47,7 @@ private:
 	GameClearUI* clearUI;			//クエストクリアUI
 	GameOverUI*	 overUI;			//クエスト失敗UI
 	TutorialUI*  tutorialUI;		//チュートリアルUI
+	BossStateUI* stateUI;			//ボスの状態UI
 	ResultType	 type;				//ロゴの種類
 	bool		 isEnd;				//終了フラグ
 	int			 alpha;				//アルファ値

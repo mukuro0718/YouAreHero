@@ -102,6 +102,7 @@ Beast_FootComboAttack::NodeState Beast_FootComboAttack::Update()
 		rootNode.SetSelectAction(this->actionType);
 		//自分をRootに登録
 		rootNode.EntryCurrentBattleAction(*this);
+		enemy.DecAttackComboCount();
 	}
 
 	/*コライダーの更新*/

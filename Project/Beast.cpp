@@ -29,23 +29,18 @@
 /// コンストラクタ
 /// </summary>
 Beast::Beast()
-	: moveTarget			(Gori::ORIGIN)
-	, animationPlayTime		(0.0f)
-	, nowAnimation			(0)
+	: animationPlayTime(0.0f)
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json  = Singleton<JsonManager>::GetInstance();
-	auto& asset = Singleton<LoadingAsset>::GetInstance();
-
 	/*メンバクラスのインスタンスの作成*/
+	auto& asset = Singleton<LoadingAsset>::GetInstance();
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::BEAST));
-	
 
 	/*アニメーションの設定*/
-	int				animationHandle	  = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_HANDLE"];
-	vector<int>		animationIndex	  = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_INDEX"];
-			  this->nowAnimation	  = static_cast<int>(AnimationType::IDLE);
-			  this->animationPlayTime = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->nowAnimation];
+	auto& json = Singleton<JsonManager>::GetInstance();
+	int				animationHandle = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_HANDLE"];
+	vector<int>		animationIndex = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_INDEX"];
+	this->nowAnimation = static_cast<int>(AnimationType::IDLE);
+	this->animationPlayTime = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->nowAnimation];
 	//アニメーションの追加
 	for (int i = 0; i < animationIndex.size(); i++)
 	{
@@ -55,20 +50,20 @@ Beast::Beast()
 	this->animation->Attach(&this->modelHandle);
 
 	/*コライダーデータの作成*/
-	this->maxHp						= json.GetJson(JsonManager::FileType::BEAST)["HP"];
-	this->collider					= new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
-	this->maxPartsColliderNum		= json.GetJson(JsonManager::FileType::BEAST)["COLLIDER_NUM"];
+	this->maxHp = json.GetJson(JsonManager::FileType::BEAST)["HP"];
+	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
+	this->maxPartsColliderNum = json.GetJson(JsonManager::FileType::BEAST)["COLLIDER_NUM"];
 	this->frameIndexUsePartsColider = json.GetJson(JsonManager::FileType::BEAST)["FRAME_INDEX_USE_PARTS_COLLIDER"];
 	for (int i = 0; i < this->maxPartsColliderNum; i++)
 	{
 		this->partsCollider.emplace_back(new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData()));
-		this->partsCollider[i]->data->hp			= this->maxHp;
-		this->partsCollider[i]->radius				= json.GetJson(JsonManager::FileType::BEAST)["PARTS_COLL_RADIUS"][i];
-		this->partsCollider[i]->isUseCollWithChara	= false;
+		this->partsCollider[i]->data->hp = this->maxHp;
+		this->partsCollider[i]->radius = json.GetJson(JsonManager::FileType::BEAST)["PARTS_COLL_RADIUS"][i];
+		this->partsCollider[i]->isUseCollWithChara = false;
 		this->partsCollider[i]->isUseCollWithGround = false;
-		this->partsCollider[i]->isSetTopPosition	= true;
-		this->partsCollider[i]->rigidbody.Initialize(false);
+		this->partsCollider[i]->isSetTopPosition = true;
 		this->partsCollider[i]->type = CharacterColliderData::CharaType::LUX;
+		this->partsCollider[i]->rigidbody.Initialize(false);
 		this->prevPartsHp.emplace_back(this->maxHp);
 		this->pos1.emplace_back(Gori::ORIGIN);
 		this->pos2.emplace_back(Gori::ORIGIN);
@@ -77,10 +72,9 @@ Beast::Beast()
 	/*通常時のカラースケールを取得*/
 	this->normalColor = MV1GetDifColorScale(this->modelHandle);
 	this->tiredColor = this->angryColor = this->normalColor;
-	this->tiredColor.b = 200;
-	this->angryColor.r = 200;
+	this->tiredColor.b += 10;
+	this->angryColor.r += 10;
 }
-
 /// <summary>
 /// デストラクタ
 /// </summary>
@@ -94,38 +88,60 @@ Beast::~Beast()
 	this->partsCollider.clear();
 }
 
+/// <summary>
+/// 初期化
+/// </summary>
 void Beast::Initialize()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
-
 	/*変数の初期化*/
-	this->isAlive						= true;
-	this->isGround						= true;
-	this->isDraw						= true;
-	this->speed							= 0.0f;
-	this->animationPlayTime				= 0.0f;
-	this->entryInterval					= 0;
-	this->moveTarget					= Gori::ORIGIN;
-	this->nowAnimation					= static_cast<int>(AnimationType::ROAR);
-	float height						= json.GetJson(JsonManager::FileType::BEAST)["HIT_HEIGHT"];
-	this->collider->topPositon			= VGet(0.0f, height, 0.0f);
-	this->collider->radius				= json.GetJson(JsonManager::FileType::BEAST)["HIT_RADIUS"];
-	this->collider->isUseCollWithChara	= false;
-	this->collider->isUseCollWithGround = true;
-	this->collider->data->hp			= this->maxHp;
-	this->collider->data->isHit			= false;
+	//Characterクラス
+	this->nextRotation	= Gori::ORIGIN;
+	this->isAlive		= true;
+	this->speed			= 0.0f;
+	this->entryInterval = 0;
+	this->isDraw		= true;
+	//Enemyクラス
+	this->moveTarget		= Gori::ORIGIN;
+	this->animationPlayTime = 0.0f;
+	this->nowAnimation		= static_cast<int>(AnimationType::ROAR);
+	this->bossState			= static_cast<int>(BossState::NORMAL);
+	this->angryValue		= 0;
+	this->tiredValue		= 0;
+	this->attackCount		= 0;
+	this->tiredDuration		= 0;
+	//Beastクラス
+	auto& json = Singleton<JsonManager>::GetInstance();
+	float defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["DEFENSIVE_POWER"][this->bossState];
+	for (int i = 0; i < this->maxPartsColliderNum; i++)
+	{
+		this->prevPartsHp[i]						 = this->maxHp;
+		this->partsCollider[i]->data->hp			 = this->maxHp;
+		this->partsCollider[i]->isUseCollWithChara	 = true;
+		this->partsCollider[i]->isSetTopPosition	 = true;
+		this->partsCollider[i]->data->defensivePower = defenisivePower;
+		this->partsCollider[i]->rigidbody.Initialize(true);
+	}
+	//ビヘイビアツリーを初期化
+	auto& tree = Singleton<BeastBehaviorTree>::GetInstance();
+	tree.Initialize();
+
+	/*コライダーの初期化*/
+	float height						 = json.GetJson(JsonManager::FileType::BEAST)["HIT_HEIGHT"];
+	this->collider->topPositon			 = VGet(0.0f, height, 0.0f);
+	this->collider->radius				 = json.GetJson(JsonManager::FileType::BEAST)["HIT_RADIUS"];
+	this->collider->isUseCollWithChara	 = false;
+	this->collider->isUseCollWithGround  = true;
+	this->collider->data->defensivePower = defenisivePower;
+	this->collider->data->hp			 = this->maxHp;
+	this->collider->data->isHit			 = false;
+	this->collider->data->damage		 = 0;
 	
-	/*物理挙動の初期化*/
-	//jsonデータを定数に代入
+	/*コライダー内のリジッドボディの初期化*/
 	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::BEAST)["INIT_POSITION"]);//座標
 	const VECTOR ROTATION = Gori::Convert(json.GetJson(JsonManager::FileType::BEAST)["INIT_ROTATION"]);//回転率
 	const VECTOR DIRECTION = Gori::Convert(json.GetJson(JsonManager::FileType::BEAST)["INIT_DIRECTION"]);//回転率
 	const VECTOR SCALE = Gori::Convert(json.GetJson(JsonManager::FileType::BEAST)["INIT_SCALE"]);	 //拡大率
-	//初期化
 	this->collider->rigidbody.Initialize(true);
-	this->collider->isUseCollWithChara = false;
 	this->collider->rigidbody.SetPosition(POSITION);
 	this->collider->rigidbody.SetVelocity(DIRECTION);
 	this->collider->rigidbody.SetRotation(ROTATION);
@@ -134,15 +150,11 @@ void Beast::Initialize()
 	MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());
 	MV1SetScale		 (this->modelHandle, this->collider->rigidbody.GetScale());
 
-	for (int i = 0; i < this->maxPartsColliderNum; i++)
-	{
-		this->prevPartsHp[i] = this->maxHp;
-		this->partsCollider[i]->isUseCollWithChara = true;
-	}
-
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
-	this->ChangeNormalColor();
+
+	SetAttackCount();
+	ChangeNormalColor();
 }
 
 /// <summary>
@@ -175,48 +187,27 @@ void Beast::Update()
 			this->partsCollider[i]->data->isHit = false;
 			int damage = this->prevPartsHp[i] - this->partsCollider[i]->data->hp;
 			this->prevPartsHp[i] = this->partsCollider[i]->data->hp;
+			this->collider->data->damage = damage;
 			this->collider->data->hp -= damage;
+			this->collider->data->isHit = true;
 		}
 	}
+
+	UpdateBossState();
 
 	/*ステージ外に出たらデス*/
 	if (this->collider->rigidbody.GetPosition().y < -30.0f)
 	{
-		DyingIfOutOfStage();
+		RespawnIfOutOfStage();
 	}
 
 	/*ビヘイビアツリーの更新*/
 	auto& tree = Singleton<BeastBehaviorTree>::GetInstance();
-	auto& json = Singleton<JsonManager>::GetInstance();
 	tree.Update();
-	float defenisivePower = 0.0f;
-	switch (tree.GetBeastState())
-	{
-		//怒り
-	case BeastBehaviorTree::BeastState::ANGRY:
-		defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["ANGRY_DEFENSIVE_POWER"];
-		for (auto& collider : this->partsCollider)
-		{
-			collider->data->defensivePower = defenisivePower;
-		}
-		break;
-		//通常
-	case BeastBehaviorTree::BeastState::NORMAL:
-		defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["NORMAL_DEFENSIVE_POWER"];
-		for (auto& collider : this->partsCollider)
-		{
-			collider->data->defensivePower = defenisivePower;
-		}
-		break;
-		//疲れ
-	case BeastBehaviorTree::BeastState::DOWN:
-		defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["DOWN_DEFENSIVE_POWER"];
-		for (auto& collider : this->partsCollider)
-		{
-			collider->data->defensivePower = defenisivePower;
-		}
-		break;
-	}
+
+	this->positionForLockon = MV1GetFramePosition(this->modelHandle, 8);
+	this->positionForLockon.y = this->collider->rigidbody.GetPosition().y;
+	this->positionForLockon.y += this->LOCKON_OFFSET;
 }
 
 /// <summary>
@@ -301,4 +292,103 @@ void Beast::SetRotation(const VECTOR _rotation)
 void Beast::SetVelocity(const VECTOR _velocity)
 {
 	this->collider->rigidbody.SetVelocity(_velocity);
+}
+
+/// <summary>
+/// 攻撃コンボ回数のセット
+/// </summary>
+void Beast::SetAttackCount()
+{
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
+	/*コンボ数の設定*/
+	if (this->bossState == static_cast<int>(BossState::NORMAL))
+	{
+		this->attackCount = json.GetJson(JsonManager::FileType::BEAST)["ATTACK_COMBO_COUNT"][this->bossState];
+	}
+}
+
+/// <summary>
+/// 怒り状態の設定
+/// </summary>
+void Beast::UpdateBossState()
+{
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
+	/*状態の切り替え*/
+	switch (this->bossState)
+	{
+		//怒り
+	case static_cast<int>(BossState::ANGRY):
+		//攻撃回数が０だったら状態を通常に戻す
+		if (this->attackCount <= 0)
+		{
+			this->bossState = static_cast<int>(BossState::NORMAL);
+			this->angryValue = 0;
+			ChangeNormalColor();
+			auto& json = Singleton<JsonManager>::GetInstance();
+			float defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["DEFENSIVE_POWER"][this->bossState];
+			for (auto& collider : this->partsCollider)
+			{
+				collider->data->defensivePower = defenisivePower;
+			}
+		}
+		break;
+		//通常
+	case static_cast<int>(BossState::NORMAL):
+		//攻撃が当たっていたら各状態変化用の値を増加させる
+		if (this->collider->data->isHit)
+		{
+			this->angryValue += this->collider->data->damage;
+			this->tiredValue += this->collider->data->damage;
+			this->collider->data->isHit = false;
+		}
+		//疲れゲージが最大以上だったら状態をTIREDにする
+		if (this->tiredValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_VALUE"])
+		{
+			this->bossState = static_cast<int>(BossState::TIRED);
+			this->attackCount = 0;
+			this->tiredValue = 0;
+			float defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["DEFENSIVE_POWER"][this->bossState];
+			for (auto& collider : this->partsCollider)
+			{
+				collider->data->defensivePower = defenisivePower;
+			}
+			ChangeTiredColor();
+		}
+		//怒り値が最大以上だったら状態をANGRYにする
+		if (this->angryValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"])
+		{
+			auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
+			rootNode.SetInterval(static_cast<int>(BeastBehaviorTree::ActionType::ROAR),0);
+			this->bossState = static_cast<int>(BossState::ANGRY);
+			this->attackCount = json.GetJson(JsonManager::FileType::BEAST)["ATTACK_COMBO_COUNT"][this->bossState];
+			float defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["DEFENSIVE_POWER"][this->bossState];
+			for (auto& collider : this->partsCollider)
+			{
+				collider->data->defensivePower = defenisivePower;
+			}
+			ChangeAngryColor();
+		}
+		break;
+		//疲れ
+	case static_cast<int>(BossState::TIRED):
+		//疲れ時間を増加
+		this->tiredDuration++;
+		//最大値を超えたら状態を通常に変更
+		if (this->tiredDuration >= json.GetJson(JsonManager::FileType::ENEMY)["TIRED_DURATION"])
+		{
+			this->bossState = static_cast<int>(BossState::NORMAL);
+			ChangeNormalColor();
+			this->tiredDuration = 0;
+			float defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["DEFENSIVE_POWER"][this->bossState];
+			for (auto& collider : this->partsCollider)
+			{
+				collider->data->defensivePower = defenisivePower;
+			}
+		}
+		break;
+	}
 }

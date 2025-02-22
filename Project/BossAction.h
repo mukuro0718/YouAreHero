@@ -36,9 +36,8 @@ protected:
 	const COLOR_F	ColorConvert	(const std::vector<float> _value);																			//vector<float>をCOLOR_Fに変換
 
 	/*メンバ変数*/
-	BossAttack*				attack;				 //ボス攻撃クラス
-	HitStop*				hitStop;			 //ヒットストップ
 	ActionParameter*		parameter;			 //パラメータ
+	BossAttack*				attack;				 //ボス攻撃クラス
 	VECTOR					moveTarget;			 //移動目標
 	bool					isSelect;			 //アクションが選択されたか
 	short					frameCount;			 //フレームカウント

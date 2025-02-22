@@ -22,6 +22,7 @@ public:
 	int		hitStopDelay;	//ヒットストップディレイ
 	float	slowFactor;		//スロウ
 	float	defensivePower; //防御力
+	float	damage;			//ダメージ
 	/*
 	HACK:
 	ここでのヒットストップ系の変数は、

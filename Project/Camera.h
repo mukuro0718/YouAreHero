@@ -23,6 +23,8 @@ public:
 private:
 	/*定数*/
 	const int BOSS_HEAD_FRAME_INDEX;
+	const int ENTRY_TIME;
+	static constexpr float ENTRY_MULT = 1.5f;
 
 	/*内部処理関数*/
 	void   UpdateDirection	();																//向きの更新
@@ -44,12 +46,13 @@ private:
 	float			length;					//長さ
 	float			yow;					//ヨー（横回転）
 	float			pitch;					//ピッチ（縦回転）
+	int				entryTime;				//搭乗時間
 	//TODO:以下の変数はJsonのデータを格納する変数であり、出来れば定数にすべきものである
 	float			nearClip;				//手前クリップ距離
 	float			farClip;				//奥クリップ距離
-	float			firstLength;			//
-	float			firstAngle;				//
-	VECTOR			firstDirection;			//
+	float			firstLength;			//長さ（初期化用）
+	float			firstAngle;				//アングル（初期化用）
+	VECTOR			firstDirection;			//向き（初期化用）
 	VECTOR			targetOffset;			//
 	VECTOR			firstPosition;			//
 	VECTOR			titleTarget;			//

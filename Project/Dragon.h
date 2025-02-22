@@ -15,13 +15,13 @@ public:
 	 Dragon();//コンストラクタ
 	~Dragon();//デストラクタ
 
-	void		Initialize			() override;										//初期化
-	void		Finalize			() override;										//後処理
-	void		Update				() override;										//更新
-	const void	DrawCharacterInfo	() const override;									//描画
-	void		PlayAnimation		(const int _playAnimation, const float _playTime);	//アニメーションの再生
-	void		OnAttackCollider	(const short _index);								//指定の攻撃コライダーのフラグを立てる
-	void		OffAttackCollider	(const short _index);								//指定の攻撃コライダーのフラグを下す
+	void		Initialize			() override;												//初期化
+	void		Finalize			() override;												//後処理
+	void		Update				() override;												//更新
+	const void	DrawCharacterInfo	() const override;											//描画
+	void		PlayAnimation		(const int _playAnimation, const float _playTime);			//アニメーションの再生
+	void		OnAttackCollider	(const short _index);										//指定の攻撃コライダーのフラグを立てる
+	void		OffAttackCollider	(const short _index);										//指定の攻撃コライダーのフラグを下す
 	void		UpdateAttackCollider(const short _colliderIndex, const float _nowTotalPlayTime);//指定の攻撃コライダーを更新
 
 	/*列挙体*/
@@ -61,12 +61,17 @@ public:
 		BREATH= 3,
 	};
 	/*getter/setter*/
-	const bool GetIsAttack	()const override;			//コウゲキしたか
-		  void OffIsDraw	(){ this->isDraw = false; }	//描画フラグを下す
+	const bool GetIsAttack	 ()const override;			//コウゲキしたか
+		  void OffIsDraw	 (){ this->isDraw = false; }//描画フラグを下す
+		  void SetAttackCount() override;				//攻撃コンボの設定
 private:
 	/*静的定数*/
+	static constexpr float LOCKON_OFFSET = 10.0f;//ロックオンオフセット
 	static constexpr float SHADOW_HEIGHT = 10.0f;//影を投影する高さ
 	static constexpr float SHADOW_SIZE	 = 30.0f; //影のサイズ
+
+	/*内部処理関数*/
+	void UpdateBossState();//怒り状態の更新
 
 	/*メンバ変数*/
 	map<short,vector<AttackCapsuleColliderData*>>				attackCollider;				//攻撃コライダー

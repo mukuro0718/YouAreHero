@@ -6,6 +6,7 @@
 #include "SceneBase.h"
 #include "Image.h"
 #include "HPUI.h"
+#include "BossStateUI.h"
 #include "ButtonUI.h"
 #include "BossNameUI.h"
 #include "GameClearUI.h"
@@ -39,6 +40,7 @@ GameUI::GameUI()
 	this->clearUI	= new GameClearUI();
 	this->overUI	= new GameOverUI();
 	this->tutorialUI= new TutorialUI();
+	this->stateUI	= new BossStateUI();
 
 	/*画像クラスインスタンスの作成*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
@@ -196,8 +198,10 @@ const void GameUI::Draw()const
 {
 	this->tutorialUI->Draw();
 	this->hp->Draw();
+	this->stateUI->Draw();
 	this->button->Draw();
 	this->bossName->Draw();
+
 	/*まだゲームが終了していなければ早期リターン*/
 	if (this->type == ResultType::NONE)
 	{
@@ -215,8 +219,8 @@ const void GameUI::Draw()const
 		if (player.GetIsLockOn())
 		{
 			auto& enemy = Singleton<EnemyManager>::GetInstance();
-			VECTOR position = enemy.GetRigidbody().GetPosition();
-			position.y += this->LOCK_ON_UI_OFFSET;
+			VECTOR position = enemy.GetPositionForLockon();
+			//position.y += this->LOCK_ON_UI_OFFSET;
 			DrawBillboard3D(position, 0.5f, 0.5f, this->LOCK_ON_UI_SIZE, 0.0f, this->lockOnImage, TRUE);
 		}
 	}

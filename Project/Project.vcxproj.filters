@@ -283,12 +283,6 @@
     <Filter Include="Object\Character\Player\PlayerAction\J_Run">
       <UniqueIdentifier>{561ca5b8-67d1-438e-8c6d-c79db1d547f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\dragon">
-      <UniqueIdentifier>{c76d36c1-9189-4379-b288-c36814c4e4d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\beast">
-      <UniqueIdentifier>{e143db46-602f-44d4-94fe-9e0e91b5f19a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\BossAction\Attack">
       <UniqueIdentifier>{4b018703-84ac-4fa5-856c-702a94ee4945}</UniqueIdentifier>
     </Filter>
@@ -363,9 +357,6 @@
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\BeastAction">
       <UniqueIdentifier>{991f373c-f725-4144-845c-d871e6092d3a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Boss">
-      <UniqueIdentifier>{ddbbb79d-d2b4-4d17-9fad-3b0a486ade42}</UniqueIdentifier>
     </Filter>
     <Filter Include="Data\BehaviorTree">
       <UniqueIdentifier>{a00544e1-ccf0-44da-8097-1365dbc67331}</UniqueIdentifier>
@@ -529,9 +520,6 @@
     <Filter Include="Object\Character\Enemy\Action\DragonAction\4_Walk">
       <UniqueIdentifier>{335681d3-f4ea-4182-9fa5-2196709dd0ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Data\BehaviorTree\Decorator\RandomSelector">
-      <UniqueIdentifier>{367f1ad3-b9f0-4600-b423-8813a371d7b8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\BeastAction\9_LongFrightening">
       <UniqueIdentifier>{f7b629fd-4980-4e34-aed2-e5ce935d80e0}</UniqueIdentifier>
     </Filter>
@@ -643,17 +631,11 @@
     <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonHpIsLessThanConstant">
       <UniqueIdentifier>{4e807475-3fc2-4e46-a5d5-7d0c758d4219}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsStageIsDifferent">
-      <UniqueIdentifier>{e4b03e41-c485-42bf-9591-2d52b0149248}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\DemonAction">
       <UniqueIdentifier>{59605f2e-f380-4ba2-b1ca-dc86ee856a23}</UniqueIdentifier>
     </Filter>
     <Filter Include="Object\Character\Enemy\BehaviorTree\Demon">
       <UniqueIdentifier>{f8e5ffc9-f1c0-4ce3-8c80-ccb3828d6a83}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Demon">
-      <UniqueIdentifier>{cfe01588-a03c-4aec-813a-de1a2c764ee7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Object\Character\Enemy\Action\DemonAction\1_Dying">
       <UniqueIdentifier>{50718f95-9f71-455b-a6d4-a28ef00ec991}</UniqueIdentifier>
@@ -663,6 +645,42 @@
     </Filter>
     <Filter Include="UI\Scene\TutorialUI">
       <UniqueIdentifier>{1248496a-abdf-44ba-b526-15321fae23ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\CreditUI">
+      <UniqueIdentifier>{0d06019b-a718-4090-acf0-e92215c80cad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonStateIsSameAsTheSpecifiedState">
+      <UniqueIdentifier>{e4b03e41-c485-42bf-9591-2d52b0149248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\BehaviorTree\Decorator\DecoratorInverse">
+      <UniqueIdentifier>{efba1f0e-1249-4e7e-bd4e-d4b1109295c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\BehaviorTree\Composite\RandomSelector">
+      <UniqueIdentifier>{367f1ad3-b9f0-4600-b423-8813a371d7b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\BossState">
+      <UniqueIdentifier>{1fc3d066-a225-4aac-bd7b-e272f2479245}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Type">
+      <UniqueIdentifier>{bd793eed-1de3-4975-8c67-a5d73f18dcda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Type\Beast">
+      <UniqueIdentifier>{e143db46-602f-44d4-94fe-9e0e91b5f19a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Type\Boss">
+      <UniqueIdentifier>{ddbbb79d-d2b4-4d17-9fad-3b0a486ade42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Type\Demon">
+      <UniqueIdentifier>{cfe01588-a03c-4aec-813a-de1a2c764ee7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Type\dragon">
+      <UniqueIdentifier>{c76d36c1-9189-4379-b288-c36814c4e4d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Conditon_IsAttackCountIsOver">
+      <UniqueIdentifier>{1469857b-fd95-4a1e-b843-ad99f4e8c007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scene\TutorialUI\Manager">
+      <UniqueIdentifier>{8b45cc85-34c6-4f0d-a194-4e320faf115b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -938,10 +956,10 @@
       <Filter>Object\Character\Enemy\EnemyChanger</Filter>
     </ClCompile>
     <ClCompile Include="Beast.cpp">
-      <Filter>Object\Character\Enemy\beast</Filter>
+      <Filter>Object\Character\Enemy\Type\Beast</Filter>
     </ClCompile>
     <ClCompile Include="Dragon.cpp">
-      <Filter>Object\Character\Enemy\dragon</Filter>
+      <Filter>Object\Character\Enemy\Type\dragon</Filter>
     </ClCompile>
     <ClCompile Include="PlayerController.cpp">
       <Filter>Object\Character\Player\PlayerController</Filter>
@@ -998,7 +1016,7 @@
       <Filter>Object\Character\Player\PlayerAction\H_KnockUp</Filter>
     </ClCompile>
     <ClCompile Include="Boss.cpp">
-      <Filter>Object\Character\Enemy\Boss</Filter>
+      <Filter>Object\Character\Enemy\Type\Boss</Filter>
     </ClCompile>
     <ClCompile Include="BehaviorTreeNode.cpp">
       <Filter>Data\BehaviorTree\Base</Filter>
@@ -1217,7 +1235,7 @@
       <Filter>Object\Character\Enemy\Action\DragonAction\7_Rotate</Filter>
     </ClCompile>
     <ClCompile Include="RandomSelector.cpp">
-      <Filter>Data\BehaviorTree\Decorator\RandomSelector</Filter>
+      <Filter>Data\BehaviorTree\Composite\RandomSelector</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsSelectedDragonBattleAction.cpp">
       <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction</Filter>
@@ -1240,8 +1258,8 @@
     <ClCompile Include="Condition_IsTargetOutOfRangeOfDragonRay.cpp">
       <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsTargetOutOfRangeOfDragonRay</Filter>
     </ClCompile>
-    <ClCompile Include="Condition_IsStageIsDifferent.cpp">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsStageIsDifferent</Filter>
+    <ClCompile Include="Condition_IsDragonStateIsSameAsTheSpecifiedState.cpp">
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonStateIsSameAsTheSpecifiedState</Filter>
     </ClCompile>
     <ClCompile Include="Sound.cpp">
       <Filter>Sound\Sound</Filter>
@@ -1262,7 +1280,7 @@
       <Filter>Object\Character\Enemy\Action\DragonAction\4_Walk</Filter>
     </ClCompile>
     <ClCompile Include="Demon.cpp">
-      <Filter>Object\Character\Enemy\Demon</Filter>
+      <Filter>Object\Character\Enemy\Type\Demon</Filter>
     </ClCompile>
     <ClCompile Include="DemonBehaviorTree.cpp">
       <Filter>Object\Character\Enemy\BehaviorTree\Demon</Filter>
@@ -1275,6 +1293,21 @@
     </ClCompile>
     <ClCompile Include="TutorialUI.cpp">
       <Filter>UI\Scene\TutorialUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CreditUI.cpp">
+      <Filter>UI\CreditUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Decorator_Inverse.cpp">
+      <Filter>Data\BehaviorTree\Decorator\DecoratorInverse</Filter>
+    </ClCompile>
+    <ClCompile Include="BossStateUI.cpp">
+      <Filter>UI\BossState</Filter>
+    </ClCompile>
+    <ClCompile Include="Conditon_IsAttackCountIsOver.cpp">
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Conditon_IsAttackCountIsOver</Filter>
+    </ClCompile>
+    <ClCompile Include="TutorialManager.cpp">
+      <Filter>UI\Scene\TutorialUI\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1576,10 +1609,10 @@
       <Filter>Object\Character\Enemy\EnemyChanger</Filter>
     </ClInclude>
     <ClInclude Include="Beast.h">
-      <Filter>Object\Character\Enemy\beast</Filter>
+      <Filter>Object\Character\Enemy\Type\Beast</Filter>
     </ClInclude>
     <ClInclude Include="Dragon.h">
-      <Filter>Object\Character\Enemy\dragon</Filter>
+      <Filter>Object\Character\Enemy\Type\dragon</Filter>
     </ClInclude>
     <ClInclude Include="PlayerController.h">
       <Filter>Object\Character\Player\PlayerController</Filter>
@@ -1639,7 +1672,7 @@
       <Filter>Object\Character\Player\PlayerAction\H_KnockUp</Filter>
     </ClInclude>
     <ClInclude Include="Boss.h">
-      <Filter>Object\Character\Enemy\Boss</Filter>
+      <Filter>Object\Character\Enemy\Type\Boss</Filter>
     </ClInclude>
     <ClInclude Include="BehaviorTreeNode.h">
       <Filter>Data\BehaviorTree\Base</Filter>
@@ -1867,7 +1900,7 @@
       <Filter>Object\Character\Enemy\Action\DragonAction\7_Rotate</Filter>
     </ClInclude>
     <ClInclude Include="RandomSelector.h">
-      <Filter>Data\BehaviorTree\Decorator\RandomSelector</Filter>
+      <Filter>Data\BehaviorTree\Composite\RandomSelector</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsSelectedDragonBattleAction.h">
       <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction</Filter>
@@ -1890,8 +1923,8 @@
     <ClInclude Include="Condition_IsTargetOutOfRangeOfDragonRay.h">
       <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsTargetOutOfRangeOfDragonRay</Filter>
     </ClInclude>
-    <ClInclude Include="Condition_IsStageIsDifferent.h">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsStageIsDifferent</Filter>
+    <ClInclude Include="Condition_IsDragonStateIsSameAsTheSpecifiedState.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonStateIsSameAsTheSpecifiedState</Filter>
     </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>Sound\Sound</Filter>
@@ -1909,7 +1942,7 @@
       <Filter>Sound\Sound\SoundEffect\3D</Filter>
     </ClInclude>
     <ClInclude Include="Demon.h">
-      <Filter>Object\Character\Enemy\Demon</Filter>
+      <Filter>Object\Character\Enemy\Type\Demon</Filter>
     </ClInclude>
     <ClInclude Include="DemonBehaviorTree.h">
       <Filter>Object\Character\Enemy\BehaviorTree\Demon</Filter>
@@ -1925,6 +1958,21 @@
     </ClInclude>
     <ClInclude Include="TutorialUI.h">
       <Filter>UI\Scene\TutorialUI</Filter>
+    </ClInclude>
+    <ClInclude Include="CreditUI.h">
+      <Filter>UI\CreditUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Decorator_Inverse.h">
+      <Filter>Data\BehaviorTree\Decorator\DecoratorInverse</Filter>
+    </ClInclude>
+    <ClInclude Include="BossStateUI.h">
+      <Filter>UI\BossState</Filter>
+    </ClInclude>
+    <ClInclude Include="Conditon_IsAttackCountIsOver.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Conditon_IsAttackCountIsOver</Filter>
+    </ClInclude>
+    <ClInclude Include="TutorialManager.h">
+      <Filter>UI\Scene\TutorialUI\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

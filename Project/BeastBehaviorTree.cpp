@@ -5,9 +5,11 @@
 #include "DeleteInstance.h"
 #include "Rigidbody.h"
 #include "CharacterData.h"
-#include "EnemyManager.h"
 #include "Character.h"
+#include "Enemy.h"
+#include "Beast.h"
 #include "Player.h"
+#include "EnemyManager.h"
 #include "PlayerManager.h"
 
 /// <summary>
@@ -15,8 +17,6 @@
 /// </summary>
 BeastBehaviorTree::BeastBehaviorTree()
 	: Selector_DeathOrReactionOrBattleOrBreak	(nullptr)
-	, state										(BeastState::NORMAL)
-	, downValue									(0)
 	, prevHp									(0)
 	, damage									(0)
 	, level										(0)
@@ -28,13 +28,38 @@ BeastBehaviorTree::BeastBehaviorTree()
 	, currentBattleAction						(nullptr)
 	, currentReaction							(nullptr)
 {
-	auto& json = Singleton<JsonManager>::GetInstance();
 	/*インターバルを初期化*/
 	this->intervalSet = { 0 };
+
+
+	this->debugActionNode = new Beast_Down();
+	
+	/*初期化*/
+	Initialize();
+}
+
+/// <summary>
+/// デストラクタ
+/// </summary>
+BeastBehaviorTree::~BeastBehaviorTree()
+{
+	DeleteMemberInstance(this->Selector_DeathOrReactionOrBattleOrBreak);
+	DeleteMemberInstance(this->currentBattleAction);
+	DeleteMemberInstance(this->currentReaction);
+	DeleteMemberInstance(this->debugActionNode);
+}
+
+/// <summary>
+/// ビヘイビアツリーを作成
+/// </summary>
+void BeastBehaviorTree::CreateBehaviorTree()
+{
+	DeleteMemberInstance(this->Selector_DeathOrReactionOrBattleOrBreak);
 
 	/*大元のツリーの作成*/
 	this->Selector_DeathOrReactionOrBattleOrBreak = new SelectorNode();
 
+	auto& json = Singleton<JsonManager>::GetInstance();
 	/*HPがないときのアクション*/
 	{
 		//デス判定ノード
@@ -57,7 +82,7 @@ BeastBehaviorTree::BeastBehaviorTree()
 			Sequencer_PlayCurrentIfSelectedReaction->AddChild(*new Beast_PlayCurrentReaction());
 			//ダウン
 			BehaviorTreeNode* Sequencer_DownIfDownValueMoreThanConstant = new SequencerNode();
-			Sequencer_DownIfDownValueMoreThanConstant->AddChild(*new Condition_IsNowStateIsSameAsTheSpecifiedState(BeastState::DOWN));
+			Sequencer_DownIfDownValueMoreThanConstant->AddChild(*new Condition_IsNowStateIsSameAsTheSpecifiedState(static_cast<int>(Beast::BossState::TIRED)));
 			Sequencer_DownIfDownValueMoreThanConstant->AddChild(*new Beast_Down());
 			//長い怯み
 			BehaviorTreeNode* Sequencer_LongFrighteningIfFrighteningValueMoreThanConstant = new SequencerNode();
@@ -98,7 +123,7 @@ BeastBehaviorTree::BeastBehaviorTree()
 		Selector_SpecialAction->AddChild(*Sequencer_RaiseLevelIfIntervalIsOver);
 		//特殊攻撃サブツリーに代入
 		Sequencer_SpecialActionIfIntervalIsOver->AddChild(*Selector_SpecialAction);
-		
+
 		//遠距離攻撃範囲外だったら歩く
 		BehaviorTreeNode* Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack = new SequencerNode();
 		Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::BEAST)["FAR_ATTACK_RANGE"]));
@@ -111,15 +136,17 @@ BeastBehaviorTree::BeastBehaviorTree()
 		BehaviorTreeNode* Selector_LongRangeAction = new SelectorNode();
 		//怒り状態だったら突進
 		BehaviorTreeNode* Sequencer_AngryLongRangeActionIfStateNormal = new SequencerNode();
-		Sequencer_AngryLongRangeActionIfStateNormal->AddChild(*new Condition_IsNowStateIsSameAsTheSpecifiedState(BeastState::ANGRY));
+		Sequencer_AngryLongRangeActionIfStateNormal->AddChild(*new Condition_IsNowStateIsSameAsTheSpecifiedState(static_cast<int>(Beast::BossState::ANGRY)));
 		Sequencer_AngryLongRangeActionIfStateNormal->AddChild(*new Beast_Rush());
 		//通常状態だったら弱ブレス
 		BehaviorTreeNode* Sequencer_NormalLongRangeActionIfStateNormal = new SequencerNode();
-		Sequencer_NormalLongRangeActionIfStateNormal->AddChild(*new Condition_IsNowStateIsSameAsTheSpecifiedState(BeastState::NORMAL));
+		Sequencer_NormalLongRangeActionIfStateNormal->AddChild(*new Condition_IsActionIntervalIsOver(static_cast<int>(ActionType::WEAK_BREATH)));
+		Sequencer_NormalLongRangeActionIfStateNormal->AddChild(*new Condition_IsNowStateIsSameAsTheSpecifiedState(static_cast<int>(Beast::BossState::NORMAL)));
 		Sequencer_NormalLongRangeActionIfStateNormal->AddChild(*new Beast_WeakBreath());
 		//遠距離攻撃アクションセレクターに各シーケンサノードを入れる
 		Selector_LongRangeAction->AddChild(*Sequencer_AngryLongRangeActionIfStateNormal);
 		Selector_LongRangeAction->AddChild(*Sequencer_NormalLongRangeActionIfStateNormal);
+		Selector_LongRangeAction->AddChild(*new Beast_Walk());
 		//遠距離攻撃アクションセレクターを遠距離攻撃サブツリーに入れる
 		Sequencer_LongRangeAttackIfTargetOutOfRangeOfNearRangeAttack->AddChild(*Selector_LongRangeAction);
 
@@ -132,10 +159,11 @@ BeastBehaviorTree::BeastBehaviorTree()
 		//プレイヤーがRayのそとだったら爆発攻撃
 		BehaviorTreeNode* Sequencer_ExplositonIfTargetOutOfRangeRay = new SequencerNode();
 		Sequencer_ExplositonIfTargetOutOfRangeRay->AddChild(*new Condition_IsTargetOutOfRangeOfRay(json.GetJson(JsonManager::FileType::BEAST)["TOLERANCE_RANGE"][0], json.GetJson(JsonManager::FileType::BEAST)["TOLERANCE_RANGE"][1]));
+		Sequencer_ExplositonIfTargetOutOfRangeRay->AddChild(*new Condition_IsActionIntervalIsOver(static_cast<int>(ActionType::EXPLOSION)));
 		Sequencer_ExplositonIfTargetOutOfRangeRay->AddChild(*new Beast_Explosion());
 		//通常時の攻撃サブツリー
 		BehaviorTreeNode* Sequencer_NormalNearActionIfStateNormal = new SequencerNode();
-		Sequencer_NormalNearActionIfStateNormal->AddChild(*new Condition_IsNowStateIsSameAsTheSpecifiedState(BeastState::NORMAL));
+		Sequencer_NormalNearActionIfStateNormal->AddChild(*new Condition_IsNowStateIsSameAsTheSpecifiedState(static_cast<int>(Beast::BossState::NORMAL)));
 		//通常状態だったらランダムで右弱攻撃かコンボ攻撃を出す
 		BehaviorTreeNode* Selector_NormalStateAction = new RandomSelector();
 		Selector_NormalStateAction->AddChild(*new Beast_RightFootAttack());
@@ -145,7 +173,7 @@ BeastBehaviorTree::BeastBehaviorTree()
 		Sequencer_NormalNearActionIfStateNormal->AddChild(*Selector_NormalStateAction);
 		//怒り時の攻撃サブツリー
 		BehaviorTreeNode* Sequencer_AngryNearActionIfStateNormal = new SequencerNode();
-		Sequencer_AngryNearActionIfStateNormal->AddChild(*new Condition_IsNowStateIsSameAsTheSpecifiedState(BeastState::ANGRY));
+		Sequencer_AngryNearActionIfStateNormal->AddChild(*new Condition_IsNowStateIsSameAsTheSpecifiedState(static_cast<int>(Beast::BossState::ANGRY)));
 		//怒り状態だったら溜め右攻撃か両足溜め攻撃か右＋回転攻撃
 		BehaviorTreeNode* Selector_AngryStateAction = new RandomSelector();
 		Selector_AngryStateAction->AddChild(*new Beast_ChargeBothFootAttack());
@@ -163,36 +191,26 @@ BeastBehaviorTree::BeastBehaviorTree()
 		Sequencer_PlayCurrentIfSelectedBattleAction->AddChild(*new Beast_PlayCurrentBattleAction());
 		//咆哮アクション
 		BehaviorTreeNode* Sequencer_RoarIfAngryValueGreaterThanConstant = new SequencerNode();
-		Sequencer_RoarIfAngryValueGreaterThanConstant->AddChild(*new Condition_IsAngryValueGreaterThanConstant(json.GetJson(JsonManager::FileType::BEAST)["MAX_ANGRY_VALUE"]));
+		Sequencer_RoarIfAngryValueGreaterThanConstant->AddChild(*new Condition_IsActionIntervalIsOver(static_cast<int>(ActionType::ROAR)));
 		Sequencer_RoarIfAngryValueGreaterThanConstant->AddChild(*new Beast_Roar());
+
+		//各攻撃アクションは、攻撃回数が残っている場合のみ行う
+		BehaviorTreeNode* Selector_AttackAction = new SelectorNode();
+		Selector_AttackAction->AddChild(*Sequencer_RoarIfAngryValueGreaterThanConstant);
+		Selector_AttackAction->AddChild(*Sequencer_SpecialActionIfIntervalIsOver);
+		Selector_AttackAction->AddChild(*Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack);
+		Selector_AttackAction->AddChild(*Sequencer_LongRangeAttackIfTargetOutOfRangeOfNearRangeAttack);
+		Selector_AttackAction->AddChild(*Selector_NearRangeAction);
+		BehaviorTreeNode* Sequencer_AttackIfAttackCountIsOver = new SequencerNode();
+		Sequencer_AttackIfAttackCountIsOver->AddChild(*Selector_AttackAction);
 
 		//攻撃を決めるサブツリーに各攻撃サブツリーを追加
 		Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack->AddChild(*Sequencer_PlayCurrentIfSelectedBattleAction);
-		Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack->AddChild(*Sequencer_RoarIfAngryValueGreaterThanConstant);
-		Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack->AddChild(*Sequencer_SpecialActionIfIntervalIsOver);
-		Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack->AddChild(*Sequencer_ApproachIfTargetOutOfRangeOfLongRangeAttack);
-		Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack->AddChild(*Sequencer_LongRangeAttackIfTargetOutOfRangeOfNearRangeAttack);
-		Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack->AddChild(*Selector_NearRangeAction);
+		Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack->AddChild(*Sequencer_AttackIfAttackCountIsOver);
 
 		//rootノードに追加
 		this->Selector_DeathOrReactionOrBattleOrBreak->AddChild(*Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack);
 	}
-
-	this->debugActionNode = new Beast_Down();
-	
-	/*初期化*/
-	Initialize();
-}
-
-/// <summary>
-/// デストラクタ
-/// </summary>
-BeastBehaviorTree::~BeastBehaviorTree()
-{
-	DeleteMemberInstance(this->Selector_DeathOrReactionOrBattleOrBreak);
-	DeleteMemberInstance(this->currentBattleAction);
-	DeleteMemberInstance(this->currentReaction);
-	DeleteMemberInstance(this->debugActionNode);
 }
 
 /// <summary>
@@ -200,27 +218,29 @@ BeastBehaviorTree::~BeastBehaviorTree()
 /// </summary>
 void BeastBehaviorTree::Initialize()
 {
-	auto& json				= Singleton<JsonManager>::GetInstance();
-	this->state				= BeastState::NORMAL;
-	this->downValue = 0;
-	this->prevHp			= json.GetJson(JsonManager::FileType::BEAST)["HP"];
-	this->damage			= 0;
-	this->level				= 0;
-	this->toTargetDistance	= 0;
-	this->isDestroyedPart	= false;
-	this->selectAction		= -1;
-	this->isSelectedBattleAction = false;
-	this->isSelectedReaction = false;
-	if (this->currentReaction != nullptr)
+	CreateBehaviorTree();
+	auto& json					= Singleton<JsonManager>::GetInstance();
+	this->prevHp							= json.GetJson(JsonManager::FileType::BEAST)["HP"];
+	this->damage							= 0;
+	this->level								= 0;
+	this->selectAction						= -1;
+	this->isDestroyedPart					= false;
+	this->isSelectedBattleAction			= false;
+	this->isSelectedReaction				= false;
+	this->toTargetDistance					= 0;
+	this->innerProductOfDirectionToTarget	= 0.0f;
+	SetInterval(static_cast<int>(ActionType::ROAR), 0);
+
+	/*if (this->currentReaction != nullptr)
 	{
 		this->currentReaction->Initialize();
 	}
 	if (this->currentBattleAction != nullptr)
 	{
 		this->currentBattleAction->Initialize();
-	}
-	this->angryValue = 0;
-
+	}*/
+	this->currentReaction = nullptr;
+	this->currentBattleAction = nullptr;
 	for (int i = 0; i < this->intervalSet.size(); i++)
 	{
 		this->intervalSet[i] = 0;
@@ -262,15 +282,13 @@ void BeastBehaviorTree::Update()
 {
 	/*メンバ変数の更新*/
 	UpdateMemberVariables();
-	ChangeState();
-
 
 	/*ツリーの実行*/
 	BehaviorTreeNode::NodeState state = this->Selector_DeathOrReactionOrBattleOrBreak->Update();
-	//BehaviorTreeNode::NodeState state = this->debugActionNode->Update();
-	int intState = static_cast<int>(state);
 
 #ifdef _DEBUG
+	//BehaviorTreeNode::NodeState state = this->debugActionNode->Update();
+	//int debugState = static_cast<int>(state);
 	//printfDx("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD:%f\n", this->innerProductOfDirectionToTarget);
 	//printfDx("BEAST_TO_TARGET:%f\n", this->toTargetDistance);
 	//printfDx("BEAST_ACTION_STATE:%d\n", this->selectAction);
@@ -332,49 +350,4 @@ void BeastBehaviorTree::ExitCurrentBattleAction()
 		this->currentBattleAction->Initialize();
 	}
 	this->currentBattleAction = nullptr;
-}
-
-/// <summary>
-/// 状態の変更
-/// </summary>
-void BeastBehaviorTree::ChangeState()
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& enemy = Singleton<EnemyManager>::GetInstance();
-
-	/*怒り状態*/
-	switch (this->state)
-	{
-		//怒り
-	case BeastState::ANGRY:
-		this->angryValue--;
-		if (this->angryValue < 0)
-		{
-			this->state = BeastState::DOWN;
-			this->angryValue = 0;
-			this->downValue = json.GetJson(JsonManager::FileType::BEAST)["MAX_DOWN_VALUE"];
-		}
-		break;
-		//通常
-	case BeastState::NORMAL:
-		//怒り値を増加
-		this->angryValue++;
-		//攻撃が当たっていたら怒り値をさらに増加
-		
-		if (enemy.GetCharacterData().isHit)
-		{
-			this->angryValue++;
-		}
-		//怒り値が最大以上だったら状態をANGRYにする
-		if (this->angryValue >= json.GetJson(JsonManager::FileType::BEAST)["MAX_ANGRY_VALUE"])
-		{
-			this->angryValue = json.GetJson(JsonManager::FileType::BEAST)["MAX_ANGRY_VALUE"];
-		}
-		break;
-		//疲れ
-	case BeastState::DOWN:
-		this->downValue -= 2;
-		break;
-	}
 }

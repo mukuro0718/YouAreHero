@@ -56,6 +56,7 @@ void GameScene::Initialize()
 	auto& sound = Singleton<SoundManager>::GetInstance();
 
 	/*‰Šú‰»*/
+	camera.Initialize();
 	timer.Initialize();
 	map.Initialize();
 	player.Initialize();

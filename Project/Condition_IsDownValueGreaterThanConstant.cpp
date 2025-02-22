@@ -27,12 +27,12 @@ Condition_IsDownValueGreaterThanConstant::NodeState Condition_IsDownValueGreater
 {
 	/*É_ÉEÉìílÇ™ÇOà»è„Ç»ÇÁê¨å˜Çï‘Ç∑*/
 	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	if (rootNode.GetDownValue() >= this->SPECIFIED_DOWN_VALUE)
-	{
-		rootNode.SetDownValue(0);
-		//printfDx("CONDITION_DOWN_SUCCESS\n");
-		return NodeState::SUCCESS;
-	}
+	//if (rootNode.GetDownValue() >= this->SPECIFIED_DOWN_VALUE)
+	//{
+	//	rootNode.SetDownValue(0);
+	//	//printfDx("CONDITION_DOWN_SUCCESS\n");
+	//	return NodeState::SUCCESS;
+	//}
 	//printfDx("CONDITION_DOWN_FAILURE\n");
 	return NodeState::FAILURE;
 }

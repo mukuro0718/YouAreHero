@@ -62,6 +62,7 @@ Beast_RaiseLevel::NodeState Beast_RaiseLevel::Update()
 		rootNode.EntryCurrentBattleAction(*this);
 		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
 		enemy.UpdateVelocity(false);
+		enemy.DecAttackComboCount();
 	}
 
 	/*エフェクトの制御*/

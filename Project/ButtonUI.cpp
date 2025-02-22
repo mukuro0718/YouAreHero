@@ -43,7 +43,7 @@ ButtonUI::ButtonUI()
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::B_BUTTON));		 //1
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::X_BUTTON));		 //2
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::Y_BUTTON));		 //3
-	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::LEFT_STICK));		 //4
+	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::LEFT_STICK));	 //4
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::RIGHT_TRIGGER));	 //5
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::RIGHT_BUMPER));	 //6
 	this->buttonList.emplace_back(asset.GetImage(LoadingAsset::ImageType::BUTTON_SET_1));	 //7

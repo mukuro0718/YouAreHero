@@ -4,6 +4,7 @@
 #pragma once
 
 class SceneUI;
+class CreditUI;
 class TitleUI : public SceneUI
 {
 public:
@@ -39,9 +40,10 @@ private:
 	bool IsPressButton();
 
 	/*ƒƒ“ƒo•Ï”*/
+	CreditUI* credit;
 	ImageData titleLogo;
 	ImageData pressLogo;
-	bool isFadeIn;
-	bool isPrevPressButton;
+	bool	  isFadeIn;
+	bool	  isPrevPressButton;
 };
 

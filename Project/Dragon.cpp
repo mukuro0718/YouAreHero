@@ -81,6 +81,7 @@ Dragon::Dragon()
 	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
 	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
 	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
+	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
 	breathColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
 	this->attackCollider.emplace(static_cast<int>(AttackCollider::SMASH), smashColider);
 	this->attackCollider.emplace(static_cast<int>(AttackCollider::SWEEP), sweepColider);
@@ -108,8 +109,8 @@ Dragon::Dragon()
 	/*通常時のカラースケールを取得*/
 	this->normalColor = MV1GetDifColorScale(this->modelHandle);
 	this->tiredColor = this->angryColor = this->normalColor;
-	this->tiredColor.b = 200;
-	this->angryColor.r = 200;
+	this->tiredColor.b += 20;
+	this->angryColor.r += 20;
 }
 
 /// <summary>
@@ -120,20 +121,33 @@ Dragon::~Dragon()
 	Finalize();
 }
 
+/// <summary>
+/// 初期化
+/// </summary>
 void Dragon::Initialize()
 {
 	/*変数の初期化*/
-	auto& json = Singleton<JsonManager>::GetInstance();
+	//Characterクラス
+	this->nextRotation	= Gori::ORIGIN;
 	this->isAlive		= true;
-	this->isGround		= true;
-	this->isDraw		= true;
 	this->speed			= 0.0f;
-	this->entryInterval	= 0;
-	
+	this->entryInterval = 0;
+	this->isDraw		= true;
+	//Enemyクラス
+	this->moveTarget		= Gori::ORIGIN;
+	this->animationPlayTime = 0.0f;
+	this->nowAnimation		= static_cast<int>(AnimationType::ROAR);	
+	this->bossState			= static_cast<int>(BossState::NORMAL);
+	this->angryValue		= 0;
+	this->tiredValue		= 0;
+	this->attackCount		= 0;
+	this->tiredDuration		= 0;
+	//ビヘイビアツリーを初期化
+	auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
+	tree.Initialize();
+
 	/*コライダーの初期化*/
-	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_POSITION"]);//座標
-	const VECTOR ROTATION = Gori::Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_ROTATION"]);//回転率
-	const VECTOR SCALE = Gori::Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_SCALE"]);	 //拡大率
+	auto& json							= Singleton<JsonManager>::GetInstance();
 	float height						= json.GetJson(JsonManager::FileType::DRAGON)["HIT_HEIGHT"];
 	this->collider->topPositon			= VGet(0.0f, height, 0.0f);
 	this->collider->radius				= json.GetJson(JsonManager::FileType::DRAGON)["HIT_RADIUS"];
@@ -141,14 +155,48 @@ void Dragon::Initialize()
 	this->collider->isUseCollWithChara  = false;
 	this->collider->data->hp			= json.GetJson(JsonManager::FileType::DRAGON)["HP"];
 	this->collider->data->isHit			= false;
+	this->collider->data->damage		= 0;
+	for (int i = 0; i < this->attackCollider.size(); i++)
+	{
+		for (int j = 0; j < this->attackCollider[i].size(); j++)
+		{
+			this->attackCollider[i][j]->radius = json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_RADIUS"][i][j];
+			this->attackCollider[i][j]->data->damage = json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_DAMAGE"][i][j];
+			this->attackCollider[i][j]->data->reactionType = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);
+			this->attackCollider[i][j]->data->hitStopTime = json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_STOP_TIME"][i][j];
+			this->attackCollider[i][j]->data->hitStopType = static_cast<int>(HitStop::Type::STOP);
+			this->attackCollider[i][j]->data->hitStopDelay = json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_STOP_DELAY"][i][j];
+			this->attackCollider[i][j]->data->slowFactor = json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_HIT_STOP_SLOW_FACTOR"][i][j];
+			this->attackCollider[i][j]->data->isHitAttack = false;
+			this->attackCollider[i][j]->data->isDoHitCheck = false;
+		}
+	}
+	for (int i = 0; i < this->isStartHitCheck.size(); i++)
+	{
+		this->isStartHitCheck[i]		= false;
+		this->startHitCheckPlayTime[i]	= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_START_HIT_CHECK_PLAY_TIME"][i];
+		this->endHitCheckPlayTime[i]	= json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_END_HIT_CHECK_PLAY_TIME"][i];
+	}
+	for (int i = 0; i < this->maxPartsColliderNum; i++)
+	{
+		this->partsCollider[i]->data->hp = this->maxHp;
+		this->partsCollider[i]->radius = json.GetJson(JsonManager::FileType::DRAGON)["PARTS_COLL_RADIUS"][i];
+		this->partsCollider[i]->isUseCollWithChara = true;
+		this->partsCollider[i]->isUseCollWithGround = false;
+		this->partsCollider[i]->isSetTopPosition = true;
+		this->partsCollider[i]->rigidbody.Initialize(false);
+		this->partsCollider[i]->type = CharacterColliderData::CharaType::MOL;
+		this->prevPartsHp[i] = this->maxHp;
+	}
+
+	/*リジッドボディの初期化*/
+	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_POSITION"]);//座標
+	const VECTOR ROTATION = Gori::Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_ROTATION"]);//回転率
+	const VECTOR SCALE = Gori::Convert(json.GetJson(JsonManager::FileType::DRAGON)["INIT_SCALE"]);	 //拡大率
 	this->collider->rigidbody.Initialize(true);
 	this->collider->rigidbody.SetPosition(POSITION);
 	this->collider->rigidbody.SetRotation(ROTATION);
 	this->collider->rigidbody.SetScale(SCALE);
-	for (int i = 0; i < this->maxPartsColliderNum; i++)
-	{
-		this->partsCollider[i]->isUseCollWithChara = true;
-	}
 
 	/*モデルの初期化*/
 	MV1SetPosition	 (this->modelHandle, this->collider->rigidbody.GetPosition());
@@ -157,6 +205,9 @@ void Dragon::Initialize()
 
 	/*アニメーションの初期化*/
 	this->animation->Attach(&this->modelHandle);
+
+	ChangeNormalColor();
+	SetAttackCount();
 }
 
 /// <summary>
@@ -189,59 +240,28 @@ void Dragon::Update()
 			this->partsCollider[i]->data->isHit = false;
 			int damage = this->prevPartsHp[i] - this->partsCollider[i]->data->hp;
 			this->prevPartsHp[i] = this->partsCollider[i]->data->hp;
+			this->collider->data->damage = damage;
 			this->collider->data->hp -= damage;
+			this->collider->data->isHit = true;
 		}
 	}
+
+	UpdateBossState();
 
 	/*ステージ外に出たらデス*/
 	if (this->collider->rigidbody.GetPosition().y < -30.0f)
 	{
-		DyingIfOutOfStage();
+		RespawnIfOutOfStage();
 	}
 
 	/*ビヘイビアツリーの更新*/
 	auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
 	tree.Update();
-	auto& json = Singleton<JsonManager>::GetInstance();
-	float defenisivePower = 0.0f;
-	if (tree.GetDragonState() == DragonBehaviorTree::DragonState::TIRED)
-	{
-		defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["TIRED_DEFENSIVE_POWER"];
-		for (auto& collider : this->partsCollider)
-		{
-			collider->data->defensivePower = defenisivePower;
-		}
-	}
-	else
-	{
-		switch (tree.GetDragonStage())
-		{
-			//1段階
-		case static_cast<short>(DragonBehaviorTree::DragonStage::AWAKENING):
-			defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["AWAKENING_DEFENSIVE_POWER"];
-			for (auto& collider : this->partsCollider)
-			{
-				collider->data->defensivePower = defenisivePower;
-			}
-			break;
-			//2段階
-		case static_cast<short>(DragonBehaviorTree::DragonStage::FURY):
-			defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["FURY_DEFENSIVE_POWER"];
-			for (auto& collider : this->partsCollider)
-			{
-				collider->data->defensivePower = defenisivePower;
-			}
-			break;
-			//3段階
-		case static_cast<short>(DragonBehaviorTree::DragonStage::RAMPAGE):
-			defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["RAMPAGE_DEFENSIVE_POWER"];
-			for (auto& collider : this->partsCollider)
-			{
-				collider->data->defensivePower = defenisivePower;
-			}
-			break;
-		}
-	}
+
+	this->positionForLockon = MV1GetFramePosition(this->modelHandle, 6);
+	this->positionForLockon.y = this->collider->rigidbody.GetPosition().y;
+	this->positionForLockon.y += this->LOCKON_OFFSET;
+
 }
 
 /// <summary>
@@ -308,25 +328,24 @@ void Dragon::OnAttackCollider(const short _index)
 	auto& effect = Singleton<EffectManager>::GetInstance();
 	auto& json = Singleton<JsonManager>::GetInstance();
 	auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
-	short dragonStage = tree.GetDragonStage();
 	for (auto& collider:this->attackCollider[_index])
 	{
 		switch (_index)
 		{
 		case static_cast<short>(AttackCollider::SMASH):
 			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_SWING_1);
-			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["SMASH_BLOCK_STAMINA_CONSUMPTION"][dragonStage];
+			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["SMASH_BLOCK_STAMINA_CONSUMPTION"][this->bossState];
 			break;
 		case static_cast<short>(AttackCollider::SWEEP):
-			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["SWEEP_BLOCK_STAMINA_CONSUMPTION"][dragonStage];
+			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["SWEEP_BLOCK_STAMINA_CONSUMPTION"][this->bossState];
 			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_SWING_2);
 			break;
 		case static_cast<short>(AttackCollider::ROTATE):
-			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["ROTATE_BLOCK_STAMINA_CONSUMPTION"][dragonStage];
+			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["ROTATE_BLOCK_STAMINA_CONSUMPTION"][this->bossState];
 			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_SWING_3);
 			break;
 		case static_cast<short>(AttackCollider::BREATH):
-			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["BREATH_BLOCK_STAMINA_CONSUMPTION"][dragonStage];
+			collider->data->blockStaminaConsumption = json.GetJson(JsonManager::FileType::DRAGON)["BREATH_BLOCK_STAMINA_CONSUMPTION"][this->bossState];
 			sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_BREATH);
 			effect.OnIsEffect(EffectManager::EffectType::DRAGON_BREATH);
 			break;
@@ -425,3 +444,101 @@ void Dragon::OffAttackCollider(const short _index)
 	}
 }
 
+/// <summary>
+/// 攻撃コンボ回数のセット
+/// </summary>
+void Dragon::SetAttackCount()
+{
+	/*シングルトンクラスのインスタンスを取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
+	/*コンボ数の設定*/
+	//if (this->bossState != static_cast<int>(BossState::NORMAL))
+	//{
+		this->attackCount = json.GetJson(JsonManager::FileType::DRAGON)["ATTACK_COUNT"][this->bossState];
+	//}
+}
+
+/// <summary>
+/// 怒り状態の設定
+/// </summary>
+void Dragon::UpdateBossState()
+{
+	/*シングルトンクラスのインスタンスの取得*/
+	auto& json = Singleton<JsonManager>::GetInstance();
+
+	/*状態の切り替え*/
+	switch (this->bossState)
+	{
+		//怒り
+	case static_cast<int>(BossState::ANGRY):
+		//攻撃回数が０だったら状態を通常に戻す
+		if (this->attackCount <= 0)
+		{
+			this->bossState = static_cast<int>(BossState::NORMAL);
+			this->angryValue = 0;
+			ChangeNormalColor();
+			auto& json = Singleton<JsonManager>::GetInstance();
+			float defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["DEFENSIVE_POWER"][this->bossState];
+			for (auto& collider : this->partsCollider)
+			{
+				collider->data->defensivePower = defenisivePower;
+			}
+		}
+		break;
+		//通常
+	case static_cast<int>(BossState::NORMAL):
+		//攻撃が当たっていたら各状態変化用の値を増加させる
+		if (this->collider->data->isHit)
+		{
+			this->angryValue += this->collider->data->damage;
+			this->tiredValue += this->collider->data->damage;
+			this->collider->data->isHit = false;
+		}
+		//疲れゲージが最大以上だったら状態をTIREDにする
+		if (this->tiredValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_VALUE"])
+		{
+			this->bossState = static_cast<int>(BossState::TIRED);
+			this->attackCount = 0;
+			this->tiredValue = 0;
+			float defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["DEFENSIVE_POWER"][this->bossState];
+			for (auto& collider : this->partsCollider)
+			{
+				collider->data->defensivePower = defenisivePower;
+			}
+			ChangeTiredColor();
+		}
+		//怒り値が最大以上だったら状態をANGRYにする
+		if (this->angryValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"])
+		{
+			auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
+			rootNode.SetInterval(static_cast<int>(DragonBehaviorTree::ActionType::ROAR),1);
+			this->bossState = static_cast<int>(BossState::ANGRY);
+			this->attackCount = json.GetJson(JsonManager::FileType::ENEMY)["ANGRY_ATTACK_COMBO_COUNT"];
+			float defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["DEFENSIVE_POWER"][this->bossState];
+			for (auto& collider : this->partsCollider)
+			{
+				collider->data->defensivePower = defenisivePower;
+			}
+			ChangeAngryColor();
+		}
+		break;
+		//疲れ
+	case static_cast<int>(BossState::TIRED):
+		//疲れ時間を増加
+		this->tiredDuration++;
+		//最大値を超えたら状態を通常に変更
+		if (this->tiredDuration >= json.GetJson(JsonManager::FileType::ENEMY)["TIRED_DURATION"])
+		{
+			this->bossState = static_cast<int>(BossState::NORMAL);
+			ChangeNormalColor();
+			this->tiredDuration = 0;
+			float defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["DEFENSIVE_POWER"][this->bossState];
+			for (auto& collider : this->partsCollider)
+			{
+				collider->data->defensivePower = defenisivePower;
+			}
+		}
+		break;
+	}
+}

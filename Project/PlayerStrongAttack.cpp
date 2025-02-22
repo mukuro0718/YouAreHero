@@ -44,6 +44,10 @@ PlayerStrongAttack::PlayerStrongAttack()
 	this->collider->radius			  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_ATTACK_RADIUS"];
 	this->collider->data->hitStopTime = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_TIME"];
 	this->collider->data->damage	  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_DAMAGE"];
+	this->collider->data->hitStopTime = this->HIT_STOP_TIME;
+	this->collider->data->hitStopType = this->HIT_STOP_TYPE;
+	this->collider->data->hitStopDelay= this->HIT_STOP_DELAY;
+	this->collider->data->slowFactor  = this->SLOW_FACTOR;
 	this->nextAnimation				  = static_cast<int>(Player::AnimationType::SKILL);
 	this->playTime					  = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 	this->firstDirection			  = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);

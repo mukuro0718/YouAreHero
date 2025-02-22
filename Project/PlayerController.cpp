@@ -82,7 +82,7 @@ void PlayerController::Initialize()
 /// <summary>
 /// ó‘Ô•ÏXƒNƒ‰ƒX
 /// </summary>
-bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEndAction, const bool _isDrawSword, const CharacterData& _data)
+bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEndAction, const bool _isDrawSword, const CharacterData& _data, const int _healCount)
 {
 	PlayerState nextState = PlayerState::IDLE;
 
@@ -204,7 +204,10 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	/*‰ñ•œ*/
 	else if (nowPadState & InputManager::PAD_X)
 	{
-		nextState = PlayerState::HEAL;
+		if (_healCount > 0)
+		{
+			nextState = PlayerState::HEAL;
+		}
 	}
 
 	/*ˆÚ“®*/

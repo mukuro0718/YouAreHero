@@ -10,6 +10,7 @@
 #include "BitFlag.h"
 #include "Animation.h"
 #include "Character.h"
+#include "HitStop.h"
 
 /// <summary>
 /// コンストラクタ
@@ -19,13 +20,16 @@ Character::Character()
 	, animation		(nullptr)
 	, state			(nullptr)
 	, collider		(nullptr)
-	, speed			(1.0f)
+	, hitStop		(nullptr)
+	, nextRotation	(Gori::ORIGIN)
 	, isAlive		(false)
-	, isGround		(false)
+	, isDraw		(false)
+	, speed			(1.0f)
 	, entryInterval	(0)
 {
 	this->animation = new Animation();
-	this->state = new BitFlag();
+	this->state		= new BitFlag();
+	this->hitStop	= new HitStop();
 }
 
 /// <summary>
@@ -179,12 +183,20 @@ void Character::SetVelocity(const VECTOR _velocity)
 }
 
 /// <summary>
-/// ステージ外に出たらデス
+/// ステージ外に出たら中央に戻す
 /// </summary>
-void Character::DyingIfOutOfStage()
+void Character::RespawnIfOutOfStage()
 {
 	VECTOR nowPosition = Gori::ORIGIN;
 	nowPosition.y = 10.0f;
 	this->collider->rigidbody.SetPosition(nowPosition);
 	//this->collider->data->hp = 0;
+}
+
+/// <summary>
+/// アクションクラス内で、ヒットストップを設定する溜めのもの
+/// </summary>
+void Character::SetHitStop(const int _time, const int _type, const int _delay, const float _factor)
+{
+	this->hitStop->SetHitStop(static_cast<float>(_time), _type, _delay, _factor);
 }

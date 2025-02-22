@@ -14,9 +14,7 @@
 /// コンストラクタ
 /// </summary>
 Dragon_Idle::Dragon_Idle()
-	: RAMPAGE_STANDBY_TIME(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["RAMPAGE_STANDBY_TIME"])
-	, FURY_STANDBY_TIME(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["FURY_STANDBY_TIME"])
-	, AWAKENING_STANDBY_TIME(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["AWAKENING_STANDBY_TIME"])
+	: STANDBY_TIME		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["STANDBY_TIME"])
 	, currentStandbyTime(0)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -50,28 +48,8 @@ Dragon_Idle::NodeState Dragon_Idle::Update()
 	{
 		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
 		enemy.UpdateVelocity(false);
-	}
-
-	/*アクションの状態をセット*/
-	if (prevAction != this->actionType)
-	{
 		rootNode.SetCurrentAction(this->actionType);
-		enemy.ChangeTiredColor();
-		switch (rootNode.GetDragonStage())
-		{
-		case static_cast<short>(DragonBehaviorTree::DragonStage::AWAKENING):
-			this->standbyTime = this->AWAKENING_STANDBY_TIME;
-			break;
-		case static_cast<short>(DragonBehaviorTree::DragonStage::FURY):
-			this->standbyTime = this->FURY_STANDBY_TIME;
-			break;
-		case static_cast<short>(DragonBehaviorTree::DragonStage::RAMPAGE):
-			this->standbyTime = this->RAMPAGE_STANDBY_TIME;
-			break;
-		default:
-			break;
-		}
-		rootNode.SetDragonState(DragonBehaviorTree::DragonState::TIRED);
+		this->standbyTime = this->STANDBY_TIME;
 	}
 
 	/*アニメーションの再生*/
@@ -84,19 +62,8 @@ Dragon_Idle::NodeState Dragon_Idle::Update()
 	//指定の待機時間を超えていたらSUCCESSを返す
 	if (this->currentStandbyTime >= this->standbyTime)
 	{
-		rootNode.SetDragonState(DragonBehaviorTree::DragonState::NORMAL);
-		switch (rootNode.GetDragonStage())
-		{
-		case static_cast<short>(DragonBehaviorTree::DragonStage::RAMPAGE):
-			enemy.ChangeAngryColor();
-			this->standbyTime = this->RAMPAGE_STANDBY_TIME;
-			break;
-		default:
-			enemy.ChangeNormalColor();
-			break;
-		}
-		rootNode.SetAttackCount();
 		this->currentStandbyTime = 0;
+		enemy.SetAttackCount();
 		return ActionNode::NodeState::SUCCESS;
 	}
 	return ActionNode::NodeState::RUNNING;

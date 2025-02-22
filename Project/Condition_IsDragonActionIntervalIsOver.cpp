@@ -31,8 +31,9 @@ Condition_IsDragonActionIntervalIsOver::NodeState Condition_IsDragonActionInterv
 {
 	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
 
-	/*スタミナが０より多ければSUCCESSを返す*/
-	if (rootNode.GetInterval(this->ACTION_INDEX) > 0)
+	/*インターバルが０より多ければSUCCESSを返す*/
+	int interval = rootNode.GetInterval(this->ACTION_INDEX);
+	if (interval > 0)
 	{
 		//printfDx("CONDITION_STAMINA_SUCCESS\n");
 		return NodeState::SUCCESS;

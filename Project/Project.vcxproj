@@ -218,6 +218,7 @@
     <ClCompile Include="BossSlashAttack.cpp" />
     <ClCompile Include="BossSlashCombo2Action.cpp" />
     <ClCompile Include="BossStabAction.cpp" />
+    <ClCompile Include="BossStateUI.cpp" />
     <ClCompile Include="ButtonUI.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Character.cpp" />
@@ -230,7 +231,7 @@
     <ClCompile Include="Condition_IsSelectedBattleAction.cpp" />
     <ClCompile Include="Condition_IsSelectedDragonBattleAction.cpp" />
     <ClCompile Include="Condition_IsSelectedReaction.cpp" />
-    <ClCompile Include="Condition_IsStageIsDifferent.cpp" />
+    <ClCompile Include="Condition_IsDragonStateIsSameAsTheSpecifiedState.cpp" />
     <ClCompile Include="Condition_IsTargetOutOfRangeOfDragonRay.cpp" />
     <ClCompile Include="Condition_IsTargetOutOfRangeOfRay.cpp" />
     <ClCompile Include="Condition_IsToTargetDistanceGreaterThanConstant.cpp" />
@@ -247,8 +248,11 @@
     <ClCompile Include="CharacterColliderData.cpp" />
     <ClCompile Include="CompositeNode.cpp" />
     <ClCompile Include="ConditionNode.cpp" />
+    <ClCompile Include="Conditon_IsAttackCountIsOver.cpp" />
+    <ClCompile Include="CreditUI.cpp" />
     <ClCompile Include="DecoratorNode.cpp" />
     <ClCompile Include="Condition_IsDownValueGreaterThanConstant.cpp" />
+    <ClCompile Include="Decorator_Inverse.cpp" />
     <ClCompile Include="Demon.cpp" />
     <ClCompile Include="DemonBehaviorTree.cpp" />
     <ClCompile Include="Demon_Dying.cpp" />
@@ -356,6 +360,7 @@
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="SelectScene.cpp" />
     <ClCompile Include="SelectUI.cpp" />
+    <ClCompile Include="TutorialManager.cpp" />
     <ClCompile Include="TutorialUI.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VECTORtoUseful.cpp" />
@@ -425,6 +430,7 @@
     <ClInclude Include="BossSlashAttack.h" />
     <ClInclude Include="BossSlashCombo2Action.h" />
     <ClInclude Include="BossStabAction.h" />
+    <ClInclude Include="BossStateUI.h" />
     <ClInclude Include="ButtonUI.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Character.h" />
@@ -437,7 +443,7 @@
     <ClInclude Include="Condition_IsSelectedBattleAction.h" />
     <ClInclude Include="Condition_IsSelectedDragonBattleAction.h" />
     <ClInclude Include="Condition_IsSelectedReaction.h" />
-    <ClInclude Include="Condition_IsStageIsDifferent.h" />
+    <ClInclude Include="Condition_IsDragonStateIsSameAsTheSpecifiedState.h" />
     <ClInclude Include="Condition_IsTargetOutOfRangeOfDragonRay.h" />
     <ClInclude Include="Condition_IsTargetOutOfRangeOfRay.h" />
     <ClInclude Include="Condition_IsToTargetDistanceGreaterThanConstant.h" />
@@ -455,8 +461,11 @@
     <ClInclude Include="BossActionHeader.h" />
     <ClInclude Include="CompositeNode.h" />
     <ClInclude Include="ConditionNode.h" />
+    <ClInclude Include="Conditon_IsAttackCountIsOver.h" />
+    <ClInclude Include="CreditUI.h" />
     <ClInclude Include="DecoratorNode.h" />
     <ClInclude Include="Condition_IsDownValueGreaterThanConstant.h" />
+    <ClInclude Include="Decorator_Inverse.h" />
     <ClInclude Include="Demon.h" />
     <ClInclude Include="DemonBehaviorTree.h" />
     <ClInclude Include="DemonBehaviorTreeHeader.h" />
@@ -562,6 +571,7 @@
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="SelectScene.h" />
     <ClInclude Include="SelectUI.h" />
+    <ClInclude Include="TutorialManager.h" />
     <ClInclude Include="TutorialUI.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="UseJson.h" />

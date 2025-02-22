@@ -16,12 +16,12 @@
 #include "Enemy.h"
 #include "BossActionHeader.h"
 #include "Boss.h"
+#include "HitStop.h"
 #include "LoadingAsset.h"
 #include "PlayerManager.h"
 #include "CameraManager.h"
 #include "EffectManager.h"
 #include "Debug.h"
-#include "HitStopManager.h"
 #include "Shadow.h"
 #include "MapManager.h"
 
@@ -31,11 +31,7 @@
 Boss::Boss()
 	: Enemy()
 	, prevAttack(AttackType::NONE)
-	, angryValue			(0.0f)
 	, nowAction				(0)
-	, angryState			(0)
-	, tiredInterval			(0)
-	, attackComboCount		(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json  = Singleton<JsonManager>::GetInstance();
@@ -71,7 +67,7 @@ Boss::Boss()
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::ROTATE_SLASH)	,this->ROTATE_SLASH);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::PUNCH)			,this->PUNCH);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_COMBO_1)	,this->SLASH_COMBO_1);
-	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_COMBO_2),this->SLASH_COMBO_2);
+	this->actionTypeMap.emplace(static_cast<int>(ActionType::SLASH_COMBO_2) ,this->SLASH_COMBO_2);
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::JUMP_ATTACK)	,this->JUMP_ATTACK);
 
 	/*コライダーデータの作成*/
@@ -114,22 +110,35 @@ Boss::~Boss()
 /// </summary>
 void Boss::Initialize()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& player = Singleton<PlayerManager>::GetInstance();
-
 	/*変数の初期化*/
-	this->isAlive						 = true;
-	this->isGround						 = true;
-	this->isDraw						 = true;
-	this->speed							 = 0.0f;
-	this->animationPlayTime				 = 0.0f;
-	this->entryInterval					 = 0;
-	this->moveTarget					 = Gori::ORIGIN;
-	this->nowAnimation					 = static_cast<int>(AnimationType::ROAR);
-	this->nowAction						 = static_cast<int>(ActionType::ROAR);
-	this->attackComboCount				 = 0;
-	this->angryState					 = static_cast<int>(BossState::NORMAL);
+	//Characterクラス
+	this->nextRotation = Gori::ORIGIN;
+	this->isAlive		= true;
+	this->speed			= 0.0f;
+	this->entryInterval	= 0;
+	this->isDraw		= true;
+	//Enemyクラス
+	this->moveTarget		= Gori::ORIGIN;
+	this->animationPlayTime	= 0.0f;
+	this->nowAnimation		= static_cast<int>(AnimationType::ROAR);
+	//Bossクラス
+	for (int i = 0; i < this->parameters.size(); i++)
+	{
+		this->parameters[i]->Initialize();
+	}
+	this->prevAttack		= AttackType::NONE;
+	this->angryValue		= 0;
+	this->nowAction			= static_cast<int>(ActionType::ROAR);
+	this->bossState			= static_cast<int>(BossState::NORMAL);
+	this->tiredValue		= 0;
+	this->tiredDuration		= 0;
+	this->attackCount		= 0;
+
+	/*コンボの設定*/
+	SetAttackCount();
+
+	/*コライダーの初期化*/
+	auto& json							 = Singleton<JsonManager>::GetInstance();
 	float height						 = json.GetJson(JsonManager::FileType::ENEMY)["HIT_HEIGHT"];
 	this->collider->topPositon			 = VGet(0.0f, height, 0.0f);
 	this->collider->radius				 = json.GetJson(JsonManager::FileType::ENEMY)["HIT_RADIUS"];
@@ -138,23 +147,11 @@ void Boss::Initialize()
 	this->collider->data->defensivePower = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DEFENSIVE_POWER"];
 	this->collider->data->hp			 = json.GetJson(JsonManager::FileType::ENEMY)["HP"];
 	this->collider->data->isHit			 = false;
-	this->tiredInterval = 0;
 
-	/*コンボの設定*/
-	SetAttackComboCount();
-
-	/*パラメータの初期化*/
-	for (int i = 0; i < this->parameters.size(); i++)
-	{
-		this->parameters[i]->Initialize();
-	}
-
-	/*物理挙動の初期化*/
-	//jsonデータを定数に代入
+	/*コライダー内のリジッドボディの初期化*/
 	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_POSITION"]);//座標
 	const VECTOR ROTATION = Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_ROTATION"]);//回転率
 	const VECTOR SCALE = Gori::Convert(json.GetJson(JsonManager::FileType::ENEMY)["INIT_SCALE"]);	 //拡大率
-	//初期化
 	this->collider->rigidbody.Initialize(true);
 	this->collider->rigidbody.SetPosition(POSITION);
 	this->collider->rigidbody.SetRotation(ROTATION);
@@ -163,13 +160,15 @@ void Boss::Initialize()
 	MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());
 	MV1SetScale		 (this->modelHandle, this->collider->rigidbody.GetScale());
 
+	/*状態の初期化*/
 	this->state->ClearFlag(this->MASK_ALL);
 	this->state->SetFlag(this->ROAR);
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
-	MV1SetTextureGraphHandle(this->modelHandle, 0, this->normalTexture, FALSE);
 
+	/*使用するテクスチャを通常に戻す*/
+	MV1SetTextureGraphHandle(this->modelHandle, 0, this->normalTexture, FALSE);
 }
 
 /// <summary>
@@ -190,17 +189,22 @@ void Boss::Update()
 	/*ステージ外に出たらデス*/
 	if (this->collider->rigidbody.GetPosition().y < -30.0f)
 	{
-		DyingIfOutOfStage();
+		RespawnIfOutOfStage();
 	}
 
+	if (this->hitStop->IsHitStop()) return;
+
 	/*怒り状態の設定*/
-	SetAngryState();
+	UpdateBossState();
+
 	/*状態の切り替え*/
 	ChangeState();
 
-
 	/*ここに各アクションごとの更新処理を入れたい*/
 	this->parameters[this->nowAction]->Update(*this);
+
+	this->positionForLockon = this->collider->rigidbody.GetPosition();
+	this->positionForLockon.y += this->LOCKON_OFFSET;
 	//int endTime = GetNowCount();
 	//this->frameTime = endTime - startTime;
 }
@@ -222,13 +226,16 @@ void Boss::PlayAnimation()
 /// <summary>
 /// 攻撃コンボ回数のセット
 /// </summary>
-void Boss::SetAttackComboCount()
+void Boss::SetAttackCount()
 {
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 
 	/*コンボ数の設定*/
-	this->attackComboCount = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_COMBO_COUNT"][this->angryState];
+	if (this->bossState == static_cast<int>(BossState::NORMAL))
+	{
+		this->attackCount = json.GetJson(JsonManager::FileType::ENEMY)["ATTACK_COMBO_COUNT"][this->bossState];
+	}
 }
 
 /// <summary>
@@ -379,53 +386,62 @@ const bool Boss::GetIsAttack()const
 /// <summary>
 /// 怒り状態の設定
 /// </summary>
-void Boss::SetAngryState()
+void Boss::UpdateBossState()
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	
-	/*怒り状態*/
-	switch (this->angryState)
+	/*状態の切り替え*/
+	switch (this->bossState)
 	{
 		//怒り
 	case static_cast<int>(BossState::ANGRY):
-		this->attackComboCount = 2;
-		this->angryValue--;
-		if (this->angryValue < 0)
+		//攻撃回数が０だったら状態を通常に戻す
+		if (this->attackCount <= 0)
 		{
-			this->angryState = static_cast<int>(BossState::TIRED);
+			this->bossState = static_cast<int>(BossState::NORMAL);
 			this->angryValue = 0;
-			MV1SetTextureGraphHandle(this->modelHandle, 0, this->tiredTexture, FALSE);
-			this->collider->data->defensivePower = json.GetJson(JsonManager::FileType::ENEMY)["TIRED_DEFENSIVE_POWER"];
+			MV1SetTextureGraphHandle(this->modelHandle, 0, this->normalTexture, FALSE);
+			this->collider->data->defensivePower = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DEFENSIVE_POWER"];
 		}
 		break;
 		//通常
 	case static_cast<int>(BossState::NORMAL):
-		//怒り値を増加
-		this->angryValue++;
-		//攻撃が当たっていたら怒り値をさらに増加
+		//攻撃が当たっていたら各状態変化用の値を増加させる
 		if (this->collider->data->isHit)
 		{
-			this->angryValue++;
+			this->angryValue += this->collider->data->damage;
+			this->tiredValue += this->collider->data->damage;
+			this->collider->data->isHit = false;
+		}
+		//疲れゲージが最大以上だったら状態をTIREDにする
+		if (this->tiredValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_VALUE"])
+		{
+			this->bossState = static_cast<int>(BossState::TIRED);
+			this->attackCount = 0;
+			this->tiredValue = 0;
+			this->collider->data->defensivePower = json.GetJson(JsonManager::FileType::ENEMY)["TIRED_DEFENSIVE_POWER"];
+			MV1SetTextureGraphHandle(this->modelHandle, 0, this->tiredTexture, FALSE);
 		}
 		//怒り値が最大以上だったら状態をANGRYにする
 		if (this->angryValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"])
 		{
-			this->angryState = static_cast<int>(BossState::ANGRY);
-			MV1SetTextureGraphHandle(this->modelHandle, 0, this->angryTexture, FALSE);
+			this->bossState = static_cast<int>(BossState::ANGRY);
+			this->attackCount = json.GetJson(JsonManager::FileType::ENEMY)["ANGRY_ATTACK_COMBO_COUNT"];
 			this->collider->data->defensivePower = json.GetJson(JsonManager::FileType::ENEMY)["ANGRY_DEFENSIVE_POWER"];
+			MV1SetTextureGraphHandle(this->modelHandle, 0, this->angryTexture, FALSE);
 		}
 		break;
 	//疲れ
 	case static_cast<int>(BossState::TIRED):
 		//疲れ時間を増加
-		this->tiredInterval++;
+		this->tiredDuration++;
 		//最大値を超えたら状態を通常に変更
-		if (this->tiredInterval >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_INTERVAL"])
+		if (this->tiredDuration >= json.GetJson(JsonManager::FileType::ENEMY)["TIRED_DURATION"])
 		{
-			this->angryState = static_cast<int>(BossState::NORMAL);
+			this->bossState = static_cast<int>(BossState::NORMAL);
 			MV1SetTextureGraphHandle(this->modelHandle, 0, this->normalTexture, FALSE);
-			this->tiredInterval = 0;
+			this->tiredDuration = 0;
 			this->collider->data->defensivePower = json.GetJson(JsonManager::FileType::ENEMY)["NORMAL_DEFENSIVE_POWER"];
 		}
 		break;

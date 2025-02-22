@@ -15,7 +15,7 @@
 #include "Condition_IsDragonAttackCountLeft.h"
 #include "Condition_IsDragonToTargetDistanceGreaterThanConstant.h"
 #include "Condition_IsTargetOutOfRangeOfDragonRay.h"
-#include "Condition_IsStageIsDifferent.h"
+#include "Condition_IsDragonStateIsSameAsTheSpecifiedState.h"
 #include "Dragon_Dying.h"
 #include "Dragon_Idle.h"
 #include "Dragon_Roar.h"

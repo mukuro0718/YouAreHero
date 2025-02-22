@@ -5,7 +5,6 @@
 
 class PlayerController;
 class Character;
-class HitStop;
 class PlayerAction;
 class Player : public Character
 {
@@ -24,16 +23,15 @@ public:
 
 	/*getter*/
 	const int		GetNowState			()const;
-	const bool		GetIsAttack			()const override { return false; }												//攻撃フラグの取得
-	const float		GetStamina			()const;																		//スタミナの取得
-	const int		GetHealCount		()const { return this->healCount; }												//回復オーブの数(今は回復回数になっている)
-	CharacterData&	GetPlayerData		();																				//プレイヤーデータの取得
-	Rigidbody&		GetPlayerRigidbody	();																				//リジッドボディの取得
-	const bool		GetIsDrawSword		()const { return this->isDrawSword; }											//武器を出しているか
-		  void		SetHealCount		(const int _count) { this->healCount = _count; }								//回復回数の設定
-		  void		SetHitStop			(const int _time, const int _type, const int _delay, const float _factor);		//ヒットストップの設定
-		  void		SetIsDrawSword		(const bool _set) { this->isDrawSword = _set; }									//抜刀フラグの設定
-	const bool		GetIsLock			() { return this->isLock; }//ロックオンフラグ
+	const bool		GetIsAttack			()const override { return false; }											//攻撃フラグの取得
+	const float		GetStamina			()const;																	//スタミナの取得
+	const int		GetHealCount		()const { return this->healCount; }											//回復オーブの数(今は回復回数になっている)
+	CharacterData&	GetPlayerData		();																			//プレイヤーデータの取得
+	Rigidbody&		GetPlayerRigidbody	();																			//リジッドボディの取得
+	const bool		GetIsDrawSword		()const { return this->isDrawSword; }										//武器を出しているか
+		  void		SetHealCount		(const int _count) { this->healCount = _count; }							//回復回数の設定
+		  void		SetIsDrawSword		(const bool _set) { this->isDrawSword = _set; }								//抜刀フラグの設定
+	const bool		GetIsLock			() { return this->isLock; }													//ロックオンフラグ
 	//アニメーションの種類
 	enum class AnimationType
 	{
@@ -71,11 +69,10 @@ private:
 	/*メンバ変数*/
 	PlayerController*		controller;		//コントローラー
 	vector<PlayerAction*>	action;			//アクション
-	HitStop*				hitStop;		//ヒットストップ
 	int						healCount;		//回復可能数
 	bool					isDrawSword;	//剣を抜いているか
 	int						frameTime;		//処理までにかかった時間
-	bool isLock;
-	bool isPrevPushLS;
+	bool					isLock;			//ロックオンフラグ
+	bool					isPrevPushLS;	//前フレームでLSを押していたか
 };
 

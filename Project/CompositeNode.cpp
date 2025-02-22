@@ -1,6 +1,7 @@
 #include "UseSTL.h"
 #include "BehaviorTreeNode.h"
 #include "CompositeNode.h"
+#include "DeleteInstance.h"
 
 /// <summary>
 /// コンストラクタ
@@ -15,6 +16,10 @@ CompositeNode::CompositeNode()
 /// </summary>
 CompositeNode::~CompositeNode()
 {
+	for (int i = 0; i < this->children.size(); i++)
+	{
+		DeleteMemberInstance(this->children[i]);
+	}
 	this->children.clear();
 }
 

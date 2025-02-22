@@ -36,13 +36,13 @@ SelectUI::SelectUI()
 	this->iconTable			 = asset.GetImage(LoadingAsset::ImageType::SELECT_ICON_TABLE);
 	this->enemyImageTable	 = asset.GetImage(LoadingAsset::ImageType::SELECT_IMAGE_TABLE);
 	this->drawRectBackGround = asset.GetImage(LoadingAsset::ImageType::SELECT_DRAW_RECT);
-	this->aButton = asset.GetImage(LoadingAsset::ImageType::A_BUTTON);
-	this->bButton = asset.GetImage(LoadingAsset::ImageType::B_BUTTON);
-	this->lStick = asset.GetImage(LoadingAsset::ImageType::LEFT_STICK_INPUT);
+	this->aButton			 = asset.GetImage(LoadingAsset::ImageType::A_BUTTON);
+	this->bButton			 = asset.GetImage(LoadingAsset::ImageType::B_BUTTON);
+	this->lStick			 = asset.GetImage(LoadingAsset::ImageType::LEFT_STICK_INPUT);
+	this->enemyImage.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_IMAGE_4));
 	this->enemyImage.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_IMAGE_1));
 	this->enemyImage.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_IMAGE_2));
 	this->enemyImage.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_IMAGE_3));
-	this->enemyImage.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_IMAGE_4));
 
 	Initialize();
 }
@@ -101,9 +101,11 @@ void SelectUI::Update()
 		//エネミーチェンジャーの更新
 		bool isProvDecide = false;
 		bool isFinalDecide = false;
+		bool isPrevProvDecide = false;
 		if (!this->isProvDecideForBackTitle)
 		{
 			auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
+			isPrevProvDecide = enemyChanger.GetIsProvDecide();
 			enemyChanger.Update();
 			this->nowSelectEnemy = enemyChanger.GetEnemyType();
 			isProvDecide = enemyChanger.GetIsProvDecide();
@@ -111,7 +113,7 @@ void SelectUI::Update()
 		}
 
 		//タイトルに戻るか
-		if (!isProvDecide && !isFinalDecide)
+		if (!isProvDecide && !isFinalDecide && !isPrevProvDecide)
 		{
 			auto& input = Singleton<InputManager>::GetInstance();
 			bool isInputB = false;
@@ -200,13 +202,13 @@ const void SelectUI::Draw()const
 		DrawStringToHandle(headerPosition[0], headerPosition[1], "クエスト一覧", fontColor, this->headerFont);
 		DrawLine(headerLinePosition[0], headerLinePosition[1], headerLinePosition[2], headerLinePosition[3], fontColor);
 		DrawExtendGraph(position1[0], position1[1], position1[2], position1[3], this->iconTable, TRUE);
-		DrawStringToHandle(position1[0] + positionOffset[0], position1[1] + positionOffset[1], "討伐：GORG GRASS", fontColor, this->questFont);
+		DrawStringToHandle(position1[0] + positionOffset[0], position1[1] + positionOffset[1], "操作確認", fontColor, this->questFont);
 		DrawExtendGraph(position2[0], position2[1], position2[2], position2[3], this->iconTable, TRUE);
-		DrawStringToHandle(position2[0] + positionOffset[0], position2[1] + positionOffset[1], "討伐：MORNACT", fontColor, this->questFont);
+		DrawStringToHandle(position2[0] + positionOffset[0], position2[1] + positionOffset[1], "討伐：GORG GRASS", fontColor, this->questFont);
 		DrawExtendGraph(position3[0], position3[1], position3[2], position3[3], this->iconTable, TRUE);
-		DrawStringToHandle(position3[0] + positionOffset[0], position3[1] + positionOffset[1], "討伐：LUXURIO", fontColor, this->questFont);
+		DrawStringToHandle(position3[0] + positionOffset[0], position3[1] + positionOffset[1], "討伐：MORNACT", fontColor, this->questFont);
 		DrawExtendGraph(position4[0], position4[1], position4[2], position4[3], this->iconTable, TRUE);
-		DrawStringToHandle(position4[0] + positionOffset[0], position4[1] + positionOffset[1], "操作確認", fontColor, this->questFont);
+		DrawStringToHandle(position4[0] + positionOffset[0], position4[1] + positionOffset[1], "討伐：LUXURIO", fontColor, this->questFont);
 	}
 
 	/*フレーム*/
@@ -244,7 +246,7 @@ const void SelectUI::Draw()const
 		DrawExtendGraph(tableDrawRect[0], tableDrawRect[1], tableDrawRect[2], tableDrawRect[3], this->enemyImageTable, TRUE);
 		DrawExtendGraph(decideButtonDrawRect[0], decideButtonDrawRect[1], decideButtonDrawRect[2], decideButtonDrawRect[3], this->bButton, TRUE);
 		DrawExtendGraph(backButtonDrawRect[0], backButtonDrawRect[1], backButtonDrawRect[2], backButtonDrawRect[3], this->aButton, TRUE);
-		DrawStringToHandle(headerTextPosition[0], headerTextPosition[1], "このボスを討伐しますか", fontColor, this->headerFont);
+		DrawStringToHandle(headerTextPosition[0], headerTextPosition[1], "このクエストを開始しますか", fontColor, this->headerFont);
 		DrawStringToHandle(actionTextPosition[0], actionTextPosition[1], ":はい       :いいえ", fontColor, this->questFont);
 	}
 	else if (this->isProvDecideForBackTitle)
@@ -257,7 +259,7 @@ const void SelectUI::Draw()const
 		DrawExtendGraph(tableDrawRect[0], tableDrawRect[1], tableDrawRect[2], tableDrawRect[3], this->enemyImageTable, TRUE);
 		DrawExtendGraph(decideButtonDrawRect[0], decideButtonDrawRect[1], decideButtonDrawRect[2], decideButtonDrawRect[3], this->bButton, TRUE);
 		DrawExtendGraph(backButtonDrawRect[0], backButtonDrawRect[1], backButtonDrawRect[2], backButtonDrawRect[3], this->aButton, TRUE);
-		DrawStringToHandle(headerTextPosition[0], headerTextPosition[1], "タイトルに戻りますか", fontColor, this->headerFont);
+		DrawStringToHandle(headerTextPosition[0], headerTextPosition[1], "   タイトルに戻りますか", fontColor, this->headerFont);
 		DrawStringToHandle(actionTextPosition[0], actionTextPosition[1], ":はい       :いいえ", fontColor, this->questFont);
 
 	}

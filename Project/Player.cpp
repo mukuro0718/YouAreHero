@@ -32,11 +32,12 @@
 /// コンストラクタ
 /// </summary>
 Player::Player()
-	: healCount	(0)
-	, hitStop	(nullptr)
-	, controller(nullptr)
-	, isLock	(false)
-	, isPrevPushLS(false)
+	: controller	(nullptr)
+	, healCount		(0)
+	, isDrawSword	(true)
+	, frameTime		(0)
+	, isLock		(false)
+	, isPrevPushLS	(false)
 {
 	/*コントローラーの作成*/
 	this->controller = new PlayerController();
@@ -64,9 +65,6 @@ Player::Player()
 	this->action.emplace_back(new PlayerStrongAttack());
 	this->action.emplace_back(new PlayerDrawSword1());
 	this->action.emplace_back(new PlayerDrawSword2());
-
-	/*ヒットストップクラスの作成*/
-	this->hitStop = new HitStop();
 
 	/*アニメーションの設定*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -105,8 +103,6 @@ void Player::Initialize()
 	/*変数の初期化*/
 	this->isAlive			= true;
 	this->isDraw			= true;
-	this->isGround			= false;
-	this->isInitialize		= true;
 	this->speed				= 0.0f;
 	this->entryInterval		= 0;
 	this->nextRotation		= Gori::ORIGIN;
@@ -160,7 +156,7 @@ void Player::Update()
 
 	if (this->collider->rigidbody.GetPosition().y < -30.0f)
 	{
-		DyingIfOutOfStage();
+		RespawnIfOutOfStage();
 	}
 
 	if (this->hitStop->IsHitStop()) return;
@@ -190,7 +186,7 @@ void Player::Update()
 	int  nowState = this->controller->GetNowState();
 	bool isChancel = this->action[nowState]->GetIsChangeAction();
 	bool isEndAction = this->action[nowState]->GetIsEndAction();
-	bool isInitialize = this->controller->StateChanger(isChancel, isEndAction, this->isDrawSword, GetCharacterData());
+	bool isInitialize = this->controller->StateChanger(isChancel, isEndAction, this->isDrawSword, GetCharacterData(), this->healCount);
 	nowState = this->controller->GetNowState();
 
 	/*状態が異なっていたらアクションを初期化する*/
@@ -347,9 +343,4 @@ CharacterData& Player::GetPlayerData()
 Rigidbody& Player::GetPlayerRigidbody()
 {
 	return this->collider->rigidbody;
-}
-
-void Player::SetHitStop(const int _time, const int _type, const int _delay, const float _factor)
-{
-	this->hitStop->SetHitStop(static_cast<float>(_time), _type, _delay, _factor);
 }

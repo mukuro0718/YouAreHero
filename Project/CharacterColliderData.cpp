@@ -57,8 +57,10 @@ void CharacterColliderData::OnHit(const AttackData& _data, const VECTOR _attackP
 	/*ガードも無敵フラグもたっていなかったら*/
 	if (!this->data->isInvinvible && !isGuard)
 	{
+		//ダメージ計算
+		this->data->damage		 = _data.damage / this->data->defensivePower;
 		//HPを減らす
-		this->data->hp			 -= _data.damage / this->data->defensivePower;
+		this->data->hp			-= this->data->damage;
 		//ヒットストップの設定
 		this->data->hitStopTime  = _data.hitStopTime;
 		this->data->hitStopType  = _data.hitStopType;

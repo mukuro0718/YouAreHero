@@ -13,10 +13,10 @@ public:
 	/*エネミーの種類*/
 	enum class EnemyType
 	{
-		GOLEM	 = 0,//ゴーレム
-		DRAGON	 = 1,//ドラゴン
-		BEAST	 = 2,//獣
-		TUTORIAL = 3,//チュートリアル
+		TUTORIAL = 0,//チュートリアル
+		GOLEM	 = 1,//ゴーレム
+		DRAGON	 = 2,//ドラゴン
+		BEAST	 = 3,//獣
 	};
 
 	void Initialize	();//初期化

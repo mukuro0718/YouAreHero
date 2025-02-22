@@ -45,6 +45,8 @@ Dragon_Sweep::NodeState Dragon_Sweep::Update()
 {
 	/*アクションの状態をセット*/
 	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
+	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
+	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
 	if (this->frameCount == 0)
 	{
 		//アクションの設定
@@ -52,13 +54,7 @@ Dragon_Sweep::NodeState Dragon_Sweep::Update()
 		//アクションの登録
 		rootNode.EntryCurrentBattleAction(*this);
 		//段階を取得
-		this->currentDragonStage = rootNode.GetDragonStage();
-		//段階が3段階の時に、アクションキャンセルフラグが立っていなければ立てる
-		if (rootNode.GetDragonStage() == static_cast<short>(DragonBehaviorTree::DragonStage::RAMPAGE) &&
-			!rootNode.GetIsCancelAction())
-		{
-			rootNode.OnIsCancelAction();
-		}
+		this->currentDragonState = enemy.GetBossState();
 	}
 
 	/*フレームカウントの増加*/
@@ -72,8 +68,6 @@ Dragon_Sweep::NodeState Dragon_Sweep::Update()
 	}
 
 	/*移動*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
 	if (this->isFixRotate)
 	{
 		enemy.Move(this->maxSpeed, this->accel, this->decel, false);
@@ -89,7 +83,7 @@ Dragon_Sweep::NodeState Dragon_Sweep::Update()
 	enemy.UpdateAttackCollider(this->USE_COLLIDER_INDEX, this->nowTotalPlayTime);
 
 	/*アニメーションの再生*/
-	float playTime = this->animationPlayTime[this->currentDragonStage];
+	float playTime = this->animationPlayTime[this->currentDragonState];
 	this->nowTotalPlayTime += playTime;
 	enemy.PlayAnimation(this->animationType, playTime);
 
@@ -103,7 +97,7 @@ Dragon_Sweep::NodeState Dragon_Sweep::Update()
 			this->nowTotalPlayTime = 0.0f;
 			enemy.OffAttackCollider(this->USE_COLLIDER_INDEX);
 			rootNode.ExitCurrentBattleAction();
-			rootNode.CalcAttackCount();
+			enemy.DecAttackComboCount();
 			return ActionNode::NodeState::SUCCESS;
 		}
 	}
@@ -115,7 +109,7 @@ Dragon_Sweep::NodeState Dragon_Sweep::Update()
 		this->nowTotalPlayTime = 0.0f;
 		enemy.OffAttackCollider(this->USE_COLLIDER_INDEX);
 		rootNode.ExitCurrentBattleAction();
-		rootNode.CalcAttackCount();
+		enemy.DecAttackComboCount();
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//それ以外は実行中を返す

@@ -10,7 +10,7 @@
 /// <summary>
 /// コンストラクタ
 /// </summary>
-Condition_IsNowStateIsSameAsTheSpecifiedState::Condition_IsNowStateIsSameAsTheSpecifiedState(const BeastBehaviorTree::BeastState _specifiedState)
+Condition_IsNowStateIsSameAsTheSpecifiedState::Condition_IsNowStateIsSameAsTheSpecifiedState(const int _specifiedState)
 	: SPECIFIED_STATE(_specifiedState)
 {
 
@@ -29,10 +29,10 @@ Condition_IsNowStateIsSameAsTheSpecifiedState::~Condition_IsNowStateIsSameAsTheS
 /// </summary>
 Condition_IsNowStateIsSameAsTheSpecifiedState::NodeState Condition_IsNowStateIsSameAsTheSpecifiedState::Update()
 {
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
+	auto& beast = Singleton<EnemyManager>::GetInstance();
 
 	/*状態が指定の状態でなければFAILUREを返す*/
-	if (rootNode.GetBeastState() != this->SPECIFIED_STATE)
+	if (beast.GetBossState() != this->SPECIFIED_STATE)
 	{
 		//printfDx("CONDITION_STATE_FAILURE\n");
 		return NodeState::FAILURE;

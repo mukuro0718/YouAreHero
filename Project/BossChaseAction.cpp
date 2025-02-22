@@ -139,7 +139,7 @@ void BossChaseAction::CalcParameter(const Boss& _boss)
 	/*もしボスとプレイヤーの間が定数以上離れていたら欲求値を倍増させる*/
 	if (DISTANCE >= this->moveDistance)
 	{
-		if (_boss.GetAttackComboCount() == 0)
+		if (_boss.GetAttackCount() == 0)
 		{
 			this->parameter->desireValue = 0;
 		}

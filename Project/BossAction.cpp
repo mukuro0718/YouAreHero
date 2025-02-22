@@ -6,7 +6,6 @@
 #include "Rigidbody.h"
 #include "ReactionType.h"
 #include "ActionParameter.h"
-#include "HitStop.h"
 #include "Character.h"
 #include "Player.h"
 #include "Enemy.h"
@@ -18,20 +17,23 @@
 /// コンストラクタ
 /// </summary>
 BossAction::BossAction()
-	: parameter		(nullptr)
-	, attack		(nullptr)
-	, hitStop		(nullptr)
-	, moveTarget	(Gori::ORIGIN)
-	, isSelect		(false)
-	, isInitialize	(false)
-	, isPriority	(false)
-	, isAllowAction (false)
-	, frameCount	(0)
-	, nowTotalAnimPlayTime(0)
+	: parameter				(nullptr)
+	, attack				(nullptr)
+	, moveTarget			(Gori::ORIGIN)
+	, isSelect				(false)
+	, frameCount			(0)
+	, isInitialize			(false)
+	, isPriority			(false)
+	, isAllowAction			(false)
+	, frameTime				(0)
+	, nextAnimation			(0)
+	, animationPlayTime		(0.0f)
+	, maxDesireValue		(0)
+	, nowTotalAnimPlayTime	(0.0f)
+	, interval				(0)
 {
 	/*インスタンスの作成*/
 	this->parameter = new ActionParameter();
-	this->hitStop	= new HitStop();
 }
 
 /// <summary>
@@ -40,7 +42,6 @@ BossAction::BossAction()
 BossAction::~BossAction()
 {
 	DeleteMemberInstance(this->attack);
-	DeleteMemberInstance(this->hitStop);
 	DeleteMemberInstance(this->parameter);
 }
 /// <summary>

@@ -4,6 +4,7 @@
 #include "ActionNode.h"
 #include "ConditionNode.h"
 #include "Condition_IsDestoroyedPart.h"
+#include "Conditon_IsAttackCountIsOver.h"
 #include "Condition_IsFrighteningValueGreaterThanConstant.h"
 #include "Condition_IsToTargetDistanceGreaterThanConstant.h"
 #include "Condition_IsDownValueGreaterThanConstant.h"

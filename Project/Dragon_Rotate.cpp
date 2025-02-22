@@ -23,6 +23,7 @@
 Dragon_Rotate::Dragon_Rotate()
 	: USE_COLLIDER_INDEX(static_cast<short>(Dragon::AttackCollider::ROTATE))
 	, frameCount		(0)
+	, currentDragonState(0)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->animationType				= static_cast<int>(Dragon::AnimationType::ROTATE_ATTACK);
@@ -33,6 +34,7 @@ Dragon_Rotate::Dragon_Rotate()
 	this->accel						= json.GetJson(JsonManager::FileType::DRAGON)["ACCEL"];
 	this->decel						= json.GetJson(JsonManager::FileType::DRAGON)["DECEL"];
 	this->isFixRotate				= true;
+	this->interval					= json.GetJson(JsonManager::FileType::DRAGON)["ROTATE_INTERVAL"];
 }
 
 /// <summary>
@@ -50,6 +52,8 @@ Dragon_Rotate::NodeState Dragon_Rotate::Update()
 {
 	/*アクションの状態をセット*/
 	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
+	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
+	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
 	if (this->frameCount == 0)
 	{
 		//アクションの設定
@@ -57,21 +61,19 @@ Dragon_Rotate::NodeState Dragon_Rotate::Update()
 		//アクションの登録
 		rootNode.EntryCurrentBattleAction(*this);
 		//段階を取得
-		this->currentDragonStage = rootNode.GetDragonStage();
+		this->currentDragonState = enemy.GetBossState();
 		this->frameCount++;
 	}
 
 	/*移動*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
-		enemy.UpdateSpeed(0.0f, this->accel, this->decel);
-		enemy.UpdateVelocity(false);
+	enemy.UpdateSpeed(0.0f, this->accel, this->decel);
+	enemy.UpdateVelocity(false);
 
 	/*当たり判定コライダーの更新*/
 	enemy.UpdateAttackCollider(this->USE_COLLIDER_INDEX, this->nowTotalPlayTime);
 
 	/*アニメーションの再生*/
-	float playTime = this->animationPlayTime[this->currentDragonStage];
+	float playTime = this->animationPlayTime[this->currentDragonState];
 	this->nowTotalPlayTime += playTime;
 	enemy.PlayAnimation(this->animationType, playTime);
 
@@ -83,7 +85,8 @@ Dragon_Rotate::NodeState Dragon_Rotate::Update()
 		this->frameCount = 0;
 		enemy.OffAttackCollider(this->USE_COLLIDER_INDEX);
 		rootNode.ExitCurrentBattleAction();
-		rootNode.CalcAttackCount();
+		rootNode.SetInterval(this->actionType, this->interval);
+		enemy.DecAttackComboCount();
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//それ以外は実行中を返す

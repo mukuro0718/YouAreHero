@@ -92,6 +92,7 @@ Beast_BackingBreath::NodeState Beast_BackingBreath::Update()
 		rootNode.SetSelectAction(this->actionType);
 		//アクションの登録
 		rootNode.EntryCurrentBattleAction(*this);
+		enemy.DecAttackComboCount();
 	}
 
 	/*コライダーの更新*/

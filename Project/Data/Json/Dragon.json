@@ -38,6 +38,11 @@
   "DECEL": -0.05,
   "WALK_SPEED": 0.7,
 
+  "ATTACK_COUNT": [ 0, 2, 10 ],
+  "DEFENSIVE_POWER": [ 0.3, 1.0, 2.0 ],
+
+
+
   "AWAKENING_DEFENSIVE_POWER": 1.0,
   "FURY_DEFENSIVE_POWER": 1.5,
   "RAMPAGE_DEFENSIVE_POWER": 2.0,
@@ -68,9 +73,10 @@
   "TOLERANCE_RANGE": [ -0.707, -1.0 ],
   "THRESHOLD_OF_FURY": 800,
   "UNLEASHED_FURY": 400,
-  "AWAKENING_STANDBY_TIME": 180,
-  "FURY_STANDBY_TIME": 120,
-  "RAMPAGE_STANDBY_TIME": 90,
+
+  "STANDBY_TIME": 180,
+
+  "ROTATE_INTERVAL": 300,
 
   "SMASH_CANCEL_PLAY_TIME": 100.0,
   "SWEEP_CANCEL_PLAY_TIME": 100.0,
@@ -105,31 +111,31 @@
   "ATTACK_HIT_RADIUS": [
     [ 5 ],
     [ 5 ],
-    [ 5, 5, 5 ],
+    [ 8, 5, 5, 5 ],
     [ 5 ]
   ],
   "ATTACK_DAMAGE": [
-    [ 25 ],
-    [ 25 ],
-    [ 15, 15, 15 ],
+    [ 35 ],
+    [ 35 ],
+    [ 30, 30, 30, 30 ],
     [ 30 ]
   ],
   "ATTACK_HIT_STOP_TIME": [
     [ 5 ],
     [ 5 ],
-    [ 5, 5, 5 ],
+    [ 5, 5, 5, 5],
     [ 5 ]
   ],
   "ATTACK_HIT_STOP_DELAY": [
     [ 0 ],
     [ 0 ],
-    [ 0, 0, 0 ],
+    [ 0, 0, 0, 0],
     [ 0 ]
   ],
   "ATTACK_HIT_STOP_SLOW_FACTOR": [
     [ 0.3 ],
     [ 0.3 ],
-    [ 0.3, 0.3, 0.3 ],
+    [ 0.3, 0.3, 0.3, 0.3 ],
     [ 0.3 ]
   ],
 
@@ -137,6 +143,7 @@
     [ [ 76, 77 ] ],
     [ [ 76, 77 ] ],
     [
+      [ 94, 203 ],
       [ 204, 206 ],
       [ 206, 208 ],
       [ 208, 210 ]

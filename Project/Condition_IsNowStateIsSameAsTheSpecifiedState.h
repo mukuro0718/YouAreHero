@@ -8,11 +8,11 @@ class BeastBehaviorTree;
 class Condition_IsNowStateIsSameAsTheSpecifiedState : public ConditionNode
 {
 public:
-	 Condition_IsNowStateIsSameAsTheSpecifiedState(const BeastBehaviorTree::BeastState _specifiedState);//コンストラクタ
+	 Condition_IsNowStateIsSameAsTheSpecifiedState(const int _specifiedState);//コンストラクタ
 	~Condition_IsNowStateIsSameAsTheSpecifiedState();//デストラクタ
 
 	NodeState Update() override;//更新
 private:
-	const BeastBehaviorTree::BeastState SPECIFIED_STATE;
+	const int SPECIFIED_STATE;
 };
 

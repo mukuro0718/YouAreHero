@@ -28,6 +28,7 @@ BossIdleAction::BossIdleAction()
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 	this->maxDesireValue	= json.GetJson(JsonManager::FileType::ENEMY)["MAX_DESIRE_VALUE"];
 	this->checkedState		= static_cast<int>(Boss::BossState::NORMAL);
+	this->maxFrameCount		= json.GetJson(JsonManager::FileType::ENEMY)["IDLE_INTERVAL"];
 }
 
 /// <summary>
@@ -65,40 +66,6 @@ void BossIdleAction::Update(Boss& _boss)
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
 
-	/*カラースケールの変更*/
-	//{
-	//	if (!this->isChangeColorScale && 
-	//		_boss.GetAngryState() == static_cast<int>(Boss::BossState::NORMAL))
-	//	{
-	//		this->isChangeColorScale = true;
-	//	}
-
-	//	//初期化フラグが立っていたら現在の色を取得する
-	//	if (this->isChangeColorScale)
-	//	{
-	//		//ボスのモデルハンドル
-	//		const int MODEL_HANDLE = _boss.GetModelHandle();
-	//		//フラグが立っていなかったらカラースケールの変更
-	//		if (!this->isInitializeColorScale)
-	//		{
-	//			//カラースケールの更新(ここでは赤色になるようにする)
-	//			for (int i = 0; i < this->nowColorScale.size(); i++)
-	//			{
-	//				this->getColorScaleMap[i](this->baseColorScale[i], this->nowColorScale[i], MODEL_HANDLE);
-	//			}
-	//			this->isInitializeColorScale = true;
-	//		}
-	//		//カラースケールの更新(ここでは赤色になるようにする)
-	//		for (int i = 0; i < this->nowColorScale.size(); i++)
-	//		{
-	//			const COLOR_F TARGET = ColorConvert(json.GetJson(JsonManager::FileType::ENEMY)["IDLE_TARGET_COLOR_SCALE"]);
-	//			const COLOR_F LERP = ColorConvert(json.GetJson(JsonManager::FileType::ENEMY)["LERP_COLOR_SCALE"]);
-	//			this->nowColorScale[i] = LerpColor(this->nowColorScale[i], TARGET, LERP);
-	//			this->setColorScaleMap[i](this->nowColorScale[i], MODEL_HANDLE);
-	//		}
-	//	}
-	//}
-
 	//移動ベクトルを出す（重力を加算するため、Yベクトルのみ前のベクトルを使用する）
 	VECTOR aimVelocity  = VScale(Gori::ORIGIN, this->speed);						//算出された移動ベクトル
 	VECTOR prevVelocity = _boss.GetRigidbody().GetVelocity();					//前の移動ベクトル
@@ -117,7 +84,7 @@ void BossIdleAction::Update(Boss& _boss)
 	if (isEndCount)
 	{
 		OffIsSelect(this->maxInterval);
-		_boss.SetAttackComboCount();
+		_boss.SetAttackCount();
 		this->isChangeColorScale = false;
 	}
 }
@@ -134,9 +101,9 @@ void BossIdleAction::CalcParameter(const Boss& _boss)
 	if (_boss.GetHP() <= 0)return;
 
 	/*攻撃コンボがなければ*/
-	if (_boss.GetAttackComboCount() == 0)
+	if (_boss.GetAttackCount() == 0)
 	{
-		int nowAngryState = _boss.GetAngryState();
+		int nowAngryState = _boss.GetBossState();
 		if (nowAngryState == static_cast<int>(Boss::BossState::NORMAL))
 		{
 			this->parameter->desireValue = this->maxDesireValue;

@@ -45,6 +45,10 @@ PlayerCombo1::PlayerCombo1()
 	this->collider->radius			  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO1_ATTACK_RADIUS"];
 	this->collider->data->hitStopTime = json.GetJson(JsonManager::FileType::PLAYER)["COMBO1_HIT_STOP_TIME"];
 	this->collider->data->damage	  = json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"][0];	
+	this->collider->data->hitStopTime = this->HIT_STOP_TIME;
+	this->collider->data->hitStopType = this->HIT_STOP_TYPE;
+	this->collider->data->hitStopDelay= this->HIT_STOP_DELAY;
+	this->collider->data->slowFactor  = this->SLOW_FACTOR;
 	this->nextAnimation				  = static_cast<int>(Player::AnimationType::COMBO_1);
 	this->playTime					  = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 	this->firstDirection			  = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);
@@ -93,7 +97,7 @@ void PlayerCombo1::Update(Player& _player)
 	{
 		auto& enemy = Singleton<EnemyManager>::GetInstance();
 		VECTOR	nextRotation	= Gori::ORIGIN;
-		VECTOR	enemyPosition	= enemy.GetRigidbody().GetPosition();
+		VECTOR	enemyPosition	= enemy.GetPositionForLockon();
 		VECTOR	positionToEnemy = VSub(_player.GetRigidbody().GetPosition(), enemyPosition);
 				nextRotation.y	= static_cast<float>(atan2(static_cast<double>(positionToEnemy.x), static_cast<double>(positionToEnemy.z)));
 				nowRotation		= Gori::LerpAngle(nowRotation, nextRotation, this->rotateLerpValue);

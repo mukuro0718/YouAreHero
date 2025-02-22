@@ -87,7 +87,7 @@ Beast_Down::NodeState Beast_Down::Update()
 	if (enemy.GetIsChangeAnimation())
 	{
 		/*状態がループの時にダウン値が残っていたらstageを変えない*/
-		if (this->stage == AnimationStage::LOOP && rootNode.GetDownValue() > 0)
+		if (this->stage == AnimationStage::LOOP && enemy.GetBossState() == static_cast<int>(Beast::BossState::TIRED))
 		{
 			return ActionNode::NodeState::RUNNING;
 		}
@@ -97,9 +97,7 @@ Beast_Down::NodeState Beast_Down::Update()
 			//アクションの解除
 			rootNode.ExitCurrentReaction();
 			//状態を通常に戻す
-			rootNode.SetBeastState(BeastBehaviorTree::BeastState::NORMAL);
 			rootNode.ExitCurrentBattleAction();
-			enemy.ChangeNormalColor();
 			return ActionNode::NodeState::SUCCESS;
 		}
 		return ActionNode::NodeState::RUNNING;

@@ -18,20 +18,23 @@ public:
 	const void Draw		 ()const;
 
 	/*getter*/
-	const int			 GetHP			 ()const;
-	Character&			 GetCharacter	 () { return *this->boss; }
-	const CharacterData& GetCharacterData()const;
-	const Rigidbody&	 GetRigidbody	 ()const;
-	const bool			 IsAttack		 ()const;
-	const int			 GetModelHandle	 ()const;
-	const bool			 GetIsAlive		 ()const;
+	const int			 GetHP				 ()const;
+	Character&			 GetCharacter		 () { return *this->boss; }
+	const CharacterData& GetCharacterData	 ()const;
+	const Rigidbody&	 GetRigidbody		 ()const;
+	const bool			 IsAttack			 ()const;
+	const int			 GetModelHandle		 ()const;
+	const bool			 GetIsAlive			 ()const;
+	const int			 GetAttackCount		 ()const;
+	const int			 GetBossState		 ()const;
+	const VECTOR		 GetPositionForLockon()const;
 private:
 	/*内部処理関数*/
 	 EnemyManager();//コンストラクタ
 	~EnemyManager();//デストラクタ
 
 	/*メンバ変数*/
-	Character* boss;//ボス
+	Character*		   boss;//ボス
 	vector<Character*> bossList;//ボス
 	
 	int enemyType;

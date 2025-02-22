@@ -17,6 +17,7 @@
 Dragon_Breath::Dragon_Breath()
 	: USE_COLLIDER_INDEX(static_cast<short>(Dragon::AttackCollider::BREATH))
 	, FIX_ROTATE_FRAME	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::DRAGON)["FIX_ROTATE_FRAME"])
+	, currentDragonState(0)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->animationType				= static_cast<int>(Dragon::AnimationType::BREATH);
@@ -44,6 +45,8 @@ Dragon_Breath::NodeState Dragon_Breath::Update()
 {
 	/*アクションの状態をセット*/
 	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
+	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
+	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
 	if (this->frameCount == 0)
 	{
 		//アクションの設定
@@ -51,7 +54,7 @@ Dragon_Breath::NodeState Dragon_Breath::Update()
 		//アクションの登録
 		rootNode.EntryCurrentBattleAction(*this);
 		//段階を取得
-		this->currentDragonStage = rootNode.GetDragonStage();
+		this->currentDragonState = enemy.GetBossState();
 	}
 
 	/*フレームカウントの増加*/
@@ -65,8 +68,6 @@ Dragon_Breath::NodeState Dragon_Breath::Update()
 	}
 
 	/*移動*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
 	if (this->isFixRotate)
 	{
 		enemy.Move(this->maxSpeed, this->accel, this->decel, false);
@@ -83,7 +84,7 @@ Dragon_Breath::NodeState Dragon_Breath::Update()
 	enemy.UpdateAttackCollider(this->USE_COLLIDER_INDEX, this->nowTotalPlayTime);
 
 	/*アニメーションの再生*/
-	float playTime = this->animationPlayTime[this->currentDragonStage];
+	float playTime = this->animationPlayTime[this->currentDragonState];
 	this->nowTotalPlayTime += playTime;
 	enemy.PlayAnimation(this->animationType, playTime);
 
@@ -96,7 +97,7 @@ Dragon_Breath::NodeState Dragon_Breath::Update()
 		this->nowTotalPlayTime = 0.0f;
 		enemy.OffAttackCollider(this->USE_COLLIDER_INDEX);
 		rootNode.ExitCurrentBattleAction();
-		rootNode.CalcAttackCount();
+		enemy.DecAttackComboCount();
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//それ以外は実行中を返す

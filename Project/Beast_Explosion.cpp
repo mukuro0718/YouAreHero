@@ -91,6 +91,8 @@ Beast_Explosion::NodeState Beast_Explosion::Update()
 		rootNode.SetSelectAction(this->actionType);
 		//アクションの登録
 		rootNode.EntryCurrentBattleAction(*this);
+		this->frameCount = 0;
+		enemy.DecAttackComboCount();
 	}
 
 	/*コライダーの更新*/

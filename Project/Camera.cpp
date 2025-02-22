@@ -19,15 +19,16 @@
 /// コンストラクタ
 /// </summary>
 Camera::Camera()
-	: collider	(nullptr)
-	, nextTarget(Gori::ORIGIN)
-	, nowTarget	(Gori::ORIGIN)
-	, direction	(Gori::ORIGIN)
-	, fov		(0.0f)
-	, length	(0.0f)
-	, yow		(0.0f)
-	, pitch		(0.0f)
-	, BOSS_HEAD_FRAME_INDEX(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::CAMERA)["BOSS_HEAD_FRAME_INDEX"])
+	: collider				(nullptr)
+	, nextTarget			(Gori::ORIGIN)
+	, nowTarget				(Gori::ORIGIN)
+	, direction				(Gori::ORIGIN)
+	, fov					(0.0f)
+	, length				(0.0f)
+	, yow					(0.0f)
+	, pitch					(0.0f)
+	, BOSS_HEAD_FRAME_INDEX	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::CAMERA)["BOSS_HEAD_FRAME_INDEX"])
+	, ENTRY_TIME			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::CAMERA)["ENTRY_TIME"])
 {
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -83,6 +84,7 @@ void Camera::Initialize()
 	auto& enemy		= Singleton<EnemyManager>::GetInstance();
 
 	/*メンバ変数の初期化*/
+	this->entryTime			 = 0;
 	this->nowTarget			 = Gori::ORIGIN + this->targetOffset;			//注視点
 	this->nextTarget		 = this->nowTarget;													//注視点
 	this->direction			 = this->firstDirection;											//カメラの向き
@@ -165,32 +167,41 @@ void Camera::UpdateTarget()
 		this->nextTarget = this->titleTarget;
 		break;
 	case SceneChanger::SceneType::GAME:
-		int playerHP = player.GetHP();
-		int enemyHP = enemy.GetHP();
-		if (playerHP <= 0 || enemyHP <= 0)
+		if (this->entryTime < this->ENTRY_TIME)
 		{
-			VECTOR target;
-			if (playerHP <= 0)
-			{
-				target = player.GetRigidbody().GetPosition();
-			}
-			else
-			{
-				target = MV1GetFramePosition(enemy.GetModelHandle(), this->BOSS_HEAD_FRAME_INDEX);
-			}
-			//注視点オフセット
-			this->nextTarget = VAdd(target, this->targetOffset);
+			this->entryTime++;
+			this->nextTarget = VAdd(enemy.GetRigidbody().GetPosition(), this->targetOffset);
 		}
 		else
 		{
-			if (!player.GetIsLockOn())
+			int playerHP = player.GetHP();
+			int enemyHP = enemy.GetHP();
+			if (playerHP <= 0 || enemyHP <= 0)
 			{
+				VECTOR target;
+				if (playerHP <= 0)
+				{
+					target = player.GetRigidbody().GetPosition();
+				}
+				else
+				{
+					target = MV1GetFramePosition(enemy.GetModelHandle(), this->BOSS_HEAD_FRAME_INDEX);
+				}
 				//注視点オフセット
-				this->nextTarget = VAdd(player.GetRigidbody().GetPosition(), this->targetOffset);
+				this->nextTarget = VAdd(target, this->targetOffset);
 			}
 			else
 			{
-				this->nextTarget = VAdd(enemy.GetRigidbody().GetPosition(), this->targetOffset);
+				if (!player.GetIsLockOn())
+				{
+					//注視点オフセット
+					this->nextTarget = VAdd(player.GetRigidbody().GetPosition(), this->targetOffset);
+				}
+				else
+				{
+					//this->nextTarget = VAdd(enemy.GetRigidbody().GetPosition(), this->targetOffset);
+					this->nextTarget = enemy.GetPositionForLockon();
+				}
 			}
 		}
 		break;
@@ -282,15 +293,23 @@ void Camera::UpdateLength()
 		minLength = this->titleMinLength;
 		break;
 	case SceneChanger::SceneType::GAME:
-		if (player.GetHP() <= 0 || enemy.GetHP() <= 0)
+		if (this->entryTime < this->ENTRY_TIME)
 		{
-			maxLength = this->deathMaxLength;
-			minLength = this->deathMinLength;
+			maxLength = this->deathMaxLength * this->ENTRY_MULT;
+			minLength = this->deathMinLength * this->ENTRY_MULT;
 		}
 		else
 		{
-			maxLength = this->maxLength;
-			minLength = this->minLength;
+			if (player.GetHP() <= 0 || enemy.GetHP() <= 0)
+			{
+				maxLength = this->deathMaxLength;
+				minLength = this->deathMinLength;
+			}
+			else
+			{
+				maxLength = this->maxLength;
+				minLength = this->minLength;
+			}
 		}
 		break;
 	default:
@@ -334,34 +353,50 @@ void Camera::UpdateVelocity()
 		nextPosition.y = this->titlePositionOffset;
 		break;
 	case SceneChanger::SceneType::GAME:
-		if (player.GetHP() <= 0 || enemy.GetHP() <= 0)
+		if (this->entryTime < this->ENTRY_TIME)
 		{
-				  VECTOR nowTarget				= this->nowTarget;
-						 nowTarget.y			= 0.0f;
-			const VECTOR NOW_POSITION			= this->collider->rigidbody.GetPosition();
-			const VECTOR TARGET_TO_POSITION		= VNorm(VSub(NOW_POSITION, this->nowTarget));
-				  VECTOR newPosition			= VAdd(VScale(TARGET_TO_POSITION, this->length), this->nowTarget);
-						 newPosition.y			= 0.0f;
+			VECTOR nowTarget = this->nowTarget;
+			nowTarget.y = 0.0f;
+			const VECTOR NOW_POSITION = this->collider->rigidbody.GetPosition();
+			const VECTOR TARGET_TO_POSITION = VNorm(VSub(NOW_POSITION, this->nowTarget));
+			VECTOR newPosition = VAdd(VScale(TARGET_TO_POSITION, this->length), this->nowTarget);
+			newPosition.y = 0.0f;
 			const VECTOR NEW_POSITION_TO_TARGET = VNorm(VSub(nowTarget, newPosition));
-			const VECTOR MOVE_VELOCITY			= VNorm(VCross(NEW_POSITION_TO_TARGET, Gori::UP_VEC));
-						 nextPosition			= VAdd(newPosition, MOVE_VELOCITY);
-						 nextPosition			= VAdd(nextPosition, this->positionOffset);
-		}
-		else if (player.GetIsLockOn())
-		{
-			const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));
-			nextPosition = VScale(ENEMY_TO_PLAYER, this->length);
-			nextPosition = VAdd(player.GetRigidbody().GetPosition(), nextPosition);
+			const VECTOR MOVE_VELOCITY = VNorm(VCross(NEW_POSITION_TO_TARGET, Gori::UP_VEC));
+			nextPosition = VAdd(newPosition, MOVE_VELOCITY);
 			nextPosition = VAdd(nextPosition, this->positionOffset);
 		}
 		else
 		{
-			/*アングルの更新*/
-			UpdateAngle();
-			VECTOR direction = VTransform(this->firstDirection, MGetRotY(this->yow));
-			VECTOR axis = VCross(direction, Gori::UP_VEC);
-			direction = VTransform(direction, MGetRotAxis(axis, this->pitch));
-			nextPosition = VAdd(player.GetRigidbody().GetPosition(), VScale(direction, this->length));
+			if (player.GetHP() <= 0 || enemy.GetHP() <= 0)
+			{
+				VECTOR nowTarget = this->nowTarget;
+				nowTarget.y = 0.0f;
+				const VECTOR NOW_POSITION = this->collider->rigidbody.GetPosition();
+				const VECTOR TARGET_TO_POSITION = VNorm(VSub(NOW_POSITION, this->nowTarget));
+				VECTOR newPosition = VAdd(VScale(TARGET_TO_POSITION, this->length), this->nowTarget);
+				newPosition.y = 0.0f;
+				const VECTOR NEW_POSITION_TO_TARGET = VNorm(VSub(nowTarget, newPosition));
+				const VECTOR MOVE_VELOCITY = VNorm(VCross(NEW_POSITION_TO_TARGET, Gori::UP_VEC));
+				nextPosition = VAdd(newPosition, MOVE_VELOCITY);
+				nextPosition = VAdd(nextPosition, this->positionOffset);
+			}
+			else if (player.GetIsLockOn())
+			{
+				const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));
+				nextPosition = VScale(ENEMY_TO_PLAYER, this->length);
+				nextPosition = VAdd(player.GetRigidbody().GetPosition(), nextPosition);
+				nextPosition = VAdd(nextPosition, this->positionOffset);
+			}
+			else
+			{
+				/*アングルの更新*/
+				UpdateAngle();
+				VECTOR direction = VTransform(this->firstDirection, MGetRotY(this->yow));
+				VECTOR axis = VCross(direction, Gori::UP_VEC);
+				direction = VTransform(direction, MGetRotAxis(axis, this->pitch));
+				nextPosition = VAdd(player.GetRigidbody().GetPosition(), VScale(direction, this->length));
+			}
 		}
 		break;
 	default:
