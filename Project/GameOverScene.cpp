@@ -120,12 +120,8 @@ bool GameOverScene::IsEnd()
 	auto& input = Singleton<InputManager>::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 
-	/*何かボタンが押されたか*/
-	int pad = input.GetNowPadState();
-	bool isPressAnyButton = (pad & InputManager::PAD_A);
-
 	/*タイトルシーンが終了可能かつ終了ボタンが押されていたらtrueを返す*/
-	if (isPressAnyButton && ui.IsDraw())
+	if (input.GetNowPad(InputManager::PAD_A) && ui.IsDraw())
 	{
 		return true;
 	}

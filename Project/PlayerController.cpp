@@ -88,7 +88,6 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 
 	//auto& json = Singleton<JsonManager>  ::GetInstance();
 	auto& input = Singleton<InputManager>  ::GetInstance();
-	int nowPadState = input.GetNowPadState();
 
 	/*HP‚ª0ˆÈ‰º‚È‚çó‘Ô‚ğDEATH‚É‚·‚é*/
 	if (_data.hp <= 0 )
@@ -134,7 +133,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 		nextState = PlayerState::KNOCK_UP;
 	}
 	/*ƒK[ƒh*/
-	else if (nowPadState & InputManager::PAD_LT)
+	else if (input.GetLeftTrigger())
 	{
 		if (_isDrawSword)
 		{
@@ -147,7 +146,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	}
 
 	/*ãUŒ‚*/
-	else if ( nowPadState & InputManager::PAD_B)
+	else if ( input.GetNowPad(InputManager::PAD_B))
 	{
 		if (_isDrawSword)
 		{
@@ -180,7 +179,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	}
 
 	/*‹­UŒ‚*/
-	else if (nowPadState & InputManager::PAD_Y)
+	else if (input.GetNowPad(InputManager::PAD_Y))
 	{
 		if (_isDrawSword)
 		{
@@ -196,13 +195,13 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	}
 
 	/*‰ñ”ğ*/
-	else if (CanAction(_data.stamina, this->avoidStaminaConsumption) && nowPadState & InputManager::PAD_A)
+	else if (CanAction(_data.stamina, this->avoidStaminaConsumption) && input.GetNowPad(InputManager::PAD_A))
 	{
 		nextState = PlayerState::AVOID;
 	}
 
 	/*‰ñ•œ*/
-	else if (nowPadState & InputManager::PAD_X)
+	else if (input.GetNowPad(InputManager::PAD_X))
 	{
 		if (_healCount > 0)
 		{
@@ -213,7 +212,7 @@ bool PlayerController::StateChanger(const bool _isCancelAction, const bool _isEn
 	/*ˆÚ“®*/
 	else if (input.GetLStickState().XBuf != 0 || input.GetLStickState().YBuf != 0)
 	{
-		if (nowPadState & InputManager::PAD_RB)
+		if (input.GetNowPad(InputManager::PAD_RB))
 		{
 			if (!_isDrawSword)
 			{

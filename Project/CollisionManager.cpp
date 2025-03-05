@@ -190,17 +190,27 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 	{
 		if (_objectA.GetTag() != _objectB.GetTag())
 		{
-			//aのほうを補正するようにするので、aが移動していた時のみ以下の処理を行う
-			VECTOR moveVelocity = _objectA.rigidbody.GetVelocity();
-			auto aTob = VSub(_objectB.GetNextPosition(), _objectA.GetNextPosition());
-			auto aTobLength = VSize(aTob);
-
 			/*互いの距離が、それぞれの半径の合計よりも小さければ当たる*/
 			auto& objectAColliderData = dynamic_cast<CharacterColliderData&>(_objectA);
 			auto& objectBColliderData = dynamic_cast<CharacterColliderData&>(_objectB);
 			if ((objectAColliderData.data->hp > 0 && objectBColliderData.data->hp > 0) && (objectAColliderData.isUseCollWithChara && objectBColliderData.isUseCollWithChara))
 			{
-				isHit = (aTobLength < objectAColliderData.radius + objectBColliderData.radius);
+				VECTOR aUnderPosition = objectAColliderData.GetNextPosition();
+				VECTOR aTopPosition = objectAColliderData.topPositon;
+				if (!objectAColliderData.isSetTopPosition)
+				{
+					aTopPosition = VAdd(aUnderPosition, objectAColliderData.topPositon);
+				}
+				VECTOR bUnderPosition = objectBColliderData.GetNextPosition();
+				VECTOR bTopPosition = objectBColliderData.topPositon;
+				if (!objectBColliderData.isSetTopPosition)
+				{
+					bTopPosition = VAdd(bUnderPosition, objectBColliderData.topPositon);
+				}
+				if (HitCheck_Capsule_Capsule(aUnderPosition, aTopPosition, objectAColliderData.radius, bUnderPosition, bTopPosition, objectBColliderData.radius))
+				{
+					isHit = true;
+				}
 			}
 		}
 	}
@@ -408,23 +418,36 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 	//カプセル同士の位置補正
 	else if (primaryKind == ColliderData::Kind::CHARACTER_CAPSULE && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
-
-		VECTOR secondaryToPrimary = VSub( _primary.GetNextPosition(), _secondary.GetNextPosition());
-		float  secondaryToPrimarySize = VSize(secondaryToPrimary);
-		VECTOR secondaryToPrimaryNorm = VNorm(secondaryToPrimary);
-
+		//VECTOR secondaryToPrimary = VSub( _primary.GetNextPosition(), _secondary.GetNextPosition());
+		//float  secondaryToPrimarySize = VSize(secondaryToPrimary);
+		//VECTOR secondaryToPrimaryNorm = VNorm(secondaryToPrimary);
 		auto& primaryColliderData = dynamic_cast<CharacterColliderData&> (_primary);
 		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
 		if (!primaryColliderData.isUseCollWithChara || !secondaryColliderData.isUseCollWithChara)return;
 
-		//そのままだとちょうど当たる位置になるので少し余分に離す
-		float awayDist = primaryColliderData.radius + secondaryColliderData.radius - secondaryToPrimarySize + 0.000005f;
-
-		VECTOR fixVector = VScale(secondaryToPrimaryNorm, awayDist);
-		fixVector.y = 0.0f;
+		/*２つのカプセルの頂点を取得*/
+		VECTOR primaryUnderPosition = primaryColliderData.GetNextPosition();
+		VECTOR primaryTopPosition = primaryColliderData.topPositon;
+		if (!primaryColliderData.isSetTopPosition)
+		{
+			primaryTopPosition = VAdd(primaryUnderPosition, primaryColliderData.topPositon);
+		}
+		VECTOR secondaryUnderPosition = secondaryColliderData.GetNextPosition();
+		VECTOR secondaryTopPosition = secondaryColliderData.topPositon;
+		if (!secondaryColliderData.isSetTopPosition)
+		{
+			secondaryTopPosition = VAdd(secondaryUnderPosition, secondaryColliderData.topPositon);
+		}
+		//カプセル同士の最近接距離を取る
+		SEGMENT_SEGMENT_RESULT result;
+		Segment_Segment_Analyse(&primaryUnderPosition, &primaryTopPosition, &secondaryUnderPosition, &secondaryTopPosition, &result);
+		//半径の合計から最近接距離を引き押し戻す、そのままだとちょうど当たる位置になるので少し余分に離す
+		float awayDist = primaryColliderData.radius + secondaryColliderData.radius - sqrt(result.SegA_SegB_MinDist_Square) + 0.000005f;
+		
+		VECTOR awayVector = VNorm(VSub(result.SegA_MinDist_Pos, result.SegB_MinDist_Pos));
+		VECTOR fixVector = VScale(awayVector, awayDist);
 		VECTOR fixedPosition = VAdd(_primary.GetNextPosition(), fixVector);
 		_primary.SetNextPosition(fixedPosition);
-
 	}
 	//平面とカプセル(平面はSTATICなので、必ずprimaryがPLANEになる)
 	else if (primaryKind == ColliderData::Kind::PLANE && secondaryKind == ColliderData::Kind::CHARACTER_CAPSULE)

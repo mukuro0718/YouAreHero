@@ -87,10 +87,8 @@ void EnemyChanger::Update()
 	}
 
 	/*決定*/
-	int nowPad = input.GetNowPadState();
-	int prevPad = input.GetPrevPadState();
-	//パッドのBが押されたら
-	if ((!(prevPad & InputManager::PAD_A) && (nowPad & InputManager::PAD_A)))
+	//パッドのAが押されたら
+	if (input.GetNowPadIntoPrevPad(InputManager::PAD_A))
 	{
 		sound.OnIsPlayEffect(SoundManager::EffectType::CONFIRMATION_SOUND);
 		if (!this->isProvDecide)
@@ -102,8 +100,8 @@ void EnemyChanger::Update()
 			this->isFinalDecide = true;
 		}
 	}
-	//パッドのAが押されたら
-	else if ((!(prevPad & InputManager::PAD_B) && (nowPad & InputManager::PAD_B)))
+	//パッドのBが押されたら
+	else if (input.GetNowPadIntoPrevPad(InputManager::PAD_B))
 	{
 		sound.OnIsPlayEffect(SoundManager::EffectType::CANCEL_SOUND);
 		this->isProvDecide = false;

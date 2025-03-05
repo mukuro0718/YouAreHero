@@ -117,12 +117,12 @@ void SelectUI::Update()
 		{
 			auto& input = Singleton<InputManager>::GetInstance();
 			bool isInputB = false;
-			if ((input.GetNowPadState() & InputManager::PAD_B) && !(input.GetPrevPadState() & InputManager::PAD_B))
+			if (input.GetNowPadIntoPrevPad(InputManager::PAD_B))
 			{
 				isInputB = true;
 			}
 			bool isInputA = false;
-			if ((input.GetNowPadState() & InputManager::PAD_A) && !(input.GetPrevPadState() & InputManager::PAD_A))
+			if (input.GetNowPadIntoPrevPad(InputManager::PAD_A))
 			{
 				isInputA = true;
 			}

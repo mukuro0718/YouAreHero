@@ -182,13 +182,12 @@ bool TitleUI::IsPressButton()
 	auto& json = Singleton<JsonManager>	 ::GetInstance();
 
 	/*pad入力*/
-	int pad = input.GetNowPadState();
 	bool isPressButton = false;
 
 	/*PRESSロゴが表示されていたら*/
 	if (this->pressLogo.alpha > 0)
 	{
-			isPressButton = (pad & InputManager::PAD_A);
+			isPressButton = input.GetNowPad(InputManager::PAD_A);
 			//前にボタン入力がない&今ボタン入力がある
 			if (!this->isPrevPressButton && isPressButton)
 			{

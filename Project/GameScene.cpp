@@ -45,10 +45,10 @@ void GameScene::Initialize()
 {
 	/*シングルトンクラスのインスタンスを取得*/
 	auto& camera = Singleton<CameraManager>::GetInstance();
-	auto& map = Singleton<MapManager>::GetInstance();
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& playerAttack = Singleton<PlayerAttackManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
+	auto& map = Singleton<MapManager>::GetInstance();
 	auto& effect = Singleton<EffectManager>		::GetInstance();
 	auto& ui = Singleton<UIManager>::GetInstance();
 	auto& debug = Singleton<Debug>::GetInstance();

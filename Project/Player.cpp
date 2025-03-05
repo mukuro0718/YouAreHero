@@ -162,7 +162,7 @@ void Player::Update()
 	if (this->hitStop->IsHitStop()) return;
 
 	auto& input = Singleton<InputManager>::GetInstance();
-	if (input.GetNowPadState() & InputManager::PAD_LS)
+	if (input.GetNowPad(InputManager::PAD_RS))
 	{
 		if (!this->isPrevPushLS)
 		{

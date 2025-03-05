@@ -27,6 +27,8 @@ private:
 	const float	SLOW_FACTOR;				//スロー係数
 	const float	STAMINA_CONSUMPTION;		//スタミナ消費量
 	const float MOVE_SPEED;					//移動スピード
+	const int   VIBRATION_POWER;			//振動する強さ
+	const int   VIBRATION_TIME;				//振動する時間
 
 	/*メンバ変数*/
 	AttackSphereColliderData*	collider;		//コライダー

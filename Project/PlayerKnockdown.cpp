@@ -19,9 +19,11 @@
 /// </summary>
 PlayerKnockdown::PlayerKnockdown()
 	: PlayerAction	()
-	, MAX_SPEED		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["REACTION_SPEED"][static_cast<int>(Gori::PlayerReactionType::BLOW_BIG)])
-	, DECEL			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["ACCEL"])
-	, nowSpeed		(0)
+	, MAX_SPEED			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["REACTION_SPEED"][static_cast<int>(Gori::PlayerReactionType::BLOW_BIG)])
+	, DECEL				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["ACCEL"])
+	, VIBRATION_POWER	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["STUNNED_VIBRATION_POWER"])
+	, VIBRATION_TIME	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["STUNNED_VIBRATION_TIME"])
+	, nowSpeed			(0)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
 	this->staminaRecoveryValue	= json.GetJson(JsonManager::FileType::PLAYER)["STAMINA_RECOVERY_VALUE"];
@@ -107,6 +109,7 @@ void PlayerKnockdown::Update(Player& _player)
 		_player.GetPlayerData().isHit = false;
 		//–³“Gƒtƒ‰ƒO‚ð—§‚Ä‚é
 		_player.GetPlayerData().isInvinvible = true;
+		StartJoypadVibration(DX_INPUT_PAD1, this->VIBRATION_POWER, this->VIBRATION_TIME);
 	}
 
 

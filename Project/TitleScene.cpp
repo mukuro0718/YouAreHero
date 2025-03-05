@@ -3,6 +3,9 @@
 #include "UseJson.h"
 #include "SceneBase.h"
 #include "Image.h"
+#include "Character.h"
+#include "Player.h"
+#include "Enemy.h"
 #include "TitleScene.h"
 #include "CameraManager.h"
 #include "MapManager.h"
@@ -11,6 +14,8 @@
 #include "SceneChanger.h"
 #include "CollisionManager.h"
 #include "SoundManager.h"
+#include "PlayerManager.h"
+#include "EnemyManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -33,10 +38,12 @@ TitleScene::~TitleScene()
 void TitleScene::Initialize()
 {
 	/*シングルトンクラスのインスタンスを取得*/
-	auto& camera = Singleton<CameraManager>::GetInstance();
-	auto& map = Singleton<MapManager>::GetInstance();
-	auto& ui = Singleton<UIManager>::GetInstance();
-	auto& sound = Singleton<SoundManager>::GetInstance();
+	auto& camera		= Singleton<CameraManager>::GetInstance();
+	auto& player		= Singleton<PlayerManager>::GetInstance();
+	auto& enemy			= Singleton<EnemyManager>::GetInstance();
+	auto& map			= Singleton<MapManager>::GetInstance();
+	auto& ui			= Singleton<UIManager>::GetInstance();
+	auto& sound			= Singleton<SoundManager>::GetInstance();
 
 	/*初期化*/
 	//camera.Initialize();

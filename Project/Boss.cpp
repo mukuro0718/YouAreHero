@@ -192,10 +192,16 @@ void Boss::Update()
 		RespawnIfOutOfStage();
 	}
 
-	if (this->hitStop->IsHitStop()) return;
-
 	/*怒り状態の設定*/
 	UpdateBossState();
+
+	/*ヒットストップ*/
+	if (this->collider->data->isHit)
+	{
+		this->hitStop->SetHitStop(this->collider->data->hitStopTime, this->collider->data->hitStopType, this->collider->data->hitStopDelay, this->collider->data->slowFactor);
+		this->collider->data->isHit = false;
+	}
+	if (this->hitStop->IsHitStop()) return;
 
 	/*状態の切り替え*/
 	ChangeState();
@@ -412,7 +418,6 @@ void Boss::UpdateBossState()
 		{
 			this->angryValue += this->collider->data->damage;
 			this->tiredValue += this->collider->data->damage;
-			this->collider->data->isHit = false;
 		}
 		//疲れゲージが最大以上だったら状態をTIREDにする
 		if (this->tiredValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_VALUE"])

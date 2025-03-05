@@ -29,10 +29,12 @@ PlayerCombo1::PlayerCombo1()
 	, Y_OFFSET					(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"])
 	, HIT_STOP_TIME				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_HIT_STOP_TIME"])
 	, HIT_STOP_DELAY			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_HIT_STOP_DELAY"])
-	, HIT_STOP_TYPE				(static_cast<int>(HitStop::Type::SLOW))
+	, HIT_STOP_TYPE				(static_cast<int>(HitStop::Type::STOP))
 	, SLOW_FACTOR				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_HIT_STOP_FACTOR"])
 	, STAMINA_CONSUMPTION		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_STAMINA_CONSUMPTION"])
 	, MOVE_SPEED				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["RUN_SPEED"])
+	, VIBRATION_POWER			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_VIBRATION_POWER"])
+	, VIBRATION_TIME			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["COMBO1_VIBRATION_TIME"])
 	, firstDirection			(Gori::ORIGIN)
 	, isStartHitCheck			(false)
 	, collider					(nullptr)
@@ -165,7 +167,8 @@ void PlayerCombo1::Update(Player& _player)
 		effect.OnIsEffect(EffectManager::EffectType::PLAYER_IMPACT);
 		effect.SetPosition(EffectManager::EffectType::PLAYER_IMPACT, this->collider->rigidbody.GetPosition());
 		this->collider->data->isHitAttack = false;
-		_player.SetHitStop(this->HIT_STOP_TIME, this->HIT_STOP_TYPE, this->HIT_STOP_DELAY, this->SLOW_FACTOR);
+		_player.SetHitStop(this->HIT_STOP_TIME, this->HIT_STOP_TYPE, 0, this->SLOW_FACTOR);
+		StartJoypadVibration(DX_INPUT_PAD1, this->VIBRATION_POWER, this->VIBRATION_TIME);
 	}
 
 	/*当たり判定許可フラグが立っていなかったら早期リターン*/

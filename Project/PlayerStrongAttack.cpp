@@ -29,9 +29,11 @@ PlayerStrongAttack::PlayerStrongAttack()
 	, Y_OFFSET					(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["ATTACK_OFFSET_Y"])
 	, HIT_STOP_TIME				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_TIME"])
 	, HIT_STOP_DELAY			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_DELAY"])
-	, HIT_STOP_TYPE				(static_cast<int>(HitStop::Type::SLOW))
+	, HIT_STOP_TYPE				(static_cast<int>(HitStop::Type::STOP))
 	, SLOW_FACTOR				(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_FACTOR"])
 	, STAMINA_CONSUMPTION		(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_STAMINA_CONSUMPTION"])
+	, VIBRATION_POWER			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_VIBRATION_POWER"])
+	, VIBRATION_TIME			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_VIBRATION_TIME"])
 	, firstDirection			(Gori::ORIGIN)
 	, isStartHitCheck			(false)
 	, collider					(nullptr)
@@ -40,7 +42,7 @@ PlayerStrongAttack::PlayerStrongAttack()
 	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER_ATTACK, new AttackData());
 	
 	/*初期化*/
-	auto& json			  = Singleton<JsonManager>::GetInstance();
+	auto& json						  = Singleton<JsonManager>::GetInstance();
 	this->collider->radius			  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_ATTACK_RADIUS"];
 	this->collider->data->hitStopTime = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_HIT_STOP_TIME"];
 	this->collider->data->damage	  = json.GetJson(JsonManager::FileType::PLAYER)["S_ATTACK_DAMAGE"];
@@ -150,7 +152,8 @@ void PlayerStrongAttack::Update(Player& _player)
 		effect.OnIsEffect(EffectManager::EffectType::PLAYER_IMPACT);
 		effect.SetPosition(EffectManager::EffectType::PLAYER_IMPACT, this->collider->rigidbody.GetPosition());
 		this->collider->data->isHitAttack = false;
-		_player.SetHitStop(this->HIT_STOP_TIME, this->HIT_STOP_TYPE, this->HIT_STOP_DELAY, this->SLOW_FACTOR);
+		_player.SetHitStop(this->HIT_STOP_TIME, this->HIT_STOP_TYPE, 0, this->SLOW_FACTOR);
+		StartJoypadVibration(DX_INPUT_PAD1, this->VIBRATION_POWER, this->VIBRATION_TIME);
 	}
 
 	/*当たり判定許可フラグが立っていなかったら早期リターン*/

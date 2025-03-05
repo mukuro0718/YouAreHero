@@ -50,7 +50,6 @@ void TutorialManager::Initialize()
 void TutorialManager::Update()
 {
 	auto& input = Singleton<InputManager>::GetInstance();
-	int pad = input.GetNowPadState();
 	InputManager::InputAnalogStick rStick = input.GetRStickState();
 	InputManager::InputAnalogStick lStick = input.GetLStickState();
 	switch (this->stage)
@@ -62,7 +61,7 @@ void TutorialManager::Update()
 			this->isMoveCamera = true;
 		}
 		//スティック押し込み
-		if (!this->isLockon && pad & InputManager::PAD_LS)
+		if (!this->isLockon && input.GetNowPad(InputManager::PAD_RS))
 		{
 			this->isLockon = true;
 		}
@@ -78,7 +77,7 @@ void TutorialManager::Update()
 			this->isWalk = true;
 		}
 		//ダッシュ
-		if (!this->isRun && (lStick.XBuf != 0 || lStick.YBuf != 0) && pad & InputManager::PAD_RB)
+		if (!this->isRun && (lStick.XBuf != 0 || lStick.YBuf != 0) && input.GetNowPad(InputManager::PAD_RB))
 		{
 			this->isRun = true;
 		}
@@ -89,12 +88,12 @@ void TutorialManager::Update()
 		break;
 	case static_cast<int>(Stage::ATTACK):
 		//弱攻撃
-		if (!this->isWeakAttack && pad & InputManager::PAD_B)
+		if (!this->isWeakAttack && input.GetNowPad(InputManager::PAD_B))
 		{
 			this->isWeakAttack = true;
 		}
 		//回転攻撃
-		if (!this->isRotateAttack && pad & InputManager::PAD_Y)
+		if (!this->isRotateAttack && input.GetNowPad(InputManager::PAD_Y))
 		{
 			this->isRotateAttack = true;
 		}
@@ -105,12 +104,12 @@ void TutorialManager::Update()
 		break;
 	case static_cast<int>(Stage::AVOID):
 		//回避
-		if (!this->isAvoid && pad & InputManager::PAD_A)
+		if (!this->isAvoid && input.GetNowPad(InputManager::PAD_A))
 		{
 			this->isAvoid = true;
 		}
 		//ガード
-		if (!this->isBlock && pad & InputManager::PAD_LT)
+		if (!this->isBlock && input.GetLeftTrigger())
 		{
 			this->isBlock = true;
 		}
@@ -121,7 +120,7 @@ void TutorialManager::Update()
 		break;
 	case static_cast<int>(Stage::HEAL):
 		//回復
-		if (!this->isHeal && pad & InputManager::PAD_X)
+		if (!this->isHeal && input.GetNowPad(InputManager::PAD_X))
 		{
 			this->isHeal = true;
 		}

@@ -26,6 +26,8 @@ private:
 	const int	HIT_STOP_TYPE;				//ヒットストップの種類
 	const float	SLOW_FACTOR;				//スロー係数
 	const float	STAMINA_CONSUMPTION;		//スタミナ消費量
+	const int   VIBRATION_POWER;			//振動する強さ
+	const int   VIBRATION_TIME;				//振動する時間
 
 	/*メンバ変数*/
 	AttackSphereColliderData*	collider;		//コライダー

@@ -33,11 +33,10 @@ void CreditUI::Update()
 {
 	/*クレジットを開くかの処理*/
 	auto& input = Singleton<InputManager>::GetInstance();
-	int nowPad = input.GetNowPadState();
 	//開いていないときに,Startボタンが押されたら開く
 	if (!this->isOpenCredit)
 	{
-		if (nowPad & InputManager::PAD_START)
+		if (input.GetNowPad(InputManager::PAD_START))
 		{
 			this->isOpenCredit = true;
 		}
@@ -45,7 +44,7 @@ void CreditUI::Update()
 	//開いている時に、Bボタンが押されたら閉じる
 	else
 	{
-		if (nowPad & InputManager::PAD_B)
+		if (input.GetNowPad(InputManager::PAD_B))
 		{
 			this->isOpenCredit = false;
 		}

@@ -243,10 +243,22 @@ void Dragon::Update()
 			this->collider->data->damage = damage;
 			this->collider->data->hp -= damage;
 			this->collider->data->isHit = true;
+			this->collider->data->hitStopTime = this->partsCollider[i]->data->hitStopTime;
+			this->collider->data->hitStopType = this->partsCollider[i]->data->hitStopType;
+			this->collider->data->hitStopDelay = this->partsCollider[i]->data->hitStopDelay;
+			this->collider->data->slowFactor = this->partsCollider[i]->data->slowFactor;
 		}
 	}
 
 	UpdateBossState();
+
+	/*ヒットストップ*/
+	if (this->collider->data->isHit)
+	{
+		this->hitStop->SetHitStop(this->collider->data->hitStopTime, this->collider->data->hitStopType, this->collider->data->hitStopDelay, this->collider->data->slowFactor);
+		this->collider->data->isHit = false;
+	}
+	if (this->hitStop->IsHitStop()) return;
 
 	/*ステージ外に出たらデス*/
 	if (this->collider->rigidbody.GetPosition().y < -30.0f)
@@ -493,7 +505,6 @@ void Dragon::UpdateBossState()
 		{
 			this->angryValue += this->collider->data->damage;
 			this->tiredValue += this->collider->data->damage;
-			this->collider->data->isHit = false;
 		}
 		//疲れゲージが最大以上だったら状態をTIREDにする
 		if (this->tiredValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_TIRED_VALUE"])

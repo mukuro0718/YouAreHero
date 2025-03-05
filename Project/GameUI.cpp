@@ -147,7 +147,7 @@ void GameUI::Update()
 		if (!this->isPause)
 		{
 			//PAD‚ÌSTART‚ª—§‚Á‚Ä‚¢‚½‚ç
-			if (input.GetNowPadState() & InputManager::PAD_START)
+			if (input.GetNowPad(InputManager::PAD_START))
 			{
 				this->isPause = true;
 			}
@@ -156,13 +156,13 @@ void GameUI::Update()
 		else
 		{
 			//A‚ª‰Ÿ‚³‚ê‚Ä‚¢‚½‚ç
-			if (input.GetNowPadState() & InputManager::PAD_A)
+			if (input.GetNowPad(InputManager::PAD_A))
 			{
 				this->type = ResultType::LOSE;
 				this->isPause = false;
 			}
 			//B‚ª‰Ÿ‚³‚ê‚Ä‚¢‚½‚ç
-			else if (input.GetNowPadState() & InputManager::PAD_B)
+			else if (input.GetNowPad(InputManager::PAD_B))
 			{
 				this->isPause = false;
 			}
