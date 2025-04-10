@@ -1,5 +1,6 @@
 #pragma once
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "DemonBehaviorTree.h"
 #include "ActionNode.h"
 #include "ConditionNode.h"

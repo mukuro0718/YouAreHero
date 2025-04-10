@@ -1,13 +1,14 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "BehaviorTreeNode.h"
-#include "ActionNode.h"
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "AttackCapsuleColliderData.h"
 #include "AttackData.h"
 #include "Character.h"
+#include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
+#include "ActionNode.h"
 #include "Enemy.h"
 #include "Dragon.h"
 #include "Dragon_Rotate.h"
@@ -48,18 +49,16 @@ Dragon_Rotate::~Dragon_Rotate()
 /// <summary>
 /// 更新処理
 /// </summary>
-Dragon_Rotate::NodeState Dragon_Rotate::Update()
+Dragon_Rotate::NodeState Dragon_Rotate::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*アクションの状態をセット*/
-	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Dragon&>(_chara);
 	if (this->frameCount == 0)
 	{
 		//アクションの設定
-		rootNode.SetCurrentAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 		//アクションの登録
-		rootNode.EntryCurrentBattleAction(*this);
+		_tree.EntryCurrentBattleAction(*this);
 		//段階を取得
 		this->currentDragonState = enemy.GetBossState();
 		this->frameCount++;
@@ -84,8 +83,8 @@ Dragon_Rotate::NodeState Dragon_Rotate::Update()
 		this->nowTotalPlayTime = 0.0f;
 		this->frameCount = 0;
 		enemy.OffAttackCollider(this->USE_COLLIDER_INDEX);
-		rootNode.ExitCurrentBattleAction();
-		rootNode.SetInterval(this->actionType, this->interval);
+		_tree.ExitCurrentBattleAction();
+		_tree.SetInterval(this->actionType, this->interval);
 		enemy.DecAttackComboCount();
 		return ActionNode::NodeState::SUCCESS;
 	}

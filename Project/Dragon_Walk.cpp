@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Dragon_Walk.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Dragon.h"
 #include "EnemyManager.h"
@@ -39,7 +40,7 @@ Dragon_Walk::~Dragon_Walk()
 /// <summary>
 /// 更新処理
 /// </summary>
-Dragon_Walk::NodeState Dragon_Walk::Update()
+Dragon_Walk::NodeState Dragon_Walk::Update(BehaviorTree& _tree, Character& _chara)
 {
 	auto& sound = Singleton<SoundManager>::GetInstance();
 	this->frameCount++;
@@ -51,15 +52,13 @@ Dragon_Walk::NodeState Dragon_Walk::Update()
 
 
 	/*アクションの状態をセット*/
-	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
-	if (rootNode.GetCurrentAction() != this->actionType)
+	if (_tree.GetNowSelectAction() != this->actionType)
 	{
-		rootNode.SetCurrentAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 	}
 
 	/*アニメーションの再生*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Dragon&>(_chara);
 	enemy.PlayAnimation(this->animationType, this->animationPlayTime);
 
 	/*移動*/

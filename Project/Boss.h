@@ -57,10 +57,10 @@ public:
 	};
 
 	/*getter/setter*/
-	const bool		 GetIsAttack		()const override;							//コウゲキしたか
-	const AttackType GetPrevAttackType	()const { return this->prevAttack; }		//前のアタックタイプの取得
-		  void		 SetAttackType		(const AttackType _type)	{ this->prevAttack = _type; }	//攻撃の種類のセット
-		  void		 SetAttackCount		() override;												//攻撃コンボの設定
+	const bool		 GetIsAttack		()const override;										//コウゲキしたか
+	const AttackType GetPrevAttackType	()const					 { return this->prevAttack; }	//前のアタックタイプの取得
+		  void		 SetAttackType		(const AttackType _type) { this->prevAttack = _type; }	//攻撃の種類のセット
+		  void		 SetAttackCount		() override;											//攻撃コンボの設定
 private:
 	/*静的定数*/
 	static constexpr float LOCKON_OFFSET = 10.0f;//ロックオンオフセット

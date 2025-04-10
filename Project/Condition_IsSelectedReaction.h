@@ -3,13 +3,15 @@
 //===========================================================
 #pragma once
 
+class BehaviorTree;
 class ConditionNode;
+class Character;
 class Condition_IsSelectedReaction : public ConditionNode
 {
 public:
 	 Condition_IsSelectedReaction();//コンストラクタ
 	~Condition_IsSelectedReaction();//デストラクタ
 
-	NodeState Update	() override;//更新
+	NodeState Update	(BehaviorTree& _tree, Character& _chara) override;//更新
 };
 

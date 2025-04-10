@@ -1,6 +1,8 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "DecoratorNode.h"
 #include "Decorator_Inverse.h"
 
@@ -23,10 +25,10 @@ Decorator_Inverse::~Decorator_Inverse()
 /// <summary>
 /// 更新
 /// </summary>
-BehaviorTreeNode::NodeState Decorator_Inverse::Update()
+BehaviorTreeNode::NodeState Decorator_Inverse::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*子を実行*/
-	NodeState state = this->child->Update();
+	NodeState state = this->child->Update(_tree, _chara);
 	//状態が成功なら成功を返し終了
 	if (state == NodeState::SUCCESS)
 	{

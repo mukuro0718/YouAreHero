@@ -20,9 +20,9 @@ BossMap::BossMap()
 	
 	/*モデルハンドルの取得*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
-	auto& modelColiderData = dynamic_cast<ModelColliderData&>(*this->collider);
-	modelColiderData.modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::FINALY_BOSS_STAGE));
+	this->collider->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::FINALY_BOSS_STAGE));
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::FINALY_BOSS_STAGE));
+	MV1SetupCollInfo(this->collider->modelHandle, this->collider->frameIndex, 16, 16, 16);
 }
 
 /// <summary>
@@ -37,8 +37,6 @@ BossMap::~BossMap()
 /// </summary>
 void BossMap::Initialize()
 {
-	/*シングルトンクラスのインスタンスの取得*/
-
 	/*リジッドボディの初期化*/
 	auto& json = Singleton<JsonManager>::GetInstance();
 	VECTOR position = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["FINALY_BOSS_MAP_POSITION"]);
@@ -51,17 +49,16 @@ void BossMap::Initialize()
 	this->collider->rigidbody.SetScale(scale);
 
 	/*当たり判定用モデルの設定*/
-	auto& modelColiderData = dynamic_cast<ModelColliderData&>(*this->collider);
-	modelColiderData.frameIndex = json.GetJson(JsonManager::FileType::MAP)["COLL_FRAME_INDEX"];
-	MV1SetPosition(modelColiderData.modelHandle, this->collider->rigidbody.GetPosition());
-	MV1SetRotationXYZ(modelColiderData.modelHandle, this->collider->rigidbody.GetRotation());
-	MV1SetScale(modelColiderData.modelHandle, this->collider->rigidbody.GetScale());
-	MV1SetupCollInfo(modelColiderData.modelHandle, modelColiderData.frameIndex, 16, 16, 16);
+	this->collider->frameIndex = json.GetJson(JsonManager::FileType::MAP)["COLL_FRAME_INDEX"];
+	this->collider->isDoHitCheck = false;
+	MV1SetPosition		(this->collider->modelHandle, this->collider->rigidbody.GetPosition());
+	MV1SetRotationXYZ	(this->collider->modelHandle, this->collider->rigidbody.GetRotation());
+	MV1SetScale			(this->collider->modelHandle, this->collider->rigidbody.GetScale());
+	MV1RefreshCollInfo	(this->collider->modelHandle, this->collider->frameIndex);
 
-	MV1SetPosition(this->modelHandle, this->collider->rigidbody.GetPosition());
-	MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());
-	MV1SetScale(this->modelHandle, this->collider->rigidbody.GetScale());
-	//MV1SetFrameVisible(this->modelHandle, 0, false);
+	MV1SetPosition		(this->modelHandle, this->collider->rigidbody.GetPosition());
+	MV1SetRotationXYZ	(this->modelHandle, this->collider->rigidbody.GetRotation());
+	MV1SetScale			(this->modelHandle, this->collider->rigidbody.GetScale());
 }
 
 /// <summary>
@@ -85,7 +82,6 @@ void BossMap::Update()
 /// </summary>
 const void BossMap::Draw()const
 {
-	//auto& modelColiderData = dynamic_cast<ModelColliderData&>(*this->collider);
 	MV1DrawModel(this->modelHandle);
 }
 
@@ -96,4 +92,9 @@ const int BossMap::GetModelHandle()const
 { 
 	//auto& modelColiderData = dynamic_cast<ModelColliderData&>(*this->collider);
 	return this->modelHandle;
+}
+
+void BossMap::OnIsDoHitCheck()
+{
+	this->collider->isDoHitCheck = true;
 }

@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Beast_Run.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Beast.h"
 #include "EnemyManager.h"
@@ -35,21 +36,19 @@ Beast_Run::~Beast_Run()
 /// <summary>
 /// 更新処理
 /// </summary>
-Beast_Run::NodeState Beast_Run::Update()
+Beast_Run::NodeState Beast_Run::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Beast&>(_chara);
 
 	/*登録されているアクションと実際のアクションが異なっていたら*/
-	if (rootNode.GetNowSelectAction() != this->actionType)
+	if (_tree.GetNowSelectAction() != this->actionType)
 	{
 		//アニメーションの種類を設定
 		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
 		enemy.SetAnimationPlayTime(this->animationPlayTime);
 		//アクションの設定
-		rootNode.SetSelectAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 	}
 
 	/*アニメーションの再生*/

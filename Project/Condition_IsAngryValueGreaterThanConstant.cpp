@@ -1,8 +1,8 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "BeastBehaviorTreeHeader.h"
 #include "Character.h"
+#include "BeastBehaviorTreeHeader.h"
 #include "Enemy.h"
 #include "EnemyManager.h"
 
@@ -26,10 +26,9 @@ Condition_IsAngryValueGreaterThanConstant::~Condition_IsAngryValueGreaterThanCon
 /// <summary>
 /// çXêV
 /// </summary>
-Condition_IsAngryValueGreaterThanConstant::NodeState Condition_IsAngryValueGreaterThanConstant::Update()
+Condition_IsAngryValueGreaterThanConstant::NodeState Condition_IsAngryValueGreaterThanConstant::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*ì{ÇËílÇ™ÇOà»è„Ç»ÇÁê¨å˜Çï‘Ç∑*/
-	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	//if (enemy.GetAngry() >= this->SPECIFIED_ANGRY_VALUE)
 	//{
 	//	//printfDx("CONDITION_ANGRY_SUCCESS\n");

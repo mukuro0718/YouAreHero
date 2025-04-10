@@ -9,4 +9,5 @@ enum class GameObjectTag
 	PLAYER_ATTACK	= 4,//プレイヤー攻撃
 	BOSS_ATTACK		= 5,//ボス攻撃
 	CAMERA			= 6,//カメラ
+	WEAK_ENEMY		= 7,//雑魚敵
 };

@@ -1,12 +1,12 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "DemonBehaviorTreeHeader.h"
 #include "DeleteInstance.h"
 #include "Rigidbody.h"
 #include "CharacterData.h"
 #include "EnemyManager.h"
 #include "Character.h"
+#include "DemonBehaviorTreeHeader.h"
 #include "Player.h"
 #include "PlayerManager.h"
 
@@ -45,16 +45,16 @@ void DemonBehaviorTree::Initialize()
 /// <summary>
 /// çXêV
 /// </summary>
-void DemonBehaviorTree::Update()
+void DemonBehaviorTree::Update(Character& _chara)
 {
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 	if (enemy.GetHP() < 0)
 	{
-		this->action_Dying->Update();
+		this->action_Dying->Update(*this, _chara);
 	}
 	else
 	{
-		this->action_Idle->Update();
+		this->action_Idle->Update(*this, _chara);
 	}
 }
 

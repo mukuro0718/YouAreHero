@@ -1,10 +1,8 @@
 #include <DxLib.h>
-#include "BehaviorTreeNode.h"
 #include "UseSTL.h"
-#include "UseJson.h"
 #include "Character.h"
-#include "Enemy.h"
-#include "Beast.h"
+#include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 
 ActionNode::ActionNode()
@@ -19,7 +17,4 @@ ActionNode::ActionNode()
 	, decel				 (0.0f)
 	, isFixRotate		 (false)
 {
-	this->rotateAnimationType = static_cast<int>(Beast::AnimationType::TURN_LEFT);
-	auto& json = Singleton<JsonManager>::GetInstance();
-	this->rotatePlayTime = json.GetJson(JsonManager::FileType::BEAST)["ANIMATION_PLAY_TIME"][this->rotateAnimationType];
 }

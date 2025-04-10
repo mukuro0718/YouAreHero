@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Beast_Idle.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Beast.h"
 #include "EnemyManager.h"
@@ -35,21 +36,19 @@ Beast_Idle::~Beast_Idle()
 /// <summary>
 /// 更新処理
 /// </summary>
-Beast_Idle::NodeState Beast_Idle::Update()
+Beast_Idle::NodeState Beast_Idle::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*アニメーション*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Beast&>(_chara);
 	/*アクションの状態をセット*/
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	if (rootNode.GetNowSelectAction() != this->actionType)
+	if (_tree.GetNowSelectAction() != this->actionType)
 	{
-		rootNode.SetSelectAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 		//アニメーションの種類を設定
 		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
 		enemy.SetAnimationPlayTime(this->animationPlayTime);
-		rootNode.EntryCurrentBattleAction(*this);
+		_tree.EntryCurrentBattleAction(*this);
 	}
 
 	/*アニメーションの再生*/
@@ -67,9 +66,8 @@ Beast_Idle::NodeState Beast_Idle::Update()
 	//アニメーションが終了していたら
 	if (enemy.GetIsChangeAnimation())
 	{
-		auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 		//アクションの解除
-		rootNode.ExitCurrentBattleAction();
+		_tree.ExitCurrentBattleAction();
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//それ以外は実行中を返す

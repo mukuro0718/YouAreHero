@@ -18,6 +18,9 @@ public:
 		MOL,
 		LUX,
 		DEMON,
+		BRAWLER,
+		TANK,
+		MAGE
 	};
 
 	/*コンストラクタ*/

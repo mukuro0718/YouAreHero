@@ -143,8 +143,7 @@
   "SELECT_ICON_POSITION": [
     [ 250, 300, 835, 375 ],
     [ 250, 400, 835, 475 ],
-    [ 250, 500, 835, 575 ],
-    [ 250, 600, 835, 675 ]
+    [ 250, 500, 835, 575 ]
   ],
   "SELECT_MENU_HEADER_POSITION": [ 860, 50 ],
   "SELECT_MENU_HEADER_LINE_POSITION": [ 760, 110, 1160, 110 ],
@@ -216,18 +215,15 @@
 
   "BOSS_NAME_BACKGROUND": [
     [ 650, 35, 1250, 110 ],
-    [ 650, 35, 1250, 110 ],
     [ 723, 35, 1177, 110 ],
     [ 723, 35, 1177, 110 ]
   ],
   "BOSS_NAME_POSITION": [
-    [ 620, 55 ],
     [ 670, 55 ],
     [ 710, 35 ],
     [ 743, 35 ]
   ],
   "BOSS_NAME_TYPE": [
-    "DEMON PANDA",
     "GORG GRASS",
     "MORNACT",
     "LUXURIO"

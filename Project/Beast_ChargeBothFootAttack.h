@@ -3,7 +3,9 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class ActionNode;
+class Character;
 class AttackCapsuleColliderData;
 class Beast_ChargeBothFootAttack : public ActionNode
 {
@@ -11,9 +13,9 @@ public:
 	 Beast_ChargeBothFootAttack();//コンストラクタ
 	~Beast_ChargeBothFootAttack();//デストラクタ
 
-	void		Initialize	();			//初期化
-	NodeState	Update		()override;	//更新
-	const void	Draw		()const;	//描画
+	void		Initialize	();													//初期化
+	NodeState	Update		(BehaviorTree& _tree, Character& _chara)override;	//更新
+	const void	Draw		()const;											//描画
 private:
 	/*構造体*/
 	//アニメーションの段階

@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Dragon_Dying.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Dragon.h"
 #include "EnemyManager.h"
@@ -35,13 +36,11 @@ Dragon_Dying::~Dragon_Dying()
 /// <summary>
 /// 更新処理
 /// </summary>
-Dragon_Dying::NodeState Dragon_Dying::Update()
+Dragon_Dying::NodeState Dragon_Dying::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*速度が０以上または最初にこのアクションになった時移動処理を行う*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
-	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
-	int prevAction = rootNode.GetCurrentAction();
+	auto& enemy = dynamic_cast<Dragon&>(_chara);
+	int prevAction = _tree.GetNowSelectAction();
 	if (enemy.GetSpeed() != 0.0f || prevAction != this->actionType)
 	{
 		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
@@ -51,7 +50,7 @@ Dragon_Dying::NodeState Dragon_Dying::Update()
 	/*アクションの状態をセット*/
 	if (prevAction != this->actionType)
 	{
-		rootNode.SetCurrentAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 	}
 
 	/*アニメーションの再生*/
@@ -62,7 +61,7 @@ Dragon_Dying::NodeState Dragon_Dying::Update()
 	if (enemy.GetIsChangeAnimation())
 	{
 		//インターバルの設定
-		rootNode.SetInterval(this->actionType);
+		_tree.SetInterval(this->actionType);
 		enemy.OffIsAlive();
 		return ActionNode::NodeState::SUCCESS;
 	}

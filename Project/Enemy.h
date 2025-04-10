@@ -4,6 +4,7 @@
 #pragma once
 
 class Character;
+class BehaviorTree;
 class Enemy: public Character
 {
 public:
@@ -49,17 +50,18 @@ protected:
 	static constexpr VECTOR VELOCITY_LERP_VALUE = { 0.1f,0.1f,0.1f };
 
 	/*メンバ変数*/
-	VECTOR  positionForLockon;	//プレイヤーのロックオン用の座標
-	VECTOR	moveTarget;			//移動目標
-	float	animationPlayTime;	//アニメーション再生時間
-	int		nowAnimation;		//現在のアニメーション
-	COLOR_F tiredColor;			//疲れ状態時カラー
-	COLOR_F angryColor;			//怒り状態時カラー
-	COLOR_F normalColor;		//通常状態時カラー
-	int		bossState;			//ボスの状態
-	int		attackCount;		//攻撃回数
-	float	angryValue;			//怒りゲージ
-	float	tiredValue;			//疲労ゲージ
-	int		tiredDuration;		//疲れ状態を継続する時間
+	BehaviorTree*	tree;				//ツリー
+	VECTOR			positionForLockon;	//プレイヤーのロックオン用の座標
+	VECTOR			moveTarget;			//移動目標
+	float			animationPlayTime;	//アニメーション再生時間
+	int				nowAnimation;		//現在のアニメーション
+	COLOR_F			tiredColor;			//疲れ状態時カラー
+	COLOR_F			angryColor;			//怒り状態時カラー
+	COLOR_F			normalColor;		//通常状態時カラー
+	int				bossState;			//ボスの状態
+	int				attackCount;		//攻撃回数
+	float			angryValue;			//怒りゲージ
+	float			tiredValue;			//疲労ゲージ
+	int				tiredDuration;		//疲れ状態を継続する時間
 };
 

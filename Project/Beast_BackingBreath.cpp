@@ -1,14 +1,15 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "BehaviorTreeNode.h"
-#include "ActionNode.h"
-#include "Beast_BackingBreath.h"
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "AttackCapsuleColliderData.h"
 #include "AttackData.h"
 #include "Character.h"
+#include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
+#include "ActionNode.h"
+#include "Beast_BackingBreath.h"
 #include "Enemy.h"
 #include "Beast.h"
 #include "EnemyManager.h"
@@ -76,22 +77,20 @@ void Beast_BackingBreath::Initialize()
 /// <summary>
 /// 更新処理
 /// </summary>
-Beast_BackingBreath::NodeState Beast_BackingBreath::Update()
+Beast_BackingBreath::NodeState Beast_BackingBreath::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
+	auto& enemy = dynamic_cast<Beast&>(_chara);
 	/*初期化*/
-	if (rootNode.GetNowSelectAction() != this->actionType)
+	if (_tree.GetNowSelectAction() != this->actionType)
 	{
 		//アニメーションの種類を設定
 		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
 		enemy.SetAnimationPlayTime(this->animationPlayTime);
 		//アクションの設定
-		rootNode.SetSelectAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 		//アクションの登録
-		rootNode.EntryCurrentBattleAction(*this);
+		_tree.EntryCurrentBattleAction(*this);
 		enemy.DecAttackComboCount();
 	}
 
@@ -148,9 +147,9 @@ Beast_BackingBreath::NodeState Beast_BackingBreath::Update()
 	if (enemy.GetIsChangeAnimation())
 	{
 		//インターバルの設定
-		rootNode.SetInterval(this->actionType, this->interval);
+		_tree.SetInterval(this->actionType, this->interval);
 		//アクションの解除
-		rootNode.ExitCurrentBattleAction();
+		_tree.ExitCurrentBattleAction();
 		this->frameCount = 0;
 		this->collider->data->isDoHitCheck = false;
 		this->collider->data->isHitAttack = false;

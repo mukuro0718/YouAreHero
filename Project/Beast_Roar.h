@@ -4,14 +4,16 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class ActionNode;
+class Character;
 class Beast_Roar : public ActionNode
 {
 public:
 	 Beast_Roar();//コンストラクタ
 	~Beast_Roar();//デストラクタ
 
-	NodeState Update()override;//更新
+	NodeState	Update(BehaviorTree& _tree, Character& _chara)override;	//更新
 private:
 	short frameCount;		  //フレームカウント
 	short roarFrame;		  //咆哮のフレーム

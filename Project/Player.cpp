@@ -161,6 +161,11 @@ void Player::Update()
 
 	if (this->hitStop->IsHitStop()) return;
 
+	//一番近い敵の番号を設定する
+	VECTOR position = GetRigidbody().GetPosition();
+	auto& enemy = Singleton<EnemyManager>::GetInstance();
+	//設定した敵が定数以内にいたらロックオンを可能にする
+	float length = VSquareSize(VSub(enemy.GetPositionForLockon(), position));
 	auto& input = Singleton<InputManager>::GetInstance();
 	if (input.GetNowPad(InputManager::PAD_RS))
 	{
@@ -168,7 +173,11 @@ void Player::Update()
 		{
 			if (!this->isLock)
 			{
-				this->isLock = true;
+				enemy.SetNearestEnemyIndent(position);
+				if (length <= 2000.0f)
+				{
+					this->isLock = true;
+				}
 			}
 			else
 			{
@@ -180,6 +189,16 @@ void Player::Update()
 	else
 	{
 		this->isPrevPushLS = false;
+	}
+	//ロックオンしていても、一定以上離れた場合ロックオンを解除する（ダンジョン中のみ）
+	auto& map = Singleton<MapManager>::GetInstance();
+	
+	if (map.GetMapType() == MapManager::MapType::DUNGEON && this->isLock)
+	{
+		if (length > 2000.0f || !enemy.GetIsEnemyWithinRnage())
+		{
+			this->isLock = false;
+		}
 	}
 
 	/*状態の変更(0~1m/s)*/
@@ -235,13 +254,13 @@ const void Player::DrawCharacterInfo()const
 {
 #ifdef _DEBUG
 	/*デバック表示フラグが立っていたら表示する*/
-	//auto& debug = Singleton<Debug>::GetInstance();
-	//if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER))
-	//{
-		//VECTOR position = this->collider->rigidbody.GetPosition();
+	auto& debug = Singleton<Debug>::GetInstance();
+	if (debug.IsShowDebugInfo(Debug::ItemType::PLAYER))
+	{
+		VECTOR position = this->collider->rigidbody.GetPosition();
 		//VECTOR direction = this->collider->rigidbody.GetDirection();
 		//VECTOR rotation = this->collider->rigidbody.GetRotation();
-		//printfDx("PLAYER_POSITION X:%f,Y:%f,Z:%f	\n", position.x, position.y, position.z);
+		printfDx("PLAYER_POSITION X:%f,Y:%f,Z:%f	\n", position.x, position.y, position.z);
 		//printfDx("PLAYER_DIRECTION X:%f,Y:%f,Z:%f	\n", direction.x, direction.y, direction.z);
 		//printfDx("PLAYER_ROTATION X:%f,Y:%f,Z:%f	\n", rotation.x, rotation.y, rotation.z);
 		//printfDx("PLAYER_SPEED:%f					\n", this->speed);
@@ -251,7 +270,7 @@ const void Player::DrawCharacterInfo()const
 		//auto& json = Singleton<JsonManager>::GetInstance();
 		//string stateInfo = json.GetJson(JsonManager::FileType::PLAYER)["STATE_INFO"][this->controller->GetNowState()];
 		//printfDx(stateInfo.c_str());
-	//}
+	}
 #endif // _DEBUG
 	
 	/*かげの描画*/

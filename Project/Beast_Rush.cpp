@@ -1,13 +1,14 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "BehaviorTreeNode.h"
-#include "ActionNode.h"
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "AttackCapsuleColliderData.h"
 #include "AttackData.h"
 #include "Character.h"
+#include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
+#include "ActionNode.h"
 #include "Enemy.h"
 #include "Player.h"
 #include "Beast.h"
@@ -87,18 +88,16 @@ void Beast_Rush::Initialize()
 /// <summary>
 /// 更新処理
 /// </summary>
-Beast_Rush::NodeState Beast_Rush::Update()
+Beast_Rush::NodeState Beast_Rush::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*選択されているアクションと実際のアクションが異なっていたら初期化*/
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
-	if (rootNode.GetNowSelectAction() != this->actionType)
+	auto& enemy = dynamic_cast<Beast&>(_chara);
+	if (_tree.GetNowSelectAction() != this->actionType)
 	{
 		//アクションの設定
-		rootNode.SetSelectAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 		//アクションの登録
-		rootNode.EntryCurrentBattleAction(*this);
+		_tree.EntryCurrentBattleAction(*this);
 		enemy.DecAttackComboCount();
 	}
 
@@ -193,11 +192,10 @@ Beast_Rush::NodeState Beast_Rush::Update()
 		//ここでステージがSTARTならアニメーションがすべて終了したということ
 		if (this->stage == AnimationStage::START)
 		{
-			auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 			//インターバルのセット
-			rootNode.SetInterval(this->actionType, this->interval);
+			_tree.SetInterval(this->actionType, this->interval);
 			//アクションの解除
-			rootNode.ExitCurrentBattleAction();
+			_tree.ExitCurrentBattleAction();
 			this->frameCount = 0;
 			this->collider->data->isDoHitCheck = false;
 			this->collider->data->isHitAttack = false;

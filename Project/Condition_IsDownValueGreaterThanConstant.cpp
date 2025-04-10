@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BeastBehaviorTreeHeader.h"
 
 /// <summary>
@@ -23,10 +24,9 @@ Condition_IsDownValueGreaterThanConstant::~Condition_IsDownValueGreaterThanConst
 /// <summary>
 /// 更新
 /// </summary>
-Condition_IsDownValueGreaterThanConstant::NodeState Condition_IsDownValueGreaterThanConstant::Update()
+Condition_IsDownValueGreaterThanConstant::NodeState Condition_IsDownValueGreaterThanConstant::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*ダウン値が０以上なら成功を返す*/
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 	//if (rootNode.GetDownValue() >= this->SPECIFIED_DOWN_VALUE)
 	//{
 	//	rootNode.SetDownValue(0);

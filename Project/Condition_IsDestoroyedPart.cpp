@@ -1,9 +1,9 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "BeastBehaviorTreeHeader.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "BeastBehaviorTreeHeader.h"
 #include "Enemy.h"
 #include "EnemyManager.h"
 
@@ -26,13 +26,12 @@ Condition_IsDestoroyedPart::~Condition_IsDestoroyedPart()
 /// <summary>
 /// çXêV
 /// </summary>
-Condition_IsDestoroyedPart::NodeState Condition_IsDestoroyedPart::Update()
+Condition_IsDestoroyedPart::NodeState Condition_IsDestoroyedPart::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*ïîà îjâÛÇ≥ÇÍÇƒÇ¢ÇΩÇÁê¨å˜*/
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	if (rootNode.GetIsDestroyedPart())
+	if (_tree.GetIsDestroyedPart())
 	{
-		rootNode.SetIsDestroyedPart(false);
+		//_tree.SetIsDestroyedPart(false);
 		//printfDx("CONDITION_DESTROY_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}

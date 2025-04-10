@@ -4,14 +4,16 @@
 //===========================================
 #pragma once
 
+class BehaviorTree;
 class BehaviorTreeNode;
+class Character;
 class ActionNode abstract : public BehaviorTreeNode
 {
 public:
 			 ActionNode();//コンストラクタ
 	virtual ~ActionNode(){}//デストラクタ
 
-	virtual NodeState Update() abstract;//更新
+	virtual NodeState Update(BehaviorTree& _tree, Character& _chara) abstract;//更新
 protected:
 	static constexpr short BREATH_HIT_COUNT = 10;//ブレス攻撃のヒットフラグを再起的に立てるカウント
 

@@ -610,27 +610,6 @@
     <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon">
       <UniqueIdentifier>{4f2091c1-908a-4b88-b4b7-84a0694c25a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts">
-      <UniqueIdentifier>{c5627f4f-67e3-42f3-992b-8d478cb7d320}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonActionIntervalIsOver">
-      <UniqueIdentifier>{ba078d42-9e90-4144-8caf-51a551f122f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction">
-      <UniqueIdentifier>{b3f2960f-ad0a-4820-bfac-863d747bc82a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonAttackCountLeft">
-      <UniqueIdentifier>{ee00b49c-4939-483d-87c5-f5deb72bf2a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonToTargetDistanceGreaterThanConstant">
-      <UniqueIdentifier>{b063d059-170e-414b-9b52-84688cc6ed9c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsTargetOutOfRangeOfDragonRay">
-      <UniqueIdentifier>{a734dbe6-dbf1-4554-b10c-bb3551b93274}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonHpIsLessThanConstant">
-      <UniqueIdentifier>{4e807475-3fc2-4e46-a5d5-7d0c758d4219}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\DemonAction">
       <UniqueIdentifier>{59605f2e-f380-4ba2-b1ca-dc86ee856a23}</UniqueIdentifier>
     </Filter>
@@ -643,14 +622,8 @@
     <Filter Include="Object\Character\Enemy\Action\DemonAction\2_Idle">
       <UniqueIdentifier>{42d8687e-185e-4892-9e60-dbef68510842}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI\Scene\TutorialUI">
-      <UniqueIdentifier>{1248496a-abdf-44ba-b526-15321fae23ec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI\CreditUI">
       <UniqueIdentifier>{0d06019b-a718-4090-acf0-e92215c80cad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonStateIsSameAsTheSpecifiedState">
-      <UniqueIdentifier>{e4b03e41-c485-42bf-9591-2d52b0149248}</UniqueIdentifier>
     </Filter>
     <Filter Include="Data\BehaviorTree\Decorator\DecoratorInverse">
       <UniqueIdentifier>{efba1f0e-1249-4e7e-bd4e-d4b1109295c9}</UniqueIdentifier>
@@ -679,8 +652,143 @@
     <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Conditon_IsAttackCountIsOver">
       <UniqueIdentifier>{1469857b-fd95-4a1e-b843-ad99f4e8c007}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Map\Dungeon">
+      <UniqueIdentifier>{53f4db3a-41ca-40ca-9501-d8c9a417058b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Map\Dungeon\MutantDungeon">
+      <UniqueIdentifier>{9335c708-2019-4ac6-99c4-dbac29ef21f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Map\Dungeon\DragonDungeon">
+      <UniqueIdentifier>{289a2a5c-7d6e-4a99-8972-ffea5f512195}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Map\Dungeon\BeastDungeon">
+      <UniqueIdentifier>{a7ed5348-55d1-4968-99ac-3c0b4c8f2564}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Map\Gate">
+      <UniqueIdentifier>{dd9855d1-ea74-4f61-bd1d-3e26e8277ca6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scene\TutorialUI">
+      <UniqueIdentifier>{1248496a-abdf-44ba-b526-15321fae23ec}</UniqueIdentifier>
+    </Filter>
     <Filter Include="UI\Scene\TutorialUI\Manager">
       <UniqueIdentifier>{8b45cc85-34c6-4f0d-a194-4e320faf115b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Alert">
+      <UniqueIdentifier>{ecff71ac-5909-4b07-b968-cd68387f358d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Type\Brawler">
+      <UniqueIdentifier>{6b85ef76-5102-4dae-ad06-2a72455fc09f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Type\Mage">
+      <UniqueIdentifier>{7f1e6878-fa22-46e6-b5f4-9240a9574a95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Type\Tank">
+      <UniqueIdentifier>{13107168-e0b2-43a9-8df2-0a8d6ec4dded}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\TankEnemy">
+      <UniqueIdentifier>{33b7058e-ac10-40fa-ad51-bdad240e9853}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\MageEnemy">
+      <UniqueIdentifier>{719f7e22-9eec-4081-9a7e-fe2b561eb247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\BrawlerEnemy">
+      <UniqueIdentifier>{398eeee9-f6f2-4d6c-b5f2-c47f04fd668f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BrawlerEnemy">
+      <UniqueIdentifier>{79a53ae2-af17-4cac-8419-b92297b17744}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\MageEnemy">
+      <UniqueIdentifier>{9ffb0b3c-a531-4e46-9c66-15ce166bc326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy">
+      <UniqueIdentifier>{59fa1d27-31f7-49da-bd90-55ad8f5f4b83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\0_Dying">
+      <UniqueIdentifier>{68ab4828-61a0-4569-a4ad-3e8b4d3b6240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\1_Idle">
+      <UniqueIdentifier>{b80fb42c-d8d4-4cce-ad42-a8064073e565}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\2_Run">
+      <UniqueIdentifier>{5c024401-5e32-4a32-a227-81c8162d146f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\3_Walk">
+      <UniqueIdentifier>{670ef2b6-7c83-465a-904a-dbe77cda9789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\4_WeakEnemy">
+      <UniqueIdentifier>{fc7ae42f-fdef-4a23-ba23-163e8fb73fb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\5_StrongEnemy">
+      <UniqueIdentifier>{0d14d506-9a1d-4be0-aee9-e1cdf422fedc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\6_Reaction">
+      <UniqueIdentifier>{db697ebf-0484-42cf-8fc1-9058d3249b57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\7_Guard">
+      <UniqueIdentifier>{fb4440e4-8050-493d-8018-86de74d29a8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\8_GuardReaction">
+      <UniqueIdentifier>{098b59c4-0356-45b4-8e99-8158c7ad4196}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\MageEnemy\0_Dying">
+      <UniqueIdentifier>{88ea6c22-954b-4208-bf1d-6d77a7d022f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\MageEnemy\1_Idle">
+      <UniqueIdentifier>{2683a795-052b-41d1-a3b1-f3b7989e88b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\MageEnemy\2_Run">
+      <UniqueIdentifier>{e7fb27d6-242d-4d39-96e0-125a69ce6a95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\MageEnemy\3_Walk">
+      <UniqueIdentifier>{3c6fbc1f-cb0d-4852-b99b-96ea086b8451}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\MageEnemy\4_Attack">
+      <UniqueIdentifier>{1ccae9d9-51a2-46b1-b252-7de1eb07f4c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\MageEnemy\5_Reaction">
+      <UniqueIdentifier>{7b583116-345d-4a7b-be93-35563c5fd979}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BrawlerEnemy\0_Dying">
+      <UniqueIdentifier>{fc084595-7b25-4ef5-adc8-61aeb3be96dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BrawlerEnemy\1_Idle">
+      <UniqueIdentifier>{e41a9c9c-bc2a-4cc7-aacb-3876ee3d7be7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BrawlerEnemy\2_Run">
+      <UniqueIdentifier>{c7f77b8a-725e-4e49-885a-ad3430c6d635}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BrawlerEnemy\3_Walk">
+      <UniqueIdentifier>{9ceade68-919e-467f-af5a-9990405c533c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BrawlerEnemy\4_Attack">
+      <UniqueIdentifier>{2514d4b4-cabc-4254-a523-e133eab56239}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BrawlerEnemy\5_Reaction">
+      <UniqueIdentifier>{d4d1c0d0-4096-45d8-bfc7-4be32031f7cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BrawlerEnemy\6_Sway">
+      <UniqueIdentifier>{2ead5bea-f209-41f6-83cf-62f8fd713f1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsHitAttack">
+      <UniqueIdentifier>{13d7b4dc-84a1-4ce2-9057-1b5414d7e0a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BrawlerEnemy\7_SelectReaction">
+      <UniqueIdentifier>{9006b5df-85ca-448e-ac7b-896b453c52b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\BrawlerEnemy\8_SelectAction">
+      <UniqueIdentifier>{c7b44b42-7ba4-44e8-aa86-a52532f4fd50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\MageEnemy\6_SelectReaction">
+      <UniqueIdentifier>{3829bf7c-1ee1-423b-8618-da3cf02ce210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\MageEnemy\7_SelectAction">
+      <UniqueIdentifier>{ca7bbbbe-be97-42c1-977b-e865159c4d6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\9_SelectReaction">
+      <UniqueIdentifier>{ec0d2451-c6b0-40f8-9540-2b86bc689639}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\10_SelectAction">
+      <UniqueIdentifier>{72eb6ce1-0b1d-4abd-a0a8-22a81ac0facc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1207,12 +1315,6 @@
     <ClCompile Include="DragonBehaviorTree.cpp">
       <Filter>Object\Character\Enemy\BehaviorTree\Dragon</Filter>
     </ClCompile>
-    <ClCompile Include="Condition_IsDragonHpIsLessThanConstant.cpp">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonHpIsLessThanConstant</Filter>
-    </ClCompile>
-    <ClCompile Include="Condition_IsDragonActionIntervalIsOver.cpp">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonActionIntervalIsOver</Filter>
-    </ClCompile>
     <ClCompile Include="Dragon_Dying.cpp">
       <Filter>Object\Character\Enemy\Action\DragonAction\1_Dying</Filter>
     </ClCompile>
@@ -1237,9 +1339,6 @@
     <ClCompile Include="RandomSelector.cpp">
       <Filter>Data\BehaviorTree\Composite\RandomSelector</Filter>
     </ClCompile>
-    <ClCompile Include="Condition_IsSelectedDragonBattleAction.cpp">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction</Filter>
-    </ClCompile>
     <ClCompile Include="Dragon_PlayCurrentBattleAction.cpp">
       <Filter>Object\Character\Enemy\Action\DragonAction\9_SelectedBattleAction</Filter>
     </ClCompile>
@@ -1248,18 +1347,6 @@
     </ClCompile>
     <ClCompile Include="DragonBreathEffect.cpp">
       <Filter>Effect\Dragon\Breath</Filter>
-    </ClCompile>
-    <ClCompile Include="Condition_IsDragonAttackCountLeft.cpp">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonAttackCountLeft</Filter>
-    </ClCompile>
-    <ClCompile Include="Condition_IsDragonToTargetDistanceGreaterThanConstant.cpp">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonToTargetDistanceGreaterThanConstant</Filter>
-    </ClCompile>
-    <ClCompile Include="Condition_IsTargetOutOfRangeOfDragonRay.cpp">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsTargetOutOfRangeOfDragonRay</Filter>
-    </ClCompile>
-    <ClCompile Include="Condition_IsDragonStateIsSameAsTheSpecifiedState.cpp">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonStateIsSameAsTheSpecifiedState</Filter>
     </ClCompile>
     <ClCompile Include="Sound.cpp">
       <Filter>Sound\Sound</Filter>
@@ -1308,6 +1395,132 @@
     </ClCompile>
     <ClCompile Include="TutorialManager.cpp">
       <Filter>UI\Scene\TutorialUI\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="BeastDungeon.cpp">
+      <Filter>Object\Map\Dungeon\BeastDungeon</Filter>
+    </ClCompile>
+    <ClCompile Include="DragonDungeon.cpp">
+      <Filter>Object\Map\Dungeon\DragonDungeon</Filter>
+    </ClCompile>
+    <ClCompile Include="Dungeon.cpp">
+      <Filter>Object\Map\Dungeon</Filter>
+    </ClCompile>
+    <ClCompile Include="MutantDungeon.cpp">
+      <Filter>Object\Map\Dungeon\MutantDungeon</Filter>
+    </ClCompile>
+    <ClCompile Include="Gate.cpp">
+      <Filter>Object\Map\Gate</Filter>
+    </ClCompile>
+    <ClCompile Include="Alert.cpp">
+      <Filter>UI\Alert</Filter>
+    </ClCompile>
+    <ClCompile Include="BehaviorTree.cpp">
+      <Filter>Data\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="BrawlerEnemy.cpp">
+      <Filter>Object\Character\Enemy\Type\Brawler</Filter>
+    </ClCompile>
+    <ClCompile Include="MageEnemy.cpp">
+      <Filter>Object\Character\Enemy\Type\Mage</Filter>
+    </ClCompile>
+    <ClCompile Include="TankEnemy.cpp">
+      <Filter>Object\Character\Enemy\Type\Tank</Filter>
+    </ClCompile>
+    <ClCompile Include="MageEnemyBehaviorTree.cpp">
+      <Filter>Object\Character\Enemy\BehaviorTree\MageEnemy</Filter>
+    </ClCompile>
+    <ClCompile Include="BrawlerEnemyBehaviorTree.cpp">
+      <Filter>Object\Character\Enemy\BehaviorTree\BrawlerEnemy</Filter>
+    </ClCompile>
+    <ClCompile Include="TankEnemyBehaviorTree.cpp">
+      <Filter>Object\Character\Enemy\BehaviorTree\TankEnemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Brawler_Dying.cpp">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\0_Dying</Filter>
+    </ClCompile>
+    <ClCompile Include="Brawler_Attack.cpp">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\4_Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="Brawler_Idle.cpp">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\1_Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="Brawler_Reaction.cpp">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\5_Reaction</Filter>
+    </ClCompile>
+    <ClCompile Include="Brawler_Run.cpp">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\2_Run</Filter>
+    </ClCompile>
+    <ClCompile Include="Brawler_Walk.cpp">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\3_Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="Brawler_Sway.cpp">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\6_Sway</Filter>
+    </ClCompile>
+    <ClCompile Include="Mage_Dying.cpp">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\0_Dying</Filter>
+    </ClCompile>
+    <ClCompile Include="Mage_Attack.cpp">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\4_Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="Mage_Reaction.cpp">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\5_Reaction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mage_Walk.cpp">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\3_Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="Mage_Run.cpp">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\2_Run</Filter>
+    </ClCompile>
+    <ClCompile Include="Mage_Idle.cpp">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\1_Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_Dying.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\0_Dying</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_Guard.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\7_Guard</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_GuardReaction.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\8_GuardReaction</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_Idle.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\1_Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_Reaction.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\6_Reaction</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_Run.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\2_Run</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_StrongAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\5_StrongEnemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_WeakAttack.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\4_WeakEnemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_Walk.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\3_Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="Condition_IsHitAttack.cpp">
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsHitAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="Brawler_PlayCurrentReaction.cpp">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\7_SelectReaction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mage_PlayCurrentReaction.cpp">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\6_SelectReaction</Filter>
+    </ClCompile>
+    <ClCompile Include="Brawler_PlayCurrentBattleAction.cpp">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\8_SelectAction</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_PlayCurrentReaction.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\9_SelectReaction</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_PlayCurrentBattleAction.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\10_SelectAction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mage_PlayCurrentBattleAction.cpp">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\7_SelectAction</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1719,9 +1932,6 @@
     <ClInclude Include="ExecuteAllNode.h">
       <Filter>Data\BehaviorTree\ExecuteAll</Filter>
     </ClInclude>
-    <ClInclude Include="BeastBehaviorTreeHeader.h">
-      <Filter>Data\HeaderFile</Filter>
-    </ClInclude>
     <ClInclude Include="Condition_IsDownValueGreaterThanConstant.h">
       <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsDownValueGreaterThanConstant</Filter>
     </ClInclude>
@@ -1869,12 +2079,6 @@
     <ClInclude Include="DragonBehaviorTreeHeader.h">
       <Filter>Object\Character\Enemy\BehaviorTree\Dragon</Filter>
     </ClInclude>
-    <ClInclude Include="Condition_IsDragonHpIsLessThanConstant.h">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonHpIsLessThanConstant</Filter>
-    </ClInclude>
-    <ClInclude Include="Condition_IsDragonActionIntervalIsOver.h">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonActionIntervalIsOver</Filter>
-    </ClInclude>
     <ClInclude Include="Dragon_Dying.h">
       <Filter>Object\Character\Enemy\Action\DragonAction\1_Dying</Filter>
     </ClInclude>
@@ -1902,9 +2106,6 @@
     <ClInclude Include="RandomSelector.h">
       <Filter>Data\BehaviorTree\Composite\RandomSelector</Filter>
     </ClInclude>
-    <ClInclude Include="Condition_IsSelectedDragonBattleAction.h">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsSelectedDragonBattleAction</Filter>
-    </ClInclude>
     <ClInclude Include="Dragon_PlayCurrentBattleAction.h">
       <Filter>Object\Character\Enemy\Action\DragonAction\9_SelectedBattleAction</Filter>
     </ClInclude>
@@ -1913,18 +2114,6 @@
     </ClInclude>
     <ClInclude Include="DragonBreathEffect.h">
       <Filter>Effect\Dragon\Breath</Filter>
-    </ClInclude>
-    <ClInclude Include="Condition_IsDragonAttackCountLeft.h">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonAttackCountLeft</Filter>
-    </ClInclude>
-    <ClInclude Include="Condition_IsDragonToTargetDistanceGreaterThanConstant.h">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonToTargetDistanceGreaterThanConstant</Filter>
-    </ClInclude>
-    <ClInclude Include="Condition_IsTargetOutOfRangeOfDragonRay.h">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsTargetOutOfRangeOfDragonRay</Filter>
-    </ClInclude>
-    <ClInclude Include="Condition_IsDragonStateIsSameAsTheSpecifiedState.h">
-      <Filter>Object\Character\Enemy\BehaviorTree\Dragon\Parts\Condition_IsDragonStateIsSameAsTheSpecifiedState</Filter>
     </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>Sound\Sound</Filter>
@@ -1973,6 +2162,144 @@
     </ClInclude>
     <ClInclude Include="TutorialManager.h">
       <Filter>UI\Scene\TutorialUI\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="BeastDungeon.h">
+      <Filter>Object\Map\Dungeon\BeastDungeon</Filter>
+    </ClInclude>
+    <ClInclude Include="DragonDungeon.h">
+      <Filter>Object\Map\Dungeon\DragonDungeon</Filter>
+    </ClInclude>
+    <ClInclude Include="Dungeon.h">
+      <Filter>Object\Map\Dungeon</Filter>
+    </ClInclude>
+    <ClInclude Include="MutantDungeon.h">
+      <Filter>Object\Map\Dungeon\MutantDungeon</Filter>
+    </ClInclude>
+    <ClInclude Include="Gate.h">
+      <Filter>Object\Map\Gate</Filter>
+    </ClInclude>
+    <ClInclude Include="Alert.h">
+      <Filter>UI\Alert</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviorTree.h">
+      <Filter>Data\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="BeastBehaviorTreeHeader.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="BrawlerEnemy.h">
+      <Filter>Object\Character\Enemy\Type\Brawler</Filter>
+    </ClInclude>
+    <ClInclude Include="MageEnemy.h">
+      <Filter>Object\Character\Enemy\Type\Mage</Filter>
+    </ClInclude>
+    <ClInclude Include="TankEnemy.h">
+      <Filter>Object\Character\Enemy\Type\Tank</Filter>
+    </ClInclude>
+    <ClInclude Include="MageEnemyBehaviorTree.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\MageEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="TankEnemyBehaviorTree.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\TankEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="BrawlerEnemyBehaviorTree.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\BrawlerEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="MageEnemyBehaviorTreeHeader.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\MageEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="BrawlerEnemyBehaviorTreeHeader.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\BrawlerEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="TankEnemyBehaviorTreeHeader.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\TankEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Brawler_Dying.h">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\0_Dying</Filter>
+    </ClInclude>
+    <ClInclude Include="Brawler_Attack.h">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\4_Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="Brawler_Idle.h">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\1_Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="Brawler_Reaction.h">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\5_Reaction</Filter>
+    </ClInclude>
+    <ClInclude Include="Brawler_Run.h">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\2_Run</Filter>
+    </ClInclude>
+    <ClInclude Include="Brawler_Walk.h">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\3_Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="Brawler_Sway.h">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\6_Sway</Filter>
+    </ClInclude>
+    <ClInclude Include="Mage_Dying.h">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\0_Dying</Filter>
+    </ClInclude>
+    <ClInclude Include="Mage_Attack.h">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\4_Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="Mage_Reaction.h">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\5_Reaction</Filter>
+    </ClInclude>
+    <ClInclude Include="Mage_Walk.h">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\3_Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="Mage_Run.h">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\2_Run</Filter>
+    </ClInclude>
+    <ClInclude Include="Mage_Idle.h">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\1_Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_Dying.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\0_Dying</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_Guard.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\7_Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_GuardReaction.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\8_GuardReaction</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_Idle.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\1_Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_Reaction.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\6_Reaction</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_Run.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\2_Run</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_StrongAttack.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\5_StrongEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_WeakAttack.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\4_WeakEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_Walk.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\3_Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="Condition_IsHitAttack.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsHitAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="Brawler_PlayCurrentReaction.h">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\7_SelectReaction</Filter>
+    </ClInclude>
+    <ClInclude Include="Mage_PlayCurrentReaction.h">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\6_SelectReaction</Filter>
+    </ClInclude>
+    <ClInclude Include="Brawler_PlayCurrentBattleAction.h">
+      <Filter>Object\Character\Enemy\Action\BrawlerEnemy\8_SelectAction</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_PlayCurrentReaction.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\9_SelectReaction</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_PlayCurrentBattleAction.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\10_SelectAction</Filter>
+    </ClInclude>
+    <ClInclude Include="Mage_PlayCurrentBattleAction.h">
+      <Filter>Object\Character\Enemy\Action\MageEnemy\7_SelectAction</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2034,6 +2361,15 @@
       <Filter>Json\File</Filter>
     </None>
     <None Include="Data\Json\DemonPanda.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\BrawlerEnemy.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\MageEnemy.json">
+      <Filter>Json\File</Filter>
+    </None>
+    <None Include="Data\Json\TankEnemy.json">
       <Filter>Json\File</Filter>
     </None>
   </ItemGroup>

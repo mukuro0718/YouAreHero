@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Demon_Dying.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Demon.h"
 #include "EnemyManager.h"
@@ -44,15 +45,13 @@ void Demon_Dying::Initialize()
 /// <summary>
 /// 更新処理
 /// </summary>
-Demon_Dying::NodeState Demon_Dying::Update()
+Demon_Dying::NodeState Demon_Dying::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Demon&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Demon&>(_chara);
 
 	/*生存フラグが下りていたら以下の処理は行わない*/
 	if (!enemy.GetIsAlive())return ActionNode::NodeState::SUCCESS;
 
-	auto& rootNode = Singleton<DemonBehaviorTree>::GetInstance();
 	/*登録されているアクションと実際のアクションが異なっていたら*/
 	if (!this->isInitialize)
 	{

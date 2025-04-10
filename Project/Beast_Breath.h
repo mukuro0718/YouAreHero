@@ -3,7 +3,9 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class ActionNode;
+class Character;
 class AttackCapsuleColliderData;
 class Beast_Breath : public ActionNode
 {
@@ -11,9 +13,9 @@ public:
 	 Beast_Breath();//コンストラクタ
 	~Beast_Breath();//デストラクタ
 
-	void		Initialize	();			//初期化
-	NodeState	Update		()override;	//更新
-	const void	Draw		()const;	//描画
+	void		Initialize	();													//初期化
+	NodeState	Update		(BehaviorTree& _tree, Character& _chara)override;	//更新
+	const void	Draw		()const;											//描画
 private:
 	/*構造体*/
 	//アニメーションの段階

@@ -3,14 +3,16 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class ActionNode;
+class Character;
 class Beast_LongFrightening : public ActionNode
 {
 public:
 	 Beast_LongFrightening();//コンストラクタ
 	~Beast_LongFrightening();//デストラクタ
 
-	NodeState Update()override;//更新
+	NodeState	Update(BehaviorTree& _tree, Character& _chara)override;	//更新
 private:
 	/*構造体*/
 	//アニメーションの段階

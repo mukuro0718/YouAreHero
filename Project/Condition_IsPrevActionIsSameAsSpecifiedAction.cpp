@@ -1,9 +1,9 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "BeastBehaviorTreeHeader.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "BeastBehaviorTreeHeader.h"
 #include "Enemy.h"
 #include "EnemyManager.h"
 
@@ -27,12 +27,10 @@ Condition_IsPrevActionIsSameAsSpecifiedAction::~Condition_IsPrevActionIsSameAsSp
 /// <summary>
 /// 更新
 /// </summary>
-Condition_IsPrevActionIsSameAsSpecifiedAction::NodeState Condition_IsPrevActionIsSameAsSpecifiedAction::Update()
+Condition_IsPrevActionIsSameAsSpecifiedAction::NodeState Condition_IsPrevActionIsSameAsSpecifiedAction::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-
 	/*インターバルが終了していなければFAILUREを返す*/
-	if (rootNode.GetNowSelectAction() == this->SPECIFIED_ACTION)
+	if (_tree.GetNowSelectAction() == this->SPECIFIED_ACTION)
 	{
 		//printfDx("CONDITION_NODESTATE_SUCCESS\n");
 		return NodeState::SUCCESS;

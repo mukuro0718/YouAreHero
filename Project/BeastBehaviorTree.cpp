@@ -1,11 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "BeastBehaviorTreeHeader.h"
 #include "DeleteInstance.h"
 #include "Rigidbody.h"
 #include "CharacterData.h"
 #include "Character.h"
+#include "BeastBehaviorTreeHeader.h"
 #include "Enemy.h"
 #include "Beast.h"
 #include "Player.h"
@@ -16,23 +16,16 @@
 /// コンストラクタ
 /// </summary>
 BeastBehaviorTree::BeastBehaviorTree()
-	: Selector_DeathOrReactionOrBattleOrBreak	(nullptr)
-	, prevHp									(0)
-	, damage									(0)
-	, level										(0)
-	, toTargetDistance							(0.0f)
-	, isDestroyedPart							(false)
-	, selectAction								(-1)
-	, isSelectedBattleAction					(false)
-	, isSelectedReaction						(false)
-	, currentBattleAction						(nullptr)
-	, currentReaction							(nullptr)
 {
 	/*インターバルを初期化*/
-	this->intervalSet = { 0 };
+	this->intervalSet.clear();
+	for (int i = 0; i < static_cast<int>(ActionType::COMBO_ATTACK) + 1; i++)
+	{
+		this->intervalSet.emplace_back(0);
+	}
 
-
-	this->debugActionNode = new Beast_Down();
+	/*デバック用ノード*/
+	this->debugNode = new Beast_Down();
 	
 	/*初期化*/
 	Initialize();
@@ -43,10 +36,6 @@ BeastBehaviorTree::BeastBehaviorTree()
 /// </summary>
 BeastBehaviorTree::~BeastBehaviorTree()
 {
-	DeleteMemberInstance(this->Selector_DeathOrReactionOrBattleOrBreak);
-	DeleteMemberInstance(this->currentBattleAction);
-	DeleteMemberInstance(this->currentReaction);
-	DeleteMemberInstance(this->debugActionNode);
 }
 
 /// <summary>
@@ -54,10 +43,10 @@ BeastBehaviorTree::~BeastBehaviorTree()
 /// </summary>
 void BeastBehaviorTree::CreateBehaviorTree()
 {
-	DeleteMemberInstance(this->Selector_DeathOrReactionOrBattleOrBreak);
+	DeleteMemberInstance(this->mainNode);
 
 	/*大元のツリーの作成*/
-	this->Selector_DeathOrReactionOrBattleOrBreak = new SelectorNode();
+	this->mainNode = new SelectorNode();
 
 	auto& json = Singleton<JsonManager>::GetInstance();
 	/*HPがないときのアクション*/
@@ -67,7 +56,7 @@ void BeastBehaviorTree::CreateBehaviorTree()
 		Sequencer_DeathIfHpIsLessThanZero->AddChild(*new Condition_IsHpBelowConstant(0));
 		Sequencer_DeathIfHpIsLessThanZero->AddChild(*new Beast_Dying());
 		//rootノードに追加
-		this->Selector_DeathOrReactionOrBattleOrBreak->AddChild(*Sequencer_DeathIfHpIsLessThanZero);
+		this->mainNode->AddChild(*Sequencer_DeathIfHpIsLessThanZero);
 	}
 
 	/*リアクション中のアクション*/
@@ -98,7 +87,7 @@ void BeastBehaviorTree::CreateBehaviorTree()
 			Selector_DownOrLongOrShortReaction->AddChild(*Sequencer_LongFrighteningIfFrighteningValueMoreThanConstant);
 			Selector_DownOrLongOrShortReaction->AddChild(*Sequencer_ShortFrighteningIfPartDestroyed);
 		}
-		this->Selector_DeathOrReactionOrBattleOrBreak->AddChild(*Selector_DownOrLongOrShortReaction);
+		this->mainNode->AddChild(*Selector_DownOrLongOrShortReaction);
 	}
 
 	/*戦闘中のアクション*/
@@ -209,7 +198,7 @@ void BeastBehaviorTree::CreateBehaviorTree()
 		Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack->AddChild(*Sequencer_AttackIfAttackCountIsOver);
 
 		//rootノードに追加
-		this->Selector_DeathOrReactionOrBattleOrBreak->AddChild(*Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack);
+		this->mainNode->AddChild(*Selector_ApproachOrSpecialOrLongRangeOrNearRangeAttack);
 	}
 }
 
@@ -219,28 +208,23 @@ void BeastBehaviorTree::CreateBehaviorTree()
 void BeastBehaviorTree::Initialize()
 {
 	CreateBehaviorTree();
-	auto& json					= Singleton<JsonManager>::GetInstance();
+	auto& json								= Singleton<JsonManager>::GetInstance();
 	this->prevHp							= json.GetJson(JsonManager::FileType::BEAST)["HP"];
 	this->damage							= 0;
 	this->level								= 0;
 	this->selectAction						= -1;
-	this->isDestroyedPart					= false;
+	this->nodeState							= BehaviorTreeNode::NodeState::NONE_ACTIVE;
+	this->toTargetDistance					= 0.0f;
+	this->innerProductOfDirectionToTarget	= 0.0f;
+	this->attackCount						= 0;
+	//this->isDestroyedPart					= false;
 	this->isSelectedBattleAction			= false;
 	this->isSelectedReaction				= false;
-	this->toTargetDistance					= 0;
-	this->innerProductOfDirectionToTarget	= 0.0f;
+
 	SetInterval(static_cast<int>(ActionType::ROAR), 0);
 
-	/*if (this->currentReaction != nullptr)
-	{
-		this->currentReaction->Initialize();
-	}
-	if (this->currentBattleAction != nullptr)
-	{
-		this->currentBattleAction->Initialize();
-	}*/
-	this->currentReaction = nullptr;
-	this->currentBattleAction = nullptr;
+	this->currentBattleNode	  = nullptr;
+	this->currentReactionNode = nullptr;
 	for (int i = 0; i < this->intervalSet.size(); i++)
 	{
 		this->intervalSet[i] = 0;
@@ -278,13 +262,13 @@ void BeastBehaviorTree::UpdateMemberVariables()
 /// <summary>
 /// 更新
 /// </summary>
-void BeastBehaviorTree::Update()
+void BeastBehaviorTree::Update(Character& _chara)
 {
 	/*メンバ変数の更新*/
 	UpdateMemberVariables();
 
 	/*ツリーの実行*/
-	BehaviorTreeNode::NodeState state = this->Selector_DeathOrReactionOrBattleOrBreak->Update();
+	BehaviorTreeNode::NodeState state = this->mainNode->Update(*this, _chara);
 
 #ifdef _DEBUG
 	//BehaviorTreeNode::NodeState state = this->debugActionNode->Update();
@@ -308,46 +292,5 @@ const void BeastBehaviorTree::Draw()const
 	//}
 	//this->debugActionNode->Draw();
 #endif // _DEBUG
-
 }
 
-/// <summary>
-/// バトルアクションの登録
-/// </summary>
-void BeastBehaviorTree::EntryCurrentBattleAction(BehaviorTreeNode& _action)
-{
-	this->currentBattleAction = &_action;
-	this->isSelectedBattleAction = true; 
-}
-/// <summary>
-/// リアクションアクションの登録
-/// </summary>
-void BeastBehaviorTree::EntryCurrentReaction(BehaviorTreeNode& _action)
-{
-	this->currentReaction = &_action;
-	this->isSelectedReaction = true;
-}
-/// <summary>
-/// リアクションアクションの解除
-/// </summary>
-void BeastBehaviorTree::ExitCurrentReaction()
-{ 
-	this->isSelectedReaction = false; 
-	if (this->currentReaction != nullptr)
-	{
-		this->currentReaction->Initialize();
-	}
-	this->currentReaction = nullptr; 
-}
-/// <summary>
-/// バトルアクションの解除
-/// </summary>
-void BeastBehaviorTree::ExitCurrentBattleAction() 
-{ 
-	this->isSelectedBattleAction = false; 
-	if (this->currentBattleAction != nullptr)
-	{
-		this->currentBattleAction->Initialize();
-	}
-	this->currentBattleAction = nullptr;
-}

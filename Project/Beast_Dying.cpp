@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Beast_Dying.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Beast.h"
 #include "EnemyManager.h"
@@ -36,24 +37,22 @@ Beast_Dying::~Beast_Dying()
 /// <summary>
 /// 更新処理
 /// </summary>
-Beast_Dying::NodeState Beast_Dying::Update()
+Beast_Dying::NodeState Beast_Dying::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Beast&>(_chara);
 
 	/*生存フラグが下りていたら以下の処理は行わない*/
 	if (!enemy.GetIsAlive())return ActionNode::NodeState::SUCCESS;
 
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
 	/*登録されているアクションと実際のアクションが異なっていたら*/
-	if (rootNode.GetNowSelectAction() != this->actionType)
+	if (_tree.GetNowSelectAction() != this->actionType)
 	{
 		//アニメーションの種類を設定
 		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
 		enemy.SetAnimationPlayTime(this->animationPlayTime);
 		//アクションの設定
-		rootNode.SetSelectAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 	}
 
 	/*アニメーションの再生*/
@@ -73,7 +72,7 @@ Beast_Dying::NodeState Beast_Dying::Update()
 		if (enemy.GetIsChangeAnimation())
 		{
 			//インターバルの設定
-			rootNode.SetInterval(this->actionType, this->interval);
+			_tree.SetInterval(this->actionType, this->interval);
 			enemy.OffIsAlive();
 			return ActionNode::NodeState::SUCCESS;
 		}

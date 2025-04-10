@@ -8,5 +8,87 @@
   "SKYDOME_SCALE": [ 1.1, 1.1, 1.1 ],
   "SKYDOME_ROTATION": [ 0.0, 0.0, 0.0 ],
   "ADD_SKYDOME_ROTATE": 0.001,
-  "COLL_FRAME_INDEX": -1
+  "COLL_FRAME_INDEX": -1,
+
+  "MUTANT_DUNGEON_SCALE": [ 0.1, 0.1, 0.1 ],
+  "MUTANT_DUNGEON_ROTATION": [ 0.0, 0.0, 0.0 ],
+  "MUTANT_DUNGEON_POSITION": [ 0.0, -15.0, -50.0 ],
+  "MUTANT_DUNGEON_COLL_FRAME_INDEX": -1,
+  "MUTANT_DUNGEON_SPOWN_ENEMY_LIST": [
+    0,
+    0,
+    0,
+    0
+  ],
+
+
+  "DUNGEON_SPOWN_POSITION": [
+    [
+      [ 120.0, -15.0, 300.0 ],
+      [ -230.0, -15.0, 350.0 ],
+      [ -200.0, -15.0, 370.0 ],
+      [ -200.0, -15.0, 300.0 ]
+    ],
+    [
+      [ 120.0, -15.0, 300.0 ],
+      [ 120.0, -15.0, 320.0 ],
+      [ 120.0, -15.0, 280.0 ],
+      [ -230.0, -15.0, 370.0 ],
+      [ -230.0, -15.0, 350.0 ],
+      [ -200.0, -15.0, 300.0 ],
+      [ -200.0, -15.0, 350.0 ],
+      [ -200.0, -15.0, 370.0 ]
+    ],
+    [
+      [ -100.0, -15.0, 50.0 ],
+      [ -225.0, -15.0, -90.0 ],
+      [ -245.0, -15.0, -80.0 ],
+      [ -245.0, -15.0, -100.0 ],
+      [ -265.0, -15.0, -70.0 ],
+      [ -265.0, -15.0, -110.0 ]
+    ]
+  ],
+
+  "DRAGON_DUNGEON_SCALE": [ 0.1, 0.1, 0.1 ],
+  "DRAGON_DUNGEON_ROTATION": [ 0.0, 0.0, 0.0 ],
+  "DRAGON_DUNGEON_POSITION": [ 0.0, -15.0, -50.0 ],
+  "DRAGON_DUNGEON_SPOWN_ENEMY_LIST": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1
+  ],
+
+  "BEAST_DUNGEON_SCALE": [ 0.1, 0.1, 0.1 ],
+  "BEAST_DUNGEON_ROTATION": [ 0.0, 0.0, 0.0 ],
+  "BEAST_DUNGEON_POSITION": [ 0.0, -15.0, -50.0 ],
+  "BEAST_DUNGEON_SPOWN_ENEMY_LIST": [
+    2,
+    2,
+    0,
+    0,
+    1,
+    1
+  ],
+
+  "FENCE_SCALE": [ 0.1, 0.1, 0.1 ],
+  "FENCE_ROTATION": [ 0.0, 0.0, 0.0 ],
+  "FENCE_POSITION": [ 0.0, -15.0, 0.0 ],
+
+  "GATE_SCALE": [ 0.1, 0.1, 0.1 ],
+  "GATE_ROTATION": [
+    [ 0.0, 180.0, 0.0 ],
+    [ 0.0, 90.0, 0.0 ],
+    [ 0.0, 0.0, 0.0 ]
+  ],
+  "GATE_POSITION": [
+    [ 470.0, -14.0, 560.0 ],
+    [ 470.0, -14.0, 560.0 ],
+    [ 470.0, -14.0, 560.0 ]
+  ],
+  "GATE_ACTION_LENGTH": 50.0
 }

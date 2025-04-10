@@ -66,13 +66,19 @@ void PlayerBlock::Update(Player& _player)
 	VECTOR nowRotation = _player.GetRigidbody().GetRotation();
 	if (this->frameCount < 10)
 	{
-		VECTOR nextRotation = Gori::ORIGIN;
-		VECTOR enemyPosition = enemy.GetRigidbody().GetPosition();
-		VECTOR positionToEnemy = VSub(_player.GetRigidbody().GetPosition(), enemyPosition);
-		nextRotation.y = static_cast<float>(atan2(static_cast<double>(positionToEnemy.x), static_cast<double>(positionToEnemy.z)));
-		nowRotation = Gori::LerpAngle(nowRotation, nextRotation, this->rotateLerpValue);
-		_player.SetRotation(nowRotation, nextRotation);
-
+		if (!_player.GetIsLock())
+		{
+			enemy.SetNearestEnemyIndent(_player.GetRigidbody().GetPosition());
+		}
+		VECTOR  nextRotation	= Gori::ORIGIN;
+		VECTOR  enemyPosition	= enemy.GetPositionForLockon();
+		VECTOR  positionToEnemy = VSub(_player.GetRigidbody().GetPosition(), enemyPosition);
+				nextRotation.y	= static_cast<float>(atan2(static_cast<double>(positionToEnemy.x), static_cast<double>(positionToEnemy.z)));
+				nowRotation		= Gori::LerpAngle(nowRotation, nextRotation, this->rotateLerpValue);
+		if (VSquareSize(VSub(enemy.GetPositionForLockon(), _player.GetRigidbody().GetPosition())) <= 400.0f)
+		{
+			_player.SetRotation(nowRotation, nextRotation);
+		}
 	}
 
 	/*ˆÚ“®‘¬“x‚ÌXV*/

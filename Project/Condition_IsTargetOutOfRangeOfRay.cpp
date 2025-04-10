@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BeastBehaviorTreeHeader.h"
 #include "EnemyManager.h"
 
@@ -25,11 +26,10 @@ Condition_IsTargetOutOfRangeOfRay::~Condition_IsTargetOutOfRangeOfRay()
 /// <summary>
 /// XV
 /// </summary>
-Condition_IsTargetOutOfRangeOfRay::NodeState Condition_IsTargetOutOfRangeOfRay::Update()
+Condition_IsTargetOutOfRangeOfRay::NodeState Condition_IsTargetOutOfRangeOfRay::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*–Ú•W‚Æ‚Ì‹——£‚ª’è”ˆÈã‚¾‚Á‚½‚ç*/
-	auto& root = Singleton<BeastBehaviorTree>::GetInstance();
-	float dot = root.GetDotOfDirAndToTarget();
+	float dot = _tree.GetDotOfDirAndToTarget();
 	if (this->MIN_TOLERANCE_RANGE <= dot && dot <= this->MAX_TOLERANCE_RANGE)
 	{
 		//printfDx("CONDITION_DOT_FAILURE\n");

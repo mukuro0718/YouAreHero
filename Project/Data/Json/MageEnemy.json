@@ -1,0 +1,92 @@
+{
+  "ANIMATION_HANDLE": [
+    "Asset/Animation/Brawler/Dying.mv1",
+    "Asset/Animation/Brawler/Idle.mv1",
+    "Asset/Animation/Brawler/Run.mv1",
+    "Asset/Animation/Brawler/WalkFront.mv1",
+    "Asset/Animation/Brawler/WalkBack.mv1",
+    "Asset/Animation/Brawler/WalkLeft.mv1",
+    "Asset/Animation/Brawler/WalkRight.mv1",
+    "Asset/Animation/Brawler/Attack.mv1",
+    "Asset/Animation/Brawler/Reaction.mv1"
+  ],
+  "ANIMATION_INDEX": 0,
+  "ANIMATION_PLAY_TIME": [
+    0.6,
+    0.6,
+    0.6,
+    0.6,
+    0.6,
+    0.6,
+    0.6,
+    0.6,
+    0.6
+  ],
+  "ACTION_INTERVAL": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+
+  "ATTACK_COMBO_COUNT": [ 0, 2, 6 ],
+  "DEFENSIVE_POWER": 1.0,
+
+  "INIT_POSITION": [ 0.0, 0.0, 0.0 ],
+  "INIT_DIRECTION": [ 0.0, 0.0, -1.0 ],
+  "INIT_SCALE": [ 0.06, 0.06, 0.06 ],
+  "INIT_ROTATION": [ 0.0, 0.0, 0.0 ],
+
+  "ATTACK_MAX_RANGE": 150.0,
+  "ATTACK_MIN_RANGE": 10.0,
+
+  "MAX_DOWN_VALUE": 600,
+  "MAX_ANGRY_VALUE": 1200,
+  "CHANGE_ANGRY_LIMIT_DAMAGE": 1000,
+  "HP": 1200,
+
+  "ACCEL": 0.05,
+  "DECEL": -0.05,
+  "WALK_SPEED": 0.3,
+  "RUN_SPEED": 0.5,
+  "STEP_BACK_SPEED": -0.5,
+  "BACKING_BREATH_SPEED": -0.3,
+  "ATTACKING_SPEED": 0.1,
+
+  "RAY_RANGE": 100.0,
+  "APPROACH_DISTANCE": 100.0,
+  "STOP_RUSH_DISTANCE": 900.0,
+
+  "FAR_ATTACK_RANGE": 100.0,
+  "NEAR_ATTACK_RANGE": 20.0,
+
+  "TOLERANCE_RANGE": [ -0.707, -1.0 ],
+
+  "SPECIFIED_DOWN_VALUE": 1000,
+  "SPECIFIED_FRIGHTENING_VALUE": 1000,
+
+  "HIT_RADIUS": 3.0,
+  "HIT_HEIGHT": 10.0,
+
+  "TURN_WAIT_COUNT": 30,
+  "ROTATE_FIX_COUNT": 20,
+  "RAISE_LEVEL_EFFECT_START_COUNT": 60,
+  "NORMAL_ROAR_COUNT": 100,
+  "RAISE_LEVEL_ROAR_COUNT": 65,
+  "WALK_SOUND_COUNT": 56,
+
+  "CHARGE_RIGHT_ATTACK_START_COUNT": 85,
+  "CHARGE_RIGHT_ATTACK_END_COUNT": 95,
+  "CHARGE_RIGHT_FRAME_INDEX_USED_CAPSULE_DIRECTION": [ 41, 42 ],
+  "CHARGE_RIGHT_RADIUS": 5.0,
+  "CHARGE_RIGHT_DAMAGE": 50.0,
+  "CHARGE_RIGHT_HIT_STOP_TIME": 5,
+  "CHARGE_RIGHT_HIT_STOP_DELAY": 0,
+  "CHARGE_RIGHT_SLOW_FACTOR": 0.3,
+  "CHARGE_RIGHT_BLOCK_STAMINA_CONSUMPTION": 50.0
+}

@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "UseJson.h"
 #include "ReactionType.h"
 #include "DeleteInstance.h"
 #include "CharacterData.h"
@@ -9,22 +10,32 @@
 #include "Boss.h"
 #include "Beast.h"
 #include "Dragon.h"
-#include "Demon.h"
+#include "TankEnemy.h"
+#include "MageEnemy.h"
+#include "BrawlerEnemy.h"
 #include "EnemyManager.h"
 #include "EnemyChanger.h"
+#include "MapManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 EnemyManager::EnemyManager()
-	: frameTime	(0)
-	, boss		(nullptr)
+	: frameTime				(0)
+	, boss					(nullptr)
+	, mapType				(-1)
+	, enemyType				(0)
+	, nearestWeakEnemyIndent(0)
+	, isEnemyWithinRange	(false)
 {
-	this->bossList.emplace_back(new Demon());
+	/*ボスの作成*/
 	this->bossList.emplace_back(new Boss());
 	this->bossList.emplace_back(new Dragon());
 	this->bossList.emplace_back(new Beast());
 	this->boss = this->bossList[0];
+
+
+	/*雑魚敵の作成*/
 }
 
 /// <summary>
@@ -32,7 +43,7 @@ EnemyManager::EnemyManager()
 /// </summary>
 EnemyManager::~EnemyManager()
 {
-
+	this->boss->Finalize();
 }
 
 /// <summary>
@@ -40,22 +51,63 @@ EnemyManager::~EnemyManager()
 /// </summary>
 void EnemyManager::Initialize()
 {
-	this->boss->Finalize();
-	
+	/*表示するボスの種類*/
 	auto& changer = Singleton<EnemyChanger>::GetInstance();
 	this->enemyType = changer.GetEnemyType();
 
+	/*現在のボスの後処理をして、次のボスを初期化する*/
+	this->boss->Finalize();
 	this->boss = this->bossList[this->enemyType];
+	//this->boss->Initialize();
 
-	this->boss->Initialize();
+	/*ボスに合わせて雑魚敵を初期化する*/
+	CreateWeakEnemy();
+	for (auto& enemy : this->weakEnemy)
+	{
+		enemy->Initialize();
+	}
+
+	auto& map = Singleton<MapManager>::GetInstance();
+	this->mapType = static_cast<int>(map.GetMapType());
 }
 /// <summary>
 /// 更新
 /// </summary>
 void EnemyManager::Update()
 {
+	auto& map = Singleton<MapManager>::GetInstance();
+	int currentMapType = static_cast<int>(map.GetMapType());
+	if (currentMapType != this->mapType)
+	{
+		switch (currentMapType)
+		{
+		case static_cast<int>(MapManager::MapType::BOSS):
+			this->boss->Initialize();
+			break;
+		case static_cast<int>(MapManager::MapType::DUNGEON):
+			for (auto& enemy : this->weakEnemy)
+			{
+				enemy->Initialize();
+			}
+			break;
+		}
+		this->mapType = currentMapType;
+	}
+
 	//int startTime = GetNowCount();
-	this->boss->Update();
+	//マップの状態に応じて、敵を変化させる
+	switch (this->mapType)
+	{
+	case static_cast<int>(MapManager::MapType::BOSS):
+		this->boss->Update();
+		break;
+	case static_cast<int>(MapManager::MapType::DUNGEON):
+		for (auto& enemy : this->weakEnemy)
+		{
+			enemy->Update();
+		}
+		break;
+	}
 	//int endTime = GetNowCount();
 	//this->frameTime = endTime - startTime;
 }
@@ -64,7 +116,6 @@ void EnemyManager::Update()
 /// </summary>
 void EnemyManager::Finalize()
 {
-	this->boss->Finalize();
 }
 
 /// <summary>
@@ -72,16 +123,34 @@ void EnemyManager::Finalize()
 /// </summary>
 const void EnemyManager::Draw()const
 {
-	this->boss->Draw();
+	switch (this->mapType)
+	{
+	case static_cast<int>(MapManager::MapType::BOSS):
+		this->boss->Draw();
+		break;
+	case static_cast<int>(MapManager::MapType::DUNGEON):
+		for (auto& enemy : this->weakEnemy)
+		{
+			enemy->Draw();
+		}
+		break;
+	}
+
 	//printfDx("M_ENEMY_FRAMETIME:%d\n", this->frameTime);
 }
 
 /// <summary>
-/// ダメージデータの取得
+/// キャラクターデータの取得
 /// </summary>
 const CharacterData& EnemyManager::GetCharacterData()const
 {
-	return this->boss->GetCharacterData();
+	switch (this->mapType)
+	{
+	case static_cast<int>(MapManager::MapType::BOSS):
+		return this->boss->GetCharacterData();
+	case static_cast<int>(MapManager::MapType::DUNGEON):
+		return this->weakEnemy[this->nearestWeakEnemyIndent]->GetCharacterData();
+	}
 }
 
 /// <summary>
@@ -95,9 +164,21 @@ const Rigidbody& EnemyManager::GetRigidbody()const
 /// <summary>
 /// ダメージ処理
 /// </summary>
-const int EnemyManager::GetHP()const
+const int EnemyManager::GetHP(const int _enemyIndent)const
 {
-	return this->boss->GetHP();
+	int indent = _enemyIndent;
+	if (indent == -1)
+	{
+		indent = this->nearestWeakEnemyIndent;
+	}
+
+	switch (this->mapType)
+	{
+	case static_cast<int>(MapManager::MapType::BOSS):
+		return this->boss->GetHP();
+	case static_cast<int>(MapManager::MapType::DUNGEON):
+		return this->weakEnemy[indent]->GetHP();
+	}
 }
 
 /// <summary>
@@ -148,5 +229,144 @@ const int EnemyManager::GetBossState()const
 const VECTOR EnemyManager::GetPositionForLockon()const
 {
 	auto& enemy = dynamic_cast<Enemy&>(*this->boss);
-	return enemy.GetPositionForLockon();
+	switch (this->mapType)
+	{
+	case static_cast<int>(MapManager::MapType::BOSS):
+		return enemy.GetPositionForLockon();
+	case static_cast<int>(MapManager::MapType::DUNGEON):
+		return this->weakEnemy[nearestWeakEnemyIndent]->GetRigidbody().GetPosition();
+	}
 }
+
+/// <summary>
+/// 一番近い敵の番号を取得
+/// </summary>
+void EnemyManager::SetNearestEnemyIndent(const VECTOR _targetPosition)
+{
+	float minLength = 0.0f;
+	int searchCount = 0;
+	switch (this->mapType)
+	{
+	case static_cast<int>(MapManager::MapType::DUNGEON):
+		//ターゲットと雑魚敵の距離を求め、一番近い敵の番号を返す
+		this->isEnemyWithinRange = false;
+		for (int i = 0; i < this->weakEnemy.size(); i++)
+		{
+			if (this->weakEnemy[i]->GetIsAlive())
+			{
+				float length = VSquareSize(VSub(this->weakEnemy[i]->GetRigidbody().GetPosition(), _targetPosition));
+				if (searchCount == 0)
+				{
+					minLength = length;
+					this->nearestWeakEnemyIndent = i;
+					this->isEnemyWithinRange = true;
+					searchCount++;
+				}
+				else if (minLength > length)
+				{
+					minLength = length;
+					this->nearestWeakEnemyIndent = i;
+					this->isEnemyWithinRange = true;
+				}
+			}
+		}
+		break;
+	default:
+		break;
+	}
+
+}
+
+/// <summary>
+/// 雑魚敵のリストを取得
+/// </summary>
+vector<int> EnemyManager::GetWeakEnemyTypeList(const int _bossType)
+{
+	/*ボスの種類に応じて登場させる敵の種類とその位置を変える*/
+	vector<int> empty;
+	auto& json = Singleton<JsonManager>::GetInstance();
+	switch (_bossType)
+	{
+	case static_cast<int>(EnemyChanger::EnemyType::MUTANT):
+		return json.GetJson(JsonManager::FileType::MAP)["MUTANT_DUNGEON_SPOWN_ENEMY_LIST"];
+	case static_cast<int>(EnemyChanger::EnemyType::DRAGON):
+		return json.GetJson(JsonManager::FileType::MAP)["DRAGON_DUNGEON_SPOWN_ENEMY_LIST"];
+	case static_cast<int>(EnemyChanger::EnemyType::BEAST):
+		return json.GetJson(JsonManager::FileType::MAP)["BEAST_DUNGEON_SPOWN_ENEMY_LIST"];
+	default:
+		return empty;
+	}
+
+}
+
+/// <summary>
+/// 雑魚敵を作成
+/// </summary>
+void EnemyManager::CreateWeakEnemy()
+{
+	/*メモリをきれいに*/
+	if (this->weakEnemy.size() != 0)
+	{
+		for (int i = 0; i < this->weakEnemy.size(); i++)
+		{
+			DeleteMemberInstance(this->weakEnemy[i]);
+		}
+	}
+	this->weakEnemy.clear();
+
+	/*どのボスを登場させるのか*/
+	auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
+	int bossType = enemyChanger.GetEnemyType();
+
+	/*雑魚敵をvectorに追加*/
+	vector<int> typeList = GetWeakEnemyTypeList(bossType);
+	for (int i = 0; i < typeList.size(); i++)
+	{
+		AddWeakEnemy(i, typeList[i], bossType, this->weakEnemy);
+	}
+}
+
+/// <summary>
+/// 雑魚敵をvectorに追加
+/// </summary>
+void EnemyManager::AddWeakEnemy(int& _indent, const int _weakEnemyType, const int _bossType, vector<Character*>& _list)
+{
+	switch (_weakEnemyType)
+	{
+	case static_cast<int>(WeakEnemyType::BRAWLER):
+		this->weakEnemy.emplace_back(new BrawlerEnemy(_indent, _bossType));
+		break;
+	case static_cast<int>(WeakEnemyType::MAGE):
+		this->weakEnemy.emplace_back(new MageEnemy(_indent, _bossType));
+		break;
+	case static_cast<int>(WeakEnemyType::TANK):
+		this->weakEnemy.emplace_back(new TankEnemy(_indent, _bossType));
+		break;
+	default:
+		break;
+	}
+
+}
+
+const bool EnemyManager::GetIsEnemyWithinRnage()const 
+{
+	if (this->isEnemyWithinRange && !this->weakEnemy[this->nearestWeakEnemyIndent]->GetIsAlive())
+	{
+		return false;
+	}
+	return this->isEnemyWithinRange; 
+}
+
+//Character& EnemyManager::GetCharacter(const int _enemyIndex = 0)
+//{ 
+//	switch (this->mapType)
+//	{
+//	case static_cast<int>(MapManager::MapType::BOSS):
+//		return *this->boss;
+//	default:
+//		break;
+//	//case static_cast<int>(MapManager::MapType::DUNGEON):
+//		//return *this->weakEnemyList[_enemyIndex];
+//	}
+//
+//}

@@ -1,5 +1,8 @@
+#include <DxLib.h>
 #include "UseSTL.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "CompositeNode.h"
 #include "ExecuteAllNode.h"
 
@@ -22,14 +25,14 @@ ExecuteAllNode::~ExecuteAllNode()
 /// <summary>
 /// 更新
 /// </summary>
-ExecuteAllNode::NodeState ExecuteAllNode::Update()
+ExecuteAllNode::NodeState ExecuteAllNode::Update(BehaviorTree& _tree, Character& _chara)
 {
 	int successCount = 0;
 	/*すべての子を実行する*/
 	for (auto& child : this->children)
 	{
 		//成功していたらカウントを増やす
-		if (child->Update() == NodeState::SUCCESS)
+		if (child->Update(_tree, _chara) == NodeState::SUCCESS)
 		{
 			successCount++;
 		}

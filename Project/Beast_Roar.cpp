@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Beast_Roar.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Beast.h"
 #include "EnemyManager.h"
@@ -41,11 +42,10 @@ Beast_Roar::~Beast_Roar()
 /// <summary>
 /// 更新処理
 /// </summary>
-Beast_Roar::NodeState Beast_Roar::Update()
+Beast_Roar::NodeState Beast_Roar::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*アニメーション*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Beast&>(_chara);
 	//初期化されていなければ
 	if (this->frameCount == 0)
 	{
@@ -54,10 +54,9 @@ Beast_Roar::NodeState Beast_Roar::Update()
 		//アニメーション再生時間の設定
 		enemy.SetAnimationPlayTime(this->animationPlayTime);
 		//アクションの状態をセット
-		auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-		rootNode.SetSelectAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 		//アクションの登録
-		rootNode.EntryCurrentBattleAction(*this);
+		_tree.EntryCurrentBattleAction(*this);
 		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
 		enemy.UpdateVelocity(false);
 	}
@@ -85,10 +84,9 @@ Beast_Roar::NodeState Beast_Roar::Update()
 		//アニメーションが終了していたら
 		if (enemy.GetIsChangeAnimation())
 		{
-			auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-			rootNode.SetInterval(this->actionType);
+			_tree.SetInterval(this->actionType);
 			//アクションの解除
-			rootNode.ExitCurrentBattleAction();
+			_tree.ExitCurrentBattleAction();
 			this->frameCount = 0;
 			return ActionNode::NodeState::SUCCESS;
 		}

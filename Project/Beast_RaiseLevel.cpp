@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Beast_RaiseLevel.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Beast.h"
 #include "EnemyManager.h"
@@ -43,23 +44,21 @@ Beast_RaiseLevel::~Beast_RaiseLevel()
 /// <summary>
 /// 更新処理
 /// </summary>
-Beast_RaiseLevel::NodeState Beast_RaiseLevel::Update()
+Beast_RaiseLevel::NodeState Beast_RaiseLevel::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Beast&>(_chara);
 
 	/*登録されているアクションと実際のアクションが異なっていたら*/
-	if (rootNode.GetNowSelectAction() != this->actionType)
+	if (_tree.GetNowSelectAction() != this->actionType)
 	{
 		//アニメーションの種類を設定
 		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
 		enemy.SetAnimationPlayTime(this->animationPlayTime);
 		//アクションの設定
-		rootNode.SetSelectAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 		//自分をRootに登録
-		rootNode.EntryCurrentBattleAction(*this);
+		_tree.EntryCurrentBattleAction(*this);
 		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
 		enemy.UpdateVelocity(false);
 		enemy.DecAttackComboCount();
@@ -97,11 +96,12 @@ Beast_RaiseLevel::NodeState Beast_RaiseLevel::Update()
 		if (enemy.GetIsChangeAnimation())
 		{
 			//インターバルの設定
-			rootNode.SetInterval(this->actionType, this->interval);
+			_tree.SetInterval(this->actionType, this->interval);
 			//登録を解除
-			rootNode.ExitCurrentBattleAction();
+			_tree.ExitCurrentBattleAction();
 			//レベルの上昇
-			rootNode.RaiseLevel();
+			auto& beastTree = dynamic_cast<BeastBehaviorTree&>(_tree);
+			beastTree.RaiseLevel();
 			this->frameCount = 0;
 			return ActionNode::NodeState::SUCCESS;
 		}

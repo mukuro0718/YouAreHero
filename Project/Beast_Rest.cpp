@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Beast_Rest.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Beast.h"
 #include "EnemyManager.h"
@@ -43,21 +44,19 @@ Beast_Rest::~Beast_Rest()
 /// <summary>
 /// 更新処理
 /// </summary>
-Beast_Rest::NodeState Beast_Rest::Update()
+Beast_Rest::NodeState Beast_Rest::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*選択されているアクションと実際のアクションが異なっていたら初期化*/
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	if (rootNode.GetNowSelectAction() != this->actionType)
+	if (_tree.GetNowSelectAction() != this->actionType)
 	{
 		//アクションの設定
-		rootNode.SetSelectAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 		//アクションの登録
-		rootNode.EntryCurrentReaction(*this);
+		_tree.EntryCurrentReaction(*this);
 	}
 
 	/*アニメーション*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Beast&>(_chara);
 	//アニメーションの種類を設定
 	int nowAnimationType = this->animationSet[this->stage];
 	if (this->animationType != nowAnimationType)
@@ -87,7 +86,7 @@ Beast_Rest::NodeState Beast_Rest::Update()
 		if (this->stage == AnimationStage::START)
 		{
 			//アクションの解除
-			rootNode.ExitCurrentReaction();
+			_tree.ExitCurrentReaction();
 			return ActionNode::NodeState::SUCCESS;
 		}
 		return ActionNode::NodeState::RUNNING;

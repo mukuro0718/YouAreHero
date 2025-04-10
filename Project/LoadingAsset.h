@@ -21,6 +21,14 @@ public:
 		BEAST,
 		DRAGON,
 		DEMON_PANDA,
+		BRAWLER_ENEMY,
+		MAGE_ENEMY,
+		TANK_ENEMY,
+		BEAST_DUNGEON,
+		DRAGON_DUNGEON,
+		MUTANT_DUNGEON,
+		FENCE,
+		GATE,
 	};
 	//‰æ‘œ‚ÌŽí—Þ
 	enum class ImageType

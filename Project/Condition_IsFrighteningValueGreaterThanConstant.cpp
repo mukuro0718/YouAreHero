@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "Character.h"
 #include "BeastBehaviorTreeHeader.h"
 
 /// <summary>
@@ -23,13 +24,12 @@ Condition_IsFrighteningValueGreaterThanConstant::~Condition_IsFrighteningValueGr
 /// <summary>
 /// 更新
 /// </summary>
-Condition_IsFrighteningValueGreaterThanConstant::NodeState Condition_IsFrighteningValueGreaterThanConstant::Update()
+Condition_IsFrighteningValueGreaterThanConstant::NodeState Condition_IsFrighteningValueGreaterThanConstant::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*ダウン値が０以上なら成功を返す*/
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	if (rootNode.GetDamage() >= this->SPECIFIED_FRIGHTENING_VALUE)
+	if (_tree.GetDamage() >= this->SPECIFIED_FRIGHTENING_VALUE)
 	{
-		rootNode.SetDamage(0);
+		_tree.SetDamage(0);
 		//printfDx("CONDITION_FRIGHT_SUCCESS\n");
 		return NodeState::SUCCESS;
 	}

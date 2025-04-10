@@ -3,14 +3,16 @@
 //=======================================================
 #pragma once
 
+class BehaviorTree;
 class ConditionNode;
+class Character;
 class Condition_IsDownValueGreaterThanConstant : public ConditionNode
 {
 public:
 	 Condition_IsDownValueGreaterThanConstant(const int _specifiedDownValue);//コンストラクタ
 	~Condition_IsDownValueGreaterThanConstant();//デストラクタ
 
-	NodeState Update() override;//更新
+	NodeState Update(BehaviorTree& _tree, Character& _chara) override;//更新
 
 private:
 	const int SPECIFIED_DOWN_VALUE;//ダウン値

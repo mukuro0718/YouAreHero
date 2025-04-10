@@ -1,6 +1,8 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Beast_PlayCurrentReaction.h"
 #include "BeastBehaviorTree.h"
@@ -26,15 +28,12 @@ Beast_PlayCurrentReaction::~Beast_PlayCurrentReaction()
 /// </summary>
 void Beast_PlayCurrentReaction::Initialize()
 {
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	rootNode.Initialize();
 }
 
 /// <summary>
 /// çXêVèàóù
 /// </summary>
-Beast_PlayCurrentReaction::NodeState Beast_PlayCurrentReaction::Update()
+Beast_PlayCurrentReaction::NodeState Beast_PlayCurrentReaction::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	return rootNode.GetReaction().Update();
+	return _tree.GetReaction().Update(_tree, _chara);
 }

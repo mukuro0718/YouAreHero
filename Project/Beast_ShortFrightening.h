@@ -4,13 +4,15 @@
 #pragma once
 
 class ActionNode;
+class Character;
+class ActionNode;
 class Beast_ShortFrightening : public ActionNode
 {
 public:
 	 Beast_ShortFrightening();//コンストラクタ
 	~Beast_ShortFrightening();//デストラクタ
 
-	NodeState Update()override;//更新
+	NodeState	Update(BehaviorTree& _tree, Character& _chara)override;	//更新
 private:
 	/*列挙体*/
 	//アニメーションの段階

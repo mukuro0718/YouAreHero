@@ -4,7 +4,7 @@
 //===========================================
 #pragma once
 
-class ColliderData;
+class ModelColliderData;
 class BossMap
 {
 public:
@@ -18,10 +18,10 @@ public:
 
 	/*getter*/
 	const int	GetModelHandle()const;
-
+		  void	OnIsDoHitCheck();
 private:
 	/*メンバ変数*/
-	ColliderData* collider;
-	int modelHandle;
+	ModelColliderData*	collider;	//コライダー
+	int					modelHandle;//モデルハンドル
 };
 

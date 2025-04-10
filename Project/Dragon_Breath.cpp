@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Dragon_Breath.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Dragon.h"
 #include "EnemyManager.h"
@@ -41,18 +42,16 @@ Dragon_Breath::~Dragon_Breath()
 /// <summary>
 /// 更新処理
 /// </summary>
-Dragon_Breath::NodeState Dragon_Breath::Update()
+Dragon_Breath::NodeState Dragon_Breath::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*アクションの状態をセット*/
-	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Dragon&>(_chara);
 	if (this->frameCount == 0)
 	{
 		//アクションの設定
-		rootNode.SetCurrentAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 		//アクションの登録
-		rootNode.EntryCurrentBattleAction(*this);
+		_tree.EntryCurrentBattleAction(*this);
 		//段階を取得
 		this->currentDragonState = enemy.GetBossState();
 	}
@@ -96,7 +95,7 @@ Dragon_Breath::NodeState Dragon_Breath::Update()
 		this->frameCount = 0;
 		this->nowTotalPlayTime = 0.0f;
 		enemy.OffAttackCollider(this->USE_COLLIDER_INDEX);
-		rootNode.ExitCurrentBattleAction();
+		_tree.ExitCurrentBattleAction();
 		enemy.DecAttackComboCount();
 		return ActionNode::NodeState::SUCCESS;
 	}

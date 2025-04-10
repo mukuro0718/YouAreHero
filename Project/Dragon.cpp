@@ -42,6 +42,9 @@ Dragon::Dragon()
 	/*メンバクラスのインスタンスの作成*/
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::DRAGON));
 
+	/*ツリーの作成*/
+	this->tree = new DragonBehaviorTree();
+
 	/*アニメーションの設定*/
 	int			animationHandle	= json.GetJson(JsonManager::FileType::DRAGON)["ANIMATION_HANDLE"];
 	vector<int>	animationIndex	= json.GetJson(JsonManager::FileType::DRAGON)["ANIMATION_INDEX"];
@@ -111,6 +114,7 @@ Dragon::Dragon()
 	this->tiredColor = this->angryColor = this->normalColor;
 	this->tiredColor.b += 20;
 	this->angryColor.r += 20;
+
 }
 
 /// <summary>
@@ -143,8 +147,7 @@ void Dragon::Initialize()
 	this->attackCount		= 0;
 	this->tiredDuration		= 0;
 	//ビヘイビアツリーを初期化
-	auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
-	tree.Initialize();
+	this->tree->Initialize();
 
 	/*コライダーの初期化*/
 	auto& json							= Singleton<JsonManager>::GetInstance();
@@ -267,13 +270,13 @@ void Dragon::Update()
 	}
 
 	/*ビヘイビアツリーの更新*/
-	auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
-	tree.Update();
+	this->tree->Update(*this);
 
 	this->positionForLockon = MV1GetFramePosition(this->modelHandle, 6);
 	this->positionForLockon.y = this->collider->rigidbody.GetPosition().y;
 	this->positionForLockon.y += this->LOCKON_OFFSET;
 
+	/*HPが０以下ならほかキャラクターとの当たり判定を行わないようにする*/
 }
 
 /// <summary>
@@ -339,7 +342,6 @@ void Dragon::OnAttackCollider(const short _index)
 	auto& sound = Singleton<SoundManager>::GetInstance();
 	auto& effect = Singleton<EffectManager>::GetInstance();
 	auto& json = Singleton<JsonManager>::GetInstance();
-	auto& tree = Singleton<DragonBehaviorTree>::GetInstance();
 	for (auto& collider:this->attackCollider[_index])
 	{
 		switch (_index)
@@ -522,8 +524,7 @@ void Dragon::UpdateBossState()
 		//怒り値が最大以上だったら状態をANGRYにする
 		if (this->angryValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"])
 		{
-			auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
-			rootNode.SetInterval(static_cast<int>(DragonBehaviorTree::ActionType::ROAR),1);
+			this->tree->SetInterval(static_cast<int>(DragonBehaviorTree::ActionType::ROAR),1);
 			this->bossState = static_cast<int>(BossState::ANGRY);
 			this->attackCount = json.GetJson(JsonManager::FileType::ENEMY)["ANGRY_ATTACK_COMBO_COUNT"];
 			float defenisivePower = json.GetJson(JsonManager::FileType::DRAGON)["DEFENSIVE_POWER"][this->bossState];

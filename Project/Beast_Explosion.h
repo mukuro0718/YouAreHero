@@ -3,7 +3,9 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class ActionNode;
+class Character;
 class AttackSphereColliderData;
 class Beast_Explosion : public ActionNode
 {
@@ -11,9 +13,9 @@ public:
 	 Beast_Explosion();//コンストラクタ
 	~Beast_Explosion();//デストラクタ
 
-	void		Initialize	();			//初期化
-	NodeState	Update		()override;	//更新
-	const void	Draw		()const;	//描画
+	void		Initialize	();													//初期化
+	NodeState	Update		(BehaviorTree& _tree, Character& _chara)override;	//更新
+	const void	Draw		()const;											//描画
 private:
 	short						roarSoundStartCount;			//咆哮の音開始フレーム
 	short						effectStartCount;				//エフェクト開始フレーム

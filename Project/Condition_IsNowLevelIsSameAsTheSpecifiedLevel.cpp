@@ -1,9 +1,9 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "BeastBehaviorTreeHeader.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "BeastBehaviorTreeHeader.h"
 #include "Enemy.h"
 #include "EnemyManager.h"
 
@@ -27,12 +27,10 @@ Condition_IsNowLevelIsSameAsTheSpecifiedLevel::~Condition_IsNowLevelIsSameAsTheS
 /// <summary>
 /// 更新
 /// </summary>
-Condition_IsNowLevelIsSameAsTheSpecifiedLevel::NodeState Condition_IsNowLevelIsSameAsTheSpecifiedLevel::Update()
+Condition_IsNowLevelIsSameAsTheSpecifiedLevel::NodeState Condition_IsNowLevelIsSameAsTheSpecifiedLevel::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-
 	/*インターバルが終了していなければFAILUREを返す*/
-	if (rootNode.GetLevel() != this->SPECIFIED_LEVEL)
+	if (_tree.GetLevel() != this->SPECIFIED_LEVEL)
 	{
 		//printfDx("CONDITION_LEVEL_FAILURE\n");
 		return NodeState::FAILURE;

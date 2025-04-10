@@ -11,6 +11,7 @@
 #include "GameClearUI.h"
 #include "UIManager.h"
 #include "SceneChanger.h"
+#include "Alert.h"
 
 /// <summary>
 /// コンストラクタ
@@ -20,6 +21,7 @@ UIManager::UIManager()
 	this->scene.emplace_back(new TitleUI());
 	this->scene.emplace_back(new SelectUI());
 	this->scene.emplace_back(new GameUI());
+	this->alert = new Alert();
 }
 
 /// <summary>
@@ -31,6 +33,7 @@ UIManager::~UIManager()
 	{
 		DeleteMemberInstance(this->scene[i]);
 	}
+	DeleteMemberInstance(this->alert);
 }
 
 /// <summary>
@@ -50,7 +53,9 @@ void UIManager::Initialize()
 void UIManager::Update()
 {
 	//int startTime = GetNowCount();
+	this->alert->Update();
 	this->scene[this->sceneType]->Update();
+
 	//int endTime = GetNowCount();
 	//this->frameTime = endTime - startTime;
 }
@@ -60,6 +65,7 @@ void UIManager::Update()
 /// </summary>
 const void UIManager::Draw()const
 {
+	this->alert->Draw();
 	this->scene[this->sceneType]->Draw();
 	//printfDx("UI_FRAMETIME:%d\n", this->frameTime);
 }
@@ -79,4 +85,12 @@ const bool UIManager::GetIsBackTitle()const
 {
 	auto& selectScene = dynamic_cast<SelectUI&>(*this->scene[this->SELECT_UI_INDEX]);
 	return selectScene.GetIsBack();
+}
+
+/// <summary>
+/// 警告呼ばれた
+/// </summary>
+void UIManager::OnIsCallAlert()
+{
+	this->alert->OnIsCall();
 }

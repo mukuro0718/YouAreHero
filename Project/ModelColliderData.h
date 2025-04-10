@@ -13,5 +13,6 @@ public:
 
 	int modelHandle;
 	int frameIndex;
+	bool isDoHitCheck;//“–‚½‚è”»’è‚ğs‚¤‚©
 };
 

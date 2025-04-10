@@ -3,13 +3,15 @@
 //===========================================================
 #pragma once
 
+class BehaviorTree;
 class ConditionNode;
+class Character;
 class Conditon_IsAttackCountIsOver : public ConditionNode
 {
 public:
 	 Conditon_IsAttackCountIsOver();//コンストラクタ
 	~Conditon_IsAttackCountIsOver();//デストラクタ
 
-	NodeState Update	() override;//更新
+	NodeState Update(BehaviorTree& _tree, Character& _chara) override;//更新
 };
 

@@ -1,14 +1,15 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "BehaviorTreeNode.h"
-#include "ActionNode.h"
-#include "Beast_SuperNova.h"
 #include "Rigidbody.h"
 #include "ColliderData.h"
 #include "AttackSphereColliderData.h"
 #include "AttackData.h"
 #include "Character.h"
+#include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
+#include "ActionNode.h"
+#include "Beast_SuperNova.h"
 #include "Enemy.h"
 #include "Beast.h"
 #include "EnemyManager.h"
@@ -84,18 +85,16 @@ void Beast_SuperNova::Initialize()
 /// <summary>
 /// 更新処理
 /// </summary>
-Beast_SuperNova::NodeState Beast_SuperNova::Update()
+Beast_SuperNova::NodeState Beast_SuperNova::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*選択されているアクションと実際のアクションが異なっていたら初期化*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	if (rootNode.GetNowSelectAction() != this->actionType)
+	auto& enemy = dynamic_cast<Beast&>(_chara);
+	if (_tree.GetNowSelectAction() != this->actionType)
 	{
 		//アクションの設定
-		rootNode.SetSelectAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 		//アクションの登録
-		rootNode.EntryCurrentBattleAction(*this);
+		_tree.EntryCurrentBattleAction(*this);
 		enemy.DecAttackComboCount();
 	}
 
@@ -176,11 +175,12 @@ Beast_SuperNova::NodeState Beast_SuperNova::Update()
 		if (this->stage == AnimationStage::START)
 		{
 			//インターバルのセット
-			rootNode.SetInterval(this->actionType, this->interval);
+			_tree.SetInterval(this->actionType, this->interval);
 			//アクションの解除
-			rootNode.ExitCurrentBattleAction();
+			_tree.ExitCurrentBattleAction();
 			//レベルの上昇
-			rootNode.ResetLevel();
+			auto& beastTree = dynamic_cast<BeastBehaviorTree&>(_tree);
+			beastTree.ResetLevel();
 			this->frameCount = 0;
 			this->collider->data->isDoHitCheck = false;
 			this->collider->data->isHitAttack = false;

@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Beast_Down.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Beast.h"
 #include "EnemyManager.h"
@@ -43,19 +44,17 @@ Beast_Down::~Beast_Down()
 /// <summary>
 /// 更新処理
 /// </summary>
-Beast_Down::NodeState Beast_Down::Update()
+Beast_Down::NodeState Beast_Down::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Beast&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Beast&>(_chara);
 
 	/*登録されているアクションと実際のアクションが異なっていたら*/
-	if (rootNode.GetNowSelectAction() != this->actionType)
+	if (_tree.GetNowSelectAction() != this->actionType)
 	{
 		//アクションの設定
-		rootNode.SetSelectAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 		//アクションの登録
-		rootNode.EntryCurrentReaction(*this);
+		_tree.EntryCurrentReaction(*this);
 		enemy.ChangeTiredColor();
 		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
 		enemy.UpdateVelocity(false);
@@ -95,9 +94,9 @@ Beast_Down::NodeState Beast_Down::Update()
 		if (this->stage == AnimationStage::START)
 		{
 			//アクションの解除
-			rootNode.ExitCurrentReaction();
+			_tree.ExitCurrentReaction();
 			//状態を通常に戻す
-			rootNode.ExitCurrentBattleAction();
+			_tree.ExitCurrentBattleAction();
 			return ActionNode::NodeState::SUCCESS;
 		}
 		return ActionNode::NodeState::RUNNING;

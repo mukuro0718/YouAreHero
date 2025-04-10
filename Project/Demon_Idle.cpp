@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Demon_Idle.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Demon.h"
 #include "EnemyManager.h"
@@ -44,14 +45,12 @@ void Demon_Idle::Initialize()
 /// <summary>
 /// 更新処理
 /// </summary>
-Demon_Idle::NodeState Demon_Idle::Update()
+Demon_Idle::NodeState Demon_Idle::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Demon&>(enemyManager.GetCharacter());
+	auto& enemy = dynamic_cast<Demon&>(_chara);
 
 	if (!this->isInitialize)
 	{
-		auto& rootNode = Singleton<DemonBehaviorTree>::GetInstance();
 		/*登録されているアクションと実際のアクションが異なっていたら*/
 		//アニメーションの種類を設定
 		enemy.SetNowAnimation(this->animationType);

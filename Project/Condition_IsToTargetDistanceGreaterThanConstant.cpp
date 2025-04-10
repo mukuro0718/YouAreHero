@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BeastBehaviorTreeHeader.h"
 #include "EnemyManager.h"
 
@@ -24,11 +25,10 @@ Condition_IsToTargetDistanceGreaterThanConstant::~Condition_IsToTargetDistanceGr
 /// <summary>
 /// XV
 /// </summary>
-Condition_IsToTargetDistanceGreaterThanConstant::NodeState Condition_IsToTargetDistanceGreaterThanConstant::Update()
+Condition_IsToTargetDistanceGreaterThanConstant::NodeState Condition_IsToTargetDistanceGreaterThanConstant::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*–Ú•W‚Æ‚Ì‹——£‚ª’è”ˆÈã‚¾‚Á‚½‚ç*/
-	auto& root = Singleton<BeastBehaviorTree>::GetInstance();
-	if (root.GetToTargetDistance() >= this->COMPARE_DISTANCE)
+	if (_tree.GetToTargetDistance() >= this->COMPARE_DISTANCE)
 	{
 		//printfDx("CONDITION_DISTANCE_SUCCESS\n");
 		return NodeState::SUCCESS;

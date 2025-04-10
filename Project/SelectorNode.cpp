@@ -1,6 +1,8 @@
 #include <DxLib.h>
 #include "UseSTL.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "CompositeNode.h"
 #include "SelectorNode.h"
 
@@ -18,12 +20,12 @@ SelectorNode::~SelectorNode()
 /// <summary>
 /// 更新
 /// </summary>
-SelectorNode::NodeState SelectorNode::Update()
+SelectorNode::NodeState SelectorNode::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*子を実行*/
 	for (auto& child : this->children)
 	{
-		NodeState state = child->Update();
+		NodeState state = child->Update(_tree, _chara);
 		//状態が成功なら成功を返し終了
 		if (state == NodeState::SUCCESS)
 		{

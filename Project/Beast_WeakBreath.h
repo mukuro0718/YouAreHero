@@ -3,7 +3,9 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class ActionNode;
+class Character;
 class AttackCapsuleColliderData;
 class Beast_WeakBreath : public ActionNode
 {
@@ -11,9 +13,9 @@ public:
 	 Beast_WeakBreath();//コンストラクタ
 	~Beast_WeakBreath();//デストラクタ
 
-	void		Initialize	();			//初期化
-	NodeState	Update		()override;	//更新
-	const void	Draw		()const;	//描画
+	void		Initialize	();													//初期化
+	NodeState	Update		(BehaviorTree& _tree, Character& _chara)override;	//更新
+	const void	Draw		()const;											//描画
 private:
 	/*定数*/
 	const int FIX_ROTATE_COUNT;//回転補正数

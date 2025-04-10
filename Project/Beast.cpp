@@ -30,7 +30,6 @@
 /// コンストラクタ
 /// </summary>
 Beast::Beast()
-	: animationPlayTime(0.0f)
 {
 	/*メンバクラスのインスタンスの作成*/
 	auto& asset = Singleton<LoadingAsset>::GetInstance();
@@ -69,6 +68,9 @@ Beast::Beast()
 		this->pos1.emplace_back(Gori::ORIGIN);
 		this->pos2.emplace_back(Gori::ORIGIN);
 	}
+
+	/*ツリーの作成*/
+	this->tree = new BeastBehaviorTree();
 
 	/*通常時のカラースケールを取得*/
 	this->normalColor = MV1GetDifColorScale(this->modelHandle);
@@ -123,8 +125,7 @@ void Beast::Initialize()
 		this->partsCollider[i]->rigidbody.Initialize(true);
 	}
 	//ビヘイビアツリーを初期化
-	auto& tree = Singleton<BeastBehaviorTree>::GetInstance();
-	tree.Initialize();
+	this->tree->Initialize();
 
 	/*コライダーの初期化*/
 	float height						 = json.GetJson(JsonManager::FileType::BEAST)["HIT_HEIGHT"];
@@ -188,7 +189,7 @@ void Beast::Update()
 			this->partsCollider[i]->data->isHit = false;
 			int damage = this->prevPartsHp[i] - this->partsCollider[i]->data->hp;
 			this->prevPartsHp[i] = this->partsCollider[i]->data->hp;
-			this->collider->data->damage = damage;
+			this->collider->data->damage = static_cast<float>(damage);
 			this->collider->data->hp -= damage;
 			this->collider->data->isHit = true;
 			this->collider->data->hitStopTime = this->partsCollider[i]->data->hitStopTime;
@@ -216,8 +217,7 @@ void Beast::Update()
 	}
 
 	/*ビヘイビアツリーの更新*/
-	auto& tree = Singleton<BeastBehaviorTree>::GetInstance();
-	tree.Update();
+	this->tree->Update(*this);
 
 	this->positionForLockon = MV1GetFramePosition(this->modelHandle, 8);
 	this->positionForLockon.y = this->collider->rigidbody.GetPosition().y;
@@ -374,8 +374,7 @@ void Beast::UpdateBossState()
 		//怒り値が最大以上だったら状態をANGRYにする
 		if (this->angryValue >= json.GetJson(JsonManager::FileType::ENEMY)["MAX_ANGRY_VALUE"])
 		{
-			auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-			rootNode.SetInterval(static_cast<int>(BeastBehaviorTree::ActionType::ROAR),0);
+			this->tree->SetInterval(static_cast<int>(BeastBehaviorTree::ActionType::ROAR),0);
 			this->bossState = static_cast<int>(BossState::ANGRY);
 			this->attackCount = json.GetJson(JsonManager::FileType::BEAST)["ATTACK_COMBO_COUNT"][this->bossState];
 			float defenisivePower = json.GetJson(JsonManager::FileType::BEAST)["DEFENSIVE_POWER"][this->bossState];

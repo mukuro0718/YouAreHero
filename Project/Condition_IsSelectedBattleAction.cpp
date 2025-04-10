@@ -1,9 +1,9 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "BeastBehaviorTreeHeader.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "BeastBehaviorTreeHeader.h"
 #include "Enemy.h"
 #include "EnemyManager.h"
 
@@ -26,11 +26,10 @@ Condition_IsSelectedBattleAction::~Condition_IsSelectedBattleAction()
 /// <summary>
 /// 更新
 /// </summary>
-Condition_IsSelectedBattleAction::NodeState Condition_IsSelectedBattleAction::Update()
+Condition_IsSelectedBattleAction::NodeState Condition_IsSelectedBattleAction::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*攻撃アクションが選択されていたら成功*/
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-	if (rootNode.GetIsSelectedBattleAction())
+	if (_tree.GetIsSelectedBattleAction())
 	{
 		//printfDx("CONDITION_SELECTED_BATTLE_SUCCESS\n");
 		return NodeState::SUCCESS;

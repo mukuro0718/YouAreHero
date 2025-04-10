@@ -13,10 +13,9 @@ public:
 	/*エネミーの種類*/
 	enum class EnemyType
 	{
-		TUTORIAL = 0,//チュートリアル
-		GOLEM	 = 1,//ゴーレム
-		DRAGON	 = 2,//ドラゴン
-		BEAST	 = 3,//獣
+		MUTANT	 = 0,//ミュータント
+		DRAGON	 = 1,//ドラゴン
+		BEAST	 = 2,//獣
 	};
 
 	void Initialize	();//初期化
@@ -33,9 +32,9 @@ private:
 	static constexpr int MAX_INPUT_INTERBVAL = 10;//最大入力インターバル
 
 	/*メンバ変数*/
-	int	enemyType;			//タイプ
-	int selectType;			//選択中の種類
-	int	inputInterval;		//入力インターバル
+	int	 enemyType;			//タイプ
+	int  selectType;			//選択中の種類
+	int	 inputInterval;		//入力インターバル
 	bool isProvDecide;		//仮の決定
 	bool isFinalDecide;		//最終決定
 };

@@ -20,6 +20,9 @@
     "Data/Json/Dragon.json",
     "Data/Json/Beast.json",
     "Data/Json/Sound.json",
-    "Data/Json/DemonPanda.json"
+    "Data/Json/DemonPanda.json",
+    "Data/Json/BrawlerEnemy.json",
+    "Data/Json/TankEnemy.json",
+    "Data/Json/MageEnemy.json"
   ]
 }

@@ -34,6 +34,9 @@ public:
 		BEAST			= 18,
 		SOUND			= 19,
 		DEMON_PANDA		= 20,
+		BRAWLER_ENEMY	= 21,
+		TANK_ENEMY		= 22,
+		MAGE_ENEMY		= 23,
 	};
 
 	void ReloadingJsonFile(const FileType _type);

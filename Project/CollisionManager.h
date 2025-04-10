@@ -29,7 +29,7 @@ private:
 	static constexpr int	MAX_CHECK_COUNT			= 100;		//当たり判定を確認する最大回数
 	static constexpr float  HIT_SLIDE_LENGTH		= 0.1f;
 	static constexpr int	HIT_TRY_NUM				= 4;
-	static constexpr int	MAX_HIT_POLY			= 100;
+	static constexpr int	MAX_HIT_POLY			= 1000;
 	static constexpr VECTOR FLOOR_NORM				= { 0.0f,1.0f,0.0f };
 	static constexpr VECTOR X_PLUS_NORM				= { 1.0f,0.0f,0.0f };
 	static constexpr VECTOR X_MINUS_NORM			= { -1.0f,0.0f,0.0f };
@@ -38,16 +38,18 @@ private:
 	static constexpr float  MAX_DEGREE				= 60.0f;
 
 	/*内部処理関数*/
-	CollisionManager() {}												//コンストラクタ
+			CollisionManager() {}												//コンストラクタ
 	void	CheckColide		();													//当たり判定チェック
 	bool	IsCollide		(ColliderData& _objectA, ColliderData& _objectB);	//当たったか
 	void	FixNextPosition	(ColliderData& _primary, ColliderData& _secondary);	//次の座標を補正
 	void	FixPosition		();													//座標確定
 	float	GetDegree		(const VECTOR _norm1, const VECTOR _norm2);
-	void	JudgeNorm		(const MV1_COLL_RESULT_POLY_DIM _hitPolyDim, vector<MV1_COLL_RESULT_POLY>& _floor, vector<MV1_COLL_RESULT_POLY>& _xpWall, vector<MV1_COLL_RESULT_POLY>& _xmWall, vector<MV1_COLL_RESULT_POLY>& _zpWall, vector<MV1_COLL_RESULT_POLY>& _zmWall);
+	void	JudgeNorm		(const MV1_COLL_RESULT_POLY_DIM _hitPolyDim, vector<MV1_COLL_RESULT_POLY>& _floor, vector<MV1_COLL_RESULT_POLY>& _xpWall, vector<MV1_COLL_RESULT_POLY>& _xmWall, vector<MV1_COLL_RESULT_POLY>& _zpWall, vector<MV1_COLL_RESULT_POLY>& _zmWall, const VECTOR _position);
 	bool	JudgeDegree		(const VECTOR _norm1, const VECTOR _norm2);
 	float	JudgeMax		(const float _nowMax, const float _judgeValue);
 	bool	HitCheckWall	(float& _max, vector<MV1_COLL_RESULT_POLY> _wall, const VECTOR _pos, const float _height, const float _radius, const bool _sign, const bool isX, const bool isZ);
+	void CheckHitXWall(vector<MV1_COLL_RESULT_POLY> _xpWall, vector<MV1_COLL_RESULT_POLY> _xmWall, bool& _isHit, VECTOR& _maxFix, float _hitHeight, float _radius, VECTOR _nowNextPosition, VECTOR& _newNextPosition, VECTOR _moveVector);
+	void CheckHitZWall(vector<MV1_COLL_RESULT_POLY> _xpWall, vector<MV1_COLL_RESULT_POLY> _xmWall, bool& _isHit, VECTOR& _maxFix, float _hitHeight, float _radius, VECTOR _nowNextPosition, VECTOR& _newNextPosition, VECTOR _moveVector);
 
 	/*メンバ変数*/
 	std::list<ColliderData*> collidables;//登録されたCollidableのリスト

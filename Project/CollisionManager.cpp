@@ -106,7 +106,6 @@ void CollisionManager::CheckColide()
 	/*当たっていたら*/
 	while (doCheck)
 	{
-
 		//フラグを下す
 		doCheck = false;
 		//チェック回数を増やす
@@ -152,10 +151,10 @@ void CollisionManager::CheckColide()
 		}
 
 		//無限ループ避け
-		if (checkCount > this->MAX_CHECK_COUNT && doCheck)
+		if (checkCount > this->MAX_CHECK_COUNT || !doCheck)
 		{
 #if _DEBUG
-			printfDx("当たり判定の繰り返しチェックが規定数を超えた\n");
+			//printfDx("当たり判定の繰り返しチェックが規定数を超えた\n");
 #endif
 			break;
 		}
@@ -188,7 +187,9 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 	/*カプセルとカプセル*/
 	else if (aKind == ColliderData::Kind::CHARACTER_CAPSULE && bKind == ColliderData::Kind::CHARACTER_CAPSULE)
 	{
-		if (_objectA.GetTag() != _objectB.GetTag())
+		auto aTag = _objectA.GetTag();
+		auto bTag = _objectB.GetTag();
+		if (aTag != bTag || (aTag != GameObjectTag::BOSS || bTag != GameObjectTag::BOSS))
 		{
 			/*互いの距離が、それぞれの半径の合計よりも小さければ当たる*/
 			auto& objectAColliderData = dynamic_cast<CharacterColliderData&>(_objectA);
@@ -378,7 +379,8 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 	{
 		//フラグが立っていたら
 		auto& charaCollision = dynamic_cast<CharacterColliderData&>(_objectB);
-		if (charaCollision.isUseCollWithGround)
+		auto& modelCollision = dynamic_cast<ModelColliderData&>(_objectA);
+		if (charaCollision.isUseCollWithGround && modelCollision.isDoHitCheck)
 		{
 			auto& model_coll = dynamic_cast<ModelColliderData&>(_objectA);
 			//構築したコリジョン情報とカプセルとの当たり判定を取り、構造体に格納する
@@ -425,17 +427,24 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
 		if (!primaryColliderData.isUseCollWithChara || !secondaryColliderData.isUseCollWithChara)return;
 
+		/*プライマリーの移動ベクトルのサイズを出す*/
+		VECTOR primaryVelocity = _primary.rigidbody.GetVelocity();
+		primaryVelocity.y = 0.0f;
+		float primaryMoveVectorSize = VSize(primaryVelocity);
+
 		/*２つのカプセルの頂点を取得*/
 		VECTOR primaryUnderPosition = primaryColliderData.GetNextPosition();
 		VECTOR primaryTopPosition = primaryColliderData.topPositon;
 		if (!primaryColliderData.isSetTopPosition)
 		{
+			primaryUnderPosition.y = 0.0f;
 			primaryTopPosition = VAdd(primaryUnderPosition, primaryColliderData.topPositon);
 		}
 		VECTOR secondaryUnderPosition = secondaryColliderData.GetNextPosition();
 		VECTOR secondaryTopPosition = secondaryColliderData.topPositon;
 		if (!secondaryColliderData.isSetTopPosition)
 		{
+			secondaryUnderPosition.y = 0.0f;
 			secondaryTopPosition = VAdd(secondaryUnderPosition, secondaryColliderData.topPositon);
 		}
 		//カプセル同士の最近接距離を取る
@@ -444,9 +453,23 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		//半径の合計から最近接距離を引き押し戻す、そのままだとちょうど当たる位置になるので少し余分に離す
 		float awayDist = primaryColliderData.radius + secondaryColliderData.radius - sqrt(result.SegA_SegB_MinDist_Square) + 0.000005f;
 		
+		if (awayDist > primaryMoveVectorSize)
+		{
+			awayDist = primaryMoveVectorSize;
+		}
+
 		VECTOR awayVector = VNorm(VSub(result.SegA_MinDist_Pos, result.SegB_MinDist_Pos));
+		awayVector.y = 0.0f;
 		VECTOR fixVector = VScale(awayVector, awayDist);
 		VECTOR fixedPosition = VAdd(_primary.GetNextPosition(), fixVector);
+		if (fixedPosition.y < -14.0f)
+		{
+			fixedPosition.y = -14.0f;
+		}
+		else if (fixedPosition.y > -13.8f)
+		{
+			fixedPosition.y = -13.8f;
+		}
 		_primary.SetNextPosition(fixedPosition);
 	}
 	//平面とカプセル(平面はSTATICなので、必ずprimaryがPLANEになる)
@@ -530,7 +553,7 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 			VECTOR velocity = _secondary.rigidbody.GetVelocity();
 
 			//当たっている数だけループを回す
-			JudgeNorm(hitPolyDim, floor, xpWall, xmWall, zpWall, zmWall);
+			JudgeNorm(hitPolyDim, floor, xpWall, xmWall, zpWall, zmWall, charaCollision.rigidbody.GetPosition());
 
 			//最大補正座標
 			VECTOR maxfix = VGet(0.0f, 0.0f, 0.0f);
@@ -540,7 +563,7 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 			for (int i = 0; i < floor.size(); i++)
 			{
 				//三角形と線分の当たり判定を行う
-				HITRESULT_LINE hitResult = HitCheck_Line_Triangle(charaCollision.GetNextPosition(), VAdd(charaCollision.topPositon, VGet(0.0f, hit_height, 0.0f)), floor[i].Position[0], floor[i].Position[1], floor[i].Position[2]);
+				HITRESULT_LINE hitResult = HitCheck_Line_Triangle(charaCollision.GetNextPosition(), VAdd(charaCollision.GetNextPosition(), VGet(0.0f, hit_height, 0.0f)), floor[i].Position[0], floor[i].Position[1], floor[i].Position[2]);
 				//当たっていたら
 				if (hitResult.HitFlag)
 				{
@@ -555,47 +578,91 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 					}
 				}
 			}
+			//床に当たっていたら、押し返す
 			if (isHit)
 			{
-				//out.isOnGround = true;
 				newNextPosition.y = nowNextPosition.y + maxfix.y + 0.001f;
 			}
-			//X+の壁と当たったか
+			//======================================================================
+			// ここから壁の処理に入る。
+			// どの壁と当たったのか、数と種類を調べる
+			// プレイヤーの移動ベクトルのうち、Z,Xのどれが大きいかを調べ
+			// 次にマイナスかプラスか調べる
+			//======================================================================
+			VECTOR	moveVector = charaCollision.rigidbody.GetDirection();
+			int		hitWallNum = 0;
+			bool	isHitXWall = false;
+			bool	isHitZWall = false;
+			//どの壁と当たっているのか、数と種類を調べる
 			if (xpWall.size() != 0)
 			{
-				isHit = HitCheckWall(maxfix.x, xpWall, nowNextPosition, hit_height, radius, false, true, false);
-				if (isHit)
-				{
-					newNextPosition.x = nowNextPosition.x + maxfix.x + 0.001f;
-				}
+				++hitWallNum;
+				isHitXWall = true;
 			}
-			//x-当たったか
 			if (xmWall.size() != 0)
 			{
-				isHit = HitCheckWall(maxfix.x, xmWall, nowNextPosition, hit_height, radius, true, true, false);
-				if (isHit)
-				{
-					newNextPosition.x = nowNextPosition.x + maxfix.x - 0.001f;
-				}
+				++hitWallNum;
+				isHitXWall = true;
 			}
-			//z+の壁と当たったか
 			if (zpWall.size() != 0)
 			{
-				isHit = HitCheckWall(maxfix.z, zpWall, nowNextPosition, hit_height, radius, false, false, true);
-				if (isHit)
-				{
-					newNextPosition.z = nowNextPosition.z + maxfix.z + 0.001f;
-				}
+				++hitWallNum;
+				isHitZWall = true;
 			}
-			//z-当たったか
 			if (zmWall.size() != 0)
 			{
-				isHit = HitCheckWall(maxfix.z, zmWall, nowNextPosition, hit_height, radius, true, false, true);
-				if (isHit)
+				++hitWallNum;
+				isHitZWall = true;
+			}
+			//3つの
+			printfDx("当たった壁の数%d\n",hitWallNum);
+			if (hitWallNum >= 2)
+			{
+				if (hitWallNum == 3)
 				{
-					newNextPosition.z = nowNextPosition.z + maxfix.z - 0.001f;
+					if (isHitXWall && xpWall.size() != 0 && xmWall.size())
+					{
+						isHitXWall = false;
+					}
+					if (isHitZWall && zpWall.size() != 0 && zmWall.size())
+					{
+						isHitZWall = false;
+					}
+				}
+				//ここではXの当たり判定を取る
+				if (isHitXWall)
+				{
+					//移動ベクトルのXがプラスの時に、Xマイナスの壁と当たったか
+					CheckHitXWall(xpWall, xmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
+				}
+				//Zの当たり判定を取る
+				if (isHitZWall)
+				{
+					//移動ベクトルのZがプラスの時に、Zマイナスの壁と当たったか
+					CheckHitZWall(zpWall, zmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
 				}
 			}
+			//ここではXの当たり判定を取る
+			else if (isHitXWall)
+			{
+				//移動ベクトルのXがプラスの時に、Xマイナスの壁と当たったか
+				CheckHitXWall(xpWall, xmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
+			}
+			//Zの当たり判定を取る
+			else if(isHitZWall)
+			{
+				//移動ベクトルのZがプラスの時に、Zマイナスの壁と当たったか
+				CheckHitZWall(zpWall, zmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
+			}
+			if (newNextPosition.y < -14.0f)
+			{
+				newNextPosition.y = newNextPosition.y;
+			}
+			else if (newNextPosition.y > -13.8f)
+			{
+				newNextPosition.y = -13.8f;
+			}
+
 			/*格納した構造体を破棄する*/
 			MV1CollResultPolyDimTerminate(hitPolyDim);
 			floor.clear();
@@ -635,29 +702,42 @@ float CollisionManager::GetDegree(const VECTOR _norm1, const VECTOR _norm2)
 	float deg = acosf(dot);
 	return deg * 180.0f / DX_PI_F;
 }
-void CollisionManager::JudgeNorm(const MV1_COLL_RESULT_POLY_DIM _hitPolyDim, vector<MV1_COLL_RESULT_POLY>& _floor, vector<MV1_COLL_RESULT_POLY>& _xpWall, vector<MV1_COLL_RESULT_POLY>& _xmWall, vector<MV1_COLL_RESULT_POLY>& _zpWall, vector<MV1_COLL_RESULT_POLY>& _zmWall)
+
+/// <summary>
+/// 当たったポリゴンの法線が、床か壁かを調べる
+/// </summary>
+void CollisionManager::JudgeNorm(const MV1_COLL_RESULT_POLY_DIM _hitPolyDim, vector<MV1_COLL_RESULT_POLY>& _floor, vector<MV1_COLL_RESULT_POLY>& _xpWall, vector<MV1_COLL_RESULT_POLY>& _xmWall, vector<MV1_COLL_RESULT_POLY>& _zpWall, vector<MV1_COLL_RESULT_POLY>& _zmWall, const VECTOR _position)
 {
+	/*当たっているポリゴンの法線を調べる*/
 	for (int i = 0; i < _hitPolyDim.HitNum; i++)
 	{
-		if (JudgeDegree(_hitPolyDim.Dim[i].Normal, FLOOR_NORM))
+		VECTOR norm = VNorm(_hitPolyDim.Dim[i].Normal);
+		//床判定
+		if (JudgeDegree(norm, FLOOR_NORM))
 		{
 			_floor.push_back(_hitPolyDim.Dim[i]);
 		}
-		else if (JudgeDegree(_hitPolyDim.Dim[i].Normal, X_PLUS_NORM))
+		//壁判定
+		else if(_hitPolyDim.Dim[i].Position[0].y >= _position.y ||
+				_hitPolyDim.Dim[i].Position[1].y >= _position.y ||
+				_hitPolyDim.Dim[i].Position[2].y >= _position.y)
 		{
-			_xpWall.push_back(_hitPolyDim.Dim[i]);
-		}
-		else if (JudgeDegree(_hitPolyDim.Dim[i].Normal, X_MINUS_NORM))
-		{
-			_xmWall.push_back(_hitPolyDim.Dim[i]);
-		}
-		else if (JudgeDegree(_hitPolyDim.Dim[i].Normal, Z_PLUS_NORM))
-		{
-			_zpWall.push_back(_hitPolyDim.Dim[i]);
-		}
-		else if (JudgeDegree(_hitPolyDim.Dim[i].Normal, Z_MINUS_NORM))
-		{
-			_zmWall.push_back(_hitPolyDim.Dim[i]);
+			if (JudgeDegree(norm, X_PLUS_NORM))
+			{
+				_xpWall.push_back(_hitPolyDim.Dim[i]);
+			}
+			else if (JudgeDegree(norm, X_MINUS_NORM))
+			{
+				_xmWall.push_back(_hitPolyDim.Dim[i]);
+			}
+			else if (JudgeDegree(norm, Z_PLUS_NORM))
+			{
+				_zpWall.push_back(_hitPolyDim.Dim[i]);
+			}
+			else if (JudgeDegree(norm, Z_MINUS_NORM))
+			{
+				_zmWall.push_back(_hitPolyDim.Dim[i]);
+			}
 		}
 	}
 }
@@ -734,4 +814,46 @@ bool CollisionManager::HitCheckWall(float& _max, vector<MV1_COLL_RESULT_POLY> _w
 	}
 
 	return isHit;
+}
+
+
+void CollisionManager::CheckHitXWall(vector<MV1_COLL_RESULT_POLY> _xpWall, vector<MV1_COLL_RESULT_POLY> _xmWall,
+	bool& _isHit, VECTOR& _maxFix, float _hitHeight, float _radius, VECTOR _nowNextPosition, VECTOR& _newNextPosition, VECTOR _moveVector)
+{
+	if (_moveVector.x < 0.0f && _xpWall.size() != 0)
+	{
+		_isHit = HitCheckWall(_maxFix.x, _xpWall, _nowNextPosition, _hitHeight, _radius, false, true, false);
+		if (_isHit)
+		{
+			_newNextPosition.x = _nowNextPosition.x + _maxFix.x + 0.001f;
+		}
+	}
+	else if (_moveVector.x > 0.0f && _xmWall.size() != 0)
+	{
+		_isHit = HitCheckWall(_maxFix.x, _xmWall, _nowNextPosition, _hitHeight, _radius, true, true, false);
+		if (_isHit)
+		{
+			_newNextPosition.x = _nowNextPosition.x + _maxFix.x + 0.001f;
+		}
+	}
+}
+void CollisionManager::CheckHitZWall(vector<MV1_COLL_RESULT_POLY> _zpWall, vector<MV1_COLL_RESULT_POLY> _zmWall,
+	bool& _isHit, VECTOR& _maxFix, float _hitHeight, float _radius, VECTOR _nowNextPosition, VECTOR& _newNextPosition, VECTOR _moveVector)
+{
+	if (_moveVector.z < 0.0f && _zpWall.size() != 0)
+	{
+		_isHit = HitCheckWall(_maxFix.z, _zpWall, _nowNextPosition, _hitHeight, _radius, false, false, true);
+		if (_isHit)
+		{
+			_newNextPosition.z = _nowNextPosition.z + _maxFix.z + 0.001f;
+		}
+	}
+	else if (_moveVector.z > 0.0f && _zmWall.size() != 0)
+	{
+		_isHit = HitCheckWall(_maxFix.z, _zmWall, _nowNextPosition, _hitHeight, _radius, true, false, true);
+		if (_isHit)
+		{
+			_newNextPosition.z = _nowNextPosition.z + _maxFix.z + 0.001f;
+		}
+	}
 }

@@ -14,6 +14,7 @@
 #include "InputManager.h"
 #include "Debug.h"
 #include "SceneChanger.h"
+#include "MapManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -27,6 +28,7 @@ Camera::Camera()
 	, length				(0.0f)
 	, yow					(0.0f)
 	, pitch					(0.0f)
+	, isFightingBoss		(false)
 	, BOSS_HEAD_FRAME_INDEX	(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::CAMERA)["BOSS_HEAD_FRAME_INDEX"])
 	, ENTRY_TIME			(Singleton<JsonManager>::GetInstance().GetJson(JsonManager::FileType::CAMERA)["ENTRY_TIME"])
 {
@@ -110,6 +112,16 @@ void Camera::InitializeStaticConst()
 /// </summary>
 void Camera::Update()
 {
+	auto& map = Singleton<MapManager>::GetInstance();
+	if (map.GetMapType() == MapManager::MapType::BOSS)
+	{
+		this->isFightingBoss = true;
+	}
+	else
+	{
+		this->isFightingBoss = false;
+	}
+
 	/*注視点の更新*/
 	UpdateTarget();
 
@@ -167,7 +179,7 @@ void Camera::UpdateTarget()
 		this->nextTarget = this->titleTarget;
 		break;
 	case SceneChanger::SceneType::GAME:
-		if (this->entryTime < this->ENTRY_TIME)
+		if (this->entryTime < this->ENTRY_TIME && this->isFightingBoss)
 		{
 			this->entryTime++;
 			this->nextTarget = VAdd(enemy.GetRigidbody().GetPosition(), this->targetOffset);
@@ -176,7 +188,7 @@ void Camera::UpdateTarget()
 		{
 			int playerHP = player.GetHP();
 			int enemyHP = enemy.GetHP();
-			if (playerHP <= 0 || enemyHP <= 0)
+			if (playerHP <= 0 || enemyHP <= 0 && this->isFightingBoss)
 			{
 				VECTOR target;
 				if (playerHP <= 0)
@@ -200,7 +212,7 @@ void Camera::UpdateTarget()
 				else
 				{
 					//this->nextTarget = VAdd(enemy.GetRigidbody().GetPosition(), this->targetOffset);
-					this->nextTarget = enemy.GetPositionForLockon();
+					this->nextTarget = VAdd(enemy.GetPositionForLockon(), this->targetOffset);
 				}
 			}
 		}
@@ -293,14 +305,14 @@ void Camera::UpdateLength()
 		minLength = this->titleMinLength;
 		break;
 	case SceneChanger::SceneType::GAME:
-		if (this->entryTime < this->ENTRY_TIME)
+		if (this->entryTime < this->ENTRY_TIME && this->isFightingBoss)
 		{
 			maxLength = this->deathMaxLength * this->ENTRY_MULT;
 			minLength = this->deathMinLength * this->ENTRY_MULT;
 		}
 		else
 		{
-			if (player.GetHP() <= 0 || enemy.GetHP() <= 0)
+			if (player.GetHP() <= 0 || enemy.GetHP() <= 0 && this->isFightingBoss)
 			{
 				maxLength = this->deathMaxLength;
 				minLength = this->deathMinLength;
@@ -353,7 +365,7 @@ void Camera::UpdateVelocity()
 		nextPosition.y = this->titlePositionOffset;
 		break;
 	case SceneChanger::SceneType::GAME:
-		if (this->entryTime < this->ENTRY_TIME)
+		if (this->entryTime < this->ENTRY_TIME && this->isFightingBoss)
 		{
 			VECTOR nowTarget = this->nowTarget;
 			nowTarget.y = 0.0f;
@@ -368,7 +380,7 @@ void Camera::UpdateVelocity()
 		}
 		else
 		{
-			if (player.GetHP() <= 0 || enemy.GetHP() <= 0)
+			if (player.GetHP() <= 0 || enemy.GetHP() <= 0 && this->isFightingBoss)
 			{
 				VECTOR nowTarget = this->nowTarget;
 				nowTarget.y = 0.0f;
@@ -383,7 +395,7 @@ void Camera::UpdateVelocity()
 			}
 			else if (player.GetIsLockOn())
 			{
-				const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetRigidbody().GetPosition()));
+				const VECTOR ENEMY_TO_PLAYER = VNorm(VSub(player.GetRigidbody().GetPosition(), enemy.GetPositionForLockon()));
 				nextPosition = VScale(ENEMY_TO_PLAYER, this->length);
 				nextPosition = VAdd(player.GetRigidbody().GetPosition(), nextPosition);
 				nextPosition = VAdd(nextPosition, this->positionOffset);

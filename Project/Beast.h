@@ -100,7 +100,6 @@ private:
 	/*メンバ変数*/
 	vector<CharacterColliderData*>  partsCollider;				//部位ごとのコライダー
 	short							maxPartsColliderNum;		//コライダーの数
-	float							animationPlayTime;			//アニメーション再生時間
 	vector<vector<short>>			frameIndexUsePartsColider;	//部位ごとのコライダーの指定に使用するフレーム番号
 	vector<VECTOR>					pos1;						//部位ごとのコライダーの座標を入れている
 	vector<VECTOR>					pos2;						//HACK:なぜかいったん代入しないとうまく入らない、なぜ

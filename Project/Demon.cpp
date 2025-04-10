@@ -30,8 +30,6 @@
 /// コンストラクタ
 /// </summary>
 Demon::Demon()
-	: animationPlayTime	(0.0f)
-	, nowAnimation		(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json  = Singleton<JsonManager>::GetInstance();
@@ -40,6 +38,8 @@ Demon::Demon()
 	/*メンバクラスのインスタンスの作成*/
 	this->modelHandle = MV1DuplicateModel(asset.GetModel(LoadingAsset::ModelType::DEMON_PANDA));
 	
+	/*ツリーの作成*/
+	this->tree = new DemonBehaviorTree();
 
 	/*アニメーションの設定*/
 	vector<string>	animationHandle	  = json.GetJson(JsonManager::FileType::DEMON_PANDA)["ANIMATION_HANDLE"];
@@ -140,8 +140,7 @@ void Demon::Update()
 	if (this->hitStop->IsHitStop()) return;
 
 	/*ビヘイビアツリーの更新*/
-	auto& tree = Singleton<DemonBehaviorTree>::GetInstance();
-	tree.Update();
+	this->tree->Update(*this);
 
 	this->positionForLockon = this->collider->rigidbody.GetPosition();
 	this->positionForLockon.y += this->LOCKON_OFFSET;
@@ -204,30 +203,4 @@ const void Demon::DrawCharacterInfo()const
 const bool Demon::GetIsAttack()const
 {
 	return false;
-}
-
-/// <summary>
-/// アニメーション再生時間の取得
-/// </summary>
-const float Demon::GetAnimationPlayTime()const
-{
-	/*シングルトンクラスのインスタンスの取得*/
-	auto& json = Singleton<JsonManager>::GetInstance();
-	return json.GetJson(JsonManager::FileType::ENEMY)["ANIMATION_PLAY_TIME"][this->nowAnimation];
-}
-
-/// <summary>
-/// 回転率の設定
-/// </summary>
-void Demon::SetRotation(const VECTOR _rotation)
-{
-	this->collider->rigidbody.SetRotation(_rotation);
-}
-
-/// <summary>
-/// 移動ベクトルの設定
-/// </summary>
-void Demon::SetVelocity(const VECTOR _velocity)
-{
-	this->collider->rigidbody.SetVelocity(_velocity);
 }

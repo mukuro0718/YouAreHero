@@ -4,13 +4,15 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class DecoratorNode;
+class Character;
 class Decorator_Inverse : public DecoratorNode
 {
 public:
 			 Decorator_Inverse();//コンストラクタ
 	virtual ~Decorator_Inverse();//デストラクタ
 
-	NodeState Update() override;//更新
+	NodeState Update(BehaviorTree& _tree, Character& _chara) override;//更新
 };
 

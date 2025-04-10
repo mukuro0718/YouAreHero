@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Dragon_Roar.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "Dragon.h"
 #include "EnemyManager.h"
@@ -40,7 +41,7 @@ Dragon_Roar::~Dragon_Roar()
 /// <summary>
 /// 更新処理
 /// </summary>
-Dragon_Roar::NodeState Dragon_Roar::Update()
+Dragon_Roar::NodeState Dragon_Roar::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*咆哮を鳴らす*/
 	this->frameCount++;
@@ -55,10 +56,8 @@ Dragon_Roar::NodeState Dragon_Roar::Update()
 	}
 
 	/*速度が０以上または最初にこのアクションになった時移動処理を行う*/
-	auto& enemyManager = Singleton<EnemyManager>::GetInstance();
-	auto& enemy = dynamic_cast<Dragon&>(enemyManager.GetCharacter());
-	auto& rootNode = Singleton<DragonBehaviorTree>::GetInstance();
-	int prevAction = rootNode.GetCurrentAction();
+	auto& enemy = dynamic_cast<Dragon&>(_chara);
+	int prevAction = _tree.GetNowSelectAction();
 	if (enemy.GetSpeed() != 0.0f || prevAction != this->actionType)
 	{
 		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
@@ -69,9 +68,9 @@ Dragon_Roar::NodeState Dragon_Roar::Update()
 	if (prevAction != this->actionType)
 	{
 		//アクションの設定
-		rootNode.SetCurrentAction(this->actionType);
+		_tree.SetNowSelectAction(this->actionType);
 		//アクションの登録
-		rootNode.EntryCurrentBattleAction(*this);
+		_tree.EntryCurrentBattleAction(*this);
 	}
 
 	/*アニメーションの再生*/
@@ -82,8 +81,8 @@ Dragon_Roar::NodeState Dragon_Roar::Update()
 	if (enemy.GetIsChangeAnimation())
 	{
 		//インターバルの設定
-		rootNode.ExitCurrentBattleAction();
-		rootNode.SetInterval(this->actionType);
+		_tree.ExitCurrentBattleAction();
+		_tree.SetInterval(this->actionType);
 		this->frameCount = 0;
 		return ActionNode::NodeState::SUCCESS;
 	}

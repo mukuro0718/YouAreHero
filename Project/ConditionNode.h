@@ -6,13 +6,15 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class BehaviorTreeNode;
+class Character;
 class ConditionNode abstract: public BehaviorTreeNode
 {
 public:
 			 ConditionNode(){}//コンストラクタ
 	virtual ~ConditionNode(){}//デストラクタ
 
-	virtual NodeState Update() abstract;//更新
+	virtual NodeState Update(BehaviorTree& _tree, Character& _chara) abstract;//更新
 };
 

@@ -47,6 +47,7 @@ private:
 	float			yow;					//ヨー（横回転）
 	float			pitch;					//ピッチ（縦回転）
 	int				entryTime;				//搭乗時間
+	bool			isFightingBoss;			//ボスと戦っているか
 
 	//TODO:以下の変数はJsonのデータを格納する変数であり、出来れば定数にすべきものである
 	float			nearClip;				//手前クリップ距離

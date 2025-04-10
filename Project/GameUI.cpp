@@ -22,6 +22,7 @@
 #include "PlayerManager.h"
 #include "EnemyManager.h"
 #include "EnemyChanger.h"
+#include "MapManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -129,11 +130,11 @@ void GameUI::Update()
 		}
 	}
 
-	auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
-	if (enemyChanger.GetEnemyType() == static_cast<int>(EnemyChanger::EnemyType::TUTORIAL))
-	{
-		this->tutorialUI->Update();
-	}
+	//auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
+	//if (enemyChanger.GetEnemyType() == static_cast<int>(EnemyChanger::EnemyType::TUTORIAL))
+	//{
+	//	this->tutorialUI->Update();
+	//}
 
 	this->hp->Update();
 	this->button->Update();
@@ -220,7 +221,7 @@ const void GameUI::Draw()const
 		{
 			auto& enemy = Singleton<EnemyManager>::GetInstance();
 			VECTOR position = enemy.GetPositionForLockon();
-			//position.y += this->LOCK_ON_UI_OFFSET;
+			position.y += this->LOCK_ON_UI_OFFSET;
 			DrawBillboard3D(position, 0.5f, 0.5f, this->LOCK_ON_UI_SIZE, 0.0f, this->lockOnImage, TRUE);
 		}
 	}
@@ -265,6 +266,7 @@ void GameUI::SetType()
 	
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
+	auto& map = Singleton<MapManager>::GetInstance();
 
 	/*プレイヤーのHPが０以下*/
 	if (player.GetHP() <= 0 && !player.GetIsAlive())
@@ -272,7 +274,7 @@ void GameUI::SetType()
 		this->type = ResultType::LOSE;
 	}
 	/*ボスのHPが０以下*/
-	else if (enemy.GetHP() <= 0 && !enemy.GetIsAlive())
+	else if (enemy.GetHP() <= 0 && !enemy.GetIsAlive() && map.GetMapType() == MapManager::MapType::BOSS)
 	{
 		this->type = ResultType::WIN;
 	}

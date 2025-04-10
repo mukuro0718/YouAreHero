@@ -98,14 +98,18 @@ void PlayerCombo1::Update(Player& _player)
 	if (this->frameCount < 10)
 	{
 		auto& enemy = Singleton<EnemyManager>::GetInstance();
+		if (!_player.GetIsLock())
+		{
+			enemy.SetNearestEnemyIndent(_player.GetRigidbody().GetPosition());
+		}
 		VECTOR	nextRotation	= Gori::ORIGIN;
 		VECTOR	enemyPosition	= enemy.GetPositionForLockon();
 		VECTOR	positionToEnemy = VSub(_player.GetRigidbody().GetPosition(), enemyPosition);
 				nextRotation.y	= static_cast<float>(atan2(static_cast<double>(positionToEnemy.x), static_cast<double>(positionToEnemy.z)));
 				nowRotation		= Gori::LerpAngle(nowRotation, nextRotation, this->rotateLerpValue);
-		_player.SetRotation(nowRotation, nextRotation);
-		if (VSquareSize(VSub(enemy.GetRigidbody().GetPosition(), _player.GetRigidbody().GetPosition())) >= 55.0f)
+		if (VSquareSize(VSub(enemy.GetPositionForLockon(), _player.GetRigidbody().GetPosition())) <= 400.0f)
 		{
+			_player.SetRotation(nowRotation, nextRotation);
 			speed = MOVE_SPEED;
 		}
 	}

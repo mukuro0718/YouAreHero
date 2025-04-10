@@ -1,9 +1,9 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
-#include "BeastBehaviorTreeHeader.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "BeastBehaviorTreeHeader.h"
 #include "Enemy.h"
 #include "EnemyManager.h"
 
@@ -27,12 +27,10 @@ Condition_IsHpBelowConstant::~Condition_IsHpBelowConstant()
 /// <summary>
 /// çXêV
 /// </summary>
-Condition_IsHpBelowConstant::NodeState Condition_IsHpBelowConstant::Update()
+Condition_IsHpBelowConstant::NodeState Condition_IsHpBelowConstant::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& rootNode = Singleton<BeastBehaviorTree>::GetInstance();
-
 	/*HPÇ™íËêîà»â∫Ç»ÇÁê¨å˜*/
-	if (rootNode.GetPrevHp() <= this->SPECIFIED_HP)
+	if (_tree.GetPrevHp() <= this->SPECIFIED_HP)
 	{
 		//printfDx("CONDITION_HP_SUCCESS\n");
 		return NodeState::SUCCESS;

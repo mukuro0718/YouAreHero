@@ -7,7 +7,7 @@
 #include "Player.h"
 #include "PlayerManager.h"
 #include "EnemyManager.h"
-
+#include "MapManager.h"
 
 /// <summary>
 /// コンストラクタ
@@ -48,14 +48,33 @@ void HPUI::Initialize()
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& enemy  = Singleton<EnemyManager>::GetInstance();
-	/*初期化*/
-	int		playerHP	  = player.GetHP();
-	int		bossHP		  = enemy.GetHP();
-	int		playerStamina = static_cast<int>(player.GetStamina());
+	auto& map	 = Singleton<MapManager>::GetInstance();
 
-	/*範囲の設定*/
+	/*Enemy*/
+	if (map.GetMapType() == MapManager::MapType::DUNGEON)
+	{
+		int	weakEnemyHP = 0;
+		this->weakEnemyHP.clear();
+		for (int i = 0; i < enemy.GetWeakEnemyNum(); i++)
+		{
+			this->weakEnemyHP.emplace_back(RangeNum());
+		}
+		for (int i = 0; i < this->weakEnemyHP.size(); i++)
+		{
+			weakEnemyHP = enemy.GetHP(i);
+			this->weakEnemyHP[i].SetRange(weakEnemyHP, 0, weakEnemyHP);
+		}
+	}
+	else
+	{
+		int	bossHP = enemy.GetHP();
+		this->bossHP.SetRange(bossHP, 0, bossHP);
+	}
+
+	/*Player*/
+	int	playerHP	  = player.GetHP();
+	int	playerStamina = static_cast<int>(player.GetStamina());
 	this->playerHP		.SetRange(playerHP		, 0, playerHP);
-	this->bossHP		.SetRange(bossHP		, 0, bossHP);
 	this->playerStamina	.SetRange(playerStamina	, 0, playerStamina);
 }
 
@@ -68,14 +87,25 @@ void HPUI::Update()
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	auto& enemy = Singleton<EnemyManager>::GetInstance();
 
-	/*HP計算*/
-	this->playerHP.SetNow(player.GetHP());
-	this->bossHP.SetNow(enemy.GetHP());
+	/*PlayerのHPとスタミナの更新*/
+	this->playerHP.		SetNow(player.GetHP());
 	this->playerStamina.SetNow(static_cast<int>(player.GetStamina()));
-
-	this->playerHP.PrevDecrease();
-	this->bossHP.PrevDecrease();
+	this->playerHP.		PrevDecrease();
 	this->playerStamina.PrevDecrease();
+
+	/*エネミーのHPゲージを更新*/
+	auto& map = Singleton<MapManager>::GetInstance();
+	if (map.GetMapType() == MapManager::MapType::DUNGEON)
+	{
+		int nearestEnemyIndent = enemy.GetNearestEnemyIndent();
+		this->weakEnemyHP[nearestEnemyIndent].SetNow(enemy.GetHP());
+		this->weakEnemyHP[nearestEnemyIndent].PrevDecrease();
+	}
+	else
+	{
+		this->bossHP.SetNow(enemy.GetHP());
+		this->bossHP.PrevDecrease();
+	}
 }
 
 /// <summary>
@@ -109,6 +139,23 @@ const void HPUI::Draw()const
 		DrawExtendGraph(stamina[0], stamina[1], stamina[0] + nowStamina, stamina[1] + height, this->playerStaminaBar, TRUE);
 	}
 	//BOSS
+	auto& map = Singleton<MapManager>::GetInstance();
+	auto& player = Singleton<PlayerManager>::GetInstance();
+	if (map.GetMapType() == MapManager::MapType::DUNGEON)
+	{
+		if (player.GetIsLockOn())
+		{
+			auto& enemy = Singleton<EnemyManager>::GetInstance();
+			int			indent = enemy.GetNearestEnemyIndent();
+			VECTOR		position = enemy.GetPositionForLockon();
+			position.y += this->WEAK_ENEMY_Y_OFFSET;
+			//int			indexBase = json.GetJson(JsonManager::FileType::UI)["BOSS_HP_WIDTH"];
+			int			indexBase = 15;
+			int			nowHP = static_cast<int>(this->weakEnemyHP[indent].GetNow() / this->weakEnemyHP[indent].GetMax() * indexBase);
+			DrawBillboard3D(position, 0.5f, 0.5f, nowHP, 0.0f, this->bossHPBar, TRUE);
+		}
+	}
+	else
 	{
 		vector<int> table		= json.GetJson(JsonManager::FileType::UI)["BOSS_HP_TABLE_POSITION"];
 		vector<int> hp			= json.GetJson(JsonManager::FileType::UI)["BOSS_HP_POSITION"];
@@ -121,6 +168,7 @@ const void HPUI::Draw()const
 		DrawBox(hp[0], hp[1], hp[0] + prevHP, hp[1] + height, this->prevBossHPColor, TRUE);
 		DrawExtendGraph(hp[0], hp[1], hp[0] + nowHP, hp[1] + height, this->bossHPBar, TRUE);
 	}
+	
 }
 /// <summary>
 /// 範囲の設定

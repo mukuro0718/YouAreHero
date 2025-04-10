@@ -5,13 +5,15 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class CompositeNode;
+class Character;
 class SequencerNode : public CompositeNode
 {
 public:
 	 SequencerNode();//コンストラクタ
 	~SequencerNode();//デストラクタ
 
-	NodeState Update() override;
+	NodeState Update(BehaviorTree& _tree, Character& _chara) override;//更新
 };
 

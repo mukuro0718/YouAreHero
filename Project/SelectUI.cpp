@@ -39,7 +39,7 @@ SelectUI::SelectUI()
 	this->aButton			 = asset.GetImage(LoadingAsset::ImageType::A_BUTTON);
 	this->bButton			 = asset.GetImage(LoadingAsset::ImageType::B_BUTTON);
 	this->lStick			 = asset.GetImage(LoadingAsset::ImageType::LEFT_STICK_INPUT);
-	this->enemyImage.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_IMAGE_4));
+	//this->enemyImage.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_IMAGE_4));
 	this->enemyImage.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_IMAGE_1));
 	this->enemyImage.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_IMAGE_2));
 	this->enemyImage.emplace_back(asset.GetImage(LoadingAsset::ImageType::QUEST_IMAGE_3));
@@ -195,20 +195,19 @@ const void SelectUI::Draw()const
 		vector<int> position1			= json.GetJson(JsonManager::FileType::UI)["SELECT_ICON_POSITION"][0];
 		vector<int> position2			= json.GetJson(JsonManager::FileType::UI)["SELECT_ICON_POSITION"][1];
 		vector<int> position3			= json.GetJson(JsonManager::FileType::UI)["SELECT_ICON_POSITION"][2];
-		vector<int> position4			= json.GetJson(JsonManager::FileType::UI)["SELECT_ICON_POSITION"][3];
 		vector<int> headerPosition		= json.GetJson(JsonManager::FileType::UI)["SELECT_ICON_HEADER_POSITION"];
 		vector<int> headerLinePosition	= json.GetJson(JsonManager::FileType::UI)["SELECT_ICON_HEADER_LINE_POSITION"];
 
 		DrawStringToHandle(headerPosition[0], headerPosition[1], "クエスト一覧", fontColor, this->headerFont);
 		DrawLine(headerLinePosition[0], headerLinePosition[1], headerLinePosition[2], headerLinePosition[3], fontColor);
-		DrawExtendGraph(position1[0], position1[1], position1[2], position1[3], this->iconTable, TRUE);
-		DrawStringToHandle(position1[0] + positionOffset[0], position1[1] + positionOffset[1], "操作確認", fontColor, this->questFont);
-		DrawExtendGraph(position2[0], position2[1], position2[2], position2[3], this->iconTable, TRUE);
-		DrawStringToHandle(position2[0] + positionOffset[0], position2[1] + positionOffset[1], "討伐：GORG GRASS", fontColor, this->questFont);
-		DrawExtendGraph(position3[0], position3[1], position3[2], position3[3], this->iconTable, TRUE);
-		DrawStringToHandle(position3[0] + positionOffset[0], position3[1] + positionOffset[1], "討伐：MORNACT", fontColor, this->questFont);
-		DrawExtendGraph(position4[0], position4[1], position4[2], position4[3], this->iconTable, TRUE);
-		DrawStringToHandle(position4[0] + positionOffset[0], position4[1] + positionOffset[1], "討伐：LUXURIO", fontColor, this->questFont);
+		//DrawExtendGraph(position1[0], position1[1], position1[2], position1[3], this->iconTable, TRUE);
+		//DrawStringToHandle(position1[0] + positionOffset[0], position1[1] + positionOffset[1], "操作確認", fontColor, this->questFont);
+		DrawExtendGraph		(position1[0], position1[1], position1[2], position1[3], this->iconTable, TRUE);
+		DrawStringToHandle	(position1[0] + positionOffset[0], position1[1] + positionOffset[1], "討伐：GORG GRASS", fontColor, this->questFont);
+		DrawExtendGraph		(position2[0], position2[1], position2[2], position2[3], this->iconTable, TRUE);
+		DrawStringToHandle	(position2[0] + positionOffset[0], position2[1] + positionOffset[1], "討伐：MORNACT", fontColor, this->questFont);
+		DrawExtendGraph		(position3[0], position3[1], position3[2], position3[3], this->iconTable, TRUE);
+		DrawStringToHandle	(position3[0] + positionOffset[0], position3[1] + positionOffset[1], "討伐：LUXURIO", fontColor, this->questFont);
 	}
 
 	/*フレーム*/

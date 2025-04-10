@@ -5,14 +5,16 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class CompositeNode;
+class Character;
 class ParalellNode : public CompositeNode
 {
 public:
-	ParalellNode();//コンストラクタ
+	 ParalellNode();//コンストラクタ
 	~ParalellNode();//デストラクタ
 
-	NodeState Update() override;
+	NodeState Update(BehaviorTree& _tree, Character& _chara) override;
 protected:
 	/*メンバ変数*/
 	int successThreshold;//成功しきい値

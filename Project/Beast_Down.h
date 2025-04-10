@@ -5,14 +5,16 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class ActionNode;
+class Character;
 class Beast_Down : public ActionNode
 {
 public:
 	 Beast_Down();//コンストラクタ
 	~Beast_Down();//デストラクタ
 
-	NodeState Update()override;//更新
+	NodeState	Update(BehaviorTree& _tree, Character& _chara)override;	//更新
 private:
 	/*列挙体*/
 	//アニメーションの段階

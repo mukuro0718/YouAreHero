@@ -4,7 +4,9 @@
 //=====================================================
 #pragma once
 
+class BehaviorTree;
 class ActionNode;
+class Character;
 class AttackCapsuleColliderData;
 class Beast_FootComboAttack : public ActionNode
 {
@@ -12,9 +14,9 @@ public:
 	 Beast_FootComboAttack();//コンストラクタ
 	~Beast_FootComboAttack();//デストラクタ
 
-	void		Initialize	();			//初期化
-	NodeState	Update		()override;	//更新
-	const void	Draw		()const;	//描画
+	void		Initialize	();													//初期化
+	NodeState	Update		(BehaviorTree& _tree, Character& _chara)override;	//更新
+	const void	Draw		()const;											//描画
 private:
 	vector<short>				attackStartCount;				//攻撃開始フレーム
 	vector<short>				attackEndCount;					//攻撃終了フレーム

@@ -54,7 +54,7 @@ void EnemyChanger::Update()
 			if ((input.GetLStickState().YBuf < 0) || CheckHitKey(KEY_INPUT_UP))
 			{
 				this->enemyType--;
-				int min = static_cast<int>(EnemyType::TUTORIAL);
+				int min = static_cast<int>(EnemyType::MUTANT);
 				if (this->enemyType < min)
 				{
 					this->enemyType = min;

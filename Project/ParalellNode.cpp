@@ -1,5 +1,8 @@
+#include <DxLib.h>
 #include "UseSTL.h"
+#include "Character.h"
 #include "BehaviorTreeNode.h"
+#include "BehaviorTree.h"
 #include "CompositeNode.h"
 #include "ParalellNode.h"
 
@@ -24,12 +27,12 @@ ParalellNode::~ParalellNode()
 /// <summary>
 /// 更新
 /// </summary>
-ParalellNode::NodeState ParalellNode::Update()
+ParalellNode::NodeState ParalellNode::Update(BehaviorTree& _tree, Character& _chara)
 {
 	/*子をすべて実行*/
 	for (auto& child : this->children)
 	{
-		NodeState state = child->Update();
+		NodeState state = child->Update(_tree,_chara);
 		if (state == NodeState::SUCCESS)
 		{
 			this->successCount++;
