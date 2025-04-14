@@ -52,7 +52,7 @@ Beast_FootComboAttack::Beast_FootComboAttack()
 	this->frameIndexUsedCapsuleDirection2		  = frameIndexUsedCapsuleDirection2;
 
 	/*コライダーの作成*/
-	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
+	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BEAST, new AttackData());
 	this->collider->radius							= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_RADIUS"];
 	this->collider->data->damage					= json.GetJson(JsonManager::FileType::BEAST)["COMBO_1_DAMAGE"];
 	this->collider->data->reactionType				= static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);

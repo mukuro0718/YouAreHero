@@ -7,6 +7,9 @@
 class Character;
 class CharacterData;
 class Rigidbody;
+class BrawlerEnemy;
+class MageEnemy;
+class TankEnemy;
 class EnemyManager : public Singleton<EnemyManager>
 {
 public:
@@ -21,7 +24,7 @@ public:
 	//Character&			 GetCharacter		 ();
 	//Character&			 GetCharacter		 (const int _enemyIndex = 0);
 	const CharacterData& GetCharacterData	  ()const;
-	const Rigidbody&	 GetRigidbody		  ()const;
+	const Rigidbody&	 GetRigidbody		  (const int _enemyIndent = -1)const;
 	const bool			 IsAttack			  ()const;
 	const int			 GetHP				  (const int _enemyIndent = -1)const;
 	const int			 GetModelHandle		  ()const;
@@ -34,6 +37,9 @@ public:
 	const int			 GetNearestEnemyIndent() { return this->nearestWeakEnemyIndent; }
 	const bool			 GetIsEnemyWithinRnage()const;
 private:
+	/*静的定数*/
+	static constexpr int WEAK_ENEMY_POOL = 10;
+
 	/*列挙体*/
 	enum class WeakEnemyType
 	{
@@ -50,15 +56,20 @@ private:
 	vector<int> GetWeakEnemyTypeList(const int _bossType);
 
 	/*メンバ変数*/
-	Character*			boss;					//ボス
-	vector<Character*>	bossList;				//ボス
-	vector<Character*>	weakEnemy;				//雑魚敵
-	int					mapType;				//マップの種類
-	int					enemyType;				//ボスの種類
-	int					frameTime;				
-	int					nearestWeakEnemyIndent;	//
-	bool				isEnemyWithinRange;		//プレイヤーの周囲に敵がいるかどうか
-
+	Character*				boss;					//ボス
+	vector<Character*>		bossList;				//ボス
+	vector<Character*>		weakEnemy;				//雑魚敵
+	vector<BrawlerEnemy*>	brawlerEnemyList;		//雑魚敵のリスト
+	vector<MageEnemy*>		mageEnemyList;			//雑魚敵のリスト
+	vector<TankEnemy*>		tankEnemyList;			//雑魚敵のリスト
+	int						mapType;				//マップの種類
+	int						enemyType;				//ボスの種類
+	int						frameTime;				
+	int						nearestWeakEnemyIndent;	//
+	bool					isEnemyWithinRange;		//プレイヤーの周囲に敵がいるかどうか
+	int						useBrawlerEnemyIndex;
+	int						useMageEnemyIndex;
+	int						useTankEnemyIndex;
 
 };
 

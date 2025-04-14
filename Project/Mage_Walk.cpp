@@ -18,9 +18,9 @@ Mage_Walk::Mage_Walk()
 	: isInitialize		(false)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->animationType		= static_cast<int>(MageEnemy::AnimationType::DYING);
+	this->animationType		= static_cast<int>(MageEnemy::AnimationType::WALK_FRONT);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ANIMATION_PLAY_TIME"][this->animationType];
-	this->actionType		= static_cast<short>(MageEnemyBehaviorTree::ActionType::DYING);
+	this->actionType		= static_cast<short>(MageEnemyBehaviorTree::ActionType::WALK);
 	this->maxSpeed			= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["WALK_SPEED"];;
 	this->accel				= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ACCEL"];
 	this->decel				= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["DECEL"];

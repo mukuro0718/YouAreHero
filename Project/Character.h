@@ -55,5 +55,6 @@ protected:
 	float					speed;			//ë¨ìx
 	int						entryInterval;
 	bool					isDraw;
+	VECTOR					spownPosition;//ç≈èâÇ…Ç¢ÇΩç¿ïW
 };
 

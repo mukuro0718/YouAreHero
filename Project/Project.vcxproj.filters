@@ -790,6 +790,9 @@
     <Filter Include="Object\Character\Enemy\Action\TankEnemy\10_SelectAction">
       <UniqueIdentifier>{72eb6ce1-0b1d-4abd-a0a8-22a81ac0facc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Effect\Mage">
+      <UniqueIdentifier>{0cf58b9b-d31f-4ca0-ab4d-e9874c18af4b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSController.cpp">
@@ -1521,6 +1524,9 @@
     </ClCompile>
     <ClCompile Include="Mage_PlayCurrentBattleAction.cpp">
       <Filter>Object\Character\Enemy\Action\MageEnemy\7_SelectAction</Filter>
+    </ClCompile>
+    <ClCompile Include="MageLaserEffect.cpp">
+      <Filter>Effect\Mage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2300,6 +2306,9 @@
     </ClInclude>
     <ClInclude Include="Mage_PlayCurrentBattleAction.h">
       <Filter>Object\Character\Enemy\Action\MageEnemy\7_SelectAction</Filter>
+    </ClInclude>
+    <ClInclude Include="MageLaserEffect.h">
+      <Filter>Effect\Mage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

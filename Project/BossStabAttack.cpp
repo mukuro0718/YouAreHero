@@ -27,7 +27,7 @@ BossStabAttack::BossStabAttack(const int _attackIndex)
 	this->attackIndex = _attackIndex;
 
 	/*コライダーデータの作成*/
-	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
+	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::MUTANT, new AttackData());
 
 	/*コライダーの初期化*/
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);

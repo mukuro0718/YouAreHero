@@ -152,6 +152,7 @@ public:
 		BEAST_SUPER_NOVA,
 		BEAST_WEAK_BREATH,
 		BEAST_EXPLOSION_RANGE,
+		MAGE_LASER,
 	};
 
 	/*getter*/

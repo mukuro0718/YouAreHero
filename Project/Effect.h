@@ -17,6 +17,7 @@ public:
 	/*setter*/
 	void OnIsPlayEffect	() { this->isPlayEffect = true; }	//再生フラグを立てる
 	void SetPosition(const VECTOR _position);
+	void SetRotation(const VECTOR _rotation);
 protected:
 	/*メンバ変数*/
 	Transform*	transform;			 //トランスフォーム

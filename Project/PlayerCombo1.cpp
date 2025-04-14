@@ -15,6 +15,7 @@
 #include "EnemyManager.h"
 #include "HitStop.h"
 #include "SoundManager.h"
+#include "ReactionType.h"
 
 /// <summary>
 /// コンストラクタ
@@ -40,17 +41,20 @@ PlayerCombo1::PlayerCombo1()
 	, collider					(nullptr)
 {
 	/*コライダーデータの作成*/
-	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER_ATTACK, new AttackData());
+	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER, new AttackData());
 
 	/*初期化*/
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->collider->radius			  = json.GetJson(JsonManager::FileType::PLAYER)["COMBO1_ATTACK_RADIUS"];
-	this->collider->data->hitStopTime = json.GetJson(JsonManager::FileType::PLAYER)["COMBO1_HIT_STOP_TIME"];
-	this->collider->data->damage	  = json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"][0];	
-	this->collider->data->hitStopTime = this->HIT_STOP_TIME;
-	this->collider->data->hitStopType = this->HIT_STOP_TYPE;
-	this->collider->data->hitStopDelay= this->HIT_STOP_DELAY;
-	this->collider->data->slowFactor  = this->SLOW_FACTOR;
+	this->collider->radius			   = json.GetJson(JsonManager::FileType::PLAYER)["COMBO1_ATTACK_RADIUS"];
+	this->collider->data->damage	   = json.GetJson(JsonManager::FileType::PLAYER)["W_ATTACK_DAMAGE"][0];	
+	this->collider->data->reactionType = static_cast<int>(Gori::PlayerReactionType::NORMAL);
+	this->collider->data->hitStopTime  = this->HIT_STOP_TIME;
+	this->collider->data->hitStopType  = this->HIT_STOP_TYPE;
+	this->collider->data->hitStopDelay = this->HIT_STOP_DELAY;
+	this->collider->data->slowFactor   = this->SLOW_FACTOR;
+	this->collider->data->isHitAttack  = false;
+	this->collider->data->isDoHitCheck = false;
+
 	this->nextAnimation				  = static_cast<int>(Player::AnimationType::COMBO_1);
 	this->playTime					  = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 	this->firstDirection			  = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);

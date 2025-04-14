@@ -58,12 +58,12 @@ Dragon::Dragon()
 
 	/*コライダーデータの作成*/
 	this->maxHp						= json.GetJson(JsonManager::FileType::DRAGON)["HP"];
-	this->collider					= new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
+	this->collider					= new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::DRAGON, new CharacterData());
 	this->maxPartsColliderNum		= json.GetJson(JsonManager::FileType::DRAGON)["COLLIDER_NUM"];
 	this->frameIndexUsePartsColider = json.GetJson(JsonManager::FileType::DRAGON)["FRAME_INDEX_USE_PARTS_COLLIDER"];
 	for (int i = 0; i < this->maxPartsColliderNum; i++)
 	{
-		this->partsCollider.emplace_back(new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData()));
+		this->partsCollider.emplace_back(new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::DRAGON, new CharacterData()));
 		this->partsCollider[i]->data->hp			= this->maxHp;
 		this->partsCollider[i]->radius				= json.GetJson(JsonManager::FileType::DRAGON)["PARTS_COLL_RADIUS"][i];
 		this->partsCollider[i]->isUseCollWithChara	= false;
@@ -79,13 +79,13 @@ Dragon::Dragon()
 	vector<AttackCapsuleColliderData*> sweepColider;
 	vector<AttackCapsuleColliderData*> rotateColider;
 	vector<AttackCapsuleColliderData*> breathColider;
-	smashColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
-	sweepColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
-	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
-	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
-	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
-	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
-	breathColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData()));
+	smashColider.emplace_back (new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::DRAGON, new AttackData()));
+	sweepColider.emplace_back (new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::DRAGON, new AttackData()));
+	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::DRAGON, new AttackData()));
+	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::DRAGON, new AttackData()));
+	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::DRAGON, new AttackData()));
+	rotateColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::DRAGON, new AttackData()));
+	breathColider.emplace_back(new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::DRAGON, new AttackData()));
 	this->attackCollider.emplace(static_cast<int>(AttackCollider::SMASH), smashColider);
 	this->attackCollider.emplace(static_cast<int>(AttackCollider::SWEEP), sweepColider);
 	this->attackCollider.emplace(static_cast<int>(AttackCollider::ROTATE), rotateColider);

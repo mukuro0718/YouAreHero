@@ -14,6 +14,7 @@
 #include "EffectManager.h"
 #include "HitStop.h"
 #include "SoundManager.h"
+#include "ReactionType.h"
 
 /// <summary>
 /// コンストラクタ
@@ -39,7 +40,7 @@ PlayerCombo3::PlayerCombo3()
 
 {
 	/*コライダーデータの作成*/
-	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER_ATTACK, new AttackData());
+	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER, new AttackData());
 
 	/*初期化*/
 	auto& json						  = Singleton<JsonManager>::GetInstance();
@@ -50,6 +51,8 @@ PlayerCombo3::PlayerCombo3()
 	this->collider->data->hitStopType = this->HIT_STOP_TYPE;
 	this->collider->data->hitStopDelay= this->HIT_STOP_DELAY;
 	this->collider->data->slowFactor  = this->SLOW_FACTOR;
+	this->collider->data->reactionType = static_cast<int>(Gori::PlayerReactionType::NORMAL);
+
 	this->nextAnimation				  = static_cast<int>(Player::AnimationType::COMBO_3);
 	this->playTime					  = json.GetJson(JsonManager::FileType::PLAYER)["ANIMATION_PLAY_TIME"][this->nextAnimation];
 	this->firstDirection			  = Gori::Convert(json.GetJson(JsonManager::FileType::PLAYER)["FIRST_DIRECTION"]);

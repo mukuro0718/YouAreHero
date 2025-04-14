@@ -43,18 +43,18 @@ MageEnemyBehaviorTree::~MageEnemyBehaviorTree()
 void MageEnemyBehaviorTree::Initialize()
 {
 	CreateBehaviorTree();
-	auto& json = Singleton<JsonManager>::GetInstance();
-	this->prevHp = json.GetJson(JsonManager::FileType::BEAST)["HP"];
-	this->damage = 0;
-	this->selectAction = -1;
-	this->nodeState = BehaviorTreeNode::NodeState::NONE_ACTIVE;
-	this->toTargetDistance = 0.0f;
-	this->innerProductOfDirectionToTarget = 0.0f;
-	this->attackCount = 0;
-	this->isSelectedBattleAction = false;
-	this->isSelectedReaction = false;
-	this->isCancelAction = false;
-	this->currentBattleNode = nullptr;
+	auto& json					= Singleton<JsonManager>::GetInstance();
+	this->prevHp							= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["HP"];
+	this->damage							= 0;
+	this->selectAction						= -1;
+	this->nodeState							= BehaviorTreeNode::NodeState::NONE_ACTIVE;
+	this->toTargetDistance					= 0.0f;
+	this->innerProductOfDirectionToTarget	= 0.0f;
+	this->attackCount						= 0;
+	this->isSelectedBattleAction			= false;
+	this->isSelectedReaction				= false;
+	this->isCancelAction					= false;
+	this->currentBattleNode					= nullptr;
 	//SetInterval(static_cast<int>(MageEnemyBehaviorTree::ActionType::ROAR), 1);
 }
 
@@ -104,26 +104,26 @@ void MageEnemyBehaviorTree::CreateBehaviorTree()
 			Sequencer_IfAlreadySelectedAttack->AddChild(*new Condition_IsSelectedBattleAction());
 			Sequencer_IfAlreadySelectedAttack->AddChild(*new Mage_PlayCurrentBattleAction());
 		}
-		//攻撃対象が攻撃の範囲外にいたら歩く
+		//攻撃対象が追跡範囲外にいたら待機状態
+		BehaviorTreeNode* Sequencer_IdleIfTargetOutOfRange = new SequencerNode();
+		{
+			Sequencer_IdleIfTargetOutOfRange->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["CHASE_RANGE"]));
+			Sequencer_IdleIfTargetOutOfRange->AddChild(*new Mage_Idle());
+		}
+		//攻撃対象が攻撃範囲外にいたら走る
 		BehaviorTreeNode* Sequencer_WalkIfToTargetOutOfRange = new SequencerNode();
 		{
-			Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_MAX_RANGE"]));
-			Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Mage_Walk());
-		}
-		//攻撃対象が攻撃の範囲内にいる時攻撃（攻撃対象が近すぎる時は走って離れるようにするため、近すぎず遠すぎずの範囲が攻撃範囲になる）
-		BehaviorTreeNode* Sequencer_AttackIfToTargetInOfRange = new SequencerNode();
-		{
-			Sequencer_AttackIfToTargetInOfRange->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_MIN_RANGE"]));
-			Sequencer_AttackIfToTargetInOfRange->AddChild(*new Mage_Attack());
+			Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_RANGE"]));
+			Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Mage_Run());
 		}
 		//ここまで通ったなら攻撃対象が自分の近くにいるということなので、遠くに離れるようにする
 		//ただ常に離れ続けるとゲームにならないので、移動するまでにディレイを入れたり、移動自体にインターバルを入れるようにする
 		//その場合、上記の攻撃判定ノードの中で移動のインターバルが終了していないときは攻撃を行うようにするか、
 		//ここでその判定を行うようにする。
 		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_IfAlreadySelectedAttack);
+		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_IdleIfTargetOutOfRange);
 		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_WalkIfToTargetOutOfRange);
-		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_AttackIfToTargetInOfRange);
-		Selector_AttackIfTargetGreaterThanConstant->AddChild(*new Mage_Run());
+		Selector_AttackIfTargetGreaterThanConstant->AddChild(*new Mage_Attack());
 	}
 
 	/*サブツリーを大元のツリーに入れる*/

@@ -288,6 +288,7 @@
     <ClCompile Include="Gate.cpp" />
     <ClCompile Include="MageEnemy.cpp" />
     <ClCompile Include="MageEnemyBehaviorTree.cpp" />
+    <ClCompile Include="MageLaserEffect.cpp" />
     <ClCompile Include="Mage_Attack.cpp" />
     <ClCompile Include="Mage_Dying.cpp" />
     <ClCompile Include="Mage_Idle.cpp" />
@@ -540,6 +541,7 @@
     <ClInclude Include="MageEnemy.h" />
     <ClInclude Include="MageEnemyBehaviorTree.h" />
     <ClInclude Include="MageEnemyBehaviorTreeHeader.h" />
+    <ClInclude Include="MageLaserEffect.h" />
     <ClInclude Include="Mage_Attack.h" />
     <ClInclude Include="Mage_Dying.h" />
     <ClInclude Include="Mage_Idle.h" />

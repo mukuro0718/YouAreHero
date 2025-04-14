@@ -102,8 +102,32 @@ void CollisionManager::CheckColide()
 {
 	bool doCheck	= true;	//当たったか
 	int  checkCount = 0;	//チェック回数
+	this->hitCheckLog.clear();
+	int collidablesSize = this->collidables.size();
+	if (this->alreadyProcessed.size() != collidablesSize)
+	{
+		this->alreadyProcessed.clear();
+		vector<bool> tmpAlreadyProcessed;
+		for (int j = 0; j < collidablesSize; j++)
+		{
+			tmpAlreadyProcessed.emplace_back(false);
+		}
+		for (int i = 0; i < collidablesSize; i++)
+		{
+			this->alreadyProcessed.emplace_back(tmpAlreadyProcessed);
+		}
+	}
+	for (int i = 0; i < collidablesSize; i++)
+	{
+		for (int j = 0; j < collidablesSize; j++)
+		{
+			this->alreadyProcessed[i][j] = false;
+		}
+	}
 
 	/*当たっていたら*/
+	int i = 0;
+	int j = 0;
 	while (doCheck)
 	{
 		//フラグを下す
@@ -116,12 +140,13 @@ void CollisionManager::CheckColide()
 		{
 			for (auto& objectB : this->collidables)
 			{
-				//AとBが異なっていたら
-				if (objectA != objectB)
+				//AとBが異なっているかつ一度もこの組み合わせで当たり判定を行っていなかったら
+				if (objectA != objectB && !this->alreadyProcessed[i][j])
 				{
 					//ぶつかっていれば
 					if (IsCollide(*objectA, *objectB))
 					{
+						this->alreadyProcessed[i][j] = true;
 						auto priorityA = objectA->GetPriority();
 						auto priorityB = objectB->GetPriority();
 
@@ -143,19 +168,28 @@ void CollisionManager::CheckColide()
 						}
 					}
 				}
+				++j;
 			}
+			j = 0;
 			if (doCheck)
 			{
 				break;
 			}
+			++i;
 		}
+		i = 0;
 
 		//無限ループ避け
-		if (checkCount > this->MAX_CHECK_COUNT || !doCheck)
+		if (checkCount > this->MAX_CHECK_COUNT)
 		{
 #if _DEBUG
 			//printfDx("当たり判定の繰り返しチェックが規定数を超えた\n");
 #endif
+			int i = this->hitCheckLog.size();
+			break;
+		}
+		if (!doCheck)
+		{
 			break;
 		}
 	}
@@ -189,29 +223,33 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 	{
 		auto aTag = _objectA.GetTag();
 		auto bTag = _objectB.GetTag();
-		if (aTag != bTag || (aTag != GameObjectTag::BOSS || bTag != GameObjectTag::BOSS))
+		//tagが一緒だったら以下の処理には進まない、ただしBeast,Dragonに限る
+		if ((aTag == GameObjectTag::BEAST && bTag == GameObjectTag::BEAST) ||
+			(aTag == GameObjectTag::DRAGON && bTag == GameObjectTag::DRAGON))
 		{
-			/*互いの距離が、それぞれの半径の合計よりも小さければ当たる*/
-			auto& objectAColliderData = dynamic_cast<CharacterColliderData&>(_objectA);
-			auto& objectBColliderData = dynamic_cast<CharacterColliderData&>(_objectB);
-			if ((objectAColliderData.data->hp > 0 && objectBColliderData.data->hp > 0) && (objectAColliderData.isUseCollWithChara && objectBColliderData.isUseCollWithChara))
+			return false;
+		}
+		/*互いの距離が、それぞれの半径の合計よりも小さければ当たる*/
+		auto& objectAColliderData = dynamic_cast<CharacterColliderData&>(_objectA);
+		auto& objectBColliderData = dynamic_cast<CharacterColliderData&>(_objectB);
+		if ((objectAColliderData.data->hp > 0 && objectBColliderData.data->hp > 0) && (objectAColliderData.isUseCollWithChara && objectBColliderData.isUseCollWithChara))
+		{
+			VECTOR aUnderPosition = objectAColliderData.GetNextPosition();
+			VECTOR aTopPosition = objectAColliderData.topPositon;
+			if (!objectAColliderData.isSetTopPosition)
 			{
-				VECTOR aUnderPosition = objectAColliderData.GetNextPosition();
-				VECTOR aTopPosition = objectAColliderData.topPositon;
-				if (!objectAColliderData.isSetTopPosition)
-				{
-					aTopPosition = VAdd(aUnderPosition, objectAColliderData.topPositon);
-				}
-				VECTOR bUnderPosition = objectBColliderData.GetNextPosition();
-				VECTOR bTopPosition = objectBColliderData.topPositon;
-				if (!objectBColliderData.isSetTopPosition)
-				{
-					bTopPosition = VAdd(bUnderPosition, objectBColliderData.topPositon);
-				}
-				if (HitCheck_Capsule_Capsule(aUnderPosition, aTopPosition, objectAColliderData.radius, bUnderPosition, bTopPosition, objectBColliderData.radius))
-				{
-					isHit = true;
-				}
+				aTopPosition = VAdd(aUnderPosition, objectAColliderData.topPositon);
+			}
+			VECTOR bUnderPosition = objectBColliderData.GetNextPosition();
+			VECTOR bTopPosition = objectBColliderData.topPositon;
+			if (!objectBColliderData.isSetTopPosition)
+			{
+				bTopPosition = VAdd(bUnderPosition, objectBColliderData.topPositon);
+			}
+			if (HitCheck_Capsule_Capsule(aUnderPosition, aTopPosition, objectAColliderData.radius, bUnderPosition, bTopPosition, objectBColliderData.radius))
+			{
+				this->hitCheckLog.emplace_back(HitCheckType::SAME_CHARA);
+				isHit = true;
 			}
 		}
 	}
@@ -223,10 +261,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 		//攻撃の主と攻撃を受ける側が異なっていたら
 		auto aTag = _objectA.GetTag();
 		auto bTag = _objectB.GetTag();
-		if ((aTag == GameObjectTag::BOSS && bTag == GameObjectTag::PLAYER_ATTACK) ||
-			(aTag == GameObjectTag::PLAYER && bTag == GameObjectTag::BOSS_ATTACK) ||
-			(aTag == GameObjectTag::BOSS_ATTACK && bTag == GameObjectTag::PLAYER) ||
-			(aTag == GameObjectTag::PLAYER_ATTACK && bTag == GameObjectTag::BOSS))
+		if (aTag != bTag)
 		{
 			//攻撃側と受ける側を判別する
 			ColliderData* attackDataBase = &_objectA;
@@ -246,6 +281,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			//キャラクターとの当たり判定を行うなら
 			if (characterColliderData.isUseCollWithChara)
 			{
+
 				//当たり判定を取れる状況なら
 				if (attackColliderData.data->isDoHitCheck && !characterColliderData.data->isInvinvible)
 				{
@@ -260,6 +296,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 					}
 					if (HitCheck_Sphere_Capsule(attackSphereCenter, attackColliderData.radius, characterCapsuleUnder, characterCapsuleTop, characterColliderData.radius))
 					{
+						this->hitCheckLog.emplace_back(HitCheckType::CHARA_ATTACK_S);
 						attackColliderData.OnHit(*characterColliderData.data);
 						characterColliderData.OnHit(*attackColliderData.data, characterColliderData.GetNextPosition());
 					}
@@ -275,10 +312,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 		//攻撃の主と攻撃を受ける側が異なっていたら
 		auto aTag = _objectA.GetTag();
 		auto bTag = _objectB.GetTag();
-		if ((aTag == GameObjectTag::BOSS && bTag == GameObjectTag::PLAYER_ATTACK) ||
-			(aTag == GameObjectTag::PLAYER && bTag == GameObjectTag::BOSS_ATTACK) ||
-			(aTag == GameObjectTag::BOSS_ATTACK && bTag == GameObjectTag::PLAYER) ||
-			(aTag == GameObjectTag::PLAYER_ATTACK && bTag == GameObjectTag::BOSS))
+		if (aTag != bTag)
 		{
 			//攻撃側と受ける側を判別する
 			ColliderData* attackDataBase = &_objectA;
@@ -314,6 +348,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 					}
 					if (HitCheck_Capsule_Capsule(attackCapsuleUnder, attackCapsuleTop, attackColliderData.radius, characterCapsuleUnder, characterCapsuleTop, characterColliderData.radius))
 					{
+						this->hitCheckLog.emplace_back(HitCheckType::CHARA_ATTACK_C);
 						attackColliderData.OnHit(*characterColliderData.data);
 						characterColliderData.OnHit(*attackColliderData.data, attackColliderData.GetNextPosition());
 					}
@@ -346,6 +381,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 		float distance = VSize(VSub(capsuleUnder, planeCenter));
 		if ((capsuleUnder.y < 0.0f) || (distance > planeColliderData.radius))
 		{
+			this->hitCheckLog.emplace_back(HitCheckType::CHARA_PLANE);
 			isHit = true;
 		}
 	}
@@ -390,6 +426,7 @@ bool CollisionManager::IsCollide(ColliderData& _objectA, ColliderData& _objectB)
 			if (hitPolyDim.HitNum > 0)
 			{
 				isHit = true;
+				this->hitCheckLog.emplace_back(HitCheckType::CHARA_MODEL);
 			}
 		}
 	}
@@ -427,24 +464,17 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		auto& secondaryColliderData = dynamic_cast<CharacterColliderData&> (_secondary);
 		if (!primaryColliderData.isUseCollWithChara || !secondaryColliderData.isUseCollWithChara)return;
 
-		/*プライマリーの移動ベクトルのサイズを出す*/
-		VECTOR primaryVelocity = _primary.rigidbody.GetVelocity();
-		primaryVelocity.y = 0.0f;
-		float primaryMoveVectorSize = VSize(primaryVelocity);
-
 		/*２つのカプセルの頂点を取得*/
 		VECTOR primaryUnderPosition = primaryColliderData.GetNextPosition();
 		VECTOR primaryTopPosition = primaryColliderData.topPositon;
 		if (!primaryColliderData.isSetTopPosition)
 		{
-			primaryUnderPosition.y = 0.0f;
 			primaryTopPosition = VAdd(primaryUnderPosition, primaryColliderData.topPositon);
 		}
 		VECTOR secondaryUnderPosition = secondaryColliderData.GetNextPosition();
 		VECTOR secondaryTopPosition = secondaryColliderData.topPositon;
 		if (!secondaryColliderData.isSetTopPosition)
 		{
-			secondaryUnderPosition.y = 0.0f;
 			secondaryTopPosition = VAdd(secondaryUnderPosition, secondaryColliderData.topPositon);
 		}
 		//カプセル同士の最近接距離を取る
@@ -452,24 +482,9 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 		Segment_Segment_Analyse(&primaryUnderPosition, &primaryTopPosition, &secondaryUnderPosition, &secondaryTopPosition, &result);
 		//半径の合計から最近接距離を引き押し戻す、そのままだとちょうど当たる位置になるので少し余分に離す
 		float awayDist = primaryColliderData.radius + secondaryColliderData.radius - sqrt(result.SegA_SegB_MinDist_Square) + 0.000005f;
-		
-		if (awayDist > primaryMoveVectorSize)
-		{
-			awayDist = primaryMoveVectorSize;
-		}
-
-		VECTOR awayVector = VNorm(VSub(result.SegA_MinDist_Pos, result.SegB_MinDist_Pos));
-		awayVector.y = 0.0f;
+		VECTOR awayVector = VNorm(VSub(primaryUnderPosition, secondaryUnderPosition));
 		VECTOR fixVector = VScale(awayVector, awayDist);
-		VECTOR fixedPosition = VAdd(_primary.GetNextPosition(), fixVector);
-		if (fixedPosition.y < -14.0f)
-		{
-			fixedPosition.y = -14.0f;
-		}
-		else if (fixedPosition.y > -13.8f)
-		{
-			fixedPosition.y = -13.8f;
-		}
+		VECTOR fixedPosition = VAdd(primaryUnderPosition, fixVector);
 		_primary.SetNextPosition(fixedPosition);
 	}
 	//平面とカプセル(平面はSTATICなので、必ずprimaryがPLANEになる)
@@ -589,79 +604,79 @@ void CollisionManager::FixNextPosition(ColliderData& _primary, ColliderData& _se
 			// プレイヤーの移動ベクトルのうち、Z,Xのどれが大きいかを調べ
 			// 次にマイナスかプラスか調べる
 			//======================================================================
-			VECTOR	moveVector = charaCollision.rigidbody.GetDirection();
-			int		hitWallNum = 0;
-			bool	isHitXWall = false;
-			bool	isHitZWall = false;
-			//どの壁と当たっているのか、数と種類を調べる
-			if (xpWall.size() != 0)
-			{
-				++hitWallNum;
-				isHitXWall = true;
-			}
-			if (xmWall.size() != 0)
-			{
-				++hitWallNum;
-				isHitXWall = true;
-			}
-			if (zpWall.size() != 0)
-			{
-				++hitWallNum;
-				isHitZWall = true;
-			}
-			if (zmWall.size() != 0)
-			{
-				++hitWallNum;
-				isHitZWall = true;
-			}
-			//3つの
-			printfDx("当たった壁の数%d\n",hitWallNum);
-			if (hitWallNum >= 2)
-			{
-				if (hitWallNum == 3)
-				{
-					if (isHitXWall && xpWall.size() != 0 && xmWall.size())
-					{
-						isHitXWall = false;
-					}
-					if (isHitZWall && zpWall.size() != 0 && zmWall.size())
-					{
-						isHitZWall = false;
-					}
-				}
-				//ここではXの当たり判定を取る
-				if (isHitXWall)
-				{
-					//移動ベクトルのXがプラスの時に、Xマイナスの壁と当たったか
-					CheckHitXWall(xpWall, xmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
-				}
-				//Zの当たり判定を取る
-				if (isHitZWall)
-				{
-					//移動ベクトルのZがプラスの時に、Zマイナスの壁と当たったか
-					CheckHitZWall(zpWall, zmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
-				}
-			}
-			//ここではXの当たり判定を取る
-			else if (isHitXWall)
-			{
-				//移動ベクトルのXがプラスの時に、Xマイナスの壁と当たったか
-				CheckHitXWall(xpWall, xmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
-			}
-			//Zの当たり判定を取る
-			else if(isHitZWall)
-			{
-				//移動ベクトルのZがプラスの時に、Zマイナスの壁と当たったか
-				CheckHitZWall(zpWall, zmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
-			}
-			if (newNextPosition.y < -14.0f)
-			{
-				newNextPosition.y = newNextPosition.y;
-			}
-			else if (newNextPosition.y > -13.8f)
-			{
-				newNextPosition.y = -13.8f;
-			}
+			//VECTOR	moveVector = charaCollision.rigidbody.GetDirection();
+			//int		hitWallNum = 0;
+			//bool	isHitXWall = false;
+			//bool	isHitZWall = false;
+			////どの壁と当たっているのか、数と種類を調べる
+			//if (xpWall.size() != 0)
+			//{
+			//	++hitWallNum;
+			//	isHitXWall = true;
+			//}
+			//if (xmWall.size() != 0)
+			//{
+			//	++hitWallNum;
+			//	isHitXWall = true;
+			//}
+			//if (zpWall.size() != 0)
+			//{
+			//	++hitWallNum;
+			//	isHitZWall = true;
+			//}
+			//if (zmWall.size() != 0)
+			//{
+			//	++hitWallNum;
+			//	isHitZWall = true;
+			//}
+			////3つの
+			//printfDx("当たった壁の数%d\n",hitWallNum);
+			//if (hitWallNum >= 2)
+			//{
+			//	if (hitWallNum == 3)
+			//	{
+			//		if (isHitXWall && xpWall.size() != 0 && xmWall.size())
+			//		{
+			//			isHitXWall = false;
+			//		}
+			//		if (isHitZWall && zpWall.size() != 0 && zmWall.size())
+			//		{
+			//			isHitZWall = false;
+			//		}
+			//	}
+			//	//ここではXの当たり判定を取る
+			//	if (isHitXWall)
+			//	{
+			//		//移動ベクトルのXがプラスの時に、Xマイナスの壁と当たったか
+			//		CheckHitXWall(xpWall, xmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
+			//	}
+			//	//Zの当たり判定を取る
+			//	if (isHitZWall)
+			//	{
+			//		//移動ベクトルのZがプラスの時に、Zマイナスの壁と当たったか
+			//		CheckHitZWall(zpWall, zmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
+			//	}
+			//}
+			////ここではXの当たり判定を取る
+			//else if (isHitXWall)
+			//{
+			//	//移動ベクトルのXがプラスの時に、Xマイナスの壁と当たったか
+			//	CheckHitXWall(xpWall, xmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
+			//}
+			////Zの当たり判定を取る
+			//else if(isHitZWall)
+			//{
+			//	//移動ベクトルのZがプラスの時に、Zマイナスの壁と当たったか
+			//	CheckHitZWall(zpWall, zmWall, isHit, maxfix, hit_height, radius, nowNextPosition, newNextPosition, moveVector);
+			//}
+			//if (newNextPosition.y < -14.0f)
+			//{
+			//	newNextPosition.y = newNextPosition.y;
+			//}
+			//else if (newNextPosition.y > -13.8f)
+			//{
+			//	newNextPosition.y = -13.8f;
+			//}
 
 			/*格納した構造体を破棄する*/
 			MV1CollResultPolyDimTerminate(hitPolyDim);
@@ -688,11 +703,13 @@ void CollisionManager::FixPosition()
 	for (auto& item : collidables)
 	{
 		//positionを更新するので、velocityもそこに移動するvelocityに修正
-		VECTOR toFixedPosition = VSub(item->GetNextPosition(), item->rigidbody.GetPosition());
-		item->rigidbody.SetVelocity(toFixedPosition);
-
+		VECTOR nowPosition = item->rigidbody.GetPosition();
+		VECTOR toFixedPositionVelocity = VSub(item->GetNextPosition(), nowPosition);
+		item->rigidbody.SetVelocity(toFixedPositionVelocity);
+		VECTOR nextPosition = VAdd(nowPosition, toFixedPositionVelocity);
 		//位置確定
-		item->rigidbody.SetPosition(item->GetNextPosition());
+		item->SetNextPosition(nextPosition);
+		item->rigidbody.SetPosition(nextPosition);
 	}
 }
 

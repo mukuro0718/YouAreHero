@@ -57,3 +57,10 @@ void Effect::SetPosition(const VECTOR _position)
 	this->transform->SetPosition(_position);
 }
 
+/// <summary>
+/// ‰ñ“]—¦‚ÌƒZƒbƒg
+/// </summary>
+void Effect::SetRotation(const VECTOR _rotation)
+{
+	this->transform->SetRotation(_rotation);
+}

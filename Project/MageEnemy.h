@@ -7,14 +7,15 @@ class Enemy;
 class MageEnemy :  public Enemy
 {
 public:
-	 MageEnemy(const int _indentNum, const int _bossType);//コンストラクタ
-	~MageEnemy();					 //デストラクタ
+	 MageEnemy();//コンストラクタ
+	~MageEnemy();//デストラクタ
 
 	void		Initialize		 () override;		//初期化
 	void		Finalize		 () override;		//後処理
 	void		Update			 () override;		//更新
 	const void	DrawCharacterInfo() const override;	//描画
 	void		PlayAnimation	 ();				//アニメーションの再生
+	void		SetSpownPosition(const int _indentNum, const int _bossType);
 
 	/*列挙体*/
 	//アニメーション

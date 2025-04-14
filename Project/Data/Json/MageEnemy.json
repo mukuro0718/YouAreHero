@@ -1,14 +1,14 @@
 {
   "ANIMATION_HANDLE": [
-    "Asset/Animation/Brawler/Dying.mv1",
-    "Asset/Animation/Brawler/Idle.mv1",
-    "Asset/Animation/Brawler/Run.mv1",
-    "Asset/Animation/Brawler/WalkFront.mv1",
-    "Asset/Animation/Brawler/WalkBack.mv1",
-    "Asset/Animation/Brawler/WalkLeft.mv1",
-    "Asset/Animation/Brawler/WalkRight.mv1",
-    "Asset/Animation/Brawler/Attack.mv1",
-    "Asset/Animation/Brawler/Reaction.mv1"
+    "Asset/Animation/Mage/Dying.mv1",
+    "Asset/Animation/Mage/Idle.mv1",
+    "Asset/Animation/Mage/Run.mv1",
+    "Asset/Animation/Mage/WalkFront.mv1",
+    "Asset/Animation/Mage/WalkBack.mv1",
+    "Asset/Animation/Mage/WalkLeft.mv1",
+    "Asset/Animation/Mage/WalkRight.mv1",
+    "Asset/Animation/Mage/Attack.mv1",
+    "Asset/Animation/Mage/Reaction.mv1"
   ],
   "ANIMATION_INDEX": 0,
   "ANIMATION_PLAY_TIME": [
@@ -42,13 +42,13 @@
   "INIT_SCALE": [ 0.06, 0.06, 0.06 ],
   "INIT_ROTATION": [ 0.0, 0.0, 0.0 ],
 
-  "ATTACK_MAX_RANGE": 150.0,
-  "ATTACK_MIN_RANGE": 10.0,
+  "CHASE_RANGE": 100.0,
+  "ATTACK_RANGE": 10.0,
 
   "MAX_DOWN_VALUE": 600,
   "MAX_ANGRY_VALUE": 1200,
   "CHANGE_ANGRY_LIMIT_DAMAGE": 1000,
-  "HP": 1200,
+  "HP": 60,
 
   "ACCEL": 0.05,
   "DECEL": -0.05,
@@ -62,8 +62,6 @@
   "APPROACH_DISTANCE": 100.0,
   "STOP_RUSH_DISTANCE": 900.0,
 
-  "FAR_ATTACK_RANGE": 100.0,
-  "NEAR_ATTACK_RANGE": 20.0,
 
   "TOLERANCE_RANGE": [ -0.707, -1.0 ],
 
@@ -80,13 +78,14 @@
   "RAISE_LEVEL_ROAR_COUNT": 65,
   "WALK_SOUND_COUNT": 56,
 
-  "CHARGE_RIGHT_ATTACK_START_COUNT": 85,
-  "CHARGE_RIGHT_ATTACK_END_COUNT": 95,
-  "CHARGE_RIGHT_FRAME_INDEX_USED_CAPSULE_DIRECTION": [ 41, 42 ],
-  "CHARGE_RIGHT_RADIUS": 5.0,
-  "CHARGE_RIGHT_DAMAGE": 50.0,
-  "CHARGE_RIGHT_HIT_STOP_TIME": 5,
-  "CHARGE_RIGHT_HIT_STOP_DELAY": 0,
-  "CHARGE_RIGHT_SLOW_FACTOR": 0.3,
-  "CHARGE_RIGHT_BLOCK_STAMINA_CONSUMPTION": 50.0
+  "ATTACK_START_COUNT": 5,
+  "ATTACK_END_COUNT": 10,
+  "ATTACK_RADIUS": 5.0,
+  "ATTACK_DAMAGE": 15.0,
+  "ATTACK_HIT_STOP_TIME": 5,
+  "ATTACK_HIT_STOP_DELAY": 0,
+  "ATTACK_SLOW_FACTOR": 0.3,
+  "ATTACK_COLLIDER_INDEX_1": 11,
+  "ATTACK_COLLIDER_INDEX_2": 18,
+  "ATTACK_START_ANIMATION_PLAY_TIME": 20.0
 }

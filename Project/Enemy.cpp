@@ -33,7 +33,7 @@ Enemy::Enemy()
 {
 	this->modelHandle;
 	/*コライダーデータの作成*/
-	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
+	//this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
 }
 
 /// <summary>
@@ -174,4 +174,9 @@ void Enemy::ChangeNormalColor()
 	//MV1SetEmiColorScale(this->modelHandle, this->normalEmiColor);
 	//MV1SetAmbColorScale(this->modelHandle, this->normalAmbColor);
 	MV1SetDifColorScale(this->modelHandle, this->normalColor);
+}
+
+void Enemy::OffIsHit()
+{
+	this->collider->data->isHit = false;
 }

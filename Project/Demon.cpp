@@ -56,7 +56,7 @@ Demon::Demon()
 	this->animation->Attach(&this->modelHandle);
 
 	/*コライダーデータの作成*/
-	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
+	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::MUTANT, new CharacterData());
 
 }
 

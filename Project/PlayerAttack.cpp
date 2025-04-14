@@ -25,7 +25,7 @@ PlayerAttack::PlayerAttack()
 	, isNotOnHit(false)
 {
 	/*コライダーデータの作成*/
-	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER_ATTACK, new AttackData());
+	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::PLAYER, new AttackData());
 }
 
 /// <summary>

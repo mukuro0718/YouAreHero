@@ -18,9 +18,9 @@ Mage_Idle::Mage_Idle()
 	: isInitialize		(false)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->animationType		= static_cast<int>(MageEnemy::AnimationType::DYING);
+	this->animationType		= static_cast<int>(MageEnemy::AnimationType::IDLE);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ANIMATION_PLAY_TIME"][this->animationType];
-	this->actionType		= static_cast<short>(MageEnemyBehaviorTree::ActionType::DYING);
+	this->actionType		= static_cast<short>(MageEnemyBehaviorTree::ActionType::IDLE);
 	this->maxSpeed			= 0.0f;
 	this->accel				= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ACCEL"];
 	this->decel				= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["DECEL"];
@@ -59,6 +59,9 @@ Mage_Idle::NodeState Mage_Idle::Update(BehaviorTree& _tree, Character& _chara)
 		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
 		enemy.SetAnimationPlayTime(this->animationPlayTime);
+		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
+		enemy.UpdateVelocity(false);
+		this->isInitialize = true;
 	}
 
 	/*アニメーションの再生*/
@@ -76,6 +79,7 @@ Mage_Idle::NodeState Mage_Idle::Update(BehaviorTree& _tree, Character& _chara)
 	//アニメーションが終了していたら
 	if (enemy.GetIsChangeAnimation())
 	{
+		this->isInitialize = false;
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//それ以外は実行中を返す

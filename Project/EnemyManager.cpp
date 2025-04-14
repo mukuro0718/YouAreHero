@@ -26,6 +26,9 @@ EnemyManager::EnemyManager()
 	, mapType				(-1)
 	, enemyType				(0)
 	, nearestWeakEnemyIndent(0)
+	, useMageEnemyIndex(0)
+	, useBrawlerEnemyIndex(0)
+	, useTankEnemyIndex(0)
 	, isEnemyWithinRange	(false)
 {
 	/*ボスの作成*/
@@ -34,8 +37,13 @@ EnemyManager::EnemyManager()
 	this->bossList.emplace_back(new Beast());
 	this->boss = this->bossList[0];
 
-
-	/*雑魚敵の作成*/
+	/*雑魚敵のプールを作成*/
+	for (int i = 0; i < this->WEAK_ENEMY_POOL; i++)
+	{
+		this->brawlerEnemyList.emplace_back(new BrawlerEnemy());
+		this->mageEnemyList.emplace_back(new MageEnemy());
+		this->tankEnemyList.emplace_back(new TankEnemy());
+	}
 }
 
 /// <summary>
@@ -62,10 +70,6 @@ void EnemyManager::Initialize()
 
 	/*ボスに合わせて雑魚敵を初期化する*/
 	CreateWeakEnemy();
-	for (auto& enemy : this->weakEnemy)
-	{
-		enemy->Initialize();
-	}
 
 	auto& map = Singleton<MapManager>::GetInstance();
 	this->mapType = static_cast<int>(map.GetMapType());
@@ -156,9 +160,16 @@ const CharacterData& EnemyManager::GetCharacterData()const
 /// <summary>
 /// リジッドボディの取得
 /// </summary>
-const Rigidbody& EnemyManager::GetRigidbody()const
+const Rigidbody& EnemyManager::GetRigidbody(const int _enemyIndent)const
 {
-	return this->boss->GetRigidbody();
+	switch (this->mapType)
+	{
+	case static_cast<int>(MapManager::MapType::BOSS):
+		return this->boss->GetRigidbody();
+	case static_cast<int>(MapManager::MapType::DUNGEON):
+		return this->weakEnemy[_enemyIndent]->GetRigidbody();
+	}
+
 }
 
 /// <summary>
@@ -305,14 +316,10 @@ vector<int> EnemyManager::GetWeakEnemyTypeList(const int _bossType)
 void EnemyManager::CreateWeakEnemy()
 {
 	/*メモリをきれいに*/
-	if (this->weakEnemy.size() != 0)
-	{
-		for (int i = 0; i < this->weakEnemy.size(); i++)
-		{
-			DeleteMemberInstance(this->weakEnemy[i]);
-		}
-	}
 	this->weakEnemy.clear();
+	this->useBrawlerEnemyIndex = 0;
+	this->useMageEnemyIndex = 0;
+	this->useTankEnemyIndex = 0;
 
 	/*どのボスを登場させるのか*/
 	auto& enemyChanger = Singleton<EnemyChanger>::GetInstance();
@@ -334,13 +341,22 @@ void EnemyManager::AddWeakEnemy(int& _indent, const int _weakEnemyType, const in
 	switch (_weakEnemyType)
 	{
 	case static_cast<int>(WeakEnemyType::BRAWLER):
-		this->weakEnemy.emplace_back(new BrawlerEnemy(_indent, _bossType));
+		this->brawlerEnemyList[this->useBrawlerEnemyIndex]->Initialize();
+		this->brawlerEnemyList[this->useBrawlerEnemyIndex]->SetSpownPosition(_indent, _bossType);
+		this->weakEnemy.emplace_back(this->brawlerEnemyList[this->useBrawlerEnemyIndex]);
+		++this->useBrawlerEnemyIndex;
 		break;
 	case static_cast<int>(WeakEnemyType::MAGE):
-		this->weakEnemy.emplace_back(new MageEnemy(_indent, _bossType));
+		this->mageEnemyList[this->useMageEnemyIndex]->Initialize();
+		this->mageEnemyList[this->useMageEnemyIndex]->SetSpownPosition(_indent, _bossType);
+		this->weakEnemy.emplace_back(this->mageEnemyList[this->useMageEnemyIndex]);
+		++this->useMageEnemyIndex;
 		break;
 	case static_cast<int>(WeakEnemyType::TANK):
-		this->weakEnemy.emplace_back(new TankEnemy(_indent, _bossType));
+		this->tankEnemyList[this->useTankEnemyIndex]->Initialize();
+		this->tankEnemyList[this->useTankEnemyIndex]->SetSpownPosition(_indent, _bossType);
+		this->weakEnemy.emplace_back(this->tankEnemyList[this->useTankEnemyIndex]);
+		++this->useTankEnemyIndex;
 		break;
 	default:
 		break;

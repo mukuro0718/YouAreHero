@@ -51,12 +51,12 @@ Beast::Beast()
 
 	/*コライダーデータの作成*/
 	this->maxHp = json.GetJson(JsonManager::FileType::BEAST)["HP"];
-	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
+	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BEAST, new CharacterData());
 	this->maxPartsColliderNum = json.GetJson(JsonManager::FileType::BEAST)["COLLIDER_NUM"];
 	this->frameIndexUsePartsColider = json.GetJson(JsonManager::FileType::BEAST)["FRAME_INDEX_USE_PARTS_COLLIDER"];
 	for (int i = 0; i < this->maxPartsColliderNum; i++)
 	{
-		this->partsCollider.emplace_back(new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData()));
+		this->partsCollider.emplace_back(new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BEAST, new CharacterData()));
 		this->partsCollider[i]->data->hp = this->maxHp;
 		this->partsCollider[i]->radius = json.GetJson(JsonManager::FileType::BEAST)["PARTS_COLL_RADIUS"][i];
 		this->partsCollider[i]->isUseCollWithChara = false;

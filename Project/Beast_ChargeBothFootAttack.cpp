@@ -49,7 +49,7 @@ Beast_ChargeBothFootAttack::Beast_ChargeBothFootAttack()
 	this->frameIndexUsedCapsuleDirection2 = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_BOTH_FRAME_INDEX_USED_CAPSULE_DIRECTION"][1];
 
 	/*コライダーの作成*/
-	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
+	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BEAST, new AttackData());
 	this->collider->radius						  = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_BOTH_RADIUS"];
 	this->collider->data->damage				  = json.GetJson(JsonManager::FileType::BEAST)["CHARGE_BOTH_DAMAGE"];
 	this->collider->data->reactionType			  = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);

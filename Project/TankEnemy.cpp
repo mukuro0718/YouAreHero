@@ -23,9 +23,9 @@
 /// <summary>
 /// コンストラクタ
 /// </summary>
-TankEnemy::TankEnemy(const int _indentNum, const int _bossType)
-	: indentNum(_indentNum)
-	, bossType(_bossType)
+TankEnemy::TankEnemy()
+	: indentNum(0)
+	, bossType(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -50,7 +50,7 @@ TankEnemy::TankEnemy(const int _indentNum, const int _bossType)
 	this->animation->Attach(&this->modelHandle);
 
 	/*コライダーデータの作成*/
-	this->collider = new CharacterColliderData(ColliderData::Priority::LOW, GameObjectTag::BOSS, new CharacterData());
+	this->collider = new CharacterColliderData(ColliderData::Priority::LOW, GameObjectTag::TANK, new CharacterData());
 
 	this->tree = new TankEnemyBehaviorTree();
 }
@@ -106,6 +106,14 @@ void TankEnemy::Initialize()
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
+}
+
+void TankEnemy::SetSpownPosition(const int _indentNum, const int _bossType)
+{
+	auto& json = Singleton<JsonManager>::GetInstance();
+	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["DUNGEON_SPOWN_POSITION"][this->bossType][this->indentNum]);//座標
+	this->spownPosition = POSITION;
+	this->collider->rigidbody.SetPosition(POSITION);
 }
 
 /// <summary>

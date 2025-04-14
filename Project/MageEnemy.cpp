@@ -23,9 +23,9 @@
 /// <summary>
 /// コンストラクタ
 /// </summary>
-MageEnemy::MageEnemy(const int _indentNum, const int _bossType)
-	: indentNum(_indentNum)
-	, bossType(_bossType)
+MageEnemy::MageEnemy()
+	: indentNum(0)
+	, bossType(0)
 {
 	/*シングルトンクラスのインスタンスの取得*/
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -50,7 +50,7 @@ MageEnemy::MageEnemy(const int _indentNum, const int _bossType)
 	this->animation->Attach(&this->modelHandle);
 
 	/*コライダーデータの作成*/
-	this->collider = new CharacterColliderData(ColliderData::Priority::LOW, GameObjectTag::BOSS, new CharacterData());
+	this->collider = new CharacterColliderData(ColliderData::Priority::LOW, GameObjectTag::MAGE, new CharacterData());
 
 	this->tree = new MageEnemyBehaviorTree();
 }
@@ -86,26 +86,32 @@ void MageEnemy::Initialize()
 	this->collider->data->defensivePower = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["DEFENSIVE_POWER"];
 	this->collider->data->hp			 = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["HP"];
 	this->collider->data->isHit			 = false;
-	this->collider->type				 = CharacterColliderData::CharaType::BRAWLER;
+	this->collider->type				 = CharacterColliderData::CharaType::MAGE;
 
 	/*物理挙動の初期化*/
 	//jsonデータを定数に代入
-	const VECTOR POSITION	= Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["DUNGEON_SPOWN_POSITION"][this->bossType][this->indentNum]);//座標
 	const VECTOR ROTATION	= Gori::Convert(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["INIT_ROTATION"]);//回転率
 	const VECTOR DIRECTION	= Gori::Convert(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["INIT_DIRECTION"]);//回転率
 	const VECTOR SCALE		= Gori::Convert(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["INIT_SCALE"]);	 //拡大率
 	//初期化
 	this->collider->rigidbody.Initialize(true);
-	this->collider->rigidbody.SetPosition(POSITION);
 	this->collider->rigidbody.SetVelocity(DIRECTION);
 	this->collider->rigidbody.SetRotation(ROTATION);
 	this->collider->rigidbody.SetScale(SCALE);
-	MV1SetPosition(this->modelHandle, this->collider->rigidbody.GetPosition());
 	MV1SetRotationXYZ(this->modelHandle, this->collider->rigidbody.GetRotation());
 	MV1SetScale(this->modelHandle, this->collider->rigidbody.GetScale());
 
 	/*アニメーションのアタッチ*/
 	this->animation->Attach(&this->modelHandle);
+}
+
+void MageEnemy::SetSpownPosition(const int _indentNum, const int _bossType)
+{
+	auto& json = Singleton<JsonManager>::GetInstance();
+	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["DUNGEON_SPOWN_POSITION"][this->bossType][this->indentNum]);//座標
+	this->spownPosition = POSITION;
+	this->collider->rigidbody.SetPosition(POSITION);
+	MV1SetPosition(this->modelHandle, this->collider->rigidbody.GetPosition());
 }
 
 /// <summary>
@@ -130,11 +136,6 @@ void MageEnemy::Update()
 		RespawnIfOutOfStage();
 	}
 
-	if (this->collider->data->isHit)
-	{
-		this->hitStop->SetHitStop(this->collider->data->hitStopTime, this->collider->data->hitStopType, this->collider->data->hitStopDelay, this->collider->data->slowFactor);
-		this->collider->data->isHit = false;
-	}
 	if (this->hitStop->IsHitStop()) return;
 
 	/*ビヘイビアツリーの更新*/

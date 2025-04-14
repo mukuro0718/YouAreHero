@@ -38,15 +38,17 @@ TitleScene::~TitleScene()
 void TitleScene::Initialize()
 {
 	/*シングルトンクラスのインスタンスを取得*/
+	auto& map			= Singleton<MapManager>::GetInstance();
 	auto& camera		= Singleton<CameraManager>::GetInstance();
 	auto& player		= Singleton<PlayerManager>::GetInstance();
 	auto& enemy			= Singleton<EnemyManager>::GetInstance();
-	auto& map			= Singleton<MapManager>::GetInstance();
 	auto& ui			= Singleton<UIManager>::GetInstance();
 	auto& sound			= Singleton<SoundManager>::GetInstance();
 
 	/*初期化*/
 	//camera.Initialize();
+	player.Initialize();
+	enemy.Initialize();
 	map.Initialize();
 	ui.Initialize();
 	sound.OnIsPlayBgm(SoundManager::BgmType::TITLE_BGM);

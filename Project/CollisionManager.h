@@ -26,7 +26,7 @@ private:
 	static constexpr int	AIM_INFO_COLOR			= 0x0000aa;	//補正前予定情報色
 	static constexpr int	AFTER_FIX_INFO_COLOR	= 0xff00ff;	//補正後情報色
 	static constexpr int	DIV_NUM					= 16;		//デバック表示図形分割数
-	static constexpr int	MAX_CHECK_COUNT			= 100;		//当たり判定を確認する最大回数
+	static constexpr int	MAX_CHECK_COUNT			= 1000;		//当たり判定を確認する最大回数
 	static constexpr float  HIT_SLIDE_LENGTH		= 0.1f;
 	static constexpr int	HIT_TRY_NUM				= 4;
 	static constexpr int	MAX_HIT_POLY			= 1000;
@@ -54,5 +54,15 @@ private:
 	/*メンバ変数*/
 	std::list<ColliderData*> collidables;//登録されたCollidableのリスト
 	int frameTime;//処理までにかかった時間
+	enum class HitCheckType
+	{
+		SAME_CHARA,
+		CHARA_ATTACK_S,
+		CHARA_ATTACK_C,
+		CHARA_PLANE,
+		CHARA_MODEL,
+	};
+	std::list<HitCheckType> hitCheckLog;
+	std::vector<std::vector<bool>> alreadyProcessed;
 };
 

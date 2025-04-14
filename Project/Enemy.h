@@ -35,7 +35,8 @@ public:
 		  void   SetAnimationPlayTime	(const float _playTime)		{ this->animationPlayTime = _playTime; }//アニメーション再生時間の設定
 		  void   SetNowAnimation		(const int _animation)		{ this->nowAnimation = _animation; }	//現在のアニメーションの設定
 		  void   OffIsDraw				()							{ this->isDraw = false; }				//描画フラグを下す
-	virtual void SetAttackCount			() abstract;
+		  void	 OffIsHit				();//攻撃を受けた時に立つフラグを下す
+		  virtual void SetAttackCount			() abstract;
 
 	/*列挙体*/
 	enum class BossState

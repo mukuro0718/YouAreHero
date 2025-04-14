@@ -2,6 +2,7 @@
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "Character.h"
+#include "CharacterData.h"
 #include "BehaviorTreeNode.h"
 #include "BehaviorTree.h"
 #include "ActionNode.h"
@@ -55,13 +56,17 @@ Brawler_Reaction::NodeState Brawler_Reaction::Update(BehaviorTree& _tree, Charac
 	/*登録されているアクションと実際のアクションが異なっていたら*/
 	if (_tree.GetNowSelectAction() != this->actionType)
 	{
+		//アニメーションの種類を設定
+		enemy.SetNowAnimation(this->animationType);
+		//アニメーション再生時間の設定
+		enemy.SetAnimationPlayTime(this->animationPlayTime);
 		//アクションの設定
 		_tree.SetNowSelectAction(this->actionType);
 		//アクションの登録
 		_tree.EntryCurrentReaction(*this);
-		enemy.ChangeTiredColor();
 		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
 		enemy.UpdateVelocity(false);
+		enemy.SetHitStop(enemy.GetCharacterData().hitStopTime, enemy.GetCharacterData().hitStopType, enemy.GetCharacterData().hitStopDelay, enemy.GetCharacterData().slowFactor);
 	}
 
 	/*アニメーションの再生*/
@@ -83,6 +88,7 @@ Brawler_Reaction::NodeState Brawler_Reaction::Update(BehaviorTree& _tree, Charac
 		_tree.ExitCurrentReaction();
 		//状態を通常に戻す
 		_tree.ExitCurrentBattleAction();
+		enemy.OffIsHit();
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//それ以外は実行中を返す

@@ -52,6 +52,14 @@ Tank_Walk::NodeState Tank_Walk::Update(BehaviorTree& _tree, Character& _chara)
 	/*生存フラグが下りていたら以下の処理は行わない*/
 	if (!enemy.GetIsAlive())return ActionNode::NodeState::SUCCESS;
 
+	//auto& sound = Singleton<SoundManager>::GetInstance();
+	//this->frameCount++;
+	//if (this->frameCount == this->walkSoundCount)
+	//{
+	//	sound.OnIsPlayEffect(SoundManager::EffectType::MONSTER_FOOTSTEPS);
+	//	this->frameCount = 0;
+	//}
+
 	/*登録されているアクションと実際のアクションが異なっていたら*/
 	if (_tree.GetNowSelectAction() != this->actionType)
 	{

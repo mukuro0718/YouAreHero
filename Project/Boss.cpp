@@ -71,7 +71,7 @@ Boss::Boss()
 	this->actionTypeMap.emplace(static_cast<int>(ActionType::JUMP_ATTACK)	,this->JUMP_ATTACK);
 
 	/*コライダーデータの作成*/
-	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::BOSS, new CharacterData());
+	this->collider = new CharacterColliderData(ColliderData::Priority::HIGH, GameObjectTag::MUTANT, new CharacterData());
 	this->collider->type = CharacterColliderData::CharaType::GORG;
 	/*アクションパラメーターの作成*/
 	this->parameters.emplace_back(new BossDeathAction());

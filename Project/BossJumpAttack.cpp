@@ -28,7 +28,7 @@ BossJumpAttack::BossJumpAttack(const int _attackIndex)
 
 	/*コライダーデータの作成*/
 	AttackData* data = new AttackData();
-	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, data);
+	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::MUTANT, data);
 
 	/*コライダーの初期化*/
 	auto& collider = dynamic_cast<AttackCapsuleColliderData&>(*this->collider);

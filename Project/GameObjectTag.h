@@ -2,12 +2,14 @@
 
 enum class GameObjectTag
 {
-	PLAYER			= 0,//プレイヤー
-	BOSS			= 1,//ボス
-	GROUND			= 2,//地面
-	WALL			= 3,//壁
-	PLAYER_ATTACK	= 4,//プレイヤー攻撃
-	BOSS_ATTACK		= 5,//ボス攻撃
-	CAMERA			= 6,//カメラ
-	WEAK_ENEMY		= 7,//雑魚敵
+	PLAYER	= 0,//プレイヤー
+	MUTANT	= 1,//ボス
+	DRAGON	= 2,
+	BEAST	= 3,
+	GROUND	= 4,//地面
+	WALL	= 5,//壁
+	CAMERA	= 6,//カメラ
+	BRAWLER	= 7,//雑魚敵
+	MAGE	= 8,//雑魚敵
+	TANK	= 9,//雑魚敵
 };

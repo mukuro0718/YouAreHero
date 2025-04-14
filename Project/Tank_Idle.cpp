@@ -59,6 +59,9 @@ Tank_Idle::NodeState Tank_Idle::Update(BehaviorTree& _tree, Character& _chara)
 		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
 		enemy.SetAnimationPlayTime(this->animationPlayTime);
+		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
+		enemy.UpdateVelocity(false);
+		this->isInitialize = true;
 	}
 
 	/*アニメーションの再生*/
@@ -76,6 +79,7 @@ Tank_Idle::NodeState Tank_Idle::Update(BehaviorTree& _tree, Character& _chara)
 	//アニメーションが終了していたら
 	if (enemy.GetIsChangeAnimation())
 	{
+		this->isInitialize = false;
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//それ以外は実行中を返す

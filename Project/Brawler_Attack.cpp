@@ -44,7 +44,7 @@ Brawler_Attack::Brawler_Attack()
 	this->frameIndexUsedCapsuleDirection2 = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["FRAME_INDEX_USED_CAPSULE_DIRECTION"][1];
 
 	/*コライダーの作成*/
-	this->collider								  = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
+	this->collider								  = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BRAWLER, new AttackData());
 	this->collider->radius						  = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["RADIUS"];
 	this->collider->data->damage				  = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["DAMAGE"];
 	this->collider->data->reactionType			  = static_cast<int>(Gori::PlayerReactionType::NORMAL);

@@ -19,8 +19,9 @@ private:
 	short						attackStartCount;				//攻撃開始フレーム
 	short						attackEndCount;					//攻撃終了フレーム
 	short						frameCount;						//フレームカウント
-	short						frameIndexUsedCapsuleDirection1;//ブレスの方向を決めるためのフレーム番号
-	short						frameIndexUsedCapsuleDirection2;//ブレスの方向を決めるためのフレーム番号
 	AttackCapsuleColliderData*  collider;						//攻撃コライダー
+	short						frameIndexUsedCapsuleDirection1;//攻撃カプセルを決めるためのフレーム番号
+	short						frameIndexUsedCapsuleDirection2;//攻撃カプセルを決めるためのフレーム番号
+	float						startAnimationPlayTime;			//アニメーションの最初の再生時間
 };
 

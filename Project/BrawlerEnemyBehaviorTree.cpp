@@ -26,7 +26,7 @@ BrawlerEnemyBehaviorTree::BrawlerEnemyBehaviorTree()
 	}
 
 	/*デバック用ノード*/
-	this->debugNode = new Brawler_Idle();
+	//this->debugNode = new Brawler_Idle();
 
 	/*初期化*/
 	Initialize();
@@ -151,6 +151,11 @@ void BrawlerEnemyBehaviorTree::UpdateMemberVariables(Character& _chara)
 		{
 			interval--;
 		}
+	}
+
+	if (_chara.GetCharacterData().isHit)
+	{
+		int i = 0;
 	}
 
 	/*目標までの距離を求める*/

@@ -2,6 +2,7 @@
 #include "UseSTL.h"
 #include "UseJson.h"
 #include "Character.h"
+#include "CharacterData.h"
 #include "BehaviorTreeNode.h"
 #include "BehaviorTree.h"
 #include "ActionNode.h"
@@ -18,9 +19,9 @@ Mage_Reaction::Mage_Reaction()
 	: isInitialize		(false)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->animationType		= static_cast<int>(MageEnemy::AnimationType::DYING);
+	this->animationType		= static_cast<int>(MageEnemy::AnimationType::REACTION);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ANIMATION_PLAY_TIME"][this->animationType];
-	this->actionType		= static_cast<short>(MageEnemyBehaviorTree::ActionType::DYING);
+	this->actionType		= static_cast<short>(MageEnemyBehaviorTree::ActionType::REACTION);
 	this->maxSpeed			= 0.0f;
 	this->accel				= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ACCEL"];
 	this->decel				= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["DECEL"];
@@ -53,12 +54,19 @@ Mage_Reaction::NodeState Mage_Reaction::Update(BehaviorTree& _tree, Character& _
 	if (!enemy.GetIsAlive())return ActionNode::NodeState::SUCCESS;
 
 	/*登録されているアクションと実際のアクションが異なっていたら*/
-	if (!this->isInitialize)
+	if (_tree.GetNowSelectAction() != this->actionType)
 	{
 		//アニメーションの種類を設定
 		enemy.SetNowAnimation(this->animationType);
 		//アニメーション再生時間の設定
 		enemy.SetAnimationPlayTime(this->animationPlayTime);
+		//アクションの設定
+		_tree.SetNowSelectAction(this->actionType);
+		//アクションの登録
+		_tree.EntryCurrentReaction(*this);
+		enemy.UpdateSpeed(this->maxSpeed, this->accel, this->decel);
+		enemy.UpdateVelocity(false);
+		enemy.SetHitStop(enemy.GetCharacterData().hitStopTime, enemy.GetCharacterData().hitStopType, enemy.GetCharacterData().hitStopDelay, enemy.GetCharacterData().slowFactor);
 	}
 
 	/*アニメーションの再生*/
@@ -76,6 +84,11 @@ Mage_Reaction::NodeState Mage_Reaction::Update(BehaviorTree& _tree, Character& _
 	//アニメーションが終了していたら
 	if (enemy.GetIsChangeAnimation())
 	{
+		//アクションの解除
+		_tree.ExitCurrentReaction();
+		//状態を通常に戻す
+		_tree.ExitCurrentBattleAction();
+		enemy.OffIsHit();
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//それ以外は実行中を返す

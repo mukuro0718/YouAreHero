@@ -48,7 +48,7 @@ Beast_WeakBreath::Beast_WeakBreath()
 	this->isFixRotate					  = true;
 
 	/*コライダーの作成*/
-	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
+	this->collider = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BEAST, new AttackData());
 	this->collider->radius						  = json.GetJson(JsonManager::FileType::BEAST)["WEAK_BREATH_RADIUS"];
 	this->collider->data->damage				  = json.GetJson(JsonManager::FileType::BEAST)["WEAK_BREATH_DAMAGE"];
 	this->collider->data->reactionType			  = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);

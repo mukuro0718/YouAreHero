@@ -50,7 +50,7 @@ Beast_SuperNova::Beast_SuperNova()
 	this->frameIndexUsedSpherePosition = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_FRAME_INDEX_USED_SPHERE_POSITION"];
 
 	/*コライダーの作成*/
-	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::BOSS_ATTACK, new AttackData());
+	this->collider = new AttackSphereColliderData(ColliderData::Priority::STATIC, GameObjectTag::BEAST, new AttackData());
 	this->collider->radius						  = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_RADIUS"];
 	this->collider->data->damage				  = json.GetJson(JsonManager::FileType::BEAST)["SUPER_NOVA_DAMAGE"];
 	this->collider->data->reactionType			  = static_cast<int>(Gori::PlayerReactionType::BLOW_BIG);

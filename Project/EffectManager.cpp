@@ -17,6 +17,7 @@
 #include "BeastSuperNovaEffect.h"
 #include "BeastRaiseLevelEffect.h"
 #include "BeastExplosionRangeEffect.h"
+#include "MageLaserEffect.h"
 #include "DragonBreathEffect.h"
 #include "EffectManager.h"
 #include "EnemyManager.h"
@@ -46,6 +47,7 @@ EffectManager::EffectManager()
 	this->effect.emplace_back(new BeastRaiseLevelEffect		(asset.GetEffect(LoadingAsset::EffectType::BOSS_ROAR)));
 	this->effect.emplace_back(new BeastExplosionRangeEffect (asset.GetEffect(LoadingAsset::EffectType::BEAST_EXPLOSION_RANGE)));
 	this->effect.emplace_back(new DragonBreathEffect		(asset.GetEffect(LoadingAsset::EffectType::BEAST_PARTS_FIRE)));
+	this->effect.emplace_back(new MageLaserEffect			(asset.GetEffect(LoadingAsset::EffectType::MAGE_LASER)));
 }
 
 /// <summary>
@@ -106,4 +108,8 @@ void EffectManager::OnIsEffect(const EffectType _type)
 void EffectManager::SetPosition(const EffectType _type, const VECTOR _position)
 {
 	this->effect[static_cast<int>(_type)]->SetPosition(_position);
+}
+void EffectManager::SetRotation(const EffectType _type, const VECTOR _rotation)
+{
+	this->effect[static_cast<int>(_type)]->SetRotation(_rotation);
 }

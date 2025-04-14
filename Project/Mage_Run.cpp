@@ -18,9 +18,9 @@ Mage_Run::Mage_Run()
 	: isInitialize		(false)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->animationType		= static_cast<int>(MageEnemy::AnimationType::DYING);
+	this->animationType		= static_cast<int>(MageEnemy::AnimationType::RUN);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ANIMATION_PLAY_TIME"][this->animationType];
-	this->actionType		= static_cast<short>(MageEnemyBehaviorTree::ActionType::DYING);
+	this->actionType		= static_cast<short>(MageEnemyBehaviorTree::ActionType::RUN);
 	this->maxSpeed			= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["RUN_SPEED"];
 	this->accel				= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ACCEL"];
 	this->decel				= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["DECEL"];

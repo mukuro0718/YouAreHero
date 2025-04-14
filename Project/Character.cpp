@@ -22,6 +22,7 @@ Character::Character()
 	, collider		(nullptr)
 	, hitStop		(nullptr)
 	, nextRotation	(Gori::ORIGIN)
+	, spownPosition	(Gori::ORIGIN)
 	, isAlive		(false)
 	, isDraw		(false)
 	, speed			(1.0f)
@@ -187,9 +188,7 @@ void Character::SetVelocity(const VECTOR _velocity)
 /// </summary>
 void Character::RespawnIfOutOfStage()
 {
-	VECTOR nowPosition = Gori::ORIGIN;
-	nowPosition.y = 10.0f;
-	this->collider->rigidbody.SetPosition(nowPosition);
+	this->collider->rigidbody.SetPosition(this->spownPosition);
 	//this->collider->data->hp = 0;
 }
 
