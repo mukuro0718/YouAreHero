@@ -11,6 +11,7 @@
 #include "CharacterColliderData.h"
 #include "Animation.h"
 #include "Character.h"
+#include "Boid.h"
 #include "Enemy.h"
 #include "BrawlerEnemyBehaviorTreeHeader.h"
 #include "HitStop.h"
@@ -50,9 +51,13 @@ BrawlerEnemy::BrawlerEnemy()
 	this->animation->Attach(&this->modelHandle);
 
 	/*コライダーデータの作成*/
-	this->collider = new CharacterColliderData(ColliderData::Priority::LOW, GameObjectTag::BRAWLER, new CharacterData());
+	this->collider = new CharacterColliderData(ColliderData::Priority::LOW, GameObjectTag::WEAK_ENEMY, new CharacterData());
 
+	/*ビヘイビアツリーの作成*/
 	this->tree = new BrawlerEnemyBehaviorTree();
+
+	/*boidの作成*/
+	this->boid = new Boid();
 }
 
 /// <summary>
@@ -109,10 +114,20 @@ void BrawlerEnemy::Initialize()
 void BrawlerEnemy::SetSpownPosition(const int _indentNum, const int _bossType)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["DUNGEON_SPOWN_POSITION"][_bossType][_indentNum]);//座標
+	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["DUNGEON_SPOWN_POSITION"][_bossType][_indentNum]);
 	this->spownPosition = POSITION;
 	this->collider->rigidbody.SetPosition(POSITION);
 	MV1SetPosition(this->modelHandle, this->collider->rigidbody.GetPosition());
+
+	float neighborRadius	 = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["NEIGHBOR_RADIUS"];
+	float separationDistance = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["SEPARATION_DISTANCE"];
+	float cohesionWeight	 = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["COHESION_WEIGHT"];
+	float alignmentWeight	 = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["ALIGNMENT_WEIGHT"];
+	float separationWeight	 = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["SEPARATION_WEIGHT"];
+	float targetRadius		 = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["TARGET_RADIUS"];
+	float stageRadius		 = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["STAGE_RADIUS"];
+	VECTOR stageCenter		 = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["STAGE_CENTER_POSITION"][_bossType][_indentNum]);
+	this->boid->Initialize(neighborRadius, cohesionWeight, alignmentWeight, separationDistance, separationWeight, targetRadius, stageRadius, stageCenter);
 }
 
 /// <summary>

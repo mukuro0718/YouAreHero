@@ -6,6 +6,7 @@
 #include "BehaviorTree.h"
 #include "ActionNode.h"
 #include "Brawler_Dying.h"
+#include "Boid.h"
 #include "Enemy.h"
 #include "BrawlerEnemy.h"
 #include "EnemyManager.h"
@@ -74,6 +75,7 @@ Brawler_Dying::NodeState Brawler_Dying::Update(BehaviorTree& _tree, Character& _
 	if (enemy.GetIsChangeAnimation())
 	{
 		enemy.OffIsAlive();
+		enemy.GetBoid().SetIsCanAttak(false);
 		return ActionNode::NodeState::SUCCESS;
 	}
 	//ÇªÇÍà»äOÇÕé¿çsíÜÇï‘Ç∑

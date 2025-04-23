@@ -3,6 +3,7 @@
 //=============================================================
 #pragma once
 
+class ColliderData;
 class CharacterColliderData;
 class CharacterData;
 class Rigidbody;
@@ -26,12 +27,13 @@ public:
 	/*getter/setter*/
 	virtual const bool			 GetIsAttack		 ()const abstract;
 			const CharacterData& GetCharacterData	 ()const;
+			const ColliderData&  GetColliderData	 ()const;
 			const Rigidbody&	 GetRigidbody		 ()const;
 			const int			 GetHP				 ()const;
 			const int			 GetModelHandle		 ()const { return this->modelHandle; }
 			const bool			 GetIsChangeAnimation()const;
 			const bool			 GetIsAlive			 ()const { return this->isAlive; }
-				  void			 OffIsAlive			 () { this->isAlive = false; }
+				  void			 OffIsAlive();
 			const VECTOR		 GetNextRotation	 ()const { return this->nextRotation; }
 	/*‚ç[‚ÕŠÖ”*/
 	float  Lerp(const float _start, const float _end, const float _percent);	//‚ç[‚ÕŠÖ”

@@ -3,6 +3,9 @@
     "Asset/Animation/Tank/Dying.mv1",
     "Asset/Animation/Tank/Idle.mv1",
     "Asset/Animation/Tank/Walk.mv1",
+    "Asset/Animation/Tank/WalkBack.mv1",
+    "Asset/Animation/Tank/WalkRight.mv1",
+    "Asset/Animation/Tank/WalkLeft.mv1",
     "Asset/Animation/Tank/Attack.mv1",
     "Asset/Animation/Tank/Reaction.mv1"
   ],
@@ -12,9 +15,15 @@
     0.6,
     0.6,
     0.6,
+    0.6,
+    0.6,
+    0.6,
     0.6
   ],
   "ACTION_INTERVAL": [
+    0,
+    0,
+    0,
     0,
     0,
     0,
@@ -30,49 +39,41 @@
   "INIT_SCALE": [ 0.06, 0.06, 0.06 ],
   "INIT_ROTATION": [ 0.0, 0.0, 0.0 ],
 
-  "MAX_DOWN_VALUE": 600,
-  "MAX_ANGRY_VALUE": 1200,
-  "CHANGE_ANGRY_LIMIT_DAMAGE": 1000,
   "HP": 150,
 
   "ACCEL": 0.05,
   "DECEL": -0.05,
   "WALK_SPEED": 0.2,
   "RUN_SPEED": 0.4,
-  "STEP_BACK_SPEED": -0.5,
-  "BACKING_BREATH_SPEED": -0.3,
   "ATTACKING_SPEED": 0.1,
 
-  "RAY_RANGE": 100.0,
-  "APPROACH_DISTANCE": 100.0,
-  "STOP_RUSH_DISTANCE": 900.0,
-
-  "FAR_ATTACK_RANGE": 100.0,
-  "NEAR_ATTACK_RANGE": 20.0,
-
-  "TOLERANCE_RANGE": [ -0.707, -1.0 ],
-
-  "SPECIFIED_DOWN_VALUE": 1000,
-  "SPECIFIED_FRIGHTENING_VALUE": 1000,
+  "ATTACK_MAX_RANGE": 50.0,
+  "NEAR_ATTACK_RANGE": 10.0,
 
   "HIT_RADIUS": 5.0,
   "HIT_HEIGHT": 10.0,
 
   "TURN_WAIT_COUNT": 30,
   "ROTATE_FIX_COUNT": 20,
-  "RAISE_LEVEL_EFFECT_START_COUNT": 60,
-  "NORMAL_ROAR_COUNT": 100,
-  "RAISE_LEVEL_ROAR_COUNT": 65,
   "WALK_SOUND_COUNT": 56,
 
   "ATTACK_START_COUNT": 85,
   "ATTACK_END_COUNT": 95,
-  "ATTACK_FRAME_INDEX_USED_CAPSULE_DIRECTION": [ 41, 42 ],
   "ATTACK_RADIUS": 5.0,
   "ATTACK_DAMAGE": 50.0,
   "ATTACK_HIT_STOP_TIME": 5,
   "ATTACK_HIT_STOP_DELAY": 0,
   "ATTACK_SLOW_FACTOR": 0.3,
-  "ATTACK_BLOCK_STAMINA_CONSUMPTION": 50.0
+  "ATTACK_BLOCK_STAMINA_CONSUMPTION": 20.0,
+  "ATTACK_COLLIDER_INDEX_1": 20,
+  "ATTACK_COLLIDER_INDEX_2": 44,
+
+  "NEIGHBOR_RADIUS": 20.0,
+  "SEPARATION_DISTANCE": 7.5,
+  "COHESION_WEIGHT": 0.01,
+  "ALIGNMENT_WEIGHT": 0.05,
+  "SEPARATION_WEIGHT": 0.1,
+  "TARGET_RADIUS": 10.0,
+  "STAGE_RADIUS": 70.0
 
 }

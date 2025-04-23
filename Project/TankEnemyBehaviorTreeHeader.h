@@ -11,6 +11,7 @@
 #include "RandomSelector.h"
 #include "SequencerNode.h"
 
+#include "Condition_IsCanAttack.h"
 #include "Condition_IsDestoroyedPart.h"
 #include "Conditon_IsAttackCountIsOver.h"
 #include "Condition_IsFrighteningValueGreaterThanConstant.h"
@@ -29,10 +30,9 @@
 
 #include "Tank_Dying.h"
 #include "Tank_Idle.h"
-#include "Tank_Run.h"
 #include "Tank_Walk.h"
-#include "Tank_WeakAttack.h"
-#include "Tank_StrongAttack.h"
+#include "Tank_Run.h"
+#include "Tank_Attack.h"
 #include "Tank_Reaction.h"
 #include "Tank_Guard.h"
 #include "Tank_GuardReaction.h"

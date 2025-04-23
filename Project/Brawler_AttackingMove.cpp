@@ -1,20 +1,25 @@
 #include <DxLib.h>
 #include "UseSTL.h"
 #include "UseJson.h"
+#include "VECTORtoUseful.h"
+#include "Rigidbody.h"
 #include "Character.h"
 #include "BehaviorTreeNode.h"
 #include "BehaviorTree.h"
 #include "ActionNode.h"
-#include "Brawler_Run.h"
+#include "Brawler_AttackingMove.h"
+#include "Boid.h"
 #include "Enemy.h"
+#include "Player.h"
 #include "BrawlerEnemy.h"
 #include "EnemyManager.h"
+#include "PlayerManager.h"
 #include "BrawlerEnemyBehaviorTree.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-Brawler_Run::Brawler_Run()
+Brawler_AttackingMove::Brawler_AttackingMove()
 	: isInitialize		(false)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
@@ -29,7 +34,7 @@ Brawler_Run::Brawler_Run()
 /// <summary>
 /// デストラクタ
 /// </summary>
-Brawler_Run::~Brawler_Run()
+Brawler_AttackingMove::~Brawler_AttackingMove()
 {
 
 }
@@ -37,7 +42,7 @@ Brawler_Run::~Brawler_Run()
 /// <summary>
 /// 初期化
 /// </summary>
-void Brawler_Run::Initialize()
+void Brawler_AttackingMove::Initialize()
 {
 	this->isInitialize = false;
 }
@@ -45,7 +50,7 @@ void Brawler_Run::Initialize()
 /// <summary>
 /// 更新処理
 /// </summary>
-Brawler_Run::NodeState Brawler_Run::Update(BehaviorTree& _tree, Character& _chara)
+Brawler_AttackingMove::NodeState Brawler_AttackingMove::Update(BehaviorTree& _tree, Character& _chara)
 {
 	auto& enemy = dynamic_cast<BrawlerEnemy&>(_chara);
 
@@ -67,8 +72,35 @@ Brawler_Run::NodeState Brawler_Run::Update(BehaviorTree& _tree, Character& _char
 	enemy.PlayAnimation();
 
 	/*移動*/
-	enemy.Move(this->maxSpeed, this->accel, this->decel, false);
+	auto&enemyManager = Singleton<EnemyManager>::GetInstance();
+	auto& player = Singleton<PlayerManager>::GetInstance();
+	VECTOR					 nowVelocity	= enemy.GetRigidbody().GetVelocity();													//現在の移動ベクトル
+	const vector<Character*> weakEnemyList	= enemyManager.GetWeakEnemyList();														//雑魚敵のリスト
+	VECTOR					 toTarget		= VSub(enemy.GetRigidbody().GetPosition(), player.GetRigidbody().GetPosition());	//移動目標へのベクトル
+	//回転率の更新
+	enemy.UpdateRotation(toTarget);
+	//移動速度の更新
+	enemy.UpdateSpeed(this->maxSpeed,this->accel,this->decel);
 
+	if (VSize(toTarget) >= 8.0f)
+	{
+		//移動ベクトルを出す
+		VECTOR v1 = enemy.GetBoid().RuleSeparation(enemy, weakEnemyList);
+		VECTOR v2 = enemy.GetBoid().RuleBounding(enemy);
+		VECTOR v3 = enemy.GetBoid().RuleTargetAttraction(enemy, player.GetRigidbody().GetPosition());
+		VECTOR newVelocity = VAdd(nowVelocity, VAdd(v1, VAdd(v2, v3)));
+		if (VSize(newVelocity) > this->maxSpeed)
+		{
+			newVelocity = VScale(VNorm(newVelocity), this->maxSpeed);
+		}
+		//新しい移動ベクトルを出す
+		newVelocity = VGet(newVelocity.x, nowVelocity.y, newVelocity.z);
+		enemy.SetVelocity(newVelocity);
+	}
+	else
+	{
+		enemy.SetVelocity(VGet(0.0f, nowVelocity.y, 0.0f));
+	}
 	/*状態を返す*/
 	return ActionNode::NodeState::SUCCESS;
 }

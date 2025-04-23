@@ -138,11 +138,19 @@ VECTOR Character::Lerp360Angle(const VECTOR _start, const VECTOR _end, const VEC
 }
 
 /// <summary>
-/// ダメージデータの取得
+/// キャラクターデータの取得
 /// </summary>
 const CharacterData& Character::GetCharacterData()const
 {
 	return *this->collider->data;
+}
+
+/// <summary>
+/// コライダーデータの取得
+/// </summary>
+const ColliderData& Character::GetColliderData()const
+{
+	return *this->collider;
 }
 
 const int Character::GetHP()const
@@ -164,6 +172,13 @@ const Rigidbody& Character::GetRigidbody()const
 const bool Character::GetIsChangeAnimation()const
 {
 	return this->animation->GetIsChangeAnim();
+}
+
+
+void Character::OffIsAlive()
+{ 
+	this->isAlive = false;
+	this->collider->isUseCollWithChara = false;
 }
 
 /// <summary>

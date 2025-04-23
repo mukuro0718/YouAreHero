@@ -11,6 +11,7 @@
 #include "RandomSelector.h"
 #include "SequencerNode.h"
 
+#include "Condition_IsCanAttack.h"
 #include "Condition_IsDestoroyedPart.h"
 #include "Conditon_IsAttackCountIsOver.h"
 #include "Condition_IsFrighteningValueGreaterThanConstant.h"
@@ -29,7 +30,7 @@
 
 #include "Brawler_Dying.h"
 #include "Brawler_Idle.h"
-#include "Brawler_Run.h"
+#include "Brawler_AttackingMove.h"
 #include "Brawler_Walk.h"
 #include "Brawler_Attack.h"
 #include "Brawler_Reaction.h"

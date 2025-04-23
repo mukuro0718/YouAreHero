@@ -3,6 +3,7 @@
 #include "UseJson.h"
 #include "DeleteInstance.h"
 #include "Rigidbody.h"
+#include "CharacterData.h"
 #include "Character.h"
 #include "Enemy.h"
 #include "TankEnemyBehaviorTreeHeader.h"
@@ -18,7 +19,7 @@ TankEnemyBehaviorTree::TankEnemyBehaviorTree()
 {
 	/*インターバルを初期化*/
 	this->intervalSet.clear();
-	for (int i = 0; i < static_cast<int>(ActionType::GUARD_REACTION) + 1; i++)
+	for (int i = 0; i < static_cast<int>(ActionType::REACTION) + 1; i++)
 	{
 		this->intervalSet.emplace_back(0);
 	}
@@ -44,17 +45,17 @@ void TankEnemyBehaviorTree::Initialize()
 {
 	CreateBehaviorTree();
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->prevHp = json.GetJson(JsonManager::FileType::BEAST)["HP"];
-	this->damage = 0;
-	this->selectAction = -1;
-	this->nodeState = BehaviorTreeNode::NodeState::NONE_ACTIVE;
-	this->toTargetDistance = 0.0f;
-	this->innerProductOfDirectionToTarget = 0.0f;
-	this->attackCount = 0;
-	this->isSelectedBattleAction = false;
-	this->isSelectedReaction = false;
-	this->isCancelAction = false;
-	this->currentBattleNode = nullptr;
+	this->prevHp							= json.GetJson(JsonManager::FileType::TANK_ENEMY)["HP"];
+	this->damage							= 0;
+	this->selectAction						= -1;
+	this->nodeState							= BehaviorTreeNode::NodeState::NONE_ACTIVE;
+	this->toTargetDistance					= 0.0f;
+	this->innerProductOfDirectionToTarget	= 0.0f;
+	this->attackCount						= 0;
+	this->isSelectedBattleAction			= false;
+	this->isSelectedReaction				= false;
+	this->isCancelAction					= false;
+	this->currentBattleNode					= nullptr;
 	//SetInterval(static_cast<int>(TankEnemyBehaviorTree::ActionType::ROAR), 1);
 }
 
@@ -98,35 +99,52 @@ void TankEnemyBehaviorTree::CreateBehaviorTree()
 	/*バトルアクションサブツリー*/
 	BehaviorTreeNode* Selector_AttackIfTargetGreaterThanConstant = new SelectorNode();
 	{
-		/*攻撃中だったらその攻撃を続行する*/
+		//攻撃中だったらその攻撃を続行する
 		BehaviorTreeNode* Sequencer_IfAlreadySelectedAttack = new SequencerNode();
 		{
 			Sequencer_IfAlreadySelectedAttack->AddChild(*new Condition_IsSelectedBattleAction());
 			Sequencer_IfAlreadySelectedAttack->AddChild(*new Tank_PlayCurrentBattleAction());
 		}
-		//攻撃対象が攻撃の範囲外にいたら走る
-		BehaviorTreeNode* Sequencer_WalkIfToTargetOutOfRange = new SequencerNode();
+		//攻撃権があれば以下の行動を行う
+		BehaviorTreeNode* Sequencer_IfCanAttack = new SequencerNode();
 		{
-			Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_MAX_RANGE"]));
-			Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Tank_Run());
+			//攻撃対象が攻撃の範囲外にいたら走る
+			BehaviorTreeNode* Sequencer_WalkIfToTargetOutOfRange = new SequencerNode();
+			{
+				Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::TANK_ENEMY)["NEAR_ATTACK_RANGE"]));
+				Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Tank_Run());
+			}
+			//インターバルが残っていたら攻撃は行わない
+			BehaviorTreeNode* Sequencer_AttackIfIntervalIsOver = new SequencerNode();
+			{
+				Sequencer_AttackIfIntervalIsOver->AddChild(*new Condition_IsActionIntervalIsOver(static_cast<int>(ActionType::ATTACK)));
+				Sequencer_AttackIfIntervalIsOver->AddChild(*new Tank_Attack());
+			}
+			//攻撃権があるときの行動を選ぶ
+			BehaviorTreeNode* Selector_AttackAction = new SelectorNode();
+			Selector_AttackAction->AddChild(*Sequencer_WalkIfToTargetOutOfRange);
+			Selector_AttackAction->AddChild(*Sequencer_AttackIfIntervalIsOver);
+
+			Sequencer_IfCanAttack->AddChild(*new Condition_IsCanAttack());
+			Sequencer_IfCanAttack->AddChild(*Selector_AttackAction);
 		}
-		//インターバルが残っていたら攻撃は行わない
-		BehaviorTreeNode* Sequencer_AttackIfIntervalIsOver = new SequencerNode();
-		{
-			Sequencer_AttackIfIntervalIsOver->AddChild(*new Condition_IsActionIntervalIsOver(static_cast<int>(ActionType::WEAK_ATTACK)));
-			Sequencer_AttackIfIntervalIsOver->AddChild(*new Tank_WeakAttack());
-		}
-		//ここまで通ったなら攻撃対象が自分の近くにいるということなので、遠くに離れるようにする
 		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_IfAlreadySelectedAttack);
-		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_WalkIfToTargetOutOfRange);
-		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_AttackIfIntervalIsOver);
+		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_IfCanAttack);
 		Selector_AttackIfTargetGreaterThanConstant->AddChild(*new Tank_Walk());
+	}
+
+	/*待機アクション*/
+	BehaviorTreeNode* Selector_IdleIfTargetGreaterThanConstant = new SequencerNode();
+	{
+		Selector_IdleIfTargetGreaterThanConstant->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::TANK_ENEMY)["ATTACK_MAX_RANGE"]));
+		Selector_IdleIfTargetGreaterThanConstant->AddChild(*new Tank_Idle());
 	}
 
 	/*サブツリーを大元のツリーに入れる*/
 	//各ノードをすべて通った結果何もアクションが選択されていなければ,IDLEを選択する
 	this->mainNode->AddChild(*Sequencer_DyingIfHpIsLessThanZero);
 	this->mainNode->AddChild(*Selector_NewOrAlreadyReaction);
+	this->mainNode->AddChild(*Selector_IdleIfTargetGreaterThanConstant);
 	this->mainNode->AddChild(*Selector_AttackIfTargetGreaterThanConstant);
 	this->mainNode->AddChild(*new Tank_Idle());
 }
@@ -136,6 +154,15 @@ void TankEnemyBehaviorTree::CreateBehaviorTree()
 /// </summary>
 void TankEnemyBehaviorTree::UpdateMemberVariables(Character& _chara)
 {
+	/*インターバルの計算*/
+	for (int& interval : this->intervalSet)
+	{
+		if (interval != 0)
+		{
+			interval--;
+		}
+	}
+
 	/*目標までの距離を求める*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	VECTOR toTarget = VSub(player.GetRigidbody().GetPosition(), _chara.GetRigidbody().GetPosition());
@@ -145,7 +172,7 @@ void TankEnemyBehaviorTree::UpdateMemberVariables(Character& _chara)
 	VECTOR enemyDirection = VTransform(VGet(0.0f, 0.0f, -1.0f), MGetRotY(_chara.GetRigidbody().GetRotation().y));
 	this->innerProductOfDirectionToTarget = VDot(enemyDirection, VNorm(VSub(_chara.GetRigidbody().GetPosition(), player.GetRigidbody().GetPosition())));
 
-
+	this->prevHp = _chara.GetHP();
 }
 
 /// <summary>

@@ -5,12 +5,11 @@
 #include "Rigidbody.h"
 #include "CharacterData.h"
 #include "Character.h"
-#include "EnemyManager.h"
-#include "Character.h"
 #include "Enemy.h"
 #include "BrawlerEnemyBehaviorTreeHeader.h"
 #include "BrawlerEnemy.h"
 #include "Player.h"
+#include "EnemyManager.h"
 #include "PlayerManager.h"
 
 /// <summary>
@@ -45,7 +44,7 @@ BrawlerEnemyBehaviorTree::~BrawlerEnemyBehaviorTree()
 void BrawlerEnemyBehaviorTree::Initialize()
 {
 	CreateBehaviorTree();
-	auto& json								= Singleton<JsonManager>::GetInstance();
+	auto& json					= Singleton<JsonManager>::GetInstance();
 	this->prevHp							= json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["HP"];
 	this->damage							= 0;
 	this->selectAction						= -1;
@@ -106,21 +105,32 @@ void BrawlerEnemyBehaviorTree::CreateBehaviorTree()
 			Sequencer_IfAlreadySelectedAttack->AddChild(*new Condition_IsSelectedBattleAction());
 			Sequencer_IfAlreadySelectedAttack->AddChild(*new Brawler_PlayCurrentBattleAction());
 		}
-		//攻撃対象が攻撃の範囲外にいたら走る
-		BehaviorTreeNode* Sequencer_WalkIfToTargetOutOfRange = new SequencerNode();
+		//攻撃権があれば以下の行動を行う
+		BehaviorTreeNode* Sequencer_IfCanAttack = new SequencerNode();
 		{
-			Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["NEAR_ATTACK_RANGE"]));
-			Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Brawler_Run());
-		}
-		//インターバルが残っていたら攻撃は行わない
-		BehaviorTreeNode* Sequencer_AttackIfIntervalIsOver = new SequencerNode();
-		{
-			Sequencer_AttackIfIntervalIsOver->AddChild(*new Condition_IsActionIntervalIsOver(static_cast<int>(ActionType::ATTACK)));
-			Sequencer_AttackIfIntervalIsOver->AddChild(*new Brawler_Attack());
+			//攻撃対象が攻撃の範囲外にいたら走る
+			BehaviorTreeNode* Sequencer_WalkIfToTargetOutOfRange = new SequencerNode();
+			{
+				Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["NEAR_ATTACK_RANGE"]));
+				Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Brawler_AttackingMove());
+			}
+			//インターバルが残っていたら攻撃は行わない
+			BehaviorTreeNode* Sequencer_AttackIfIntervalIsOver = new SequencerNode();
+			{
+				Sequencer_AttackIfIntervalIsOver->AddChild(*new Condition_IsActionIntervalIsOver(static_cast<int>(ActionType::ATTACK)));
+				Sequencer_AttackIfIntervalIsOver->AddChild(*new Brawler_Attack());
+			}
+			//攻撃権があるときの行動を選ぶ
+			BehaviorTreeNode* Selector_AttackAction = new SelectorNode();
+			Selector_AttackAction->AddChild(*Sequencer_WalkIfToTargetOutOfRange);
+			Selector_AttackAction->AddChild(*Sequencer_AttackIfIntervalIsOver);
+
+			Sequencer_IfCanAttack->AddChild(*new Condition_IsCanAttack());
+			Sequencer_IfCanAttack->AddChild(*Selector_AttackAction);
 		}
 		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_IfAlreadySelectedAttack);
-		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_WalkIfToTargetOutOfRange);
-		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_AttackIfIntervalIsOver);
+		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_IfCanAttack);
+		Selector_AttackIfTargetGreaterThanConstant->AddChild(*new Brawler_Walk());
 	}
 
 	/*待機アクション*/
@@ -151,11 +161,6 @@ void BrawlerEnemyBehaviorTree::UpdateMemberVariables(Character& _chara)
 		{
 			interval--;
 		}
-	}
-
-	if (_chara.GetCharacterData().isHit)
-	{
-		int i = 0;
 	}
 
 	/*目標までの距離を求める*/

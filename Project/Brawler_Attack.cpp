@@ -11,6 +11,7 @@
 #include "ActionNode.h"
 #include "Brawler_Attack.h"
 #include "Player.h"
+#include "Boid.h"
 #include "Enemy.h"
 #include "BrawlerEnemy.h"
 #include "EnemyManager.h"
@@ -44,7 +45,7 @@ Brawler_Attack::Brawler_Attack()
 	this->frameIndexUsedCapsuleDirection2 = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["FRAME_INDEX_USED_CAPSULE_DIRECTION"][1];
 
 	/*コライダーの作成*/
-	this->collider								  = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::BRAWLER, new AttackData());
+	this->collider								  = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::WEAK_ENEMY, new AttackData());
 	this->collider->radius						  = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["RADIUS"];
 	this->collider->data->damage				  = json.GetJson(JsonManager::FileType::BRAWLER_ENEMY)["DAMAGE"];
 	this->collider->data->reactionType			  = static_cast<int>(Gori::PlayerReactionType::NORMAL);
@@ -164,6 +165,7 @@ Brawler_Attack::NodeState Brawler_Attack::Update(BehaviorTree& _tree, Character&
 			this->frameCount = 0;
 			this->collider->data->isDoHitCheck = false;
 			this->collider->data->isHitAttack = false;
+			enemy.GetBoid().SetIsCanAttak(false);
 			return ActionNode::NodeState::SUCCESS;
 		}
 		//それ以外は実行中を返す

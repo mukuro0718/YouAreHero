@@ -9,56 +9,58 @@
 #include "BehaviorTreeNode.h"
 #include "BehaviorTree.h"
 #include "ActionNode.h"
-#include "Mage_Attack.h"
-#include "Player.h"
+#include "Tank_Attack.h"
 #include "Enemy.h"
-#include "MageEnemy.h"
+#include "Player.h"
+#include "TankEnemy.h"
 #include "EnemyManager.h"
 #include "PlayerManager.h"
-#include "MageEnemyBehaviorTree.h"
 #include "ReactionType.h"
 #include "HitStop.h"
 #include "EffectManager.h"
+#include "TankEnemyBehaviorTree.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-Mage_Attack::Mage_Attack()
-	: attackStartCount(0)
-	, attackEndCount(0)
-	, frameCount(0)
-	, collider(nullptr)
+Tank_Attack::Tank_Attack()
+	: attackStartCount		(0)
+	, attackEndCount		(0)
+	, frameCount			(0)
+	, collider				(nullptr)
+	, startAnimationPlayTime(0.0f)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->animationType						= static_cast<int>(MageEnemy::AnimationType::ATTACK);
-	this->animationPlayTime					= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ANIMATION_PLAY_TIME"][this->animationType];
-	this->actionType						= static_cast<int>(MageEnemyBehaviorTree::ActionType::ATTACK);
-	this->interval							= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ACTION_INTERVAL"][this->actionType];
-	this->maxSpeed							= 0.0f;
-	this->accel								= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ACCEL"];
-	this->decel								= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["DECEL"];
-	this->attackStartCount					= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_START_COUNT"];
-	this->attackEndCount					= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_END_COUNT"];
-	this->frameIndexUsedCapsuleDirection1	= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_COLLIDER_INDEX_1"];
-	this->frameIndexUsedCapsuleDirection2	= json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_COLLIDER_INDEX_2"];
+	this->animationType					  = static_cast<int>(TankEnemy::AnimationType::ATTACK);
+	this->animationPlayTime				  = json.GetJson(JsonManager::FileType::TANK_ENEMY)["ANIMATION_PLAY_TIME"][this->animationType];
+	this->startAnimationPlayTime		  = this->animationPlayTime;
+	this->actionType					  = static_cast<int>(TankEnemyBehaviorTree::ActionType::ATTACK);
+	this->interval						  = json.GetJson(JsonManager::FileType::TANK_ENEMY)["ACTION_INTERVAL"][this->actionType];
+	this->maxSpeed						  = 0.0f;
+	this->accel							  = json.GetJson(JsonManager::FileType::TANK_ENEMY)["ACCEL"];
+	this->decel							  = json.GetJson(JsonManager::FileType::TANK_ENEMY)["DECEL"];
+	this->attackStartCount				  = json.GetJson(JsonManager::FileType::TANK_ENEMY)["ATTACK_START_COUNT"];
+	this->attackEndCount				  = json.GetJson(JsonManager::FileType::TANK_ENEMY)["ATTACK_END_COUNT"];
+	this->frameIndexUsedCapsuleDirection1 = json.GetJson(JsonManager::FileType::TANK_ENEMY)["ATTACK_COLLIDER_INDEX_1"];
+	this->frameIndexUsedCapsuleDirection2 = json.GetJson(JsonManager::FileType::TANK_ENEMY)["ATTACK_COLLIDER_INDEX_2"];
 
 	/*コライダーの作成*/
-	this->collider								  = new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::MAGE, new AttackData());
-	this->collider->radius						  = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_RADIUS"];
-	this->collider->data->damage				  = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_DAMAGE"];
-	this->collider->data->reactionType			  = static_cast<int>(Gori::PlayerReactionType::NORMAL);
-	this->collider->data->hitStopTime			  = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_HIT_STOP_TIME"];
-	this->collider->data->hitStopType			  = static_cast<int>(HitStop::Type::STOP);
-	this->collider->data->hitStopDelay			  = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_HIT_STOP_DELAY"];
-	this->collider->data->slowFactor			  = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_SLOW_FACTOR"];
-	this->collider->data->isHitAttack			  = false;
-	this->collider->data->isDoHitCheck			  = false;
+	this->collider						= new AttackCapsuleColliderData(ColliderData::Priority::STATIC, GameObjectTag::TANK, new AttackData());
+	this->collider->radius				= json.GetJson(JsonManager::FileType::TANK_ENEMY)["ATTACK_RADIUS"];
+	this->collider->data->damage		= json.GetJson(JsonManager::FileType::TANK_ENEMY)["ATTACK_DAMAGE"];
+	this->collider->data->reactionType	= static_cast<int>(Gori::PlayerReactionType::NORMAL);
+	this->collider->data->hitStopTime	= json.GetJson(JsonManager::FileType::TANK_ENEMY)["ATTACK_HIT_STOP_TIME"];
+	this->collider->data->hitStopType	= static_cast<int>(HitStop::Type::STOP);
+	this->collider->data->hitStopDelay	= json.GetJson(JsonManager::FileType::TANK_ENEMY)["ATTACK_HIT_STOP_DELAY"];
+	this->collider->data->slowFactor	= json.GetJson(JsonManager::FileType::TANK_ENEMY)["ATTACK_SLOW_FACTOR"];
+	this->collider->data->isHitAttack	= false;
+	this->collider->data->isDoHitCheck	= false;
 }
 
 /// <summary>
 /// デストラクタ
 /// </summary>
-Mage_Attack::~Mage_Attack()
+Tank_Attack::~Tank_Attack()
 {
 
 }
@@ -66,7 +68,7 @@ Mage_Attack::~Mage_Attack()
 /// <summary>
 /// 初期化
 /// </summary>
-void Mage_Attack::Initialize()
+void Tank_Attack::Initialize()
 {
 	this->frameCount = 0;
 	this->isFixRotate = false;
@@ -75,9 +77,9 @@ void Mage_Attack::Initialize()
 /// <summary>
 /// 更新処理
 /// </summary>
-Mage_Attack::NodeState Mage_Attack::Update(BehaviorTree& _tree, Character& _chara)
+Tank_Attack::NodeState Tank_Attack::Update(BehaviorTree& _tree, Character& _chara)
 {
-	auto& enemy = dynamic_cast<MageEnemy&>(_chara);
+	auto& enemy = dynamic_cast<TankEnemy&>(_chara);
 	auto& effect = Singleton<EffectManager>::GetInstance();
 
 	/*生存フラグが下りていたら以下の処理は行わない*/

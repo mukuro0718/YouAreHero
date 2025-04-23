@@ -11,6 +11,7 @@
 #include "CharacterColliderData.h"
 #include "Animation.h"
 #include "Character.h"
+#include "Boid.h"
 #include "Enemy.h"
 #include "MageEnemyBehaviorTreeHeader.h"
 #include "HitStop.h"
@@ -52,7 +53,11 @@ MageEnemy::MageEnemy()
 	/*コライダーデータの作成*/
 	this->collider = new CharacterColliderData(ColliderData::Priority::LOW, GameObjectTag::MAGE, new CharacterData());
 
+	/*ビヘイビアツリーの作成*/
 	this->tree = new MageEnemyBehaviorTree();
+
+	/*boidの作成*/
+	this->boid = new Boid();
 }
 
 /// <summary>
@@ -112,6 +117,17 @@ void MageEnemy::SetSpownPosition(const int _indentNum, const int _bossType)
 	this->spownPosition = POSITION;
 	this->collider->rigidbody.SetPosition(POSITION);
 	MV1SetPosition(this->modelHandle, this->collider->rigidbody.GetPosition());
+
+	float neighborRadius	 = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["NEIGHBOR_RADIUS"];
+	float separationDistance = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["SEPARATION_DISTANCE"];
+	float cohesionWeight	 = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["COHESION_WEIGHT"];
+	float alignmentWeight	 = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ALIGNMENT_WEIGHT"];
+	float separationWeight	 = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["SEPARATION_WEIGHT"];
+	float targetRadius		 = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["TARGET_RADIUS"];
+	float stageRadius		 = json.GetJson(JsonManager::FileType::MAGE_ENEMY)["STAGE_RADIUS"];
+	VECTOR stageCenter		 = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["STAGE_CENTER_POSITION"][_bossType][_indentNum]);
+	this->boid->Initialize(neighborRadius, separationDistance, cohesionWeight, alignmentWeight, separationWeight, targetRadius, stageRadius, stageCenter);
+
 }
 
 /// <summary>

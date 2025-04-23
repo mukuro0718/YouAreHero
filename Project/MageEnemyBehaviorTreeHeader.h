@@ -11,6 +11,7 @@
 #include "RandomSelector.h"
 #include "SequencerNode.h"
 
+#include "Condition_IsCanAttack.h"
 #include "Condition_IsDestoroyedPart.h"
 #include "Conditon_IsAttackCountIsOver.h"
 #include "Condition_IsFrighteningValueGreaterThanConstant.h"

@@ -6,6 +6,7 @@
 #include "CharacterData.h"
 #include "Rigidbody.h"
 #include "Character.h"
+#include "Player.h"
 #include "Enemy.h"
 #include "Boss.h"
 #include "Beast.h"
@@ -16,6 +17,7 @@
 #include "EnemyManager.h"
 #include "EnemyChanger.h"
 #include "MapManager.h"
+#include "PlayerManager.h"
 
 /// <summary>
 /// ÉRÉìÉXÉgÉâÉNÉ^
@@ -26,10 +28,11 @@ EnemyManager::EnemyManager()
 	, mapType				(-1)
 	, enemyType				(0)
 	, nearestWeakEnemyIndent(0)
-	, useMageEnemyIndex(0)
-	, useBrawlerEnemyIndex(0)
-	, useTankEnemyIndex(0)
+	, useMageEnemyIndex		(0)
+	, useBrawlerEnemyIndex	(0)
+	, useTankEnemyIndex		(0)
 	, isEnemyWithinRange	(false)
+	, attackSwitchTimer		(0)
 {
 	/*É{ÉXÇÃçÏê¨*/
 	this->bossList.emplace_back(new Boss());
@@ -106,6 +109,13 @@ void EnemyManager::Update()
 		this->boss->Update();
 		break;
 	case static_cast<int>(MapManager::MapType::DUNGEON):
+		//éGãõìGÇ…çUåÇå†Çó^Ç¶ÇÈ
+		this->attackSwitchTimer++;
+		if (this->attackSwitchTimer >= this->ATTACK_SWITCH_INTERVAL)
+		{
+			UpdateWeakEnemyAttackPermission();
+			this->attackSwitchTimer = 0;
+		}
 		for (auto& enemy : this->weakEnemy)
 		{
 			enemy->Update();
@@ -167,9 +177,12 @@ const Rigidbody& EnemyManager::GetRigidbody(const int _enemyIndent)const
 	case static_cast<int>(MapManager::MapType::BOSS):
 		return this->boss->GetRigidbody();
 	case static_cast<int>(MapManager::MapType::DUNGEON):
+		if (_enemyIndent == -1)
+		{
+			return this->weakEnemy[this->nearestWeakEnemyIndent]->GetRigidbody();
+		}
 		return this->weakEnemy[_enemyIndent]->GetRigidbody();
 	}
-
 }
 
 /// <summary>
@@ -364,7 +377,7 @@ void EnemyManager::AddWeakEnemy(int& _indent, const int _weakEnemyType, const in
 
 }
 
-const bool EnemyManager::GetIsEnemyWithinRnage()const 
+const bool EnemyManager::GetIsEnemyWithinRange()const 
 {
 	if (this->isEnemyWithinRange && !this->weakEnemy[this->nearestWeakEnemyIndent]->GetIsAlive())
 	{
@@ -386,3 +399,31 @@ const bool EnemyManager::GetIsEnemyWithinRnage()const
 //	}
 //
 //}
+
+void EnemyManager::UpdateWeakEnemyAttackPermission()
+{
+	auto& player = Singleton<PlayerManager>::GetInstance();
+	VECTOR playerPosition = player.GetRigidbody().GetPosition();
+	float minDist = FLT_MAX;
+	int attackerIndex = -1;
+
+	//ç≈Ç‡ÉvÉåÉCÉÑÅ[Ç…ãﬂÇ¢boidÇíTÇ∑
+	for (int i = 0; i < this->weakEnemy.size(); i++)
+	{
+		if (this->weakEnemy[i]->GetHP() <= 0)continue;
+		float dist = VSize(VSub(this->weakEnemy[i]->GetRigidbody().GetPosition(), playerPosition));
+		if (dist < minDist)
+		{
+			minDist = dist;
+			attackerIndex = i;
+		}
+	}
+
+	//ç≈Ç‡ãﬂÇ¢boidÇ…çUåÇå†Çó^Ç¶ÅAÇŸÇ©ÇÕñ≥å¯âªÇ∑ÇÈ
+	for (int i = 0; i < this->weakEnemy.size(); i++)
+	{
+		auto& enemy = dynamic_cast<Enemy&>(*this->weakEnemy[i]);
+		enemy.SetIsCanAttak((attackerIndex == i));
+	}
+
+}

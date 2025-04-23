@@ -709,27 +709,6 @@
     <Filter Include="Object\Character\Enemy\Action\TankEnemy\1_Idle">
       <UniqueIdentifier>{b80fb42c-d8d4-4cce-ad42-a8064073e565}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\TankEnemy\2_Run">
-      <UniqueIdentifier>{5c024401-5e32-4a32-a227-81c8162d146f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\TankEnemy\3_Walk">
-      <UniqueIdentifier>{670ef2b6-7c83-465a-904a-dbe77cda9789}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\TankEnemy\4_WeakEnemy">
-      <UniqueIdentifier>{fc7ae42f-fdef-4a23-ba23-163e8fb73fb5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\TankEnemy\5_StrongEnemy">
-      <UniqueIdentifier>{0d14d506-9a1d-4be0-aee9-e1cdf422fedc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\TankEnemy\6_Reaction">
-      <UniqueIdentifier>{db697ebf-0484-42cf-8fc1-9058d3249b57}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\TankEnemy\7_Guard">
-      <UniqueIdentifier>{fb4440e4-8050-493d-8018-86de74d29a8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\TankEnemy\8_GuardReaction">
-      <UniqueIdentifier>{098b59c4-0356-45b4-8e99-8158c7ad4196}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Character\Enemy\Action\MageEnemy\0_Dying">
       <UniqueIdentifier>{88ea6c22-954b-4208-bf1d-6d77a7d022f2}</UniqueIdentifier>
     </Filter>
@@ -784,14 +763,32 @@
     <Filter Include="Object\Character\Enemy\Action\MageEnemy\7_SelectAction">
       <UniqueIdentifier>{ca7bbbbe-be97-42c1-977b-e865159c4d6e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Character\Enemy\Action\TankEnemy\9_SelectReaction">
-      <UniqueIdentifier>{ec0d2451-c6b0-40f8-9540-2b86bc689639}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Character\Enemy\Action\TankEnemy\10_SelectAction">
-      <UniqueIdentifier>{72eb6ce1-0b1d-4abd-a0a8-22a81ac0facc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Effect\Mage">
       <UniqueIdentifier>{0cf58b9b-d31f-4ca0-ab4d-e9874c18af4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\2_Walk">
+      <UniqueIdentifier>{670ef2b6-7c83-465a-904a-dbe77cda9789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Boid">
+      <UniqueIdentifier>{0a04ea30-4720-45bc-bf88-e68530cd3bf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsCanAttack">
+      <UniqueIdentifier>{4c7a4ebe-4bbc-4221-9bd8-300a65f3ea27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\4_Attack">
+      <UniqueIdentifier>{fc7ae42f-fdef-4a23-ba23-163e8fb73fb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\5_Reaction">
+      <UniqueIdentifier>{db697ebf-0484-42cf-8fc1-9058d3249b57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\6_SelectReaction">
+      <UniqueIdentifier>{ec0d2451-c6b0-40f8-9540-2b86bc689639}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\7_SelectAction">
+      <UniqueIdentifier>{72eb6ce1-0b1d-4abd-a0a8-22a81ac0facc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Character\Enemy\Action\TankEnemy\3_Run">
+      <UniqueIdentifier>{f312535c-66e5-4daa-96e3-8ac9bc8ba39e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1450,7 +1447,7 @@
     <ClCompile Include="Brawler_Reaction.cpp">
       <Filter>Object\Character\Enemy\Action\BrawlerEnemy\5_Reaction</Filter>
     </ClCompile>
-    <ClCompile Include="Brawler_Run.cpp">
+    <ClCompile Include="Brawler_AttackingMove.cpp">
       <Filter>Object\Character\Enemy\Action\BrawlerEnemy\2_Run</Filter>
     </ClCompile>
     <ClCompile Include="Brawler_Walk.cpp">
@@ -1480,29 +1477,17 @@
     <ClCompile Include="Tank_Dying.cpp">
       <Filter>Object\Character\Enemy\Action\TankEnemy\0_Dying</Filter>
     </ClCompile>
-    <ClCompile Include="Tank_Guard.cpp">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\7_Guard</Filter>
-    </ClCompile>
-    <ClCompile Include="Tank_GuardReaction.cpp">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\8_GuardReaction</Filter>
-    </ClCompile>
     <ClCompile Include="Tank_Idle.cpp">
       <Filter>Object\Character\Enemy\Action\TankEnemy\1_Idle</Filter>
     </ClCompile>
     <ClCompile Include="Tank_Reaction.cpp">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\6_Reaction</Filter>
+      <Filter>Object\Character\Enemy\Action\TankEnemy\5_Reaction</Filter>
     </ClCompile>
-    <ClCompile Include="Tank_Run.cpp">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\2_Run</Filter>
-    </ClCompile>
-    <ClCompile Include="Tank_StrongAttack.cpp">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\5_StrongEnemy</Filter>
-    </ClCompile>
-    <ClCompile Include="Tank_WeakAttack.cpp">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\4_WeakEnemy</Filter>
+    <ClCompile Include="Tank_Attack.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\4_Attack</Filter>
     </ClCompile>
     <ClCompile Include="Tank_Walk.cpp">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\3_Walk</Filter>
+      <Filter>Object\Character\Enemy\Action\TankEnemy\2_Walk</Filter>
     </ClCompile>
     <ClCompile Include="Condition_IsHitAttack.cpp">
       <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsHitAttack</Filter>
@@ -1517,16 +1502,25 @@
       <Filter>Object\Character\Enemy\Action\BrawlerEnemy\8_SelectAction</Filter>
     </ClCompile>
     <ClCompile Include="Tank_PlayCurrentReaction.cpp">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\9_SelectReaction</Filter>
+      <Filter>Object\Character\Enemy\Action\TankEnemy\6_SelectReaction</Filter>
     </ClCompile>
     <ClCompile Include="Tank_PlayCurrentBattleAction.cpp">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\10_SelectAction</Filter>
+      <Filter>Object\Character\Enemy\Action\TankEnemy\7_SelectAction</Filter>
     </ClCompile>
     <ClCompile Include="Mage_PlayCurrentBattleAction.cpp">
       <Filter>Object\Character\Enemy\Action\MageEnemy\7_SelectAction</Filter>
     </ClCompile>
     <ClCompile Include="MageLaserEffect.cpp">
       <Filter>Effect\Mage</Filter>
+    </ClCompile>
+    <ClCompile Include="Boid.cpp">
+      <Filter>Object\Character\Boid</Filter>
+    </ClCompile>
+    <ClCompile Include="Condition_IsCanAttack.cpp">
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsCanAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank_Run.cpp">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\3_Run</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2232,7 +2226,7 @@
     <ClInclude Include="Brawler_Reaction.h">
       <Filter>Object\Character\Enemy\Action\BrawlerEnemy\5_Reaction</Filter>
     </ClInclude>
-    <ClInclude Include="Brawler_Run.h">
+    <ClInclude Include="Brawler_AttackingMove.h">
       <Filter>Object\Character\Enemy\Action\BrawlerEnemy\2_Run</Filter>
     </ClInclude>
     <ClInclude Include="Brawler_Walk.h">
@@ -2262,29 +2256,17 @@
     <ClInclude Include="Tank_Dying.h">
       <Filter>Object\Character\Enemy\Action\TankEnemy\0_Dying</Filter>
     </ClInclude>
-    <ClInclude Include="Tank_Guard.h">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\7_Guard</Filter>
-    </ClInclude>
-    <ClInclude Include="Tank_GuardReaction.h">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\8_GuardReaction</Filter>
-    </ClInclude>
     <ClInclude Include="Tank_Idle.h">
       <Filter>Object\Character\Enemy\Action\TankEnemy\1_Idle</Filter>
     </ClInclude>
     <ClInclude Include="Tank_Reaction.h">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\6_Reaction</Filter>
+      <Filter>Object\Character\Enemy\Action\TankEnemy\5_Reaction</Filter>
     </ClInclude>
-    <ClInclude Include="Tank_Run.h">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\2_Run</Filter>
-    </ClInclude>
-    <ClInclude Include="Tank_StrongAttack.h">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\5_StrongEnemy</Filter>
-    </ClInclude>
-    <ClInclude Include="Tank_WeakAttack.h">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\4_WeakEnemy</Filter>
+    <ClInclude Include="Tank_Attack.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\4_Attack</Filter>
     </ClInclude>
     <ClInclude Include="Tank_Walk.h">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\3_Walk</Filter>
+      <Filter>Object\Character\Enemy\Action\TankEnemy\2_Walk</Filter>
     </ClInclude>
     <ClInclude Include="Condition_IsHitAttack.h">
       <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsHitAttack</Filter>
@@ -2299,16 +2281,25 @@
       <Filter>Object\Character\Enemy\Action\BrawlerEnemy\8_SelectAction</Filter>
     </ClInclude>
     <ClInclude Include="Tank_PlayCurrentReaction.h">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\9_SelectReaction</Filter>
+      <Filter>Object\Character\Enemy\Action\TankEnemy\6_SelectReaction</Filter>
     </ClInclude>
     <ClInclude Include="Tank_PlayCurrentBattleAction.h">
-      <Filter>Object\Character\Enemy\Action\TankEnemy\10_SelectAction</Filter>
+      <Filter>Object\Character\Enemy\Action\TankEnemy\7_SelectAction</Filter>
     </ClInclude>
     <ClInclude Include="Mage_PlayCurrentBattleAction.h">
       <Filter>Object\Character\Enemy\Action\MageEnemy\7_SelectAction</Filter>
     </ClInclude>
     <ClInclude Include="MageLaserEffect.h">
       <Filter>Effect\Mage</Filter>
+    </ClInclude>
+    <ClInclude Include="Boid.h">
+      <Filter>Object\Character\Boid</Filter>
+    </ClInclude>
+    <ClInclude Include="Condition_IsCanAttack.h">
+      <Filter>Object\Character\Enemy\BehaviorTree\Beast\Parts\Condition_IsCanAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank_Run.h">
+      <Filter>Object\Character\Enemy\Action\TankEnemy\3_Run</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

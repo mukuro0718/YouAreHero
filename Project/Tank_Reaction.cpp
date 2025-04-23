@@ -18,9 +18,9 @@ Tank_Reaction::Tank_Reaction()
 	: isInitialize		(false)
 {
 	auto& json = Singleton<JsonManager>::GetInstance();
-	this->animationType		= static_cast<int>(TankEnemy::AnimationType::DYING);
+	this->animationType		= static_cast<int>(TankEnemy::AnimationType::ATTACK);
 	this->animationPlayTime = json.GetJson(JsonManager::FileType::TANK_ENEMY)["ANIMATION_PLAY_TIME"][this->animationType];
-	this->actionType		= static_cast<short>(TankEnemyBehaviorTree::ActionType::DYING);
+	this->actionType		= static_cast<short>(TankEnemyBehaviorTree::ActionType::ATTACK);
 	this->maxSpeed			= 0.0f;
 	this->accel				= json.GetJson(JsonManager::FileType::TANK_ENEMY)["ACCEL"];
 	this->decel				= json.GetJson(JsonManager::FileType::TANK_ENEMY)["DECEL"];

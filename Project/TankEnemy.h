@@ -23,16 +23,12 @@ public:
 	{
 		DYING,			//ダイ
 		IDLE,			//待機
-		RUN,			//走り
 		WALK_FRONT,		//歩き
 		WALK_BACK,		//歩き
-		WALK_LEFT,		//歩き
 		WALK_RIGHT,		//歩き
-		WEAK_ATTACK,	//攻撃
-		STRONG_ATTACK,	//攻撃
+		WALK_LEFT,		//歩き
+		ATTACK,			//攻撃
 		REACTION,		//攻撃を受けた時のリアクション
-		GUARD,			//ガード
-		GUARD_REACTION,	//ガードリアクション
 	};
 
 	/*getter/setter*/

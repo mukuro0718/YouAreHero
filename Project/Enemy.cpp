@@ -13,6 +13,7 @@
 #include "Animation.h"
 #include "Character.h"
 #include "Player.h"
+#include "Boid.h"
 #include "Enemy.h"
 #include "PlayerManager.h"
 
@@ -179,4 +180,14 @@ void Enemy::ChangeNormalColor()
 void Enemy::OffIsHit()
 {
 	this->collider->data->isHit = false;
+}
+
+const bool Enemy::GetIsCanAttack()const
+{
+	return this->boid->GetIsCanAttack();
+}
+
+void Enemy::SetIsCanAttak(const bool _isCanAttack)
+{
+	this->boid->SetIsCanAttak(_isCanAttack);
 }

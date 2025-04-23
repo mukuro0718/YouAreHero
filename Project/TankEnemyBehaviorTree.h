@@ -15,15 +15,11 @@ public:
 	//アクションの種類
 	enum class ActionType
 	{
-		DYING			= 0, //デス
-		IDLE			= 1, //待機
-		RUN				= 2, //走る
-		WALK			= 3, //歩く
-		WEAK_ATTACK		= 4, //弱攻撃
-		STRONG_ATTACK	= 5, //強攻撃
-		REACTION		= 6, //リアクション
-		GUARD			= 7, //ガード
-		GUARD_REACTION	= 8, //ガード時リアクション
+		DYING	 = 0, //デス
+		IDLE	 = 1, //待機
+		WALK	 = 2, //歩く
+		ATTACK	 = 3, //弱攻撃
+		REACTION = 4, //リアクション
 	};
 		  void Initialize()					 override;		//初期化
 		  void Update	 (Character& _chara) override;		//更新

@@ -195,7 +195,7 @@ void Player::Update()
 	
 	if (map.GetMapType() == MapManager::MapType::DUNGEON && this->isLock)
 	{
-		if (length > 2000.0f || !enemy.GetIsEnemyWithinRnage())
+		if (length > 2000.0f || !enemy.GetIsEnemyWithinRange())
 		{
 			this->isLock = false;
 		}

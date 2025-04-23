@@ -3,12 +3,13 @@
 #include "UseJson.h"
 #include "DeleteInstance.h"
 #include "Rigidbody.h"
-#include "EnemyManager.h"
+#include "CharacterData.h"
 #include "Character.h"
 #include "Enemy.h"
 #include "MageEnemyBehaviorTreeHeader.h"
 #include "MageEnemy.h"
 #include "Player.h"
+#include "EnemyManager.h"
 #include "PlayerManager.h"
 
 /// <summary>
@@ -98,38 +99,52 @@ void MageEnemyBehaviorTree::CreateBehaviorTree()
 	/*バトルアクションサブツリー*/
 	BehaviorTreeNode* Selector_AttackIfTargetGreaterThanConstant = new SelectorNode();
 	{
-		/*攻撃中だったらその攻撃を続行する*/
+		//攻撃中だったらその攻撃を続行する
 		BehaviorTreeNode* Sequencer_IfAlreadySelectedAttack = new SequencerNode();
 		{
 			Sequencer_IfAlreadySelectedAttack->AddChild(*new Condition_IsSelectedBattleAction());
 			Sequencer_IfAlreadySelectedAttack->AddChild(*new Mage_PlayCurrentBattleAction());
 		}
-		//攻撃対象が追跡範囲外にいたら待機状態
-		BehaviorTreeNode* Sequencer_IdleIfTargetOutOfRange = new SequencerNode();
+		//攻撃権があれば以下の行動を行う
+		BehaviorTreeNode* Sequencer_IfCanAttack = new SequencerNode();
 		{
-			Sequencer_IdleIfTargetOutOfRange->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["CHASE_RANGE"]));
-			Sequencer_IdleIfTargetOutOfRange->AddChild(*new Mage_Idle());
+			//攻撃対象が攻撃範囲外にいたら走る
+			BehaviorTreeNode* Sequencer_WalkIfToTargetOutOfRange = new SequencerNode();
+			{
+				Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["NEAR_ATTACK_RANGE"]));
+				Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Mage_Run());
+			}
+			//インターバルが残っていたら攻撃は行わない
+			BehaviorTreeNode* Sequencer_AttackIfIntervalIsOver = new SequencerNode();
+			{
+				Sequencer_AttackIfIntervalIsOver->AddChild(*new Condition_IsActionIntervalIsOver(static_cast<int>(ActionType::ATTACK)));
+				Sequencer_AttackIfIntervalIsOver->AddChild(*new Mage_Attack());
+			}
+			//攻撃権があるときの行動を選ぶ
+			BehaviorTreeNode* Selector_AttackAction = new SelectorNode();
+			Selector_AttackAction->AddChild(*Sequencer_WalkIfToTargetOutOfRange);
+			Selector_AttackAction->AddChild(*Sequencer_AttackIfIntervalIsOver);
+
+			Sequencer_IfCanAttack->AddChild(*new Condition_IsCanAttack());
+			Sequencer_IfCanAttack->AddChild(*Selector_AttackAction);
 		}
-		//攻撃対象が攻撃範囲外にいたら走る
-		BehaviorTreeNode* Sequencer_WalkIfToTargetOutOfRange = new SequencerNode();
-		{
-			Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_RANGE"]));
-			Sequencer_WalkIfToTargetOutOfRange->AddChild(*new Mage_Run());
-		}
-		//ここまで通ったなら攻撃対象が自分の近くにいるということなので、遠くに離れるようにする
-		//ただ常に離れ続けるとゲームにならないので、移動するまでにディレイを入れたり、移動自体にインターバルを入れるようにする
-		//その場合、上記の攻撃判定ノードの中で移動のインターバルが終了していないときは攻撃を行うようにするか、
-		//ここでその判定を行うようにする。
 		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_IfAlreadySelectedAttack);
-		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_IdleIfTargetOutOfRange);
-		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_WalkIfToTargetOutOfRange);
-		Selector_AttackIfTargetGreaterThanConstant->AddChild(*new Mage_Attack());
+		Selector_AttackIfTargetGreaterThanConstant->AddChild(*Sequencer_IfCanAttack);
+		Selector_AttackIfTargetGreaterThanConstant->AddChild(*new Mage_Walk());
+	}
+
+	/*待機アクション*/
+	BehaviorTreeNode* Selector_IdleIfTargetGreaterThanConstant = new SequencerNode();
+	{
+		Selector_IdleIfTargetGreaterThanConstant->AddChild(*new Condition_IsToTargetDistanceGreaterThanConstant(json.GetJson(JsonManager::FileType::MAGE_ENEMY)["ATTACK_MAX_RANGE"]));
+		Selector_IdleIfTargetGreaterThanConstant->AddChild(*new Mage_Idle());
 	}
 
 	/*サブツリーを大元のツリーに入れる*/
 	//各ノードをすべて通った結果何もアクションが選択されていなければ,IDLEを選択する
 	this->mainNode->AddChild(*Sequencer_DyingIfHpIsLessThanZero);
 	this->mainNode->AddChild(*Selector_NewOrAlreadyReaction);
+	this->mainNode->AddChild(*Selector_IdleIfTargetGreaterThanConstant);
 	this->mainNode->AddChild(*Selector_AttackIfTargetGreaterThanConstant);
 	this->mainNode->AddChild(*new Mage_Idle());
 }
@@ -139,6 +154,15 @@ void MageEnemyBehaviorTree::CreateBehaviorTree()
 /// </summary>
 void MageEnemyBehaviorTree::UpdateMemberVariables(Character& _chara)
 {
+	/*インターバルの計算*/
+	for (int& interval : this->intervalSet)
+	{
+		if (interval != 0)
+		{
+			interval--;
+		}
+	}
+
 	/*目標までの距離を求める*/
 	auto& player = Singleton<PlayerManager>::GetInstance();
 	VECTOR toTarget = VSub(player.GetRigidbody().GetPosition(), _chara.GetRigidbody().GetPosition());
@@ -147,6 +171,8 @@ void MageEnemyBehaviorTree::UpdateMemberVariables(Character& _chara)
 	/*ボスの向いている方向とプレイヤーの位置との内積を取る*/
 	VECTOR enemyDirection = VTransform(VGet(0.0f, 0.0f, -1.0f), MGetRotY(_chara.GetRigidbody().GetRotation().y));
 	this->innerProductOfDirectionToTarget = VDot(enemyDirection, VNorm(VSub(_chara.GetRigidbody().GetPosition(), player.GetRigidbody().GetPosition())));
+
+	this->prevHp = _chara.GetHP();
 }
 
 /// <summary>

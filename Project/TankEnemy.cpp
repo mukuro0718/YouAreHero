@@ -11,6 +11,7 @@
 #include "CharacterColliderData.h"
 #include "Animation.h"
 #include "Character.h"
+#include "Boid.h"
 #include "Enemy.h"
 #include "TankEnemyBehaviorTreeHeader.h"
 #include "HitStop.h"
@@ -52,7 +53,11 @@ TankEnemy::TankEnemy()
 	/*コライダーデータの作成*/
 	this->collider = new CharacterColliderData(ColliderData::Priority::LOW, GameObjectTag::TANK, new CharacterData());
 
+	/*ビヘイビアツリーの作成*/
 	this->tree = new TankEnemyBehaviorTree();
+
+	/*boidの作成*/
+	this->boid = new Boid();
 }
 
 /// <summary>
@@ -114,6 +119,16 @@ void TankEnemy::SetSpownPosition(const int _indentNum, const int _bossType)
 	const VECTOR POSITION = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["DUNGEON_SPOWN_POSITION"][this->bossType][this->indentNum]);//座標
 	this->spownPosition = POSITION;
 	this->collider->rigidbody.SetPosition(POSITION);
+
+	float neighborRadius	 = json.GetJson(JsonManager::FileType::TANK_ENEMY)["NEIGHBOR_RADIUS"];
+	float separationDistance = json.GetJson(JsonManager::FileType::TANK_ENEMY)["SEPARATION_DISTANCE"];
+	float cohesionWeight	 = json.GetJson(JsonManager::FileType::TANK_ENEMY)["COHESION_WEIGHT"];
+	float alignmentWeight	 = json.GetJson(JsonManager::FileType::TANK_ENEMY)["ALIGNMENT_WEIGHT"];
+	float separationWeight	 = json.GetJson(JsonManager::FileType::TANK_ENEMY)["SEPARATION_WEIGHT"];
+	float targetRadius		 = json.GetJson(JsonManager::FileType::TANK_ENEMY)["TARGET_RADIUS"];
+	float stageRadius		 = json.GetJson(JsonManager::FileType::TANK_ENEMY)["STAGE_RADIUS"];
+	VECTOR stageCenter		 = Gori::Convert(json.GetJson(JsonManager::FileType::MAP)["STAGE_CENTER_POSITION"][_bossType][_indentNum]);
+	this->boid->Initialize(neighborRadius, separationDistance, cohesionWeight, alignmentWeight, separationWeight, targetRadius, stageRadius, stageCenter);
 }
 
 /// <summary>

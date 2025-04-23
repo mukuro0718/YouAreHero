@@ -9,7 +9,7 @@ enum class GameObjectTag
 	GROUND	= 4,//’n–Ê
 	WALL	= 5,//•Ç
 	CAMERA	= 6,//ƒJƒƒ‰
-	BRAWLER	= 7,//ŽG‹›“G
+	WEAK_ENEMY	= 7,//ŽG‹›“G
 	MAGE	= 8,//ŽG‹›“G
 	TANK	= 9,//ŽG‹›“G
 };
